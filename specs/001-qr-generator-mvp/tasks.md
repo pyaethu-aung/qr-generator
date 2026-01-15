@@ -21,7 +21,7 @@ description: "Task list for QR Code Generator MVP"
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Initialize Vite project with React + TypeScript in `.`
+- [x] T001 Initialize Vite project with React + TypeScript in `.`
 - [ ] T002 Install dependencies (`qrcode.react`, `qrcode`, `clsx`, `tailwind-merge`, `tailwindcss`, `autoprefixer`, `postcss`)
 - [ ] T003 [P] Configure ESLint, Prettier, and Vitest in project root
 
