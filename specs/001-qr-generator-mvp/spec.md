@@ -5,6 +5,13 @@
 **Status**: Draft
 **Input**: User description: "Build a web-based QR Code Generator application..."
 
+## Clarifications
+### Session 2026-01-17
+- Q: Support customizable Foreground/Background colors? → A: Yes, support customizable Foreground/Background colors.
+- Q: Allow Error Correction Level (L/M/Q/H) selection? → A: Yes, enable selection (default: M).
+- Q: QR Code Download Resolution? → A: 1024px (Standard Print).
+- Q: Error Handling UI? → A: Inline Message (Red text below input).
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Manual QR Generation (Priority: P1)
@@ -38,6 +45,20 @@ As a user, I want to download the generated QR code as a PNG or SVG file, so tha
 2. **Given** a QR code is visible, **When** I click "Download SVG", **Then** a `.svg` vector file is downloaded to my device containing the currently displayed QR code.
 3. **Given** the input field is empty, **When** I view the download buttons, **Then** they are disabled or hidden to prevent downloading empty/invalid files.
 
+### User Story 3 - Customize QR Colors (Priority: P2)
+
+As a user, I want to select the foreground and background colors of the QR code so that I can match it to my branding.
+
+**Why this priority**: Adds personalization value.
+
+**Independent Test**: select colors and verify the preview updates on generation.
+
+**Acceptance Scenarios**:
+
+1. **Given** I am editing the QR options, **When** I select a new foreground color, **Then** the color picker updates, and upon "Generate", the QR code renders with the new color.
+2. **Given** customized colors, **When** I download the image, **Then** the saved file retains the selected colors.
+3. **Given** I change Error Correction Level to 'H', **When** I click "Generate", **Then** the QR pattern density increases (visible change).
+
 ### Edge Cases
 
 - What happens when text is extremely long? QR code should increase version (density) or show error if max limit reached.
@@ -50,13 +71,16 @@ As a user, I want to download the generated QR code as a PNG or SVG file, so tha
 - **FR-001**: System MUST provide a single text input field accepting any Unicode characters or URL strings.
 - **FR-002**: System MUST validate if the input acts like a URL and display a non-blocking warning if malformed (while still generating the QR).
 - **FR-003**: System MUST provide a "Generate" button that is disabled if input is empty.
-- **FR-004**: QR code generation MUST happen strictly on client-side state; no data shall be sent to any remote server.
-- **FR-005**: Preview MUST update only when the user explicitly triggers the "Generate" action.
-- **FR-006**: System MUST generate standard PNG images (bitmap) for download.
-- **FR-007**: System MUST generate standard SVG images (vector) for download.
-- **FR-008**: Filenames for downloads SHOULD include a timestamp or sanitized content snippet (e.g., `qr-code-2026-01-15.png`).
-- **FR-009**: The QR code image components MUST have an appropriate `alt` text attribute reflecting its content or function for accessibility.
-- **FR-010**: Input fields and buttons MUST be navigable via keyboard (Tab/Enter).
+- **FR-004**: System MUST display generation errors (e.g. "Input too long") as inline red text below the input field and prevent generation.
+- **FR-005**: QR code generation MUST happen strictly on client-side state; no data shall be sent to any remote server.
+- **FR-006**: Preview MUST update only when the user explicitly triggers the "Generate" action.
+- **FR-006**: System MUST generate standard PNG images (bitmap) for download at 1024x1024px resolution.
+- **FR-007**: System MUST generate standard SVG images (vector) for download (resolution independent).
+- **FR-008**: System MUST allow users to select Foreground and Background colors via color picker inputs.
+- **FR-009**: System MUST allow users to select Error Correction Level (L, M, Q, H), defaulting to 'M'.
+- **FR-010**: Filenames for downloads SHOULD include a timestamp or sanitized content snippet (e.g., `qr-code-2026-01-15.png`).
+- **FR-011**: The QR code image components MUST have an appropriate `alt` text attribute reflecting its content or function for accessibility.
+- **FR-012**: Input fields and buttons MUST be navigable via keyboard (Tab/Enter).
 
 ### Non-Functional Requirements (Constraints)
 
