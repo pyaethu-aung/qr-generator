@@ -9,7 +9,8 @@
 ### Rationale
 
 **1. Preview Requirement**:
-- The user needs a real-time preview.
+- The user needs to verify the outcome before downloading.
+- Instead of "flashy" real-time updates which might be distracting or resource-intensive during rapid typing, a **manual "Generate" button** provides deliberate control.
 - `qrcode.react` offers a simple `<QRCodeSVG />` or `<QRCodeCanvas />` component that accepts `value` as a prop.
 - It handles the rendering updates efficiently within the React lifecycle.
 
