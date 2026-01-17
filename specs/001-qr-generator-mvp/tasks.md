@@ -23,7 +23,7 @@
 *Independent Test: Enter text, click "Generate", verify QR code appears.*
 
 - [x] T007 [US1] Implement QRPreview component using qrcode.react in src/components/feature/qr/QRPreview.tsx
-- [ ] T008 [US1] Implement basic QRControls component (Input + Generate Button) in src/components/feature/qr/QRControls.tsx
+- [x] T008 [US1] Implement basic QRControls component (Input + Generate Button) in src/components/feature/qr/QRControls.tsx
 - [ ] T009 [US1] Implement useQRGenerator hook (state logic + generation handler) in src/hooks/useQRGenerator.ts
 - [ ] T010 [US1] Implement QRGenerator container component wiring hook to children in src/components/feature/qr/QRGenerator.tsx
 - [ ] T011 [US1] Update App.tsx to render QRGenerator component
