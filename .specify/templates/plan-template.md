@@ -52,16 +52,20 @@ specs/[###-feature]/
   ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
   for this feature. Delete unused options and expand the chosen structure with
   real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
+  not include Option labels. For this project, default SPA layout uses
+  src/components (UI), src/hooks (stateful logic), src/utils (pure helpers),
+  and src/data (data shapers/models); prefer these locations unless the plan
+  justifies a different structure.
 -->
 
 ```text
 # [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
 src/
-├── models/
-├── services/
-├── cli/
-└── lib/
+├── components/
+├── hooks/
+├── utils/
+├── data/
+└── types/
 
 tests/
 ├── contract/
