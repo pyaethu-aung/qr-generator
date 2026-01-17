@@ -34,7 +34,7 @@ description: "Task list for QR Code Generator MVP"
 - [x] T005 [P] Setup Tailwind CSS (Tailwind v4 entry in `src/index.css`)
 - [x] T006 [P] Create reusable `Button` component in `src/components/common/Button.tsx`
 - [x] T007 [P] Create reusable `Card` container component in `src/components/common/Card.tsx`
-- [ ] T008 [P] Create reusable `Input` component in `src/components/common/Input.tsx`
+- [x] T008 [P] Create reusable `Input` component in `src/components/common/Input.tsx`
 
 **Checkpoint**: Foundation ready - UI primitives and types available.
 
