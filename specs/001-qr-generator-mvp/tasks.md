@@ -15,8 +15,8 @@
 
 - [x] T003 Create QRConfig interface and Enums in src/types/qr.ts
 - [x] T004 Create default configuration constants (colors, ecLevel) in src/data/defaults.ts
-- [ ] T005 [P] Implement downloadBlob utility helper in src/utils/download.ts
-- [ ] T006 [P] Add unit tests for downloadBlob helper in src/utils/__tests__/download.test.tsx
+- [x] T005 [P] Implement downloadBlob utility helper in src/utils/download.ts
+- [x] T006 [P] Add unit tests for downloadBlob helper in src/utils/__tests__/download.test.tsx
 
 ## Phase 3: User Story 1 - Manual QR Generation (Priority: P1)
 *Goal: Allow users to input text and manually trigger QR code generation.*
