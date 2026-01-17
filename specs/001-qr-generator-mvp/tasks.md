@@ -27,7 +27,7 @@
 - [x] T009 [US1] Implement useQRGenerator hook (state logic + generation handler) in src/hooks/useQRGenerator.ts
 - [x] T010 [US1] Implement QRGenerator container component wiring hook to children in src/components/feature/qr/QRGenerator.tsx
 - [x] T011 [US1] Update App.tsx to render QRGenerator component
-- [ ] T012 [US1] Add integration test for Manual Generation flow in src/components/feature/qr/__tests__/QRGenerator.test.tsx
+- [x] T012 [US1] Add integration test for Manual Generation flow in src/components/feature/qr/__tests__/QRGenerator.test.tsx
 
 ## Phase 4: User Story 2 - Download QR Assets (Priority: P1)
 *Goal: Allow users to download the generated QR as PNG or SVG.*
