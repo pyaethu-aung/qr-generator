@@ -1,5 +1,5 @@
 import type { InputHTMLAttributes } from 'react'
-import { forwardRef } from 'react'
+import { forwardRef, useId } from 'react'
 import clsx from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -12,7 +12,8 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, helperText, error, fullWidth = true, className, id, disabled, ...props }, ref) => {
-    const inputId = id || props.name
+    const generatedId = useId()
+    const inputId = id || props.name || generatedId
 
     const inputClass = twMerge(
       clsx(
@@ -26,18 +27,19 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     )
 
     return (
-      <label
-        className={twMerge(clsx('flex flex-col gap-1', fullWidth && 'w-full'))}
-        htmlFor={inputId}
-      >
-        {label && <span className="text-sm font-medium text-slate-700">{label}</span>}
+      <div className={twMerge(clsx('flex flex-col gap-1', fullWidth && 'w-full'))}>
+        {label && (
+          <label htmlFor={inputId} className="text-sm font-medium text-slate-700">
+            {label}
+          </label>
+        )}
         <input id={inputId} ref={ref} className={inputClass} disabled={disabled} {...props} />
         {error ? (
           <span className="text-sm text-red-600">{error}</span>
         ) : (
           helperText && <span className="text-sm text-slate-500">{helperText}</span>
         )}
-      </label>
+      </div>
     )
   },
 )
