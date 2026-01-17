@@ -8,7 +8,7 @@
 *Goal: Initialize dependencies and project structure.*
 
 - [x] T001 Install dependencies (qrcode, qrcode.react, @types/qrcode) in package.json
-- [ ] T002 Create feature directory structure (src/components/feature/qr, src/types, src/data, src/utils)
+- [x] T002 Create feature directory structure (src/components/feature/qr, src/types, src/data, src/utils)
 
 ## Phase 2: Foundational
 *Goal: Create shared types, constants, and utility helpers required by the feature.*
