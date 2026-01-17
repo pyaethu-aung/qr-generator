@@ -1,13 +1,13 @@
 # Implementation Plan: QR Generator MVP
 
-**Branch**: `001-qr-generator-mvp` | **Date**: 2026-01-17 | **Spec**: [spec.md](./spec.md)
+**Branch**: `feature/001-qr-generator-mvp` | **Date**: 2026-01-17 | **Spec**: [spec.md](./spec.md)
 **Input**: Feature specification from `specs/001-qr-generator-mvp/spec.md`
 
 **Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
 
 ## Summary
 
-Implement a client-side only QR code generator using React 19 and Tailwind CSS. The app will allow users to input text/URL, click a "Generate" button to view the QR preview, customize colors, and download the result as PNG or SVG.
+Implement a client-side only QR code generator using React 19 and Tailwind CSS. The app will include a "Generate" button, options for Color/ECC Level, and download capability for 1024px PNGs and SVGs.
 
 ## Technical Context
 
