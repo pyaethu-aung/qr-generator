@@ -3,7 +3,15 @@ import { QRPreview } from './QRPreview'
 import { useQRGenerator } from '../../../hooks/useQRGenerator'
 
 export const QRGenerator = () => {
-  const { config, inputValue, setInputValue, generateQRCode, isGenerating } = useQRGenerator()
+  const {
+    config,
+    inputValue,
+    setInputValue,
+    generateQRCode,
+    isGenerating,
+    downloadPng,
+    downloadSvg,
+  } = useQRGenerator()
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl mx-auto px-4 py-8">
@@ -14,6 +22,9 @@ export const QRGenerator = () => {
           onValueChange={setInputValue}
           onGenerate={generateQRCode}
           isGenerating={isGenerating}
+          onDownloadPng={() => void downloadPng()}
+          onDownloadSvg={() => void downloadSvg()}
+          canDownload={!!config.value}
         />
       </div>
 
