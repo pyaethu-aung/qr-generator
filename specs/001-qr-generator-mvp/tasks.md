@@ -1,94 +1,62 @@
----
-description: "Task list for QR Code Generator MVP"
----
+# Tasks: QR Generator MVP
 
-# Tasks: QR Code Generator MVP
+**Feature Branch**: `feature/001-qr-generator-mvp`
+**Spec**: [spec.md](./spec.md)
+**Plan**: [plan.md](./plan.md)
 
-**Input**: Design documents from `/specs/001-qr-generator-mvp/`
-**Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md
+## Phase 1: Setup
+*Goal: Initialize dependencies and project structure.*
 
-**Tests**: Testing is MANDATORY per Constitution Principle II. Every user story implementation includes corresponding unit and integration tests.
+- [ ] T001 Install dependencies (qrcode, qrcode.react, @types/qrcode) in package.json
+- [ ] T002 Create feature directory structure (src/components/feature/qr, src/types, src/data, src/utils)
 
-**Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
+## Phase 2: Foundational
+*Goal: Create shared types, constants, and utility helpers required by the feature.*
 
-## Format: `[ID] [P?] [Story] Description`
+- [ ] T003 Create QRConfig interface and Enums in src/types/qr.ts
+- [ ] T004 Create default configuration constants (colors, ecLevel) in src/data/defaults.ts
+- [ ] T005 [P] Implement downloadBlob utility helper in src/utils/download.ts
+- [ ] T006 [P] Add unit tests for downloadBlob helper in src/utils/__tests__/download.test.tsx
 
-- **[P]**: Can run in parallel (different files, no dependencies)
-- **[Story]**: Which user story this task belongs to (e.g., US1, US2)
-- Include exact file paths in descriptions
+## Phase 3: User Story 1 - Manual QR Generation (Priority: P1)
+*Goal: Allow users to input text and manually trigger QR code generation.*
+*Independent Test: Enter text, click "Generate", verify QR code appears.*
 
-## Phase 1: Setup (Shared Infrastructure)
-
-**Purpose**: Project initialization and basic structure
-
-- [x] T001 Initialize Vite project with React + TypeScript in `.`
-- [x] T002 Install dependencies (`qrcode.react`, `qrcode`, `clsx`, `tailwind-merge`, `tailwindcss`, `autoprefixer`, `postcss`)
-- [x] T003 [P] Configure ESLint, Prettier, and Vitest in project root
-
-## Phase 2: Foundational (Blocking Prerequisites)
-
-**Purpose**: Core infrastructure and shared components required by all stories
-
-
-- [x] T004 [P] Create shared types `QRConfig` and `ValidationResult` in `src/types/index.ts`
-- [x] T005 [P] Setup Tailwind CSS (Tailwind v4 entry in `src/index.css`)
-- [x] T006 [P] Create reusable `Button` component in `src/components/common/Button.tsx`
-- [x] T007 [P] Create reusable `Card` container component in `src/components/common/Card.tsx`
-- [x] T008 [P] Create reusable `Input` component in `src/components/common/Input.tsx`
-
-**Checkpoint**: Foundation ready - UI primitives and types available.
-
-## Phase 3: User Story 1 - Real-time QR Generation (Priority: P1)
-
-**Goal**: User types text/URL and sees an instant QR preview.
-
-**Independent Test**: Load page, type "test", verify QR code SVG appears on screen without page reload.
-
-### Tests for US1
-
-- [ ] T009 [P] [US1] Create unit tests for validation logic in `src/utils/validation.test.ts`
-- [ ] T010 [P] [US1] Create component tests for QRPreview rendering in `src/components/qr/QRPreview.test.tsx`
-
-### Implementation for US1
-
-- [ ] T011 [P] [US1] Implement `validateInput` utility in `src/utils/validation.ts`
-- [ ] T012 [P] [US1] Implement `useQR` hook (state & validation logic) in `src/hooks/useQR.ts`
-- [ ] T013 [P] [US1] Create `QRForm` component (wraps Input) in `src/components/qr/QRForm.tsx`
-- [ ] T014 [P] [US1] Create `QRPreview` component (wraps qrcode.react) in `src/components/qr/QRPreview.tsx`
-- [ ] T015 [US1] Assemble Main Layout and US1 components in `src/App.tsx`
-
-**Checkpoint**: App displays valid QR codes from input.
+- [ ] T007 [US1] Implement QRPreview component using qrcode.react in src/components/feature/qr/QRPreview.tsx
+- [ ] T008 [US1] Implement basic QRControls component (Input + Generate Button) in src/components/feature/qr/QRControls.tsx
+- [ ] T009 [US1] Implement useQRGenerator hook (state logic + generation handler) in src/hooks/useQRGenerator.ts
+- [ ] T010 [US1] Implement QRGenerator container component wiring hook to children in src/components/feature/qr/QRGenerator.tsx
+- [ ] T011 [US1] Update App.tsx to render QRGenerator component
+- [ ] T012 [US1] Add integration test for Manual Generation flow in src/components/feature/qr/__tests__/QRGenerator.test.tsx
 
 ## Phase 4: User Story 2 - Download QR Assets (Priority: P1)
+*Goal: Allow users to download the generated QR as PNG or SVG.*
+*Independent Test: Generate QR, click Download PNG/SVG, verify file download.*
 
-**Goal**: User can download the generated QR as PNG or SVG.
+- [ ] T013 [US2] Update useQRGenerator hook to implement downloadPng (headless qrcode) and downloadSvg logic in src/hooks/useQRGenerator.ts
+- [ ] T014 [US2] Update QRControls to add "Download PNG" and "Download SVG" buttons in src/components/feature/qr/QRControls.tsx
+- [ ] T015 [US2] Add unit tests for download functions (mocking qrcode lib) in src/hooks/__tests__/useQRGenerator.test.tsx
 
-**Independent Test**: Generate QR, click "Download PNG", verify file download event and content type.
+## Phase 5: User Story 3 - Customize QR Colors (Priority: P2)
+*Goal: Allow users to customize foreground/background colors and error correction level.*
+*Independent Test: Change color/EC level, click Generate, verify visual update and download consistency.*
 
-### Tests for US2
+- [ ] T016 [US3] Update QRControls to add Color Pickers (FG/BG) and EC Level Select in src/components/feature/qr/QRControls.tsx
+- [ ] T017 [US3] Update QRPreview to accept and render dynamic colors/EC level in src/components/feature/qr/QRPreview.tsx
+- [ ] T018 [US3] Update useQRGenerator download logic to use customized config in src/hooks/useQRGenerator.ts
+- [ ] T019 [US3] Add unit tests for configuration updates in src/components/feature/qr/__tests__/QRControls.test.tsx
 
-- [ ] T016 [P] [US2] Create unit tests for download utility (mocking DOM/Blob) in `src/utils/download.test.ts`
+## Final Phase: Polish & Cross-Cutting
+*Goal: Ensure validation, accessibility, and styles are production-ready.*
 
-### Implementation for US2
-
-- [ ] T017 [P] [US2] Implement `downloadQR` utility (using `qrcode` lib) in `src/utils/download.ts`
-- [ ] T018 [P] [US2] Create `QRDownload` component (buttons) in `src/components/qr/QRDownload.tsx`
-- [ ] T019 [US2] Integrate `QRDownload` component into main view in `src/App.tsx`
-
-**Checkpoint**: Download buttons function correctly.
-
-## Final Phase: Polish & Cross-cutting
-
-- [ ] T020 [P] Verify accessibility (ARIA labels, keyboard nav) across all components
-- [ ] T021 [P] Run Lighthouse performance check and optimize assets if needed
+- [ ] T020 Implement inline error validation (FR-004) for input length/content in src/hooks/useQRGenerator.ts
+- [ ] T021 Apply final Tailwind styles and responsiveness in src/components/feature/qr/QRGenerator.tsx
+- [ ] T022 Verify Accessibility (alt text, keyboard nav) across all components
 
 ## Dependencies
+- US2 depends on US1 (Skeleton & Generator logic)
+- US3 depends on US1 (Controls & Preview)
+- T013 depends on T005 (Download helper)
 
-- Phase 1 & 2 must be complete before Phase 3/4.
-- Phase 3 (Generation) is a logical prerequisite for Phase 4 (Download), though compoments can be built in parallel.
-
-## Parallel Execution Opportunities
-
-- T006, T007, T008 (UI Components) can be built simultaneously.
-- T011 (Validation) and T012 (Hook) can be built in parallel with T013/T014 (UI).
-- T016 (Download Logic) is independent of the UI work in Phase 3.
+## Implementation Strategy
+We will build the MVP starting with Manual Generation (US1), followed by the critical Download features (US2), and finally add Customization attributes (US3). Each phase includes its own tests.
