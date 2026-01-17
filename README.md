@@ -1,73 +1,39 @@
-# React + TypeScript + Vite
+# QR Generator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Single-page app for generating QR codes with real-time preview and download.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React 19, TypeScript, Vite 7
+- Tailwind CSS v4 (via `@tailwindcss/vite` + `@tailwindcss/postcss`)
+- `qrcode.react` for preview, `qrcode` for asset generation
+- Testing: Vitest + React Testing Library + jest-dom
+- Linting/formatting: ESLint (type-aware) + Prettier
 
-## React Compiler
+## Project Structure
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- `src/components` – UI components (common primitives, feature views)
+- `src/hooks` – stateful logic/hooks
+- `src/utils` – pure helpers
+- `src/data` – data shapers/models
+- `src/types` – shared types
 
-## Expanding the ESLint configuration
+## Development
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Install: `npm install`
+- Dev server: `npm run dev`
+- Lint: `npm run lint` (fix: `npm run lint:fix`)
+- Format check: `npm run format` (write: `npm run format:fix`)
+- Tests: `npm run test` (watch: `npm run test:watch`, coverage: `npm run test:coverage`)
+- Build: `npm run build`
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Quality & Constitution Highlights
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Every change must add/update relevant unit tests and all tests must pass before merge.
+- Remove unused code/assets; keep files in the agreed structure above.
+- CI gates: lint, test, build must pass; PR review required.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Tailwind v4 Notes
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- Entry point: `src/index.css` imports `tailwindcss` and defines base/component layers.
+- Vite integration: `@tailwindcss/vite` plugin plus `@tailwindcss/postcss` in `postcss.config.cjs`.
