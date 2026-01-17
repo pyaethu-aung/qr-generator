@@ -33,7 +33,7 @@
 *Goal: Allow users to download the generated QR as PNG or SVG.*
 *Independent Test: Generate QR, click Download PNG/SVG, verify file download.*
 
-- [ ] T013 [US2] Update useQRGenerator hook to implement downloadPng (headless qrcode) and downloadSvg logic in src/hooks/useQRGenerator.ts
+- [x] T013 [US2] Update useQRGenerator hook to implement downloadPng (headless qrcode) and downloadSvg logic in src/hooks/useQRGenerator.ts
 - [ ] T014 [US2] Update QRControls to add "Download PNG" and "Download SVG" buttons in src/components/feature/qr/QRControls.tsx
 - [ ] T015 [US2] Add unit tests for download functions (mocking qrcode lib) in src/hooks/__tests__/useQRGenerator.test.tsx
 
