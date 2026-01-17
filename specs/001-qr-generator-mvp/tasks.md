@@ -14,7 +14,7 @@
 *Goal: Create shared types, constants, and utility helpers required by the feature.*
 
 - [x] T003 Create QRConfig interface and Enums in src/types/qr.ts
-- [ ] T004 Create default configuration constants (colors, ecLevel) in src/data/defaults.ts
+- [x] T004 Create default configuration constants (colors, ecLevel) in src/data/defaults.ts
 - [ ] T005 [P] Implement downloadBlob utility helper in src/utils/download.ts
 - [ ] T006 [P] Add unit tests for downloadBlob helper in src/utils/__tests__/download.test.tsx
 
