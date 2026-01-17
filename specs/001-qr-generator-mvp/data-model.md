@@ -1,48 +1,28 @@
 # Data Model: QR Generator MVP
 
-Since this is a frontend-only application, this model describes the **Client-Side State** and **TypeScript Interfaces**.
+## Entities
 
-## Core Types
+### QRConfig
 
-### `QRConfig`
-The configuration state for generating a QR code.
+Represents the user's active configuration for the generated QR code.
 
-```typescript
-interface QRConfig {
-  /** The content to encode (text or URL) */
-  value: string;
-  /** Error Correction Level (fixed to 'M' for MVP) */
-  level: 'L' | 'M' | 'Q' | 'H';
-  /** Display size in pixels (fixed to 256 for MVP preview) */
-  size: number;
-  /** Background color (fixed to #FFFFFF for MVP) */
-  bgColor: string;
-  /** Foreground color (fixed to #000000 for MVP) */
-  fgColor: string;
-}
-```
-
-### `ValidationResult`
-Result of input string validation.
-
-```typescript
-interface ValidationResult {
-  /** Is the input potentially a valid URL? */
-  isURL: boolean;
-  /** If not a valid URL, is it non-empty text? */
-  isValidText: boolean;
-  /** Warning message if applicable (e.g., "Invalid URL format") */
-  warning?: string;
-}
-```
+| Field | Type | Required | Default | Description |
+|-------|------|----------|---------|-------------|
+| `value` | string | Yes | "" | The confirmed text content to encode (set on "Generate" click). |
+| `ecLevel` | enum | Yes | 'M' | Error Correction Level (L, M, Q, H). |
+| `fgColor` | string | Yes | "#000000" | Foreground color (hex). |
+| `bgColor` | string | Yes | "#ffffff" | Background color (hex). |
+| `size` | number | No | N/A | Size in pixels (used for download generation only). |
 
 ## State Management
 
-**Store**: React `useState` (Local Component State is sufficient for MVP).
+- **Scope**: Local State (Container Component).
+- **Structure**:
+    - `inputBuffer`: string (Tracks typing)
+    - `qrConfig`: QRConfig (Tracks verified output)
+- **Persistence**: None required for MVP.
 
-- `inputValue`: string (Linked to Input field)
-- `qrConfig`: QRConfig (derived from inputValue + defaults)
+## Validation Rules
 
-## Transformation Logic
-
-`Input String` -> `Validation` -> `QRConfig` -> `Render`
+- **value**: Max length ~2000 chars (depending on EC level).
+- **colors**: Valid Hex codes.
