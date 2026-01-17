@@ -7,20 +7,20 @@
 
 ## User Scenarios & Testing *(mandatory)*
 
-### User Story 1 - Real-time QR Generation (Priority: P1)
+### User Story 1 - Manual QR Generation (Priority: P1)
 
-As a user, I want to see a QR code generated instantly as I type text or a URL, so that I can verify the content before using it.
+As a user, I want to click a button to generate the QR code after entering my text, so that I can control when the code is created and avoid flashing updates while typing.
 
 **Why this priority**: Core functionality of the application. Without this, the app serves no purpose.
 
-**Independent Test**: Can be tested by opening the page, typing in the input field, and observing the visual QR code change without hitting a "submit" button.
+**Independent Test**: Can be tested by opening the page, typing in the input field, clicking "Generate", and observing the visual QR code appear.
 
 **Acceptance Scenarios**:
 
-1. **Given** the application is loaded and input is empty, **When** I view the page, **Then** no QR code is visible (or a placeholder/empty state is shown) and the download buttons are disabled.
-2. **Given** I am on the main page, **When** I type "Hello World" into the input field, **Then** a valid QR code representing "Hello World" appears instantly in the preview area.
-3. **Given** I have typed text, **When** I clear the input field, **Then** the QR code disappears.
-4. **Given** I type a string that is not a valid URL format (e.g., "google com"), **When** the input loses focus or after a brief delay, **Then** a warning message "Invalid URL format" appears, but the QR code for the text "google com" is still displayed.
+1. **Given** the application is loaded and input is empty, **When** I view the page, **Then** no QR code is visible (or a placeholder/empty state is shown) and the "Generate" button is disabled.
+2. **Given** I am on the main page, **When** I type "Hello World" into the input field and click "Generate", **Then** a valid QR code representing "Hello World" appears in the preview area.
+3. **Given** I have typed text but not clicked "Generate", **When** I check the preview, **Then** the QR code does not appear (or shows the previous state).
+4. **Given** I type a string that is not a valid URL format (e.g., "google com"), **When** the input loses focus or after clicking "Generate", **Then** a warning message "Invalid URL format" appears, but the QR code is generated.
 
 ---
 
@@ -49,9 +49,9 @@ As a user, I want to download the generated QR code as a PNG or SVG file, so tha
 
 - **FR-001**: System MUST provide a single text input field accepting any Unicode characters or URL strings.
 - **FR-002**: System MUST validate if the input acts like a URL and display a non-blocking warning if malformed (while still generating the QR).
-- **FR-003**: System MUST disable generation triggers triggers/preview if input is effectively empty (whitespace only).
-- **FR-004**: QR code generation MUST happen acts strictly on client-side state; no data shall be sent to any remote server.
-- **FR-005**: Preview MUST update in real-time (debounce acceptable approx 100-300ms) as the user types.
+- **FR-003**: System MUST provide a "Generate" button that is disabled if input is empty.
+- **FR-004**: QR code generation MUST happen strictly on client-side state; no data shall be sent to any remote server.
+- **FR-005**: Preview MUST update only when the user explicitly triggers the "Generate" action.
 - **FR-006**: System MUST generate standard PNG images (bitmap) for download.
 - **FR-007**: System MUST generate standard SVG images (vector) for download.
 - **FR-008**: Filenames for downloads SHOULD include a timestamp or sanitized content snippet (e.g., `qr-code-2026-01-15.png`).
@@ -83,9 +83,23 @@ As a user, I want to download the generated QR code as a PNG or SVG file, so tha
 
 ## UI/UX Rules
 
-- **Layout**: Single-column layout on mobile; centered card or split view on desktop. Input at top.
-- **Theme**: Light mode default (Black QR on White).
-- **Responsiveness**: Fits visible area without scrolling on typical mobile screens.
+### Layout
+- Single-column layout on mobile
+- Horizontal split view on desktop: inputs at right column
+
+### Theme
+- Light mode default (Black QR on White)
+- Support light and dark model
+
+### Responsiveness
+- Fits visible area without scrolling on typical mobile screens
+
+### Typography
+- System font stack
+- Clear hierarchy:
+  - Page title
+  - Section labels
+  - Body text
 
 ## Assumptions
 

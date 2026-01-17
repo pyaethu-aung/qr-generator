@@ -1,31 +1,34 @@
 # Quickstart: QR Generator MVP
 
-## Prerequisites
+## Overview
 
-- Node.js 20+
-- npm 10+
+This feature provides a single-page interface to generate and download QR codes. It runs entirely client-side.
 
-## Setup
+## Running the Feature
 
-1. **Install Dependencies**
-   ```bash
-   npm install
-   ```
+1.  **Install Dependencies**:
+    ```bash
+    npm install qrcode.react qrcode
+    npm install -D @types/qrcode
+    ```
 
-2. **Start Development Server**
-   ```bash
-   npm run dev
-   ```
-   Access the app at `http://localhost:5173`
+2.  **Start Development Server**:
+    ```bash
+    npm run dev
+    ```
 
-3. **Run Tests**
-   ```bash
-   npm run test        # Unit tests
-   npm run test:ui     # UI test runner
-   ```
+3.  **Navigate to**: `http://localhost:5173` (The main entry point will be updated to show the generator).
 
-## Development Workflow
+## Key Components
 
-- **Linting**: `npm run lint`
-- **Formatting**: `npm run format`
-- **Build**: `npm run build` (outputs to `dist/`)
+- `QRGenerator`: Main container managing state.
+- `QRPreview`: Displays the SVG preview using `qrcode.react`.
+- `QRControls`: Inputs for text and color.
+- `useQR`: Hook handling generation logic for downloads.
+
+## Testing
+
+Run unit tests for the new components:
+```bash
+npm run test src/components/feature/qr
+```
