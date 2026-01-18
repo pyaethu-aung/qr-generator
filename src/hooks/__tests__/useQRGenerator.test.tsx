@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { useQRGenerator } from '../useQRGenerator'
+import { INPUT_LENGTH_LIMIT, useQRGenerator } from '../useQRGenerator'
 import QRCode from 'qrcode'
 import * as downloadUtils from '../../utils/download'
 
@@ -51,6 +51,34 @@ describe('useQRGenerator', () => {
     })
 
     expect(result.current.config.value).toBe('test-value')
+  })
+
+  it('should surface validation errors for inputs that exceed the limit', () => {
+    const { result } = renderHook(() => useQRGenerator())
+    const longValue = 'a'.repeat(INPUT_LENGTH_LIMIT + 1)
+
+    act(() => {
+      result.current.setInputValue(longValue)
+    })
+
+    expect(result.current.inputError).toBe(`Input too long (max ${INPUT_LENGTH_LIMIT} characters)`)
+    expect(result.current.canGenerate).toBe(false)
+  })
+
+  it('should not generate QR code when validation fails', () => {
+    const { result } = renderHook(() => useQRGenerator())
+    const longValue = 'a'.repeat(INPUT_LENGTH_LIMIT + 1)
+
+    act(() => {
+      result.current.setInputValue(longValue)
+    })
+
+    act(() => {
+      result.current.generateQRCode()
+    })
+
+    expect(result.current.config.value).toBe('')
+    expect(result.current.inputError).toBe(`Input too long (max ${INPUT_LENGTH_LIMIT} characters)`)
   })
 
   it('should generate PNG download', async () => {

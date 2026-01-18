@@ -49,7 +49,7 @@
 ## Final Phase: Polish & Cross-Cutting
 *Goal: Ensure validation, accessibility, and styles are production-ready.*
 
-- [ ] T020 Implement inline error validation (FR-004) for input length/content in src/hooks/useQRGenerator.ts
+- [x] T020 Implement inline error validation (FR-004) for input length/content in src/hooks/useQRGenerator.ts
 - [ ] T021 Apply final Tailwind styles and responsiveness in src/components/feature/qr/QRGenerator.tsx
 - [ ] T022 Verify Accessibility (alt text, keyboard nav) across all components
 

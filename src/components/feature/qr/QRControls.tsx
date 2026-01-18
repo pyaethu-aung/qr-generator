@@ -16,6 +16,8 @@ interface QRControlsProps {
   onDownloadPng?: () => void
   onDownloadSvg?: () => void
   canDownload?: boolean
+  inputError?: string
+  canGenerate?: boolean
 }
 
 export const QRControls = ({
@@ -32,6 +34,8 @@ export const QRControls = ({
   onDownloadPng,
   onDownloadSvg,
   canDownload = false,
+  inputError,
+  canGenerate = true,
 }: QRControlsProps) => {
   return (
     <div className="flex flex-col gap-6 w-full p-6 bg-white rounded-lg shadow-sm border border-gray-100">
@@ -44,6 +48,7 @@ export const QRControls = ({
             onChange={(e) => onValueChange(e.target.value)}
             disabled={isGenerating}
             fullWidth
+            error={inputError}
           />
           <p className="text-xs text-slate-500">
             Enter the content you want to encode in the QR code.
@@ -108,7 +113,7 @@ export const QRControls = ({
         <Button
           variant="primary"
           onClick={onGenerate}
-          disabled={!value || isGenerating}
+          disabled={!canGenerate || isGenerating}
           loading={isGenerating}
           fullWidth
         >
