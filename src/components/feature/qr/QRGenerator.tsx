@@ -2,11 +2,18 @@ import { QRControls } from './QRControls'
 import { QRPreview } from './QRPreview'
 import { useQRGenerator } from '../../../hooks/useQRGenerator'
 
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
 export const QRGenerator = () => {
   const {
     config,
     inputValue,
     setInputValue,
+    inputEcLevel,
+    setInputEcLevel,
+    inputFgColor,
+    setInputFgColor,
+    inputBgColor,
+    setInputBgColor,
     generateQRCode,
     isGenerating,
     downloadPng,
@@ -20,6 +27,12 @@ export const QRGenerator = () => {
         <QRControls
           value={inputValue}
           onValueChange={setInputValue}
+          ecLevel={inputEcLevel}
+          onEcLevelChange={setInputEcLevel}
+          fgColor={inputFgColor}
+          onFgColorChange={setInputFgColor}
+          bgColor={inputBgColor}
+          onBgColorChange={setInputBgColor}
           onGenerate={generateQRCode}
           isGenerating={isGenerating}
           onDownloadPng={() => void downloadPng()}
@@ -30,7 +43,7 @@ export const QRGenerator = () => {
 
       <div className="flex flex-col gap-4">
         <h2 className="text-xl font-semibold text-slate-800">Preview</h2>
-        <div className="flex items-start justify-center p-6 bg-slate-50 rounded-xl border border-slate-200 min-h-[400px]">
+        <div className="flex items-start justify-center p-6 bg-slate-50 rounded-xl border border-slate-200 min-h-100">
           <QRPreview {...config} />
         </div>
       </div>
