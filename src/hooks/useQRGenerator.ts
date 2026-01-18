@@ -1,15 +1,38 @@
 import { useState, useCallback } from 'react'
 import QRCode from 'qrcode'
-import type { QRConfig } from '../types/qr'
+import type { QRConfig, QRErrorCorrectionLevel } from '../types/qr'
 import { DEFAULT_QR_CONFIG, QR_SIZE_DOWNLOAD } from '../data/defaults'
 import { downloadBlob } from '../utils/download'
 
-export const useQRGenerator = () => {
+export interface UseQRGeneratorReturn {
+  config: QRConfig
+  inputValue: string
+  setInputValue: (value: string) => void
+  inputEcLevel: QRErrorCorrectionLevel
+  setInputEcLevel: (level: QRErrorCorrectionLevel) => void
+  inputFgColor: string
+  setInputFgColor: (color: string) => void
+  inputBgColor: string
+  setInputBgColor: (color: string) => void
+  generateQRCode: () => void
+  isGenerating: boolean
+  downloadPng: () => Promise<void>
+  downloadSvg: () => Promise<void>
+}
+
+export const useQRGenerator = (): UseQRGeneratorReturn => {
   // config holds the current configuration for the displayed QR code
   const [config, setConfig] = useState<QRConfig>(DEFAULT_QR_CONFIG)
 
-  // inputValue holds the text in the input field, which might not be generated yet
+  // inputValue holds the text in the input field
   const [inputValue, setInputValue] = useState<string>('')
+
+  // Input states for customization (not applied until Generate is clicked)
+  const [inputEcLevel, setInputEcLevel] = useState<QRErrorCorrectionLevel>(
+    DEFAULT_QR_CONFIG.ecLevel,
+  )
+  const [inputFgColor, setInputFgColor] = useState<string>(DEFAULT_QR_CONFIG.fgColor)
+  const [inputBgColor, setInputBgColor] = useState<string>(DEFAULT_QR_CONFIG.bgColor)
 
   const [isGenerating, setIsGenerating] = useState<boolean>(false)
 
@@ -23,10 +46,13 @@ export const useQRGenerator = () => {
     setConfig((prev) => ({
       ...prev,
       value: inputValue,
+      ecLevel: inputEcLevel,
+      fgColor: inputFgColor,
+      bgColor: inputBgColor,
     }))
 
     setIsGenerating(false)
-  }, [inputValue])
+  }, [inputValue, inputEcLevel, inputFgColor, inputBgColor])
 
   const downloadPng = useCallback(async () => {
     if (!config.value) return
@@ -59,6 +85,7 @@ export const useQRGenerator = () => {
 
     try {
       // Generate SVG string using 'qrcode' library
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string
       const svgString = await QRCode.toString(config.value, {
         type: 'svg',
         errorCorrectionLevel: config.ecLevel,
@@ -81,6 +108,12 @@ export const useQRGenerator = () => {
     config,
     inputValue,
     setInputValue,
+    inputEcLevel,
+    setInputEcLevel,
+    inputFgColor,
+    setInputFgColor,
+    inputBgColor,
+    setInputBgColor,
     generateQRCode,
     isGenerating,
     downloadPng,
