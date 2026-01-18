@@ -51,7 +51,7 @@
 
 - [x] T020 Implement inline error validation (FR-004) for input length/content in src/hooks/useQRGenerator.ts
 - [x] T021 Apply final Tailwind styles and responsiveness in src/components/feature/qr/QRGenerator.tsx
-- [ ] T022 Verify Accessibility (alt text, keyboard nav) across all components
+- [x] T022 Verify Accessibility (alt text, keyboard nav) across all components
 
 ## Dependencies
 - US2 depends on US1 (Skeleton & Generator logic)
