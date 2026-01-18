@@ -57,14 +57,21 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
   const downloadPng = useCallback(async () => {
     if (!config.value) return
 
+    const downloadConfig = {
+      value: config.value,
+      ecLevel: inputEcLevel,
+      fgColor: inputFgColor,
+      bgColor: inputBgColor,
+    }
+
     try {
       // Generate the Data URL using the 'qrcode' library (headless)
       // This doesn't rely on the rendered DOM component
-      const dataUrl = await QRCode.toDataURL(config.value, {
-        errorCorrectionLevel: config.ecLevel,
+      const dataUrl = await QRCode.toDataURL(downloadConfig.value, {
+        errorCorrectionLevel: downloadConfig.ecLevel,
         color: {
-          dark: config.fgColor,
-          light: config.bgColor,
+          dark: downloadConfig.fgColor,
+          light: downloadConfig.bgColor,
         },
         width: QR_SIZE_DOWNLOAD,
         margin: 1,
@@ -78,20 +85,27 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
     } catch (err) {
       console.error('Failed to generate PNG', err)
     }
-  }, [config])
+  }, [config.value, inputEcLevel, inputFgColor, inputBgColor])
 
   const downloadSvg = useCallback(async () => {
     if (!config.value) return
 
+    const downloadConfig = {
+      value: config.value,
+      ecLevel: inputEcLevel,
+      fgColor: inputFgColor,
+      bgColor: inputBgColor,
+    }
+
     try {
       // Generate SVG string using 'qrcode' library
       // eslint-disable-next-line @typescript-eslint/no-base-to-string
-      const svgString = await QRCode.toString(config.value, {
+      const svgString = await QRCode.toString(downloadConfig.value, {
         type: 'svg',
-        errorCorrectionLevel: config.ecLevel,
+        errorCorrectionLevel: downloadConfig.ecLevel,
         color: {
-          dark: config.fgColor,
-          light: config.bgColor,
+          dark: downloadConfig.fgColor,
+          light: downloadConfig.bgColor,
         },
         width: QR_SIZE_DOWNLOAD,
         margin: 1,
@@ -102,7 +116,7 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
     } catch (err) {
       console.error('Failed to generate SVG', err)
     }
-  }, [config])
+  }, [config.value, inputEcLevel, inputFgColor, inputBgColor])
 
   return {
     config,
