@@ -2,7 +2,6 @@ import { QRControls } from './QRControls'
 import { QRPreview } from './QRPreview'
 import { useQRGenerator } from '../../../hooks/useQRGenerator'
 
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
 export const QRGenerator = () => {
   const {
     config,
