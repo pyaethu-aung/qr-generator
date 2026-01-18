@@ -24,6 +24,7 @@ const setup = (overrides: Partial<QRControlsProps> = {}) => {
     onGenerate,
     isGenerating: false,
     canDownload: false,
+    canGenerate: true,
   }
 
   const utils = render(<QRControls {...baseProps} {...overrides} />)
@@ -70,5 +71,11 @@ describe('QRControls configuration updates', () => {
 
     expect(onFgColorChange).toHaveBeenCalledWith('#ff0000')
     expect(onBgColorChange).toHaveBeenCalledWith('#00ff00')
+  })
+
+  it('renders inline error when provided', () => {
+    setup({ inputError: 'Input too long' })
+
+    expect(screen.getByText('Input too long')).toBeInTheDocument()
   })
 })

@@ -1,8 +1,10 @@
-import { useState, useCallback } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import QRCode from 'qrcode'
 import type { QRConfig, QRErrorCorrectionLevel } from '../types/qr'
 import { DEFAULT_QR_CONFIG, QR_SIZE_DOWNLOAD } from '../data/defaults'
 import { downloadBlob } from '../utils/download'
+
+export const INPUT_LENGTH_LIMIT = 2000
 
 export interface UseQRGeneratorReturn {
   config: QRConfig
@@ -18,6 +20,8 @@ export interface UseQRGeneratorReturn {
   isGenerating: boolean
   downloadPng: () => Promise<void>
   downloadSvg: () => Promise<void>
+  inputError?: string
+  canGenerate: boolean
 }
 
 export const useQRGenerator = (): UseQRGeneratorReturn => {
@@ -25,7 +29,8 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
   const [config, setConfig] = useState<QRConfig>(DEFAULT_QR_CONFIG)
 
   // inputValue holds the text in the input field
-  const [inputValue, setInputValue] = useState<string>('')
+  const [inputValue, setInputValueState] = useState<string>('')
+  const [inputError, setInputError] = useState<string | undefined>()
 
   // Input states for customization (not applied until Generate is clicked)
   const [inputEcLevel, setInputEcLevel] = useState<QRErrorCorrectionLevel>(
@@ -36,12 +41,41 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
 
   const [isGenerating, setIsGenerating] = useState<boolean>(false)
 
-  const generateQRCode = useCallback(() => {
-    setIsGenerating(true)
+  const getValidationError = useCallback((value: string) => {
+    if (value.length > INPUT_LENGTH_LIMIT) {
+      return `Input too long (max ${INPUT_LENGTH_LIMIT} characters)`
+    }
 
-    // Simulate a small delay for better UX (optional, but good for "feeling" of work)
-    // or just set it immediately. Since it's client-side, it's instant.
-    // We'll set it immediately for MVP performance goals.
+    return undefined
+  }, [])
+
+  const setInputValue = useCallback(
+    (value: string) => {
+      setInputValueState(value)
+      setInputError(getValidationError(value))
+    },
+    [getValidationError],
+  )
+
+  const canGenerate = useMemo(
+    () => Boolean(inputValue.trim()) && !inputError,
+    [inputError, inputValue],
+  )
+
+  const generateQRCode = useCallback(() => {
+    if (!inputValue.trim()) {
+      setInputError(undefined)
+      return
+    }
+
+    const validationError = getValidationError(inputValue)
+    if (validationError) {
+      setInputError(validationError)
+      return
+    }
+
+    setInputError(undefined)
+    setIsGenerating(true)
 
     setConfig((prev) => ({
       ...prev,
@@ -52,7 +86,7 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
     }))
 
     setIsGenerating(false)
-  }, [inputValue, inputEcLevel, inputFgColor, inputBgColor])
+  }, [getValidationError, inputBgColor, inputEcLevel, inputFgColor, inputValue])
 
   const downloadPng = useCallback(async () => {
     if (!config.value) return
@@ -132,5 +166,7 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
     isGenerating,
     downloadPng,
     downloadSvg,
+    inputError,
+    canGenerate,
   }
 }
