@@ -42,7 +42,7 @@
 *Independent Test: Change color/EC level, click Generate, verify visual update and download consistency.*
 
 - [x] T016 [US3] Update QRControls to add Color Pickers (FG/BG) and EC Level Select in src/components/feature/qr/QRControls.tsx
-- [ ] T017 [US3] Update QRPreview to accept and render dynamic colors/EC level in src/components/feature/qr/QRPreview.tsx
+- [x] T017 [US3] Update QRPreview to accept and render dynamic colors/EC level in src/components/feature/qr/QRPreview.tsx
 - [ ] T018 [US3] Update useQRGenerator download logic to use customized config in src/hooks/useQRGenerator.ts
 - [ ] T019 [US3] Add unit tests for configuration updates in src/components/feature/qr/__tests__/QRControls.test.tsx
 
