@@ -22,34 +22,68 @@ export const QRGenerator = () => {
   } = useQRGenerator()
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl mx-auto px-4 py-8">
-      <div className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-slate-800">Configuration</h2>
-        <QRControls
-          value={inputValue}
-          onValueChange={setInputValue}
-          ecLevel={inputEcLevel}
-          onEcLevelChange={setInputEcLevel}
-          fgColor={inputFgColor}
-          onFgColorChange={setInputFgColor}
-          bgColor={inputBgColor}
-          onBgColorChange={setInputBgColor}
-          onGenerate={generateQRCode}
-          isGenerating={isGenerating}
-          onDownloadPng={() => void downloadPng()}
-          onDownloadSvg={() => void downloadSvg()}
-          canDownload={!!config.value}
-          inputError={inputError}
-          canGenerate={canGenerate}
-        />
+    <section className="relative isolate overflow-hidden px-4 pb-12 pt-14 sm:px-6 lg:px-8">
+      <div aria-hidden className="pointer-events-none absolute inset-0 opacity-60">
+        <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-sky-400/40 to-transparent blur-3xl" />
+        <div className="absolute right-1/3 top-6 h-64 w-64 rounded-full bg-fuchsia-500/40 blur-3xl" />
+        <div className="absolute left-0 bottom-6 h-72 w-72 rounded-full bg-indigo-500/30 blur-[120px]" />
       </div>
 
-      <div className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold text-slate-800">Preview</h2>
-        <div className="flex items-start justify-center p-6 bg-slate-50 rounded-xl border border-slate-200 min-h-100">
-          <QRPreview {...config} />
+      <div className="relative mx-auto max-w-6xl space-y-6">
+        <div className="text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.5em] text-indigo-200">
+            US3 · Customize
+          </p>
+          <h2 className="mt-3 text-3xl font-semibold text-white sm:text-4xl">
+            Sculpt standout QR codes
+          </h2>
+          <p className="mt-2 text-base text-indigo-100/80">
+            Dial in colors, error correction, and downloads before sharing with stakeholders.
+          </p>
+        </div>
+
+        <div className="rounded-[32px] border border-white/10 bg-slate-900/70 p-6 shadow-2xl shadow-black/50 backdrop-blur-xl">
+          <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-10">
+            <div className="space-y-5">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  Configuration
+                </p>
+                <h3 className="text-2xl font-semibold text-white">Preview what you’ll download</h3>
+              </div>
+              <QRControls
+                value={inputValue}
+                onValueChange={setInputValue}
+                ecLevel={inputEcLevel}
+                onEcLevelChange={setInputEcLevel}
+                fgColor={inputFgColor}
+                onFgColorChange={setInputFgColor}
+                bgColor={inputBgColor}
+                onBgColorChange={setInputBgColor}
+                onGenerate={generateQRCode}
+                isGenerating={isGenerating}
+                onDownloadPng={() => void downloadPng()}
+                onDownloadSvg={() => void downloadSvg()}
+                canDownload={!!config.value}
+                inputError={inputError?.message ?? null}
+                canGenerate={canGenerate}
+              />
+            </div>
+
+            <div className="space-y-5">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">
+                  Preview
+                </p>
+                <h3 className="text-2xl font-semibold text-white">See every pixel</h3>
+              </div>
+              <div className="flex flex-1 items-center justify-center rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_30px_80px_rgba(15,23,42,0.5)]">
+                <QRPreview {...config} className="w-full" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   )
 }
