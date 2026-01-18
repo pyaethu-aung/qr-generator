@@ -7,10 +7,12 @@ import * as downloadUtils from '../../utils/download'
 // Mock dependencies
 vi.mock('qrcode', () => ({
   default: {
-    toDataURL: vi.fn(),
-    toString: vi.fn(),
+    toDataURL: vi.fn().mockResolvedValue(''),
+    toString: vi.fn().mockResolvedValue(''),
   },
 }))
+
+const mockedQRCode = vi.mocked(QRCode, true)
 
 vi.spyOn(downloadUtils, 'downloadBlob').mockImplementation(() => {})
 
@@ -60,7 +62,7 @@ describe('useQRGenerator', () => {
     } as Response)
 
     // Setup qrcode mock
-    vi.mocked(QRCode.toDataURL as any).mockResolvedValue('data:image/png;base64,fake')
+    mockedQRCode.toDataURL.mockResolvedValue('data:image/png;base64,fake')
 
     // 1. Set Value
     act(() => {
@@ -92,7 +94,7 @@ describe('useQRGenerator', () => {
     const { result } = renderHook(() => useQRGenerator())
 
     // Setup qrcode mock
-    vi.mocked(QRCode.toString as any).mockResolvedValue('<svg>fake</svg>')
+    mockedQRCode.toString.mockResolvedValue('<svg>fake</svg>')
 
     // 1. Set Value
     act(() => {
@@ -135,7 +137,7 @@ describe('useQRGenerator', () => {
   it('should handle PNG download errors gracefully', async () => {
     const { result } = renderHook(() => useQRGenerator())
 
-    vi.mocked(QRCode.toDataURL as any).mockRejectedValue(new Error('Generation failed'))
+    mockedQRCode.toDataURL.mockRejectedValue(new Error('Generation failed'))
 
     act(() => {
       result.current.setInputValue('fail')
