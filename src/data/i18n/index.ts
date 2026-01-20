@@ -37,7 +37,9 @@ function logMissingTranslation(locale: SupportedLocale, key: TranslationKey) {
   const logToken = `${locale}:${key}`
   if (!missingTranslationLog.has(logToken)) {
     missingTranslationLog.add(logToken)
-    console.warn(`[i18n] Missing translation for "${key}" in ${locale}; falling back to ${defaultLocale}`)
+    console.warn(
+      `[i18n] Missing translation for "${key}" in ${locale}; falling back to ${defaultLocale}`,
+    )
   }
 }
 

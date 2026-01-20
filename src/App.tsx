@@ -1,7 +1,10 @@
 import { QRGenerator } from './components/feature/qr/QRGenerator'
 import './App.css'
+import { useLocaleContext } from './hooks/LocaleProvider'
 
 function App() {
+  const { translate } = useLocaleContext()
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-50">
       <div className="relative isolate overflow-hidden">
@@ -10,11 +13,9 @@ function App() {
           <div className="max-w-6xl mx-auto px-4 py-5 sm:px-6 lg:px-8">
             <h1 className="flex items-center gap-3 text-xl font-semibold text-white">
               <span className="text-2xl">✨</span>
-              QR Code Generator
+              {translate('layout.headerTitle')}
             </h1>
-            <p className="mt-1 text-sm text-slate-300">
-              Generate, style, and download high-quality QR codes without touching a backend.
-            </p>
+            <p className="mt-1 text-sm text-slate-300">{translate('layout.headerSubtitle')}</p>
           </div>
         </header>
 
@@ -25,7 +26,7 @@ function App() {
         </main>
 
         <footer className="relative z-10 border-t border-white/5 py-8 text-center text-sm text-slate-400">
-          <p>Client-side only. Zero knowledge. Export at 1024px PNG/SVG.</p>
+          <p>{translate('layout.footerNote')}</p>
         </footer>
       </div>
     </div>

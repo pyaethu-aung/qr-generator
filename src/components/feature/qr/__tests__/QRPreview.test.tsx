@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
-import { QRPreview } from '../QRPreview'
 import { describe, it, expect } from 'vitest'
+import { LocaleProvider } from '../../../../hooks/LocaleProvider'
+import { QRPreview } from '../QRPreview'
 
 describe('QRPreview', () => {
   const defaultProps = {
@@ -11,14 +12,22 @@ describe('QRPreview', () => {
   }
 
   it('renders placeholder when value is empty', () => {
-    render(<QRPreview {...defaultProps} value="" />)
+    render(
+      <LocaleProvider>
+        <QRPreview {...defaultProps} value="" />
+      </LocaleProvider>,
+    )
 
     expect(screen.getByText('Enter text to generate')).toBeInTheDocument()
     expect(screen.getByRole('img', { name: 'QR Code Placeholder' })).toBeInTheDocument()
   })
 
   it('renders QR code SVG when value is provided', () => {
-    render(<QRPreview {...defaultProps} value="https://example.com" />)
+    render(
+      <LocaleProvider>
+        <QRPreview {...defaultProps} value="https://example.com" />
+      </LocaleProvider>,
+    )
 
     // The placeholder should be gone
     expect(screen.queryByText('Enter text to generate')).not.toBeInTheDocument()
@@ -39,7 +48,11 @@ describe('QRPreview', () => {
       bgColor: '#0000FF', // Blue
     }
 
-    render(<QRPreview {...customProps} />)
+    render(
+      <LocaleProvider>
+        <QRPreview {...customProps} />
+      </LocaleProvider>,
+    )
 
     const svg = screen.getByRole('img', { name: 'QR Code for value: Test Color' })
 
@@ -53,7 +66,11 @@ describe('QRPreview', () => {
   })
 
   it('renders with custom size', () => {
-    render(<QRPreview {...defaultProps} value="Test Size" size={128} />)
+    render(
+      <LocaleProvider>
+        <QRPreview {...defaultProps} value="Test Size" size={128} />
+      </LocaleProvider>,
+    )
 
     const svg = screen.getByRole('img', { name: 'QR Code for value: Test Size' })
     expect(svg).toHaveAttribute('height', '128')

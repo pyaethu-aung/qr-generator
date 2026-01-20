@@ -1,6 +1,8 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi } from 'vitest'
+import type { ReactElement } from 'react'
+import { LocaleProvider } from '../../../../hooks/LocaleProvider'
 import { QRGenerator } from '../QRGenerator'
 
 // Mock qrcode.react simply to avoid canvas/DOM issues and verify props
@@ -18,20 +20,22 @@ vi.mock('qrcode.react', () => ({
 }))
 
 describe('QRGenerator Integration', () => {
+  const renderWithProviders = (ui: ReactElement) => render(<LocaleProvider>{ui}</LocaleProvider>)
+
   it('should render the generator layout', () => {
-    render(<QRGenerator />)
+    renderWithProviders(<QRGenerator />)
     expect(screen.getByText('Configuration')).toBeInTheDocument()
     expect(screen.getByText('Preview')).toBeInTheDocument()
   })
 
   it('should show placeholder initially', () => {
-    render(<QRGenerator />)
+    renderWithProviders(<QRGenerator />)
     expect(screen.getByRole('img', { name: /qr code placeholder/i })).toBeInTheDocument()
     expect(screen.queryByTestId('qr-code-svg')).not.toBeInTheDocument()
   })
 
   it('should generate QR code when user inputs text and clicks generate', async () => {
-    render(<QRGenerator />)
+    renderWithProviders(<QRGenerator />)
 
     // User types into input
     const input = screen.getByLabelText(/content/i)
@@ -55,7 +59,7 @@ describe('QRGenerator Integration', () => {
   })
 
   it('renders accessible preview aria labels after generation', async () => {
-    render(<QRGenerator />)
+    renderWithProviders(<QRGenerator />)
 
     const input = screen.getByLabelText(/content/i)
     fireEvent.change(input, { target: { value: 'keyboard.com' } })
@@ -70,7 +74,7 @@ describe('QRGenerator Integration', () => {
   })
 
   it('allows keyboard navigation to generate button and triggers via Enter', async () => {
-    render(<QRGenerator />)
+    renderWithProviders(<QRGenerator />)
     const user = userEvent.setup()
 
     const input = screen.getByLabelText(/content/i)
