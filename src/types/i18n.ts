@@ -49,6 +49,10 @@ export interface ControlStrings {
   downloadsTitle: string
   downloadPng: string
   downloadSvg: string
+  correctionLow: string
+  correctionMedium: string
+  correctionQuartile: string
+  correctionHigh: string
 }
 
 export interface PreviewStrings {
@@ -99,6 +103,10 @@ export type TranslationKey =
   | 'controls.downloadsTitle'
   | 'controls.downloadPng'
   | 'controls.downloadSvg'
+  | 'controls.correctionLow'
+  | 'controls.correctionMedium'
+  | 'controls.correctionQuartile'
+  | 'controls.correctionHigh'
   | 'preview.sectionLabel'
   | 'preview.sectionTitle'
   | 'preview.placeholder'
