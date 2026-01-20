@@ -1,14 +1,14 @@
 <!--
 SYNC IMPACT REPORT
-Version: 1.0.0 -> 1.1.0
+Version: 1.1.0 -> 1.2.0
 Modified Principles:
-- Code Quality & Craftsmanship (explicit removal of unused code/resources)
-- Testing Standards (per-change unit tests must be added/updated and all tests must pass)
+- Testing Standards (per-change npm run test + npm run lint; coverage floor raised to 85%)
 Added Sections:
-- Architecture & Structure
+- None
 Templates Updated:
 - .specify/templates/plan-template.md (✅ updated)
 - .specify/templates/tasks-template.md (✅ updated)
+- README.md (✅ updated)
 Deferred Items:
 - None
 -->
@@ -20,7 +20,7 @@ Deferred Items:
 Code must be readable, maintainable, and idiomatic. Automated linting and formatting are required on every commit. No dead code, unused assets, or commented-out blocks are permitted; remove unreferenced resources as part of each change. Refactoring is continuous, and complexity is managed through modular design.
 
 ### II. Testing Standards (NON-NEGOTIABLE)
-Testing is mandatory (Unit & Integration). Every code change MUST add or update relevant unit tests, and all tests MUST pass locally and in CI before merge. Regression tests are required for bug fixes. Target minimum 80% coverage. Tests must be deterministic, fast, and independent. TDD is encouraged.
+Testing is mandatory (Unit & Integration). Run `npm run test` and `npm run lint` locally after every change. Every code change MUST add or update relevant unit tests, and all tests MUST pass locally and in CI before merge. Regression tests are required for bug fixes. Maintain coverage at or above 85%. Tests must be deterministic, fast, and independent. TDD is encouraged.
 
 ### III. User Experience Consistency
 Interfaces (CLI, API, UI) must be predictable and consistent. Standardize flags, error messages, and return codes across the application. Documentation must match implementation. Prioritize user intent and minimize cognitive load in workflows.
@@ -37,10 +37,10 @@ All public APIs and libraries must be documented. The README must be kept up to 
 
 ## Review & Quality Gates
 
-All code changes require a Pull Request review. Continuous Integration (CI) checks (linting, testing, build) must pass before merging; tests must be added/updated for the change set. No direct pushes to the main branch are permitted. Reviews must confirm adherence to structure conventions, removal of unused code/resources, and compliance with these principles.
+All code changes require a Pull Request review. Continuous Integration (CI) checks (linting, testing, build) must pass before merging; tests must be added/updated for the change set. No direct pushes to the main branch are permitted. Reviews must confirm adherence to structure conventions, removal of unused code/resources, compliance with these principles, documented local runs of `npm run test` and `npm run lint`, and coverage remaining above 85%.
 
 ## Governance
 
-This Constitution supersedes previous ad-hoc practices. Amendments require a Pull Request with justification and team approval. Versioning follows Semantic Versioning (MAJOR for principle changes, MINOR for additions, PATCH for clarifications). Compliance is verified during Code Review and CI.
+This Constitution supersedes previous ad-hoc practices. Amendments require a Pull Request with justification and team approval. Each task must be committed individually; commit titles must be ≤50 characters and commit body lines ≤72 characters. Versioning follows Semantic Versioning (MAJOR for principle changes, MINOR for additions, PATCH for clarifications). Compliance is verified during Code Review and CI.
 
-**Version**: 1.1.0 | **Ratified**: 2026-01-15 | **Last Amended**: 2026-01-17
+**Version**: 1.2.0 | **Ratified**: 2026-01-15 | **Last Amended**: 2026-01-19

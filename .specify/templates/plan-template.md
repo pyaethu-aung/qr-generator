@@ -31,7 +31,12 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- Tests and lint MUST be run locally after every change via `npm run test` and `npm run lint` per constitution.
+- Unit and integration tests MUST be added/updated for each change; maintain coverage ≥85%.
+- Structure adherence: UI in `src/components`, hooks in `src/hooks`, utilities in `src/utils`, data shapers in `src/data`, shared types in `src/types`.
+- Remove unused code/assets; no commented-out blocks committed.
+- Commit discipline: commit each task; commit titles ≤50 chars and body lines ≤72 chars.
+- CI gates (lint, test, build) MUST pass; PR review is mandatory.
 
 ## Project Structure
 
