@@ -1,13 +1,7 @@
 import type { LocaleRegistry } from '../data/i18n'
 
-/**
- * Supported locale codes derived from locale config files.
- */
 export type SupportedLocale = keyof LocaleRegistry
 
-/**
- * Locale metadata structure for each supported language.
- */
 export interface LocaleMetadata {
   code: SupportedLocale
   name: string
@@ -15,47 +9,36 @@ export interface LocaleMetadata {
   switchTo: Record<SupportedLocale, string>
 }
 
-/**
- * SEO metadata structure for the document.
- */
 export interface SeoMetadata {
   title: string
   description: string
   ogTitle: string
   ogDescription: string
+  ogType: string
   canonical: string
+  twitterCard: string
+  twitterTitle: string
+  twitterDescription: string
 }
 
-/**
- * Layout strings for header, footer, and subtitles.
- */
 export interface LayoutStrings {
   headerTitle: string
   headerSubtitle: string
   footerNote: string
 }
 
-/**
- * Hero section strings.
- */
 export interface HeroStrings {
   badge: string
   title: string
   subtitle: string
 }
 
-/**
- * Configuration panel strings.
- */
 export interface ConfigStrings {
   sectionLabel: string
   sectionTitle: string
   helper: string
 }
 
-/**
- * Control button and download strings.
- */
 export interface ControlStrings {
   contentLabel: string
   contentPlaceholder: string
@@ -68,9 +51,6 @@ export interface ControlStrings {
   downloadSvg: string
 }
 
-/**
- * Preview panel strings.
- */
 export interface PreviewStrings {
   sectionLabel: string
   sectionTitle: string
@@ -79,9 +59,6 @@ export interface PreviewStrings {
   ariaPlaceholder: string
 }
 
-/**
- * Complete locale configuration structure.
- */
 export interface LocaleConfig {
   locale: LocaleMetadata
   seo: SeoMetadata
@@ -92,9 +69,6 @@ export interface LocaleConfig {
   preview: PreviewStrings
 }
 
-/**
- * Translation key paths for type-safe lookups.
- */
 export type TranslationKey =
   | 'locale.toggleLabel'
   | `locale.switchTo.${SupportedLocale}`
@@ -102,7 +76,11 @@ export type TranslationKey =
   | 'seo.description'
   | 'seo.ogTitle'
   | 'seo.ogDescription'
+  | 'seo.ogType'
   | 'seo.canonical'
+  | 'seo.twitterCard'
+  | 'seo.twitterTitle'
+  | 'seo.twitterDescription'
   | 'layout.headerTitle'
   | 'layout.headerSubtitle'
   | 'layout.footerNote'
