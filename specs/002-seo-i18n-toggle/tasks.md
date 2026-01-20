@@ -24,7 +24,7 @@
 - [X] T022 [P] Add English fallback for missing translations and log gaps in src/data/i18n/index.ts with unit tests in src/data/i18n/__tests__/i18n.test.ts
 - [X] T004 Implement metadata helper to set document title, meta description, Open Graph/Twitter tags per locale in src/utils/metadata.ts
  - [X] T005 Implement locale state hook with `useLocale` (lang state, setter, fallbacks) in src/hooks/useLocale.ts
-- [ ] T006 Wire HTML `lang` synchronization effect in src/main.tsx to active locale
+- [X] T006 Wire HTML `lang` synchronization effect in src/main.tsx to active locale
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
