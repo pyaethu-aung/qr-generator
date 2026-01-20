@@ -2,7 +2,6 @@ import type { LocaleRegistry } from '../data/i18n'
 
 /**
  * Supported locale codes derived from locale config files.
- * Maps to en.json, my.json, etc.
  */
 export type SupportedLocale = keyof LocaleRegistry
 
@@ -12,70 +11,72 @@ export type SupportedLocale = keyof LocaleRegistry
 export interface LocaleMetadata {
   code: SupportedLocale
   name: string
-  nativeName: string
-  direction: 'ltr' | 'rtl'
+  toggleLabel: string
+  switchTo: Record<SupportedLocale, string>
 }
 
 /**
- * SEO metadata structure for Open Graph and Twitter tags.
+ * SEO metadata structure for the document.
  */
 export interface SeoMetadata {
   title: string
   description: string
   ogTitle: string
   ogDescription: string
-  ogType: string
-  twitterCard: string
-  twitterTitle: string
-  twitterDescription: string
+  canonical: string
 }
 
 /**
- * Layout strings for header, footer, and navigation.
+ * Layout strings for header, footer, and subtitles.
  */
 export interface LayoutStrings {
-  appName: string
-  tagline: string
-  footer: string
+  headerTitle: string
+  headerSubtitle: string
+  footerNote: string
 }
 
 /**
- * Hero section strings (main heading and subheading).
+ * Hero section strings.
  */
 export interface HeroStrings {
-  heading: string
-  subheading: string
+  badge: string
+  title: string
+  subtitle: string
 }
 
 /**
- * Configuration panel strings (labels, placeholders, validation).
+ * Configuration panel strings.
  */
 export interface ConfigStrings {
-  urlLabel: string
-  urlPlaceholder: string
-  urlError: string
-  sizeLabel: string
-  colorLabel: string
-  bgColorLabel: string
+  sectionLabel: string
+  sectionTitle: string
+  helper: string
 }
 
 /**
- * Control button strings (generate, download, reset).
+ * Control button and download strings.
  */
 export interface ControlStrings {
-  generateButton: string
-  downloadButton: string
-  resetButton: string
-  generatingButton: string
+  contentLabel: string
+  contentPlaceholder: string
+  correctionLabel: string
+  foregroundLabel: string
+  backgroundLabel: string
+  generate: string
+  downloadsTitle: string
+  downloadPng: string
+  downloadSvg: string
 }
 
 /**
- * Preview area strings (loading, error states).
+ * Preview panel strings.
  */
 export interface PreviewStrings {
-  loadingMessage: string
-  errorMessage: string
-  emptyMessage: string
+  sectionLabel: string
+  sectionTitle: string
+  placeholder: string
+  ariaValue: string
+  ariaPlaceholder: string
 }
 
 /**
@@ -93,32 +94,35 @@ export interface LocaleConfig {
 
 /**
  * Translation key paths for type-safe lookups.
- * Example: getCopy('en', 'hero.heading')
  */
 export type TranslationKey =
+  | 'locale.toggleLabel'
+  | `locale.switchTo.${SupportedLocale}`
   | 'seo.title'
   | 'seo.description'
   | 'seo.ogTitle'
   | 'seo.ogDescription'
-  | 'seo.ogType'
-  | 'seo.twitterCard'
-  | 'seo.twitterTitle'
-  | 'seo.twitterDescription'
-  | 'layout.appName'
-  | 'layout.tagline'
-  | 'layout.footer'
-  | 'hero.heading'
-  | 'hero.subheading'
-  | 'config.urlLabel'
-  | 'config.urlPlaceholder'
-  | 'config.urlError'
-  | 'config.sizeLabel'
-  | 'config.colorLabel'
-  | 'config.bgColorLabel'
-  | 'controls.generateButton'
-  | 'controls.downloadButton'
-  | 'controls.resetButton'
-  | 'controls.generatingButton'
-  | 'preview.loadingMessage'
-  | 'preview.errorMessage'
-  | 'preview.emptyMessage'
+  | 'seo.canonical'
+  | 'layout.headerTitle'
+  | 'layout.headerSubtitle'
+  | 'layout.footerNote'
+  | 'hero.badge'
+  | 'hero.title'
+  | 'hero.subtitle'
+  | 'config.sectionLabel'
+  | 'config.sectionTitle'
+  | 'config.helper'
+  | 'controls.contentLabel'
+  | 'controls.contentPlaceholder'
+  | 'controls.correctionLabel'
+  | 'controls.foregroundLabel'
+  | 'controls.backgroundLabel'
+  | 'controls.generate'
+  | 'controls.downloadsTitle'
+  | 'controls.downloadPng'
+  | 'controls.downloadSvg'
+  | 'preview.sectionLabel'
+  | 'preview.sectionTitle'
+  | 'preview.placeholder'
+  | 'preview.ariaValue'
+  | 'preview.ariaPlaceholder'
