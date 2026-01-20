@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import type { ComponentProps } from 'react'
+import { LocaleProvider } from '../../../../hooks/LocaleProvider'
 import { QRControls } from '../QRControls'
 
 type QRControlsProps = ComponentProps<typeof QRControls>
@@ -27,7 +28,11 @@ const setup = (overrides: Partial<QRControlsProps> = {}) => {
     canGenerate: true,
   }
 
-  const utils = render(<QRControls {...baseProps} {...overrides} />)
+  const utils = render(
+    <LocaleProvider>
+      <QRControls {...baseProps} {...overrides} />
+    </LocaleProvider>,
+  )
 
   return {
     ...utils,

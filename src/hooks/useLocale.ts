@@ -14,8 +14,11 @@ function isSupportedLocale(value: unknown): value is SupportedLocale {
 function readPersistedLocale(): SupportedLocale | null {
   if (!isBrowser) return null
 
+  const storage = window.localStorage
+  if (typeof storage?.getItem !== 'function') return null
+
   try {
-    const stored = window.localStorage.getItem(STORAGE_KEY)
+    const stored = storage.getItem(STORAGE_KEY)
     return stored && isSupportedLocale(stored) ? stored : null
   } catch (error) {
     console.warn('[i18n] Could not access localStorage for locale preference', error)
@@ -26,8 +29,11 @@ function readPersistedLocale(): SupportedLocale | null {
 function persistLocale(locale: SupportedLocale) {
   if (!isBrowser) return
 
+  const storage = window.localStorage
+  if (typeof storage?.setItem !== 'function') return
+
   try {
-    window.localStorage.setItem(STORAGE_KEY, locale)
+    storage.setItem(STORAGE_KEY, locale)
   } catch (error) {
     console.warn('[i18n] Could not persist locale preference', error)
   }

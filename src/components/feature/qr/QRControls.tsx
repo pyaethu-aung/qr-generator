@@ -1,5 +1,6 @@
 import { Button } from '../../common/Button'
 import { Input } from '../../common/Input'
+import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import type { QRErrorCorrectionLevel } from '../../../types/qr'
 
 interface QRControlsProps {
@@ -37,27 +38,38 @@ export const QRControls = ({
   inputError,
   canGenerate = true,
 }: QRControlsProps) => {
+  const { translate } = useLocaleContext()
+
+  const contentLabel = translate('controls.contentLabel')
+  const contentPlaceholder = translate('controls.contentPlaceholder')
+  const helperText = translate('config.helper')
+  const correctionLabel = translate('controls.correctionLabel')
+  const foregroundLabel = translate('controls.foregroundLabel')
+  const backgroundLabel = translate('controls.backgroundLabel')
+  const generateLabel = translate('controls.generate')
+  const downloadsTitle = translate('controls.downloadsTitle')
+  const downloadPngLabel = translate('controls.downloadPng')
+  const downloadSvgLabel = translate('controls.downloadSvg')
+
   return (
     <div className="flex flex-col gap-6 w-full p-6 bg-white rounded-lg shadow-sm border border-gray-100">
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <Input
-            label="Content"
-            placeholder="Enter text or URL"
+            label={contentLabel}
+            placeholder={contentPlaceholder}
             value={value}
             onChange={(e) => onValueChange(e.target.value)}
             disabled={isGenerating}
             fullWidth
             error={inputError}
           />
-          <p className="text-xs text-slate-500">
-            Enter the content you want to encode in the QR code.
-          </p>
+          <p className="text-xs text-slate-500">{helperText}</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-slate-900">Correction Level</label>
+            <label className="text-sm font-medium text-slate-900">{correctionLabel}</label>
             <select
               className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors disabled:bg-slate-100 disabled:text-slate-500"
               value={ecLevel}
@@ -73,7 +85,7 @@ export const QRControls = ({
 
           <div className="flex gap-4">
             <div className="flex-1 flex flex-col gap-1">
-              <label className="text-sm font-medium text-slate-900">Foreground</label>
+              <label className="text-sm font-medium text-slate-900">{foregroundLabel}</label>
               <div className="flex items-center gap-2">
                 <div className="relative w-12 h-9 overflow-hidden rounded-md border border-slate-300 shadow-sm">
                   <input
@@ -91,7 +103,7 @@ export const QRControls = ({
             </div>
 
             <div className="flex-1 flex flex-col gap-1">
-              <label className="text-sm font-medium text-slate-900">Background</label>
+              <label className="text-sm font-medium text-slate-900">{backgroundLabel}</label>
               <div className="flex items-center gap-2">
                 <div className="relative w-12 h-9 overflow-hidden rounded-md border border-slate-300 shadow-sm">
                   <input
@@ -117,13 +129,13 @@ export const QRControls = ({
           loading={isGenerating}
           fullWidth
         >
-          Generate QR Code
+          {generateLabel}
         </Button>
       </div>
 
       {(onDownloadPng || onDownloadSvg) && (
         <div className="pt-6 border-t border-slate-100 flex flex-col gap-3">
-          <h3 className="text-sm font-medium text-slate-700">Downloads</h3>
+          <h3 className="text-sm font-medium text-slate-700">{downloadsTitle}</h3>
           <div className="grid grid-cols-2 gap-3">
             {onDownloadPng && (
               <Button
@@ -132,7 +144,7 @@ export const QRControls = ({
                 onClick={onDownloadPng}
                 disabled={!canDownload || isGenerating}
               >
-                Download PNG
+                {downloadPngLabel}
               </Button>
             )}
             {onDownloadSvg && (
@@ -142,7 +154,7 @@ export const QRControls = ({
                 onClick={onDownloadSvg}
                 disabled={!canDownload || isGenerating}
               >
-                Download SVG
+                {downloadSvgLabel}
               </Button>
             )}
           </div>
