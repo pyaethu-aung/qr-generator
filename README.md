@@ -29,7 +29,8 @@ Single-page app for generating QR codes with real-time preview and download.
 
 ## Quality & Constitution Highlights
 
-- Every change must add/update relevant unit tests and all tests must pass before merge.
+- Every change must add/update relevant unit tests, maintain ≥85% coverage, and all tests must pass before merge.
+- Run `npm run test` and `npm run lint` after every change before opening a PR.
 - Remove unused code/assets; keep files in the agreed structure above.
 - CI gates: lint, test, build must pass; PR review required.
 
