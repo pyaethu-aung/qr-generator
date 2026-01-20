@@ -1,6 +1,7 @@
 import { QRControls } from './QRControls'
 import { QRPreview } from './QRPreview'
 import { useQRGenerator } from '../../../hooks/useQRGenerator'
+import { useLocaleContext } from '../../../hooks/LocaleProvider'
 
 export const QRGenerator = () => {
   const {
@@ -21,6 +22,8 @@ export const QRGenerator = () => {
     canGenerate,
   } = useQRGenerator()
 
+  const { translate } = useLocaleContext()
+
   return (
     <section className="relative isolate overflow-hidden px-4 pb-12 pt-14 sm:px-6 lg:px-8">
       <div aria-hidden className="pointer-events-none absolute inset-0 opacity-60">
@@ -32,14 +35,12 @@ export const QRGenerator = () => {
       <div className="relative mx-auto max-w-6xl space-y-6">
         <div className="text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.5em] text-indigo-200">
-            US3 · Customize
+            {translate('hero.badge')}
           </p>
           <h2 className="mt-3 text-3xl font-semibold text-white sm:text-4xl">
-            Sculpt standout QR codes
+            {translate('hero.title')}
           </h2>
-          <p className="mt-2 text-base text-indigo-100/80">
-            Dial in colors, error correction, and downloads before sharing with stakeholders.
-          </p>
+          <p className="mt-2 text-base text-indigo-100/80">{translate('hero.subtitle')}</p>
         </div>
 
         <div className="rounded-[32px] border border-white/10 bg-slate-900/70 p-6 shadow-2xl shadow-black/50 backdrop-blur-xl">
@@ -47,9 +48,11 @@ export const QRGenerator = () => {
             <div className="space-y-5">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">
-                  Configuration
+                  {translate('config.sectionLabel')}
                 </p>
-                <h3 className="text-2xl font-semibold text-white">Preview what you’ll download</h3>
+                <h3 className="text-2xl font-semibold text-white">
+                  {translate('config.sectionTitle')}
+                </h3>
               </div>
               <QRControls
                 value={inputValue}
@@ -73,9 +76,11 @@ export const QRGenerator = () => {
             <div className="space-y-5">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">
-                  Preview
+                  {translate('preview.sectionLabel')}
                 </p>
-                <h3 className="text-2xl font-semibold text-white">See every pixel</h3>
+                <h3 className="text-2xl font-semibold text-white">
+                  {translate('preview.sectionTitle')}
+                </h3>
               </div>
               <div className="flex flex-1 items-center justify-center rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_30px_80px_rgba(15,23,42,0.5)]">
                 <QRPreview {...config} className="w-full" />
