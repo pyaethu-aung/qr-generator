@@ -1,0 +1,51 @@
+{
+  "locale": {
+    "code": "my",
+    "name": "မြန်မာ",
+    "toggleLabel": "ဘာသာစကား",
+    "switchTo": {
+      "en": "အင်္ဂလိပ် ဘာသာသို့ ပြောင်းရန်",
+      "my": "မြန်မာ ဘာသာသို့ ပြောင်းရန်"
+    }
+  },
+  "seo": {
+    "title": "QR Code Generator",
+    "description": "ဘက်အင်ဘက် အသုံးမပြုဘဲ အရည်အသွေးမြင့် QR ကုဒ်များကို ဖန်တီး၊ အလှဆင်၊ ဒေါင်းလုဒ်လုပ်ပါ။",
+    "ogTitle": "QR Code Generator",
+    "ogDescription": "ဘက်အင်ဘက် အသုံးမပြုဘဲ အရည်အသွေးမြင့် QR ကုဒ်များကို ဖန်တီး၊ အလှဆင်၊ ဒေါင်းလုဒ်လုပ်ပါ။",
+    "canonical": "/"
+  },
+  "layout": {
+    "headerTitle": "QR Code Generator",
+    "headerSubtitle": "ဘက်အင်ဘက် အသုံးမပြုဘဲ အရည်အသွေးမြင့် QR ကုဒ်များကို ဖန်တီး၊ အလှဆင်၊ ဒေါင်းလုဒ်လုပ်ပါ။",
+    "footerNote": "Client-side ပဲ အသုံးပြုသည်။ သိထားမှုမရှိ။ 1024px PNG/SVG ဖြင့် ထုတ်ယူနိုင်သည်။"
+  },
+  "hero": {
+    "badge": "US3 · ပြင်ဆင်မှု",
+    "title": "ထူးခြားတဲ့ QR ကုဒ်တွေ ဖန်တီးပါ",
+    "subtitle": "အရောင်၊ Error correction နဲ့ ဒေါင်းလုဒ်ကို တိကျစွာညှိပြီး မျှဝေရန် ပြင်ဆင်ပါ။"
+  },
+  "config": {
+    "sectionLabel": "တည်းဖြတ်မှု",
+    "sectionTitle": "ဒေါင်းလုဒ်မလုပ်ခင် ကြည့်ရှုပါ",
+    "helper": "QR ကုဒ်ထဲ ထည့်ချင်တဲ့ အကြောင်းအရာကို ရေးထည့်ပါ။"
+  },
+  "controls": {
+    "contentLabel": "အကြောင်းအရာ",
+    "contentPlaceholder": "စာသား သို့မဟုတ် URL ထည့်ပါ",
+    "correctionLabel": "ပြင်ဆင်မှု အဆင့်",
+    "foregroundLabel": "အနောက်ခံအရောင်",
+    "backgroundLabel": "နောက်ခံအရောင်",
+    "generate": "QR ကုဒ် ဖန်တီးရန်",
+    "downloadsTitle": "ဒေါင်းလုဒ်များ",
+    "downloadPng": "PNG ဒေါင်းလုဒ်",
+    "downloadSvg": "SVG ဒေါင်းလုဒ်"
+  },
+  "preview": {
+    "sectionLabel": "ကြိုတင်ကြည့်ရှုခြင်း",
+    "sectionTitle": "အစဉ်အမြဲ ကြည့်ရှုနိုင်သည်",
+    "placeholder": "ဖန်တီးရန် စာသားထည့်ပါ",
+    "ariaValue": "ဒီတန်ဖိုးအတွက် QR ကုဒ်: {value}",
+    "ariaPlaceholder": "QR ကုဒ် နမူနာ"
+  }
+}
