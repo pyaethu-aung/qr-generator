@@ -1,0 +1,51 @@
+{
+  "locale": {
+    "code": "en",
+    "name": "English",
+    "toggleLabel": "Language",
+    "switchTo": {
+      "en": "Switch to English",
+      "my": "Switch to Burmese"
+    }
+  },
+  "seo": {
+    "title": "QR Code Generator",
+    "description": "Generate, style, and download high-quality QR codes without touching a backend.",
+    "ogTitle": "QR Code Generator",
+    "ogDescription": "Generate, style, and download high-quality QR codes without touching a backend.",
+    "canonical": "/"
+  },
+  "layout": {
+    "headerTitle": "QR Code Generator",
+    "headerSubtitle": "Generate, style, and download high-quality QR codes without touching a backend.",
+    "footerNote": "Client-side only. Zero knowledge. Export at 1024px PNG/SVG."
+  },
+  "hero": {
+    "badge": "US3 · Customize",
+    "title": "Sculpt standout QR codes",
+    "subtitle": "Dial in colors, error correction, and downloads before sharing with stakeholders."
+  },
+  "config": {
+    "sectionLabel": "Configuration",
+    "sectionTitle": "Preview what you’ll download",
+    "helper": "Enter the content you want to encode in the QR code."
+  },
+  "controls": {
+    "contentLabel": "Content",
+    "contentPlaceholder": "Enter text or URL",
+    "correctionLabel": "Correction Level",
+    "foregroundLabel": "Foreground",
+    "backgroundLabel": "Background",
+    "generate": "Generate QR Code",
+    "downloadsTitle": "Downloads",
+    "downloadPng": "Download PNG",
+    "downloadSvg": "Download SVG"
+  },
+  "preview": {
+    "sectionLabel": "Preview",
+    "sectionTitle": "See every pixel",
+    "placeholder": "Enter text to generate",
+    "ariaValue": "QR Code for value: {value}",
+    "ariaPlaceholder": "QR Code Placeholder"
+  }
+}
