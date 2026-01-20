@@ -1,9 +1,15 @@
 # Feature Specification: QR site branding and bilingual toggle
 
-**Feature Branch**: `001-seo-i18n-toggle`  
+**Feature Branch**: `feature/002-seo-i18n-toggle`  
 **Created**: 2026-01-20  
 **Status**: Draft  
 **Input**: User description: "Set the website name as QR Code Generator. Add required metadata for SEO and accessibility. And support both English and Burmese. English should be the default one, and user choice will be stored locally for next time usage. Language toggle should be at the top-right corner."
+
+## Clarifications
+
+### Session 2026-01-20
+
+- Q: Which locale code should be used for Burmese? → A: Use `my`.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -63,7 +69,7 @@ A returning visitor sees the site in their previously selected language without 
 - **FR-001**: The site MUST present the name "QR Code Generator" consistently in the document title, primary heading, and SEO metadata for the active language.
 - **FR-002**: The site MUST include SEO metadata (title, meta description, canonical URL, Open Graph/Twitter tags) that align with the active language and reflect the "QR Code Generator" brand.
 - **FR-003**: The document MUST set the HTML `lang` attribute to the active language and update it upon language changes to support accessibility and SEO.
-- **FR-004**: The UI MUST support English (default) and Burmese for all visible strings, including navigation, headings, controls, helper text, and accessibility labels.
+- **FR-004**: The UI MUST support English (default) and Burmese (`my`) for all visible strings, including navigation, headings, controls, helper text, and accessibility labels.
 - **FR-005**: The language toggle MUST be placed in the top-right of the viewport, be keyboard-focusable, have an accessible name announcing current/target language, and be discoverable on both desktop and mobile layouts.
 - **FR-006**: Language switching MUST update visible text and key metadata without a full page reload and complete within 1 second of user action.
 - **FR-007**: The system MUST persist the user’s selected language locally and automatically reapply it on subsequent visits; if local storage is unavailable, the site MUST fall back to English gracefully.
@@ -71,7 +77,7 @@ A returning visitor sees the site in their previously selected language without 
 
 ### Key Entities *(include if feature involves data)*
 
-- **LocalePreference**: The active language code (e.g., `en`, `my`) stored locally for reuse on return visits.
+- **LocalePreference**: The active language code (`en` or `my`) stored locally for reuse on return visits.
 - **LocalizedCopy**: Bundled text resources for English and Burmese covering all user-facing strings and accessibility labels.
 
 ### Assumptions
