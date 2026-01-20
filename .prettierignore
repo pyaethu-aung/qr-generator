@@ -4,6 +4,9 @@ dist-ssr/
 coverage/
 .vscode/
 .idea/
+build/
+.cache/
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
+.env*

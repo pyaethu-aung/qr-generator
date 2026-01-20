@@ -39,8 +39,8 @@
 ### Implementation for User Story 1
 
 - [X] T007 [P] [US1] Add metadata helper unit tests covering en defaults in src/utils/__tests__/metadata.test.ts
-- [ ] T008 [US1] Apply default English copy (title/heading/body strings) via i18n resolver in src/App.tsx and src/components/feature/qr/*.tsx
-- [ ] T009 [US1] Render SEO meta tags (title, description, OG/Twitter) with English values in src/App.tsx using metadata helper
+- [X] T008 [US1] Apply default English copy (title/heading/body strings) via i18n resolver in src/App.tsx and src/components/feature/qr/*.tsx
+- [X] T009 [US1] Render SEO meta tags (title, description, OG/Twitter) with English values in src/App.tsx using metadata helper
 
 **Checkpoint**: User Story 1 fully functional and testable independently
 

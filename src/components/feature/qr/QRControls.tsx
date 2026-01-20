@@ -44,6 +44,12 @@ export const QRControls = ({
   const contentPlaceholder = translate('controls.contentPlaceholder')
   const helperText = translate('config.helper')
   const correctionLabel = translate('controls.correctionLabel')
+  const correctionOptions = [
+    { value: 'L', label: translate('controls.correctionLow') },
+    { value: 'M', label: translate('controls.correctionMedium') },
+    { value: 'Q', label: translate('controls.correctionQuartile') },
+    { value: 'H', label: translate('controls.correctionHigh') },
+  ] as const
   const foregroundLabel = translate('controls.foregroundLabel')
   const backgroundLabel = translate('controls.backgroundLabel')
   const generateLabel = translate('controls.generate')
@@ -76,10 +82,11 @@ export const QRControls = ({
               onChange={(e) => onEcLevelChange(e.target.value as QRErrorCorrectionLevel)}
               disabled={isGenerating}
             >
-              <option value="L">Low (7%)</option>
-              <option value="M">Medium (15%)</option>
-              <option value="Q">Quartile (25%)</option>
-              <option value="H">High (30%)</option>
+              {correctionOptions.map(({ value, label }) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
             </select>
           </div>
 
