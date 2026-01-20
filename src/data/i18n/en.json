@@ -13,6 +13,10 @@
     "description": "Generate, style, and download high-quality QR codes without touching a backend.",
     "ogTitle": "QR Code Generator",
     "ogDescription": "Generate, style, and download high-quality QR codes without touching a backend.",
+    "ogType": "website",
+    "twitterCard": "summary_large_image",
+    "twitterTitle": "QR Code Generator",
+    "twitterDescription": "Generate, style, and download high-quality QR codes without touching a backend.",
     "canonical": "/"
   },
   "layout": {
