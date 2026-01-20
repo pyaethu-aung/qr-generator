@@ -1,9 +1,16 @@
+import { useEffect } from 'react'
+
 import { QRGenerator } from './components/feature/qr/QRGenerator'
 import './App.css'
 import { useLocaleContext } from './hooks/LocaleProvider'
+import { applySeoMetadata } from './utils/metadata'
 
 function App() {
-  const { translate } = useLocaleContext()
+  const { translate, seo } = useLocaleContext()
+
+  useEffect(() => {
+    applySeoMetadata(seo)
+  }, [seo])
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-50">
