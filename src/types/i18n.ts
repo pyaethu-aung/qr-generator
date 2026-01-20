@@ -1,10 +1,10 @@
-import type { locales } from '../data/i18n'
+import type { LocaleRegistry } from '../data/i18n'
 
 /**
  * Supported locale codes derived from locale config files.
  * Maps to en.json, my.json, etc.
  */
-export type SupportedLocale = keyof typeof locales
+export type SupportedLocale = keyof LocaleRegistry
 
 /**
  * Locale metadata structure for each supported language.
