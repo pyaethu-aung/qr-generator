@@ -20,7 +20,7 @@
 **Purpose**: Core i18n and metadata plumbing required by all stories
 
 - [X] T002 Define i18n types and locale key exports in src/types/i18n.ts
-- [ ] T003 Implement locale loader and translation resolver in src/data/i18n/index.ts (import json, expose `getCopy(lang)`)
+- [X] T003 Implement locale loader and translation resolver in src/data/i18n/index.ts (import json, expose `getCopy(lang)`)
 - [ ] T022 [P] Add English fallback for missing translations and log gaps in src/data/i18n/index.ts with unit tests in src/data/i18n/__tests__/i18n.test.ts
 - [ ] T004 Implement metadata helper to set document title, meta description, Open Graph/Twitter tags per locale in src/utils/metadata.ts
 - [ ] T005 Implement locale state hook with `useLocale` (lang state, setter, fallbacks) in src/hooks/useLocale.ts
