@@ -1,14 +1,12 @@
 <!--
 SYNC IMPACT REPORT
-Version: 1.1.0 -> 1.2.0
+Version: 1.2.0 -> 1.3.0
 Modified Principles:
-- Testing Standards (per-change npm run test + npm run lint; coverage floor raised to 85%)
+- Governance (branch naming policy requiring feature/, buffix/, docs/ prefixes)
 Added Sections:
 - None
 Templates Updated:
-- .specify/templates/plan-template.md (✅ updated)
-- .specify/templates/tasks-template.md (✅ updated)
-- README.md (✅ updated)
+- None (no changes required)
 Deferred Items:
 - None
 -->
@@ -41,6 +39,6 @@ All code changes require a Pull Request review. Continuous Integration (CI) chec
 
 ## Governance
 
-This Constitution supersedes previous ad-hoc practices. Amendments require a Pull Request with justification and team approval. Each task must be committed individually; commit titles must be ≤50 characters and commit body lines ≤72 characters. Versioning follows Semantic Versioning (MAJOR for principle changes, MINOR for additions, PATCH for clarifications). Compliance is verified during Code Review and CI.
+This Constitution supersedes previous ad-hoc practices. Amendments require a Pull Request with justification and team approval. Each task must be committed individually; commit titles must be ≤50 characters and commit body lines ≤72 characters. Branch names MUST begin with one of the approved prefixes: `feature/`, `buffix/`, or `docs/`; all developers and agents must use these prefixes for new branches. Versioning follows Semantic Versioning (MAJOR for principle changes, MINOR for additions, PATCH for clarifications). Compliance is verified during Code Review and CI.
 
-**Version**: 1.2.0 | **Ratified**: 2026-01-15 | **Last Amended**: 2026-01-19
+**Version**: 1.3.0 | **Ratified**: 2026-01-15 | **Last Amended**: 2026-01-20
