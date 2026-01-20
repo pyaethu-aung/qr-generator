@@ -11,7 +11,7 @@
 
 **Purpose**: Prepare i18n storage for locale configs
 
-- [ ] T001 [P] Create locale config directory with initial files src/data/i18n/en.json, src/data/i18n/my.json, src/data/i18n/index.ts
+- [X] T001 [P] Create locale config directory with initial files src/data/i18n/en.json, src/data/i18n/my.json, src/data/i18n/index.ts
 
 ---
 
