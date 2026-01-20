@@ -14,13 +14,39 @@ export type SupportedLocale = keyof LocaleRegistry
 export const defaultLocale: SupportedLocale = 'en'
 export const localeCodes = Object.keys(localeRegistry) as SupportedLocale[]
 
-export function getCopy(locale: SupportedLocale, key: TranslationKey): string {
-  const [section, entry] = key.split('.') as [keyof LocaleConfig, string]
-  const sectionValues = locales[locale][section]
+const missingTranslationLog = new Set<string>()
 
-  if (sectionValues && typeof sectionValues === 'object') {
-    return (sectionValues as Record<string, string>)[entry] ?? ''
+function resolveTranslation(locale: SupportedLocale, key: TranslationKey): string | undefined {
+  const segments = key.split('.')
+  let current: unknown = locales[locale]
+
+  for (const segment of segments) {
+    if (current && typeof current === 'object' && segment in current) {
+      current = (current as Record<string, unknown>)[segment]
+    } else {
+      return undefined
+    }
   }
 
-  return ''
+  return typeof current === 'string' ? current : undefined
+}
+
+function logMissingTranslation(locale: SupportedLocale, key: TranslationKey) {
+  if (locale === defaultLocale) return
+
+  const logToken = `${locale}:${key}`
+  if (!missingTranslationLog.has(logToken)) {
+    missingTranslationLog.add(logToken)
+    console.warn(`[i18n] Missing translation for "${key}" in ${locale}; falling back to ${defaultLocale}`)
+  }
+}
+
+export function getCopy(locale: SupportedLocale, key: TranslationKey): string {
+  const localizedCopy = resolveTranslation(locale, key)
+  if (localizedCopy) {
+    return localizedCopy
+  }
+
+  logMissingTranslation(locale, key)
+  return resolveTranslation(defaultLocale, key) ?? ''
 }
