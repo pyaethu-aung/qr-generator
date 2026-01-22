@@ -15,8 +15,21 @@ Single-page app for generating QR codes with real-time preview and download.
 - `src/components` – UI components (common primitives, feature views)
 - `src/hooks` – stateful logic/hooks
 - `src/utils` – pure helpers
-- `src/data` – data shapers/models
+- `src/data` – data shapers/models (including `i18n` configs)
 - `src/types` – shared types
+
+## Localization (i18n)
+
+The app supports multiple languages (English and Burmese) via custom locale config files in `src/data/i18n/`.
+- Localized strings are stored in `en.json` and `my.json`.
+- Components consume translations via `useLocaleContext` and `translate(key)`.
+- User language preference is persisted in `localStorage`.
+
+## SEO & Accessibility
+
+- Metadata (title, description, Open Graph, Twitter) is automatically updated on language change.
+- HTML `lang` attribute is kept in sync with the active locale.
+- Language toggle is accessible and keyboard-friendly.
 
 ## Development
 
