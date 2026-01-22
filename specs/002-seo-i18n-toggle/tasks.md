@@ -56,13 +56,13 @@
 
 - [X] T010 [P] [US2] Add RTL/Vitest tests for LanguageToggle focusability and label announcements in src/components/common/__tests__/LanguageToggle.test.tsx
 - [X] T011 [P] [US2] Add integration test to verify UI strings and metadata swap to Burmese on toggle in src/App.test.tsx
-- [ ] T024 [US2] Add performance check in src/App.test.tsx ensuring toggle + metadata update completes within 1s
+- [X] T024 [US2] Add performance check in src/App.test.tsx ensuring toggle + metadata update completes within 1s
 
 ### Implementation for User Story 2
 
-- [ ] T012 [P] [US2] Build LanguageToggle component in src/components/common/LanguageToggle.tsx positioned top-right, consuming useLocale
-- [ ] T013 [US2] Replace hardcoded strings with i18n lookups across QR views in src/components/feature/qr/*.tsx and shared UI
-- [ ] T014 [US2] Invoke metadata helper on locale changes to update title/meta/OG/Twitter in src/App.tsx
+- [X] T012 [P] [US2] Build LanguageToggle component in src/components/common/LanguageToggle.tsx positioned top-right, consuming useLocale
+- [X] T013 [US2] Replace hardcoded strings with i18n lookups across QR views in src/components/feature/qr/*.tsx and shared UI
+- [X] T014 [US2] Invoke metadata helper on locale changes to update title/meta/OG/Twitter in src/App.tsx
 
 **Checkpoint**: User Story 1 and 2 functional and independently testable
 
@@ -76,14 +76,14 @@
 
 ### Tests for User Story 3
 
-- [ ] T015 [P] [US3] Add persistence and fallback tests for useLocale (localStorage available/unavailable) in src/hooks/__tests__/useLocale.test.ts
-- [ ] T023 [P] [US3] Add tests for invalid/unknown locale codes defaulting to English in src/hooks/__tests__/useLocale.test.ts and src/App.test.tsx
-- [ ] T016 [P] [US3] Add integration test to confirm initial locale derives from stored preference in src/App.test.tsx
+- [X] T015 [P] [US3] Add persistence and fallback tests for useLocale (localStorage available/unavailable) in src/hooks/__tests__/useLocale.test.ts
+- [X] T023 [P] [US3] Add tests for invalid/unknown locale codes defaulting to English in src/hooks/__tests__/useLocale.test.ts and src/App.test.tsx
+- [X] T016 [P] [US3] Add integration test to confirm initial locale derives from stored preference in src/App.test.tsx
 
 ### Implementation for User Story 3
 
-- [ ] T017 [US3] Persist locale selection with storage guards inside src/hooks/useLocale.ts (read/write, graceful fallback)
-- [ ] T018 [US3] Initialize app with stored locale and sync toggle/metadata on load in src/App.tsx
+- [X] T017 [US3] Persist locale selection with storage guards inside src/hooks/useLocale.ts (read/write, graceful fallback)
+- [X] T018 [US3] Initialize app with stored locale and sync toggle/metadata on load in src/App.tsx
 
 **Checkpoint**: All user stories independently functional
 
@@ -91,9 +91,9 @@
 
 ## Phase N: Polish & Cross-Cutting Concerns
 
-- [ ] T019 [P] Update documentation for i18n usage and SEO expectations in README.md and specs/002-seo-i18n-toggle/quickstart.md
-- [ ] T020 Run `npm run lint` and `npm run test` and address any issues; ensure coverage ≥85%
-- [ ] T021 [P] Accessibility sweep for language labels and metadata correctness (manual + axe) across pages
+- [X] T019 [P] Update documentation for i18n usage and SEO expectations in README.md and specs/002-seo-i18n-toggle/quickstart.md
+- [X] T020 Run `npm run lint` and `npm run test` and address any issues; ensure coverage ≥85%
+- [X] T021 [P] Accessibility sweep for language labels and metadata correctness (manual + axe) across pages
 
 ---
 
