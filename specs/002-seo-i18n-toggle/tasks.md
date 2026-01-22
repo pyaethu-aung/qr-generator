@@ -54,7 +54,7 @@
 
 ### Tests for User Story 2
 
-- [ ] T010 [P] [US2] Add RTL/Vitest tests for LanguageToggle focusability and label announcements in src/components/common/__tests__/LanguageToggle.test.tsx
+- [X] T010 [P] [US2] Add RTL/Vitest tests for LanguageToggle focusability and label announcements in src/components/common/__tests__/LanguageToggle.test.tsx
 - [ ] T011 [P] [US2] Add integration test to verify UI strings and metadata swap to Burmese on toggle in src/App.test.tsx
 - [ ] T024 [US2] Add performance check in src/App.test.tsx ensuring toggle + metadata update completes within 1s
 
