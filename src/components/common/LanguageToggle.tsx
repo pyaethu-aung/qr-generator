@@ -6,7 +6,7 @@ const toggleLocale = (current: SupportedLocale): SupportedLocale => (current ===
 export function LanguageToggle() {
   const { locale, setLocale, translate } = useLocaleContext()
   const nextLocale = toggleLocale(locale)
-  const ariaLabel = translate((`locale.switchTo.${nextLocale}`) as TranslationKey)
+  const ariaLabel = translate(`locale.switchTo.${nextLocale}` as TranslationKey)
 
   return (
     <div className="fixed top-4 right-4 z-50">

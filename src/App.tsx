@@ -4,6 +4,7 @@ import { QRGenerator } from './components/feature/qr/QRGenerator'
 import './App.css'
 import { useLocaleContext } from './hooks/LocaleProvider'
 import { applySeoMetadata } from './utils/metadata'
+import { LanguageToggle } from './components/common/LanguageToggle'
 
 function App() {
   const { translate, seo } = useLocaleContext()
@@ -14,6 +15,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-50">
+      <LanguageToggle />
       <div className="relative isolate overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.25),_transparent_45%)]" />
         <header className="relative z-10 border-b border-white/10 bg-slate-950/70 backdrop-blur-md">
