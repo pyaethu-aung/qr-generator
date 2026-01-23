@@ -95,6 +95,18 @@
 
 ---
 
+## Phase 7: Validation, Performance, and Supportability
+
+- [ ] T021 [P] Add UX action-count test to ensure share completes in ≤3 user actions (desktop/mobile) in `src/components/feature/qr/__tests__/QRShareUX.test.tsx` (covers SC-001).
+- [ ] T022 [P] Add performance budget test to assert share/fallback completes within 3s using mocked timers and real canvas rendering in `src/components/feature/qr/__tests__/QRSharePerf.test.tsx` (covers SC-004).
+- [ ] T023 [P] Add capability-matrix test for native share, clipboard, and download fallbacks to guarantee 100% availability in unsupported environments in `src/components/feature/qr/__tests__/QRShareFallback.test.tsx` (covers SC-003).
+- [ ] T024 [P] Add reliability test simulating multiple share attempts with mixed capabilities to assert ≥95% success when APIs are available in `src/components/feature/qr/__tests__/QRShareReliability.test.tsx` (covers SC-002).
+- [ ] T025 Define supportability/observability plan for “cannot share QR” rate (≤1%): document monitoring approach in `specs/003-qr-share-button/quickstart.md` and add an instrumentation hook stub or comments in `src/hooks/useQRShare.ts` (covers SC-005).
+- [ ] T026 Define and implement explicit UX for permission-denied/blocked share or clipboard: non-blocking toast copy, auto-offer download fallback, no repeated prompts; document in `specs/003-qr-share-button/quickstart.md`.
+- [ ] T027 [P] Add tests for permission-denied/blocked paths ensuring fallback selection and messaging consistency in `src/components/feature/qr/__tests__/QRShareFallback.test.tsx`.
+
+---
+
 ## Dependencies & Execution Order
 
 - Setup (Phase 1) → Foundational (Phase 2) → US1 (P1) → US2 (P2) → US3 (P3) → Polish.
