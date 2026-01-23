@@ -5,6 +5,11 @@
 **Status**: Draft  
 **Input**: User description: "I want to add share QR button at the bottom of generated QR code. That share button must share the PNG format of generated QR code, and share function should support any other standard photo sharing functions in both desktop and mobile."
 
+## Clarifications
+
+### Session 2026-01-23
+- Q: What PNG export sizing rule should we use for sharing? → A: Export at the exact rendered preview dimensions (WYSIWYG).
+
 ## User Scenarios & Testing *(mandatory)*
 
 <!--
@@ -80,7 +85,7 @@ As a mobile user, I can share the QR PNG to common photo-aware targets (messagin
 - **FR-002**: When tapped, produce a PNG of the current QR state (including styling, size, and content) and initiate the device's standard share flow with that PNG attached as an image/photo payload.
 - **FR-003**: Name the shared file descriptively (e.g., `qr-code.png`) and ensure the filename is consistent across desktop and mobile.
 - **FR-004**: Provide a graceful fallback when native sharing is unavailable or fails: allow the user to save/download or copy the PNG without losing the current QR state.
-- **FR-005**: Preserve image fidelity: the shared PNG MUST match the on-screen QR in resolution, colors, and error-correction choices visible in the preview.
+- **FR-005**: Preserve image fidelity: the shared PNG MUST match the on-screen QR in resolution (WYSIWYG at rendered preview dimensions), colors, and error-correction choices visible in the preview.
 - **FR-006**: On desktop, support standard photo-share equivalents (e.g., save to disk, copy image) initiated from the same share button interaction.
 - **FR-007**: If sharing is canceled or errors, inform the user with a non-blocking message and leave the QR preview unchanged.
 
@@ -93,7 +98,7 @@ As a mobile user, I can share the QR PNG to common photo-aware targets (messagin
 
 - Supported environments include modern desktop and mobile browsers; when native share is absent, fallback download/copy is acceptable as a "share" equivalent.
 - No additional text or link metadata is required beyond the PNG itself unless added later.
-- PNG dimensions align with the displayed preview size; no separate high-res export is mandated.
+- PNG dimensions match the displayed preview size exactly; no separate high-res export is mandated.
 
 ## Success Criteria *(mandatory)*
 
