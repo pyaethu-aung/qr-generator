@@ -1,7 +1,37 @@
 import { render, screen } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { LocaleProvider } from '../../../../hooks/LocaleProvider'
 import { QRPreview } from '../QRPreview'
+
+vi.mock('qrcode.react', () => {
+  const QRCodeMock = ({
+    value,
+    fgColor,
+    bgColor,
+    size,
+  }: {
+    value: string
+    fgColor?: string
+    bgColor?: string
+    size?: number
+  }) => (
+    <div
+      data-testid="qr-code-canvas"
+      data-value={value}
+      data-fg={fgColor ?? ''}
+      data-bg={bgColor ?? ''}
+      data-size={size?.toString() ?? ''}
+      role="img"
+      aria-label={`QR Code for value: ${value}`}
+    >
+      QR Code: {value}
+    </div>
+  )
+
+  return {
+    QRCodeCanvas: QRCodeMock,
+  }
+})
 
 describe('QRPreview', () => {
   const defaultProps = {
@@ -22,7 +52,7 @@ describe('QRPreview', () => {
     expect(screen.getByRole('img', { name: 'QR Code Placeholder' })).toBeInTheDocument()
   })
 
-  it('renders QR code SVG when value is provided', () => {
+  it('renders QR code canvas when value is provided', () => {
     render(
       <LocaleProvider>
         <QRPreview {...defaultProps} value="https://example.com" />
@@ -32,12 +62,9 @@ describe('QRPreview', () => {
     // The placeholder should be gone
     expect(screen.queryByText('Enter text to generate')).not.toBeInTheDocument()
 
-    // We expect an SVG or generic role="img" with the correct aria label
-    const qrCode = screen.getByRole('img', { name: 'QR Code for value: https://example.com' })
+    const qrCode = screen.getByTestId('qr-code-canvas')
     expect(qrCode).toBeInTheDocument()
-
-    // Check if it is an SVG (qrcode.react renders an svg element)
-    expect(qrCode.tagName.toLowerCase()).toBe('svg')
+    expect(qrCode).toHaveAttribute('aria-label', 'QR Code for value: https://example.com')
   })
 
   it('applies foreground and background colors correctly', () => {
@@ -54,15 +81,9 @@ describe('QRPreview', () => {
       </LocaleProvider>,
     )
 
-    const svg = screen.getByRole('img', { name: 'QR Code for value: Test Color' })
-
-    // Check for foreground path (Red)
-    const fgPath = svg.querySelector('path[fill="#FF0000"]')
-    expect(fgPath).toBeInTheDocument()
-
-    // Check for background path/rect (Blue)
-    const bgElement = svg.querySelector('[fill="#0000FF"]')
-    expect(bgElement).toBeInTheDocument()
+    const canvas = screen.getByTestId('qr-code-canvas')
+    expect(canvas).toHaveAttribute('data-fg', '#FF0000')
+    expect(canvas).toHaveAttribute('data-bg', '#0000FF')
   })
 
   it('renders with custom size', () => {
@@ -72,8 +93,7 @@ describe('QRPreview', () => {
       </LocaleProvider>,
     )
 
-    const svg = screen.getByRole('img', { name: 'QR Code for value: Test Size' })
-    expect(svg).toHaveAttribute('height', '128')
-    expect(svg).toHaveAttribute('width', '128')
+    const canvas = screen.getByTestId('qr-code-canvas')
+    expect(canvas).toHaveAttribute('data-size', '128')
   })
 })

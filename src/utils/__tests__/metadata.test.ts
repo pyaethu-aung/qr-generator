@@ -44,8 +44,8 @@ describe('applySeoMetadata', () => {
 
     expect(document.title).toBe(updatedSeo.title)
     expect(document.head.querySelectorAll('meta[name="description"]').length).toBe(1)
-    expect(document.head.querySelector('meta[name="description"]').getAttribute('content')).toBe(
-      updatedSeo.description,
-    )
+    const descriptionMeta = document.head.querySelector('meta[name="description"]')
+    expect(descriptionMeta).toBeInstanceOf(HTMLMetaElement)
+    expect(descriptionMeta?.getAttribute('content')).toBe(updatedSeo.description)
   })
 })

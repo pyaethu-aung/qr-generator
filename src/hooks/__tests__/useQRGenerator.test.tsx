@@ -1,26 +1,41 @@
 import { renderHook, act } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import type { MockedFunction } from 'vitest'
 import { INPUT_LENGTH_LIMIT, useQRGenerator } from '../useQRGenerator'
-import QRCode from 'qrcode'
 import * as downloadUtils from '../../utils/download'
+
+type ToDataURLArgs = [string, { width: number; margin: number }]
+type ToStringArgs = [string, { type: 'svg'; width: number; margin: number }]
+type ToDataURL = (...args: ToDataURLArgs) => Promise<string>
+type ToString = (...args: ToStringArgs) => Promise<string>
+type QRCodeMockModule = {
+  default: {
+    toDataURL: MockedFunction<ToDataURL>
+    toString: MockedFunction<ToString>
+  }
+}
+
+let toDataURLMock: MockedFunction<ToDataURL>
+let toStringMock: MockedFunction<ToString>
 
 // Mock dependencies
 vi.mock('qrcode', () => ({
   default: {
-    toDataURL: vi.fn().mockResolvedValue(''),
-    toString: vi.fn().mockResolvedValue(''),
+    toDataURL: vi.fn<ToDataURL>(),
+    toString: vi.fn<ToString>(),
   },
 }))
-
-const mockedQRCode = vi.mocked(QRCode, true)
 
 vi.spyOn(downloadUtils, 'downloadBlob').mockImplementation(() => {})
 
 describe('useQRGenerator', () => {
   const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks()
+    const qrcodeModule = (await import('qrcode')) as unknown as QRCodeMockModule
+    toDataURLMock = qrcodeModule.default.toDataURL
+    toStringMock = qrcodeModule.default.toString
   })
 
   afterEach(() => {
@@ -90,7 +105,7 @@ describe('useQRGenerator', () => {
     } as Response)
 
     // Setup qrcode mock
-    mockedQRCode.toDataURL.mockResolvedValue('data:image/png;base64,fake')
+    toDataURLMock.mockResolvedValue('data:image/png;base64,fake')
 
     // 1. Set Value
     act(() => {
@@ -107,7 +122,7 @@ describe('useQRGenerator', () => {
       await result.current.downloadPng()
     })
 
-    expect(QRCode.toDataURL).toHaveBeenCalledWith(
+    expect(toDataURLMock).toHaveBeenCalledWith(
       'test-qr',
       expect.objectContaining({
         width: 1024,
@@ -122,7 +137,7 @@ describe('useQRGenerator', () => {
     const { result } = renderHook(() => useQRGenerator())
 
     // Setup qrcode mock
-    mockedQRCode.toString.mockResolvedValue('<svg>fake</svg>')
+    toStringMock.mockResolvedValue('<svg>fake</svg>')
 
     // 1. Set Value
     act(() => {
@@ -139,7 +154,7 @@ describe('useQRGenerator', () => {
       await result.current.downloadSvg()
     })
 
-    expect(QRCode.toString).toHaveBeenCalledWith(
+    expect(toStringMock).toHaveBeenCalledWith(
       'test-qr',
       expect.objectContaining({
         type: 'svg',
@@ -158,14 +173,14 @@ describe('useQRGenerator', () => {
       await result.current.downloadSvg()
     })
 
-    expect(QRCode.toDataURL).not.toHaveBeenCalled()
-    expect(QRCode.toString).not.toHaveBeenCalled()
+    expect(toDataURLMock).not.toHaveBeenCalled()
+    expect(toStringMock).not.toHaveBeenCalled()
   })
 
   it('should handle PNG download errors gracefully', async () => {
     const { result } = renderHook(() => useQRGenerator())
 
-    mockedQRCode.toDataURL.mockRejectedValue(new Error('Generation failed'))
+    toDataURLMock.mockRejectedValue(new Error('Generation failed'))
 
     act(() => {
       result.current.setInputValue('fail')
