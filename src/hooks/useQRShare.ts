@@ -75,8 +75,6 @@ export const useQRShare = () => {
 
     shareInFlight.current = true
 
-
-
     try {
       const payload = await createSharePayload(canvasElement)
       const file = payloadToFile(payload)
@@ -97,12 +95,7 @@ export const useQRShare = () => {
         typeof navigator.share === 'function' ? navigator.share.bind(navigator) : undefined
       if (typeof shareFn !== 'function') {
         setShareRequest(
-          buildRequest(
-            SHARE_METHOD,
-            'failed',
-            false,
-            'Navigator share function is unavailable',
-          ),
+          buildRequest(SHARE_METHOD, 'failed', false, 'Navigator share function is unavailable'),
         )
         await handleFallback(payload)
         return
