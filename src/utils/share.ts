@@ -38,3 +38,49 @@ export const payloadToFile = (payload: SharePayload): File =>
 
 export const isSharePayload = (value: unknown): value is SharePayload =>
   typeof value === 'object' && value !== null && 'blob' in value && 'filename' in value
+
+const isNavigatorShareAvailable = (): boolean => typeof navigator !== 'undefined' && typeof navigator.share === 'function'
+
+export const supportsNavigatorShare = (): boolean => isNavigatorShareAvailable()
+
+export const canShareFiles = (files: File[]): boolean => {
+  if (!isNavigatorShareAvailable()) {
+    return false
+  }
+
+  if (typeof navigator.canShare !== 'function') {
+    return true
+  }
+
+  try {
+    return navigator.canShare({ files })
+  } catch {
+    return false
+  }
+}
+
+export const supportsClipboardImage = (): boolean =>
+  typeof navigator !== 'undefined' &&
+  typeof navigator.clipboard?.write === 'function' &&
+  typeof ClipboardItem !== 'undefined'
+
+export const copyPayloadToClipboard = async (payload: SharePayload): Promise<void> => {
+  if (!supportsClipboardImage()) {
+    throw new Error('Clipboard image sharing is not supported in this environment')
+  }
+
+  const clipboardItem = new ClipboardItem({ 'image/png': payload.blob })
+  await navigator.clipboard.write([clipboardItem])
+}
+
+export const downloadPayload = (payload: SharePayload): void => {
+  const url = URL.createObjectURL(payload.blob)
+  const anchor = document.createElement('a')
+  anchor.style.display = 'none'
+  anchor.href = url
+  anchor.download = payload.filename
+  document.body.appendChild(anchor)
+  anchor.click()
+  document.body.removeChild(anchor)
+  URL.revokeObjectURL(url)
+}
