@@ -55,6 +55,12 @@
     "placeholder": "ဖန်တီးရန် စာသားထည့်ပါ",
     "ariaValue": "ဒီတန်ဖိုးအတွက် QR ကုဒ်: {value}",
     "ariaPlaceholder": "QR ကုဒ် နမူနာ",
-    "shareButtonLabel": "QR ကုဒ် မျှဝေပါ"
+    "shareButtonLabel": "QR ကုဒ် မျှဝေပါ",
+    "shareStatusSharing": "မျှဝေပေးနေသည်...",
+    "shareStatusShared": "QR ကို အောင်မြင်စွာ မျှဝေပြီးပြီ",
+    "shareStatusClipboard": "QR ကို clipboard သို့ မိတ္တူယူပြီးပြီ",
+    "shareStatusDownloaded": "QR ကို ဒေါင်းလုဒ် ပြုလုပ်ပြီးပြီ",
+    "shareStatusFailed": "QR ကို မျှဝေပေးလို့ မရနိုင်ပါ",
+    "shareStatusCanceled": "မျှဝေပေးခြင်း ပယ်ဖျက်လိုက်သည်"
   }
 }

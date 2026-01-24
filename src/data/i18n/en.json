@@ -55,6 +55,12 @@
     "placeholder": "Enter text to generate",
     "ariaValue": "QR Code for value: {value}",
     "ariaPlaceholder": "QR Code Placeholder",
-    "shareButtonLabel": "Share QR code"
+    "shareButtonLabel": "Share QR code",
+    "shareStatusSharing": "Sharing...",
+    "shareStatusShared": "QR code shared",
+    "shareStatusClipboard": "QR code copied to clipboard",
+    "shareStatusDownloaded": "QR code downloaded",
+    "shareStatusFailed": "Unable to share QR code",
+    "shareStatusCanceled": "Share canceled"
   }
 }

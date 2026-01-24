@@ -62,6 +62,12 @@ export interface PreviewStrings {
   ariaValue: string
   ariaPlaceholder: string
   shareButtonLabel: string
+  shareStatusSharing: string
+  shareStatusShared: string
+  shareStatusClipboard: string
+  shareStatusDownloaded: string
+  shareStatusFailed: string
+  shareStatusCanceled: string
 }
 
 export interface LocaleConfig {
@@ -109,6 +115,12 @@ export type TranslationKey =
   | 'controls.correctionQuartile'
   | 'controls.correctionHigh'
   | 'preview.sectionLabel'
+  | 'preview.shareStatusSharing'
+  | 'preview.shareStatusShared'
+  | 'preview.shareStatusClipboard'
+  | 'preview.shareStatusDownloaded'
+  | 'preview.shareStatusFailed'
+  | 'preview.shareStatusCanceled'
   | 'preview.sectionTitle'
   | 'preview.placeholder'
   | 'preview.ariaValue'

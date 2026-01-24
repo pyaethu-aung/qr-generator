@@ -17,7 +17,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
     const ariaValueTemplate = translate('preview.ariaValue')
     const shareButtonLabel = translate('preview.shareButtonLabel')
 
-    const { share, isSharing } = useQRShare()
+    const { share, shareRequest, isSharing } = useQRShare()
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
     const assignForwardedRef = useCallback(
@@ -42,6 +42,33 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
       })
 
     const isShareDisabled = !value || isSharing
+    const shareStatusMessage = (() => {
+      if (!shareRequest) {
+        return undefined
+      }
+
+      switch (shareRequest.status) {
+        case 'pending':
+          return translate('preview.shareStatusSharing')
+        case 'shared':
+          if (shareRequest.method === 'clipboard') {
+            return translate('preview.shareStatusClipboard')
+          }
+
+          if (shareRequest.method === 'download') {
+            return translate('preview.shareStatusDownloaded')
+          }
+
+          return translate('preview.shareStatusShared')
+        case 'canceled':
+          return translate('preview.shareStatusCanceled')
+        case 'failed':
+          return shareRequest.errorMessage ?? translate('preview.shareStatusFailed')
+        default:
+          return undefined
+      }
+    })()
+
     const shareButton = (
       <button
         type="button"
@@ -62,6 +89,24 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
       </button>
     )
 
+    const shareStatusElement = shareStatusMessage ? (
+      <p
+        data-testid="share-status"
+        role="status"
+        aria-live="polite"
+        className="text-sm text-slate-500"
+      >
+        {shareStatusMessage}
+      </p>
+    ) : null
+
+    const shareControls = (
+      <div className="mt-4 w-full flex flex-col gap-2">
+        {shareButton}
+        {shareStatusElement}
+      </div>
+    )
+
     if (!value) {
       return (
         <div className={`flex flex-col items-center ${className ?? ''}`} style={{ width: size }}>
@@ -73,7 +118,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
           >
             <span className="text-sm">{placeholderCopy}</span>
           </div>
-          <div className="mt-4 w-full">{shareButton}</div>
+          {shareControls}
         </div>
       )
     }
@@ -96,7 +141,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
           role="img"
           aria-label={formatValueLabel(ariaValueTemplate, { value })}
         />
-        <div className="mt-4 w-full">{shareButton}</div>
+        {shareControls}
       </div>
     )
   },

@@ -1,16 +1,7 @@
 import { forwardRef } from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {
-  describe,
-  expect,
-  it,
-  beforeEach,
-  afterEach,
-  afterAll,
-  vi,
-  type MockedFunction,
-} from 'vitest'
+import { describe, expect, it, beforeEach, afterEach, vi, type MockedFunction } from 'vitest'
 import { LocaleProvider } from '../../../../hooks/LocaleProvider'
 import { QRPreview } from '../QRPreview'
 import type { SharePayload } from '../../../../types/qr'
@@ -26,8 +17,8 @@ type DownloadPayloadFn = (payload: SharePayload) => void
 vi.mock('../../../../utils/share', () => {
   const createSharePayload = vi.fn() as MockedFunction<CreateSharePayloadFn>
   const payloadToFile = vi.fn() as MockedFunction<PayloadToFileFn>
-  const supportsNavigatorShare = vi.fn<SupportsNavigatorShareFn>(() => true)
-  const canShareFiles = vi.fn<CanShareFilesFn>(() => true)
+  const supportsNavigatorShare = vi.fn<SupportsNavigatorShareFn>(() => false)
+  const canShareFiles = vi.fn<CanShareFilesFn>(() => false)
   const supportsClipboardImage = vi.fn<SupportsClipboardImageFn>(() => false)
   const copyPayloadToClipboard = vi.fn<CopyPayloadToClipboardFn>(() => Promise.resolve())
   const downloadPayload = vi.fn<DownloadPayloadFn>(() => undefined)
@@ -42,14 +33,6 @@ vi.mock('../../../../utils/share', () => {
     downloadPayload,
   }
 })
-
-let createSharePayloadMock: MockedFunction<CreateSharePayloadFn>
-let payloadToFileMock: MockedFunction<PayloadToFileFn>
-let supportsNavigatorShareMock: MockedFunction<SupportsNavigatorShareFn>
-let canShareFilesMock: MockedFunction<CanShareFilesFn>
-let supportsClipboardImageMock: MockedFunction<SupportsClipboardImageFn>
-let copyPayloadToClipboardMock: MockedFunction<CopyPayloadToClipboardFn>
-let downloadPayloadMock: MockedFunction<DownloadPayloadFn>
 
 vi.mock('qrcode.react', () => {
   interface QRCodeMockProps {
@@ -80,7 +63,15 @@ vi.mock('qrcode.react', () => {
   }
 })
 
-describe('QRShareButton', () => {
+let createSharePayloadMock: MockedFunction<CreateSharePayloadFn>
+let payloadToFileMock: MockedFunction<PayloadToFileFn>
+let supportsNavigatorShareMock: MockedFunction<SupportsNavigatorShareFn>
+let canShareFilesMock: MockedFunction<CanShareFilesFn>
+let supportsClipboardImageMock: MockedFunction<SupportsClipboardImageFn>
+let copyPayloadToClipboardMock: MockedFunction<CopyPayloadToClipboardFn>
+let downloadPayloadMock: MockedFunction<DownloadPayloadFn>
+
+describe('QRShareFallback', () => {
   const mockBlob = new Blob(['PNG'], { type: 'image/png' })
   const mockFilename = 'qr-code.png'
   const mockPayload: SharePayload = {
@@ -88,13 +79,7 @@ describe('QRShareButton', () => {
     filename: mockFilename,
     lastUpdated: new Date(0),
   }
-  const mockFile = new File([mockBlob], mockFilename, {
-    type: mockBlob.type,
-  })
-  type NativeShareArgs = { files: File[] }
-  type NativeShareFn = (args: NativeShareArgs) => Promise<void>
-  const shareMock = vi.fn<NativeShareFn>(() => Promise.resolve())
-  const originalNavigatorShareDescriptor = Object.getOwnPropertyDescriptor(navigator, 'share')
+  const mockFile = new File([mockBlob], mockFilename, { type: mockBlob.type })
 
   beforeEach(() =>
     vi.importMock('../../../../utils/share').then((shareModule) => {
@@ -108,14 +93,11 @@ describe('QRShareButton', () => {
       downloadPayloadMock = vi.mocked(resolvedModule.downloadPayload)
       createSharePayloadMock.mockResolvedValue(mockPayload)
       payloadToFileMock.mockReturnValue(mockFile)
-      supportsNavigatorShareMock.mockReturnValue(true)
-      canShareFilesMock.mockReturnValue(true)
+      supportsNavigatorShareMock.mockReturnValue(false)
+      canShareFilesMock.mockReturnValue(false)
       supportsClipboardImageMock.mockReturnValue(false)
-      shareMock.mockResolvedValue(undefined)
-      Object.defineProperty(navigator, 'share', {
-        value: shareMock,
-        configurable: true,
-      })
+      copyPayloadToClipboardMock.mockResolvedValue(undefined)
+      downloadPayloadMock.mockReturnValue(undefined)
     }),
   )
 
@@ -123,13 +105,9 @@ describe('QRShareButton', () => {
     vi.resetAllMocks()
   })
 
-  afterAll(() => {
-    if (originalNavigatorShareDescriptor) {
-      Object.defineProperty(navigator, 'share', originalNavigatorShareDescriptor)
-    }
-  })
+  it('copies QR payload to clipboard when native share is unavailable', async () => {
+    supportsClipboardImageMock.mockReturnValue(true)
 
-  it('shares the WYSIWYG QR canvas via navigator.share', async () => {
     render(
       <LocaleProvider>
         <QRPreview
@@ -145,22 +123,29 @@ describe('QRShareButton', () => {
     const shareButton = screen.getByRole('button', { name: 'Share QR code' })
     await userEvent.click(shareButton)
 
-    await waitFor(() => expect(shareMock).toHaveBeenCalledTimes(1))
-    expect(createSharePayloadMock).toHaveBeenCalledTimes(1)
-
-    const canvasArg = createSharePayloadMock.mock.calls[0][0]
-    expect(canvasArg).toBeInstanceOf(HTMLCanvasElement)
-    expect(canvasArg?.width).toBe(200)
-    expect(canvasArg?.height).toBe(200)
-
-    expect(payloadToFileMock).toHaveBeenCalledWith(mockPayload)
-
-    const shareArgument = shareMock.mock.calls[0][0]
-    expect(shareArgument.files).toHaveLength(1)
-    const [shareFile] = shareArgument.files
-    expect(shareFile.name).toBe('qr-code.png')
-    expect(shareFile.type).toBe('image/png')
-    expect(copyPayloadToClipboardMock).not.toHaveBeenCalled()
+    await waitFor(() => expect(copyPayloadToClipboardMock).toHaveBeenCalledWith(mockPayload))
     expect(downloadPayloadMock).not.toHaveBeenCalled()
+  })
+
+  it('downloads QR payload when clipboard fallback is not supported', async () => {
+    supportsClipboardImageMock.mockReturnValue(false)
+
+    render(
+      <LocaleProvider>
+        <QRPreview
+          value="https://example.com"
+          ecLevel="M"
+          fgColor="#000000"
+          bgColor="#ffffff"
+          size={200}
+        />
+      </LocaleProvider>,
+    )
+
+    const shareButton = screen.getByRole('button', { name: 'Share QR code' })
+    await userEvent.click(shareButton)
+
+    await waitFor(() => expect(downloadPayloadMock).toHaveBeenCalledWith(mockPayload))
+    expect(copyPayloadToClipboardMock).not.toHaveBeenCalled()
   })
 })
