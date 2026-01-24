@@ -1,13 +1,18 @@
 import { useCallback, useRef, useState } from 'react'
-import type { ShareMethod, ShareRequest } from '../types/qr'
+import type { ShareMethod, SharePayload, ShareRequest } from '../types/qr'
 import {
   canShareFiles,
+  copyPayloadToClipboard,
   createSharePayload,
+  downloadPayload,
   payloadToFile,
+  supportsClipboardImage,
   supportsNavigatorShare,
 } from '../utils/share'
 
 const SHARE_METHOD: ShareMethod = 'navigator-share'
+const CLIPBOARD_METHOD: ShareMethod = 'clipboard'
+const DOWNLOAD_METHOD: ShareMethod = 'download'
 
 const normalizeErrorMessage = (value: unknown): string | undefined => {
   if (value instanceof Error) {
@@ -22,11 +27,12 @@ const normalizeErrorMessage = (value: unknown): string | undefined => {
 }
 
 const buildRequest = (
+  method: ShareMethod,
   status: ShareRequest['status'],
   targetSupported: boolean,
   errorMessage?: string,
 ): ShareRequest => ({
-  method: SHARE_METHOD,
+  method,
   targetSupported,
   status,
   errorMessage,
@@ -43,7 +49,33 @@ export const useQRShare = () => {
       return
     }
 
+    const attemptClipboardFallback = async (payload: SharePayload): Promise<boolean> => {
+      if (!supportsClipboardImage()) {
+        return false
+      }
+
+      setShareRequest(buildRequest(CLIPBOARD_METHOD, 'pending', true))
+      await copyPayloadToClipboard(payload)
+      setShareRequest(buildRequest(CLIPBOARD_METHOD, 'shared', true))
+
+      return true
+    }
+
+    const triggerDownloadFallback = (payload: SharePayload) => {
+      setShareRequest(buildRequest(DOWNLOAD_METHOD, 'shared', true))
+      downloadPayload(payload)
+    }
+
+    const handleFallback = async (payload: SharePayload) => {
+      const clipboardAvailable = await attemptClipboardFallback(payload)
+      if (!clipboardAvailable) {
+        triggerDownloadFallback(payload)
+      }
+    }
+
     shareInFlight.current = true
+
+
 
     try {
       const payload = await createSharePayload(canvasElement)
@@ -52,22 +84,33 @@ export const useQRShare = () => {
       const targetSupported = navigatorAvailable && canShareFiles([file])
 
       if (!targetSupported) {
-        setShareRequest(buildRequest('failed', false, 'Native share is not available'))
+        setShareRequest(
+          buildRequest(SHARE_METHOD, 'failed', false, 'Native share is not available'),
+        )
+        await handleFallback(payload)
         return
       }
 
-      setShareRequest(buildRequest('pending', true))
+      setShareRequest(buildRequest(SHARE_METHOD, 'pending', true))
 
       const shareFn =
         typeof navigator.share === 'function' ? navigator.share.bind(navigator) : undefined
       if (typeof shareFn !== 'function') {
-        setShareRequest(buildRequest('failed', false, 'Navigator share function is unavailable'))
+        setShareRequest(
+          buildRequest(
+            SHARE_METHOD,
+            'failed',
+            false,
+            'Navigator share function is unavailable',
+          ),
+        )
+        await handleFallback(payload)
         return
       }
 
       await shareFn({ files: [file] })
 
-      setShareRequest(buildRequest('shared', true))
+      setShareRequest(buildRequest(SHARE_METHOD, 'shared', true))
     } catch (error) {
       const maybeError = error as Error
       const status =
@@ -75,7 +118,7 @@ export const useQRShare = () => {
           ? 'canceled'
           : 'failed'
 
-      setShareRequest(buildRequest(status, true, normalizeErrorMessage(error)))
+      setShareRequest(buildRequest(SHARE_METHOD, status, true, normalizeErrorMessage(error)))
     } finally {
       shareInFlight.current = false
     }
