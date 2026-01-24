@@ -1,31 +1,31 @@
+import { forwardRef } from 'react'
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { LocaleProvider } from '../../../../hooks/LocaleProvider'
 import { QRPreview } from '../QRPreview'
 
 vi.mock('qrcode.react', () => {
-  const QRCodeMock = ({
-    value,
-    fgColor,
-    bgColor,
-    size,
-  }: {
+  interface QRCodeMockProps {
     value: string
     fgColor?: string
     bgColor?: string
     size?: number
-  }) => (
-    <div
-      data-testid="qr-code-canvas"
-      data-value={value}
-      data-fg={fgColor ?? ''}
-      data-bg={bgColor ?? ''}
-      data-size={size?.toString() ?? ''}
-      role="img"
-      aria-label={`QR Code for value: ${value}`}
-    >
-      QR Code: {value}
-    </div>
+  }
+
+  const QRCodeMock = forwardRef<HTMLCanvasElement, QRCodeMockProps>(
+    ({ value, fgColor, bgColor, size }, ref) => (
+      <canvas
+        ref={ref}
+        data-testid="qr-code-canvas"
+        data-value={value}
+        data-fg={fgColor ?? ''}
+        data-bg={bgColor ?? ''}
+        width={size ?? 0}
+        height={size ?? 0}
+        role="img"
+        aria-label={`QR Code for value: ${value}`}
+      />
+    ),
   )
 
   return {
@@ -108,6 +108,7 @@ describe('QRPreview', () => {
     )
 
     const canvas = screen.getByTestId('qr-code-canvas')
-    expect(canvas).toHaveAttribute('data-size', '128')
+    expect(canvas).toHaveAttribute('width', '128')
+    expect(canvas).toHaveAttribute('height', '128')
   })
 })
