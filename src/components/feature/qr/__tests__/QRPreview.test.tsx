@@ -52,6 +52,17 @@ describe('QRPreview', () => {
     expect(screen.getByRole('img', { name: 'QR Code Placeholder' })).toBeInTheDocument()
   })
 
+  it('renders a disabled share control while no QR is generated', () => {
+    render(
+      <LocaleProvider>
+        <QRPreview {...defaultProps} value="" />
+      </LocaleProvider>,
+    )
+
+    const shareButton = screen.getByRole('button', { name: 'Share QR code' })
+    expect(shareButton).toBeDisabled()
+  })
+
   it('renders QR code canvas when value is provided', () => {
     render(
       <LocaleProvider>
@@ -65,6 +76,9 @@ describe('QRPreview', () => {
     const qrCode = screen.getByTestId('qr-code-canvas')
     expect(qrCode).toBeInTheDocument()
     expect(qrCode).toHaveAttribute('aria-label', 'QR Code for value: https://example.com')
+
+    const shareButton = screen.getByRole('button', { name: 'Share QR code' })
+    expect(shareButton).toBeEnabled()
   })
 
   it('applies foreground and background colors correctly', () => {

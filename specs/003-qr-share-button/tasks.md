@@ -37,7 +37,7 @@
 
 ### Tests for User Story 1
 
-- [ ] T006 [P] [US1] Add unit tests for share button render/disabled states in `src/components/feature/qr/__tests__/QRPreview.test.tsx`.
+- [x] T006 [P] [US1] Add unit tests for share button render/disabled states in `src/components/feature/qr/__tests__/QRPreview.test.tsx`.
 - [ ] T007 [P] [US1] Add unit tests mocking `navigator.share` to verify PNG `File` payload (name `qr-code.png`, WYSIWYG size) in `src/components/feature/qr/__tests__/QRShareButton.test.tsx`.
 
 ### Implementation for User Story 1
