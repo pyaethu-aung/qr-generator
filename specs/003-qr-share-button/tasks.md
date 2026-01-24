@@ -24,7 +24,7 @@
 - [x] T002 [P] Add share-related types (`SharePayload`, `ShareRequest`) to support PNG sharing flows in `src/types/qr.ts`. (Completed: share payload and request interfaces with WYSIWYG filename and status metadata)
 - [x] T003 Create share utility for WYSIWYG canvas→PNG blob/file generation with fixed filename `qr-code.png` in `src/utils/share.ts`. (Completed: `createSharePayload` captures the QR canvas, enforces WYSIWYG, and the helper exposes `payloadToFile`.)
 - [x] T004 Add capability detection helpers for `navigator.share`, `canShare(files)`, clipboard image write, and download fallback in `src/utils/share.ts` (uses types from T002). (Completed: exports for `supportsNavigatorShare`, `canShareFiles`, `supportsClipboardImage`, `copyPayloadToClipboard`, and download fallback.)
-- [ ] T005 Wire QR preview canvas ref exposure (if missing) to enable PNG capture in `src/components/feature/qr/QRPreview.tsx` or associated hook file.
+- [x] T005 Wire QR preview canvas ref exposure (if missing) to enable PNG capture in `src/components/feature/qr/QRPreview.tsx` or associated hook file. (Completed: `QRPreview` now renders `QRCodeCanvas` and forwards the canvas ref via `forwardRef`.)
 
 **Checkpoint**: Foundation ready; user stories may proceed.
 
