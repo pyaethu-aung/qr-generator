@@ -68,7 +68,7 @@ export const QRGenerator = () => {
                 onDownloadPng={() => void downloadPng()}
                 onDownloadSvg={() => void downloadSvg()}
                 canDownload={!!config.value}
-                inputError={inputError ?? null}
+                inputError={inputError ?? undefined}
                 canGenerate={canGenerate}
               />
             </div>
