@@ -3,7 +3,7 @@
 **Input**: Design documents from `/specs/003-qr-share-button/`
 **Prerequisites**: plan.md, spec.md (required); research.md, data-model.md, contracts/, quickstart.md (available)
 
-**Tests**: Testing is MANDATORY per Constitution Principle II. Run `npm run test` and `npm run lint` after every change. Maintain ≥85% coverage. Each story adds/updates unit (and integration where applicable) tests before implementation.
+**Tests**: Testing is MANDATORY per Constitution Principle II. Run `npm run test`, `npm run lint`, and `npm run build` after every change. Maintain ≥85% coverage. Each story adds/updates unit (and integration where applicable) tests before implementation.
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -15,7 +15,7 @@
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-- [x] T001 Confirm baseline passes via scripts in package.json (`npm run lint`, `npm run test`) to ensure clean state before changes. [package.json] (Completed: lint/test executed successfully locally)
+- [x] T001 Confirm baseline passes via scripts in package.json (`npm run lint`, `npm run test`, `npm run build`) to ensure clean state before changes. [package.json] (Completed: lint/test/build executed successfully locally)
 
 ---
 
