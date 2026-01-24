@@ -6,18 +6,36 @@ import { LocaleProvider } from '../../../../hooks/LocaleProvider'
 import { QRGenerator } from '../QRGenerator'
 
 // Mock qrcode.react simply to avoid canvas/DOM issues and verify props
-vi.mock('qrcode.react', () => ({
-  QRCodeSVG: ({ value }: { value: string }) => (
+vi.mock('qrcode.react', () => {
+  const QRCodeMock = ({
+    value,
+    fgColor,
+    bgColor,
+    size,
+  }: {
+    value: string
+    fgColor?: string
+    bgColor?: string
+    size?: number
+  }) => (
     <div
-      data-testid="qr-code-svg"
+      data-testid="qr-code-canvas"
       data-value={value}
+      data-fg={fgColor ?? ''}
+      data-bg={bgColor ?? ''}
+      data-size={size?.toString() ?? ''}
       role="img"
       aria-label={`QR Code for value: ${value}`}
     >
       QR Code: {value}
     </div>
-  ),
-}))
+  )
+
+  return {
+    QRCodeSVG: QRCodeMock,
+    QRCodeCanvas: QRCodeMock,
+  }
+})
 
 describe('QRGenerator Integration', () => {
   const renderWithProviders = (ui: ReactElement) => render(<LocaleProvider>{ui}</LocaleProvider>)
@@ -31,7 +49,7 @@ describe('QRGenerator Integration', () => {
   it('should show placeholder initially', () => {
     renderWithProviders(<QRGenerator />)
     expect(screen.getByRole('img', { name: /qr code placeholder/i })).toBeInTheDocument()
-    expect(screen.queryByTestId('qr-code-svg')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('qr-code-canvas')).not.toBeInTheDocument()
   })
 
   it('should generate QR code when user inputs text and clicks generate', async () => {
@@ -49,7 +67,7 @@ describe('QRGenerator Integration', () => {
 
     // Verify QR code appears
     await waitFor(() => {
-      const qrCode = screen.getByTestId('qr-code-svg')
+      const qrCode = screen.getByTestId('qr-code-canvas')
       expect(qrCode).toBeInTheDocument()
       expect(qrCode).toHaveAttribute('data-value', 'https://example.com')
     })
@@ -95,7 +113,7 @@ describe('QRGenerator Integration', () => {
     await user.keyboard('{Enter}')
 
     await waitFor(() => {
-      expect(screen.getByTestId('qr-code-svg')).toBeInTheDocument()
+      expect(screen.getByTestId('qr-code-canvas')).toBeInTheDocument()
     })
   })
 })

@@ -1,4 +1,4 @@
-import { SharePayload } from '../types/qr'
+import type { SharePayload } from '../types/qr'
 
 const SHARE_FILENAME = 'qr-code.png'
 
@@ -20,7 +20,9 @@ const ensureCanvas = (element: HTMLCanvasElement | null): HTMLCanvasElement => {
   return element
 }
 
-export const createSharePayload = async (canvasElement: HTMLCanvasElement | null): Promise<SharePayload> => {
+export const createSharePayload = async (
+  canvasElement: HTMLCanvasElement | null,
+): Promise<SharePayload> => {
   const canvas = ensureCanvas(canvasElement)
   const blob = await captureCanvasBlob(canvas)
 
@@ -39,7 +41,8 @@ export const payloadToFile = (payload: SharePayload): File =>
 export const isSharePayload = (value: unknown): value is SharePayload =>
   typeof value === 'object' && value !== null && 'blob' in value && 'filename' in value
 
-const isNavigatorShareAvailable = (): boolean => typeof navigator !== 'undefined' && typeof navigator.share === 'function'
+const isNavigatorShareAvailable = (): boolean =>
+  typeof navigator !== 'undefined' && typeof navigator.share === 'function'
 
 export const supportsNavigatorShare = (): boolean => isNavigatorShareAvailable()
 

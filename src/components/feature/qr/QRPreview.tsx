@@ -9,17 +9,7 @@ interface QRPreviewProps extends QRConfig {
 }
 
 export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
-  (
-    {
-      value,
-      ecLevel,
-      fgColor,
-      bgColor,
-      size = 256,
-      className,
-    },
-    ref,
-  ) => {
+  ({ value, ecLevel, fgColor, bgColor, size = 256, className }, ref) => {
     const { translate } = useLocaleContext()
     const placeholderCopy = translate('preview.placeholder')
     const ariaPlaceholder = translate('preview.ariaPlaceholder')
@@ -65,4 +55,3 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
 )
 
 QRPreview.displayName = 'QRPreview'
-```
