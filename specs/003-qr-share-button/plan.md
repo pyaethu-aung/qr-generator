@@ -25,7 +25,7 @@ Add a share button under the QR preview that shares the currently rendered QR as
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-- Tests and lint MUST be run locally after every change via `npm run test` and `npm run lint` per constitution.
+- Tests, lint, and build MUST be run locally after every change via `npm run test`, `npm run lint`, and `npm run build` per constitution.
 - Unit and integration tests MUST be added/updated for each change; maintain coverage ≥85%.
 - Structure adherence: UI in `src/components`, hooks in `src/hooks`, utilities in `src/utils`, data shapers in `src/data`, shared types in `src/types`.
 - Remove unused code/assets; no commented-out blocks committed.
