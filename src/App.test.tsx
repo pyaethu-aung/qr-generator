@@ -71,7 +71,7 @@ describe('App integration', () => {
     expect(duration).toBeLessThanOrEqual(1000)
   })
 
-  it('derives initial locale from localStorage on load', async () => {
+  it('derives initial locale from localStorage on load', () => {
     window.localStorage.setItem('qr-generator:locale-preference', 'my')
 
     render(
