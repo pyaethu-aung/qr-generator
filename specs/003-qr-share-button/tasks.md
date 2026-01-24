@@ -15,7 +15,7 @@
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-- [ ] T001 Confirm baseline passes via scripts in package.json (`npm run lint`, `npm run test`) to ensure clean state before changes. [package.json]
+- [x] T001 Confirm baseline passes via scripts in package.json (`npm run lint`, `npm run test`) to ensure clean state before changes. [package.json] (Completed: lint/test executed successfully locally)
 
 ---
 
