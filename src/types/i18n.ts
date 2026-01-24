@@ -61,6 +61,7 @@ export interface PreviewStrings {
   placeholder: string
   ariaValue: string
   ariaPlaceholder: string
+  shareButtonLabel: string
 }
 
 export interface LocaleConfig {
@@ -112,3 +113,4 @@ export type TranslationKey =
   | 'preview.placeholder'
   | 'preview.ariaValue'
   | 'preview.ariaPlaceholder'
+  | 'preview.shareButtonLabel'

@@ -54,6 +54,7 @@
     "sectionTitle": "အစဉ်အမြဲ ကြည့်ရှုနိုင်သည်",
     "placeholder": "ဖန်တီးရန် စာသားထည့်ပါ",
     "ariaValue": "ဒီတန်ဖိုးအတွက် QR ကုဒ်: {value}",
-    "ariaPlaceholder": "QR ကုဒ် နမူနာ"
+    "ariaPlaceholder": "QR ကုဒ် နမူနာ",
+    "shareButtonLabel": "QR ကုဒ် မျှဝေပါ"
   }
 }

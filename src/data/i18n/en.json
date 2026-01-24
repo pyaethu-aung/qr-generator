@@ -54,6 +54,7 @@
     "sectionTitle": "See every pixel",
     "placeholder": "Enter text to generate",
     "ariaValue": "QR Code for value: {value}",
-    "ariaPlaceholder": "QR Code Placeholder"
+    "ariaPlaceholder": "QR Code Placeholder",
+    "shareButtonLabel": "Share QR code"
   }
 }
