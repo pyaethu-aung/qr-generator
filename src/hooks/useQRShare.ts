@@ -5,6 +5,7 @@ import {
   copyPayloadToClipboard,
   createSharePayload,
   downloadPayload,
+  isMobileDevice,
   payloadToFile,
   supportsClipboardImage,
   supportsNavigatorShare,
@@ -79,7 +80,7 @@ export const useQRShare = () => {
       const payload = await createSharePayload(canvasElement)
       const file = payloadToFile(payload)
       const navigatorAvailable = supportsNavigatorShare()
-      const targetSupported = navigatorAvailable && canShareFiles([file])
+      const targetSupported = navigatorAvailable && (canShareFiles([file]) || isMobileDevice())
 
       if (!targetSupported) {
         setShareRequest(

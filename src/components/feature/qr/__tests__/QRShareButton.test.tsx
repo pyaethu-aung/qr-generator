@@ -19,6 +19,7 @@ type CreateSharePayloadFn = (canvas: HTMLCanvasElement | null) => Promise<ShareP
 type PayloadToFileFn = (payload: SharePayload) => File
 type SupportsNavigatorShareFn = () => boolean
 type CanShareFilesFn = (files: File[]) => boolean
+type IsMobileDeviceFn = () => boolean
 type SupportsClipboardImageFn = () => boolean
 type CopyPayloadToClipboardFn = (payload: SharePayload) => Promise<void>
 type DownloadPayloadFn = (payload: SharePayload) => void
@@ -31,6 +32,7 @@ vi.mock('../../../../utils/share', () => {
   const supportsClipboardImage = vi.fn<SupportsClipboardImageFn>(() => false)
   const copyPayloadToClipboard = vi.fn<CopyPayloadToClipboardFn>(() => Promise.resolve())
   const downloadPayload = vi.fn<DownloadPayloadFn>(() => undefined)
+  const isMobileDevice = vi.fn<IsMobileDeviceFn>(() => false)
 
   return {
     createSharePayload,
@@ -40,6 +42,7 @@ vi.mock('../../../../utils/share', () => {
     supportsClipboardImage,
     copyPayloadToClipboard,
     downloadPayload,
+    isMobileDevice,
   }
 })
 
@@ -50,6 +53,7 @@ let canShareFilesMock: MockedFunction<CanShareFilesFn>
 let supportsClipboardImageMock: MockedFunction<SupportsClipboardImageFn>
 let copyPayloadToClipboardMock: MockedFunction<CopyPayloadToClipboardFn>
 let downloadPayloadMock: MockedFunction<DownloadPayloadFn>
+let isMobileDeviceMock: MockedFunction<IsMobileDeviceFn>
 
 vi.mock('qrcode.react', () => {
   interface QRCodeMockProps {
@@ -106,11 +110,13 @@ describe('QRShareButton', () => {
       supportsClipboardImageMock = vi.mocked(resolvedModule.supportsClipboardImage)
       copyPayloadToClipboardMock = vi.mocked(resolvedModule.copyPayloadToClipboard)
       downloadPayloadMock = vi.mocked(resolvedModule.downloadPayload)
+      isMobileDeviceMock = vi.mocked(resolvedModule.isMobileDevice)
       createSharePayloadMock.mockResolvedValue(mockPayload)
       payloadToFileMock.mockReturnValue(mockFile)
       supportsNavigatorShareMock.mockReturnValue(true)
       canShareFilesMock.mockReturnValue(true)
       supportsClipboardImageMock.mockReturnValue(false)
+      isMobileDeviceMock.mockReturnValue(false)
       shareMock.mockResolvedValue(undefined)
       Object.defineProperty(navigator, 'share', {
         value: shareMock,

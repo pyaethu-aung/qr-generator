@@ -1,6 +1,7 @@
 import type { SharePayload } from '../types/qr'
 
 const SHARE_FILENAME = 'qr-code.png'
+const MOBILE_USER_AGENT_PATTERN = /android|iphone|ipad|ipod|mobile/i
 
 const captureCanvasBlob = (canvas: HTMLCanvasElement): Promise<Blob> =>
   new Promise((resolve, reject) => {
@@ -46,6 +47,15 @@ const isNavigatorShareAvailable = (): boolean =>
 
 export const supportsNavigatorShare = (): boolean => isNavigatorShareAvailable()
 
+export const isMobileDevice = (): boolean => {
+  if (typeof navigator === 'undefined') {
+    return false
+  }
+
+  const userAgent = navigator.userAgent ?? ''
+  return MOBILE_USER_AGENT_PATTERN.test(userAgent)
+}
+
 export const canShareFiles = (files: File[]): boolean => {
   if (!isNavigatorShareAvailable()) {
     return false
@@ -56,9 +66,14 @@ export const canShareFiles = (files: File[]): boolean => {
   }
 
   try {
-    return navigator.canShare({ files })
+    const isSupported = navigator.canShare({ files })
+    if (isSupported) {
+      return true
+    }
+
+    return isMobileDevice()
   } catch {
-    return false
+    return isMobileDevice()
   }
 }
 

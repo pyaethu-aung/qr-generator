@@ -80,7 +80,7 @@
 
 ### Implementation for User Story 3
 
-- [ ] T016 [P] [US3] Enhance capability detection to prioritize file-based share on mobile and guard non-supported `canShare` paths in `src/utils/share.ts` and `src/hooks/useQRShare.ts`.
+- [x] T016 [P] [US3] Enhance capability detection to prioritize file-based share on mobile and guard non-supported `canShare` paths in `src/utils/share.ts` and `src/hooks/useQRShare.ts`.
 - [ ] T017 [US3] Ensure WYSIWYG PNG fidelity for mobile exports (respect preview dimensions, colors, error correction) and reuse filename in `src/hooks/useQRShare.ts` and `src/components/feature/qr/QRPreview.tsx`.
 
 **Checkpoint**: User Story 3 independently compatible on mobile targets.
