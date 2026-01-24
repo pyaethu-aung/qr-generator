@@ -13,6 +13,7 @@ type CanShareFilesFn = (files: File[]) => boolean
 type SupportsClipboardImageFn = () => boolean
 type CopyPayloadToClipboardFn = (payload: SharePayload) => Promise<void>
 type DownloadPayloadFn = (payload: SharePayload) => void
+type IsMobileDeviceFn = () => boolean
 
 vi.mock('../../../../utils/share', () => {
   const createSharePayload = vi.fn() as MockedFunction<CreateSharePayloadFn>
@@ -22,6 +23,7 @@ vi.mock('../../../../utils/share', () => {
   const supportsClipboardImage = vi.fn<SupportsClipboardImageFn>(() => false)
   const copyPayloadToClipboard = vi.fn<CopyPayloadToClipboardFn>(() => Promise.resolve())
   const downloadPayload = vi.fn<DownloadPayloadFn>(() => undefined)
+  const isMobileDevice = vi.fn<IsMobileDeviceFn>(() => true)
 
   return {
     createSharePayload,
@@ -31,6 +33,7 @@ vi.mock('../../../../utils/share', () => {
     supportsClipboardImage,
     copyPayloadToClipboard,
     downloadPayload,
+    isMobileDevice,
   }
 })
 
@@ -41,6 +44,7 @@ let canShareFilesMock: MockedFunction<CanShareFilesFn>
 let supportsClipboardImageMock: MockedFunction<SupportsClipboardImageFn>
 let copyPayloadToClipboardMock: MockedFunction<CopyPayloadToClipboardFn>
 let downloadPayloadMock: MockedFunction<DownloadPayloadFn>
+let isMobileDeviceMock: MockedFunction<IsMobileDeviceFn>
 
 vi.mock('qrcode.react', () => {
   interface QRCodeMockProps {
@@ -82,7 +86,9 @@ describe('QRShareMobile', () => {
   const mockFile = new File([mockBlob], mockFilename, {
     type: mockBlob.type,
   })
-  const shareMock = vi.fn(() => Promise.resolve())
+  type NativeShareArgs = { files: File[] }
+  type NativeShareFn = (args: NativeShareArgs) => Promise<void>
+  const shareMock = vi.fn<NativeShareFn>(() => Promise.resolve())
   const originalNavigatorShareDescriptor = Object.getOwnPropertyDescriptor(navigator, 'share')
 
   beforeEach(() =>
@@ -95,13 +101,15 @@ describe('QRShareMobile', () => {
       supportsClipboardImageMock = vi.mocked(resolvedModule.supportsClipboardImage)
       copyPayloadToClipboardMock = vi.mocked(resolvedModule.copyPayloadToClipboard)
       downloadPayloadMock = vi.mocked(resolvedModule.downloadPayload)
+      isMobileDeviceMock = vi.mocked(resolvedModule.isMobileDevice)
       createSharePayloadMock.mockResolvedValue(mockPayload)
       payloadToFileMock.mockReturnValue(mockFile)
       supportsNavigatorShareMock.mockReturnValue(true)
-      canShareFilesMock.mockReturnValue(true)
+      canShareFilesMock.mockReturnValue(false)
       supportsClipboardImageMock.mockReturnValue(false)
       copyPayloadToClipboardMock.mockResolvedValue(undefined)
       downloadPayloadMock.mockReturnValue(undefined)
+      isMobileDeviceMock.mockReturnValue(true)
       shareMock.mockResolvedValue(undefined)
       Object.defineProperty(navigator, 'share', {
         value: shareMock,
@@ -140,8 +148,13 @@ describe('QRShareMobile', () => {
     await waitFor(() => expect(shareMock).toHaveBeenCalledTimes(1))
 
     expect(canShareFilesMock).toHaveBeenCalledWith([mockFile])
+    expect(isMobileDeviceMock).toHaveBeenCalled()
     expect(copyPayloadToClipboardMock).not.toHaveBeenCalled()
     expect(downloadPayloadMock).not.toHaveBeenCalled()
+
+    const shareArgument = shareMock.mock.calls[0][0]
+    expect(shareArgument.files).toHaveLength(1)
+    expect(shareArgument.files[0]).toBe(mockFile)
 
     const canvasArg = createSharePayloadMock.mock.calls[0][0]
     expect(canvasArg).toBeInstanceOf(HTMLCanvasElement)
