@@ -43,7 +43,7 @@ The app supports multiple languages (English and Burmese) via custom locale conf
 ## Quality & Constitution Highlights
 
 - Every change must add/update relevant unit tests, maintain ≥85% coverage, and all tests must pass before merge.
-- Run `npm run test` and `npm run lint` after every change before opening a PR.
+- Run `npm run test`, `npm run lint`, and `npm run build` after every change before opening a PR.
 - Remove unused code/assets; keep files in the agreed structure above.
 - CI gates: lint, test, build must pass; PR review required.
 
