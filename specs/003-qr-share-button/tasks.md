@@ -57,12 +57,13 @@
 
 ### Tests for User Story 2
 
- - [x] T011 [P] [US2] Add tests for fallback selection (share unsupported → clipboard/download) in `src/components/feature/qr/__tests__/QRShareFallback.test.tsx`.
+- [x] T011 [P] [US2] Add tests for fallback selection (share unsupported → clipboard/download) in `src/components/feature/qr/__tests__/QRShareFallback.test.tsx`.
+
 ### Implementation for User Story 2
 
- - [x] T012 [P] [US2] Implement clipboard image fallback using `ClipboardItem` and `navigator.clipboard.write` in `src/hooks/useQRShare.ts`.
- - [x] T013 [P] [US2] Implement download fallback via object URL and `<a download>` in `src/utils/share.ts` and expose through `useQRShare`.
- - [x] T014 [P] [US2] Add user-facing messaging for cancel/error and fallback outcomes (non-blocking toast/message) in `src/hooks/useQRShare.ts` and `src/components/feature/qr/QRPreview.tsx`.
+- [x] T012 [P] [US2] Implement clipboard image fallback using `ClipboardItem` and `navigator.clipboard.write` in `src/hooks/useQRShare.ts`.
+- [x] T013 [P] [US2] Implement download fallback via object URL and `<a download>` in `src/utils/share.ts` and expose through `useQRShare`.
+- [x] T014 [P] [US2] Add user-facing messaging for cancel/error and fallback outcomes (non-blocking toast/message) in `src/hooks/useQRShare.ts` and `src/components/feature/qr/QRPreview.tsx`.
 
 **Checkpoint**: User Story 2 independently usable with fallbacks.
 
@@ -75,7 +76,7 @@
 
 ### Tests for User Story 3
 
-- [ ] T015 [P] [US3] Add mobile-focused tests simulating `canShare({ files })` support and verifying PNG fidelity (size/color) in `src/components/feature/qr/__tests__/QRShareMobile.test.tsx`.
+- [x] T015 [P] [US3] Add mobile-focused tests simulating `canShare({ files })` support and verifying PNG fidelity (size/color) in `src/components/feature/qr/__tests__/QRShareMobile.test.tsx`.
 
 ### Implementation for User Story 3
 
