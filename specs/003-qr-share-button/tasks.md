@@ -38,13 +38,13 @@
 ### Tests for User Story 1
 
 - [x] T006 [P] [US1] Add unit tests for share button render/disabled states in `src/components/feature/qr/__tests__/QRPreview.test.tsx`.
-- [ ] T007 [P] [US1] Add unit tests mocking `navigator.share` to verify PNG `File` payload (name `qr-code.png`, WYSIWYG size) in `src/components/feature/qr/__tests__/QRShareButton.test.tsx`.
+- [x] T007 [P] [US1] Add unit tests mocking `navigator.share` to verify PNG `File` payload (name `qr-code.png`, WYSIWYG size) in `src/components/feature/qr/__tests__/QRShareButton.test.tsx`.
 
 ### Implementation for User Story 1
 
-- [ ] T008 [US1] Add share button UI beneath QR preview with correct styling and disabled logic when no QR in `src/components/feature/qr/QRPreview.tsx`.
-- [ ] T009 [US1] Implement share handler using native share (`navigator.share` with `files`) consuming PNG generator/capability helpers in `src/hooks/useQRShare.ts` (new).
-- [ ] T010 [US1] Connect share handler to QR preview component and ensure latest rendered QR canvas is used (debounce rapid taps) in `src/components/feature/qr/QRPreview.tsx`.
+- [x] T008 [US1] Add share button UI beneath QR preview with correct styling and disabled logic when no QR in `src/components/feature/qr/QRPreview.tsx`.
+- [x] T009 [US1] Implement share handler using native share (`navigator.share` with `files`) consuming PNG generator/capability helpers in `src/hooks/useQRShare.ts` (new).
+- [x] T010 [US1] Connect share handler to QR preview component and ensure latest rendered QR canvas is used (debounce rapid taps) in `src/components/feature/qr/QRPreview.tsx`.
 
 **Checkpoint**: User Story 1 independently shareable via native share.
 
@@ -97,7 +97,7 @@
 
 ## Phase 7: Validation, Performance, and Supportability
 
-- [ ] T021 [P] Add UX action-count test to ensure share completes in ≤3 user actions (desktop/mobile) in `src/components/feature/qr/__tests__/QRShareUX.test.tsx` (covers SC-001).
+- [x] T021 [P] Add UX action-count test to ensure share completes in ≤3 user actions (desktop/mobile) in `src/components/feature/qr/__tests__/QRShareUX.test.tsx` (covers SC-001).
 - [ ] T022 [P] Add performance budget test to assert share/fallback completes within 3s using mocked timers and real canvas rendering in `src/components/feature/qr/__tests__/QRSharePerf.test.tsx` (covers SC-004).
 - [ ] T023 [P] Add capability-matrix test for native share, clipboard, and download fallbacks to guarantee 100% availability in unsupported environments in `src/components/feature/qr/__tests__/QRShareFallback.test.tsx` (covers SC-003).
 - [ ] T024 [P] Add reliability test simulating multiple share attempts with mixed capabilities to assert ≥95% success when APIs are available in `src/components/feature/qr/__tests__/QRShareReliability.test.tsx` (covers SC-002).
