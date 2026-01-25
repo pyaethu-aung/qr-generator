@@ -61,6 +61,8 @@ describe('QRPreview', () => {
 
     const shareButton = screen.getByRole('button', { name: 'Share QR code' })
     expect(shareButton).toBeDisabled()
+    expect(shareButton).toHaveAttribute('aria-disabled', 'true')
+    expect(shareButton).not.toHaveAttribute('aria-describedby')
   })
 
   it('renders QR code canvas when value is provided', () => {
@@ -79,6 +81,8 @@ describe('QRPreview', () => {
 
     const shareButton = screen.getByRole('button', { name: 'Share QR code' })
     expect(shareButton).toBeEnabled()
+    expect(shareButton).toHaveAttribute('aria-disabled', 'false')
+    expect(shareButton).not.toHaveAttribute('aria-describedby')
   })
 
   it('applies foreground and background colors correctly', () => {
