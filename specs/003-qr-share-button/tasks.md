@@ -89,7 +89,7 @@
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
-- [ ] T018 [P] Add accessibility affordances (aria-label, focus/keyboard) for share button in `src/components/feature/qr/QRPreview.tsx`.
+- [x] T018 [P] Add accessibility affordances (aria-label, focus/keyboard) for share button in `src/components/feature/qr/QRPreview.tsx`.
 - [ ] T019 [P] Update docs with share usage/fallback notes in `specs/003-qr-share-button/quickstart.md` and `README.md`.
 - [ ] T020 Run full validation: `npm run lint`, `npm run test`, `npm run build` from repo root to confirm release readiness. [package.json]
 
