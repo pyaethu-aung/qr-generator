@@ -18,6 +18,8 @@
 - Fallback B: provide a download link (`<a download>` with object URL) as the universal path.
 - Debounce rapid taps; show non-blocking message on cancel/error.
 
+The share handler lives inside `src/hooks/useQRShare.ts`, so that every tap goes through the same capability detection chain: it prefers the native share sheet, falls back to clipboard copy, and finally triggers a download. On mobile devices we still attempt `navigator.share` even when `navigator.canShare({ files })` is absent, keeping the PNG payload WYSIWYG and named `qr-code.png`. The component surfaces a live status message below the button so users know when sharing is pending, shared, or failed.
+
 5) Testing
 - Unit/component tests for share button render states and disabled state when no QR.
 - Mock `navigator.share`, `navigator.clipboard.write`, and ensure fallbacks trigger in unsupported cases.
