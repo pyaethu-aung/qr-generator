@@ -1,5 +1,5 @@
 import { QRCodeCanvas } from 'qrcode.react'
-import { forwardRef, useCallback, useRef } from 'react'
+import { forwardRef, useCallback, useId, useRef } from 'react'
 import { useQRShare } from '../../../hooks/useQRShare'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import type { QRConfig } from '../../../types/qr'
@@ -42,6 +42,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
       })
 
     const isShareDisabled = !value || isSharing
+    const shareStatusId = useId()
     const shareStatusMessage = (() => {
       if (!shareRequest) {
         return undefined
@@ -76,6 +77,8 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
         disabled={isShareDisabled}
         aria-label={shareButtonLabel}
         aria-busy={isSharing}
+        aria-disabled={isShareDisabled}
+        aria-describedby={shareStatusMessage ? shareStatusId : undefined}
         onClick={handleShareClick}
         className={`w-full rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
           value
@@ -94,6 +97,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
         data-testid="share-status"
         role="status"
         aria-live="polite"
+        id={shareStatusId}
         className="text-sm text-slate-500"
       >
         {shareStatusMessage}
