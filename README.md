@@ -47,6 +47,13 @@ The app supports multiple languages (English and Burmese) via custom locale conf
 - Remove unused code/assets; keep files in the agreed structure above.
 - CI gates: lint, test, build must pass; PR review required.
 
+## Share experience
+
+- The QR share button under the preview consumes `useQRShare`, so every tap goes through one handler that captures the canvas, conversts it to a PNG `SharePayload`, and shares using native APIs when possible.
+- Capability detection prioritizes `navigator.share` with `files`, then clipboard image write via `ClipboardItem`, and finally a download link that names the file `qr-code.png`. The hook surfaces a polite status message (pending/shared/failed) that `aria-describedby` is wired to the button.
+- On mobile devices we still attempt `navigator.share` even when `navigator.canShare({ files })` is absent, ensuring the share sheet receives the WYSIWYG PNG at the preview dimensions and colors.
+- Validate share/fallback behavior with Vitest mocks, including the mobile path, clipboard path, and download fallback so every environment succeeds.
+
 ## Tailwind v4 Notes
 
 - Entry point: `src/index.css` imports `tailwindcss` and defines base/component layers.
