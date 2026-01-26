@@ -83,4 +83,26 @@ describe('QRControls configuration updates', () => {
 
     expect(screen.getByText('Input too long')).toBeInTheDocument()
   })
+
+  it('triggers onGenerate when Enter key is pressed in the content input', () => {
+    const { onGenerate } = setup({ canGenerate: true, isGenerating: false })
+
+    fireEvent.keyDown(screen.getByLabelText(/content/i), {
+      key: 'Enter',
+      code: 'Enter',
+      charCode: 13,
+    })
+
+    expect(onGenerate).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not trigger onGenerate when Enter is pressed but generation is disabled', () => {
+    const { onGenerate } = setup({ canGenerate: false })
+
+    fireEvent.keyDown(screen.getByLabelText(/content/i), {
+      key: 'Enter',
+    })
+
+    expect(onGenerate).not.toHaveBeenCalled()
+  })
 })
