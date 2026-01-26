@@ -13,6 +13,7 @@ type CanShareFilesFn = (files: File[]) => boolean
 type SupportsClipboardImageFn = () => boolean
 type CopyPayloadToClipboardFn = (payload: SharePayload) => Promise<void>
 type DownloadPayloadFn = (payload: SharePayload) => void
+type IsMobileDeviceFn = () => boolean
 
 vi.mock('../../../../utils/share', () => {
   const createSharePayload = vi.fn() as MockedFunction<CreateSharePayloadFn>
@@ -22,6 +23,7 @@ vi.mock('../../../../utils/share', () => {
   const supportsClipboardImage = vi.fn<SupportsClipboardImageFn>(() => false)
   const copyPayloadToClipboard = vi.fn<CopyPayloadToClipboardFn>(() => Promise.resolve())
   const downloadPayload = vi.fn<DownloadPayloadFn>(() => undefined)
+  const isMobileDevice = vi.fn<IsMobileDeviceFn>(() => false)
 
   return {
     createSharePayload,
@@ -31,6 +33,7 @@ vi.mock('../../../../utils/share', () => {
     supportsClipboardImage,
     copyPayloadToClipboard,
     downloadPayload,
+    isMobileDevice,
   }
 })
 
@@ -70,6 +73,7 @@ let canShareFilesMock: MockedFunction<CanShareFilesFn>
 let supportsClipboardImageMock: MockedFunction<SupportsClipboardImageFn>
 let copyPayloadToClipboardMock: MockedFunction<CopyPayloadToClipboardFn>
 let downloadPayloadMock: MockedFunction<DownloadPayloadFn>
+let isMobileDeviceMock: MockedFunction<IsMobileDeviceFn>
 
 describe('QRShareFallback', () => {
   const mockBlob = new Blob(['PNG'], { type: 'image/png' })
@@ -91,11 +95,13 @@ describe('QRShareFallback', () => {
       supportsClipboardImageMock = vi.mocked(resolvedModule.supportsClipboardImage)
       copyPayloadToClipboardMock = vi.mocked(resolvedModule.copyPayloadToClipboard)
       downloadPayloadMock = vi.mocked(resolvedModule.downloadPayload)
+      isMobileDeviceMock = vi.mocked(resolvedModule.isMobileDevice)
       createSharePayloadMock.mockResolvedValue(mockPayload)
       payloadToFileMock.mockReturnValue(mockFile)
       supportsNavigatorShareMock.mockReturnValue(false)
       canShareFilesMock.mockReturnValue(false)
       supportsClipboardImageMock.mockReturnValue(false)
+      isMobileDeviceMock.mockReturnValue(false)
       copyPayloadToClipboardMock.mockResolvedValue(undefined)
       downloadPayloadMock.mockReturnValue(undefined)
     }),
@@ -147,5 +153,70 @@ describe('QRShareFallback', () => {
 
     await waitFor(() => expect(downloadPayloadMock).toHaveBeenCalledWith(mockPayload))
     expect(copyPayloadToClipboardMock).not.toHaveBeenCalled()
+  })
+
+  const capabilityMatrix = [
+    {
+      title: 'falls back to clipboard when native share is unavailable',
+      supportsNavigatorShare: false,
+      canShareFiles: false,
+      clipboardAvailable: true,
+      expectClipboard: true,
+    },
+    {
+      title: 'falls back to download when native share is unavailable and clipboard unsupported',
+      supportsNavigatorShare: false,
+      canShareFiles: false,
+      clipboardAvailable: false,
+      expectClipboard: false,
+    },
+    {
+      title: 'falls back to clipboard when native share cannot share files',
+      supportsNavigatorShare: true,
+      canShareFiles: false,
+      clipboardAvailable: true,
+      expectClipboard: true,
+    },
+    {
+      title: 'falls back to download when native share cannot share files and clipboard unsupported',
+      supportsNavigatorShare: true,
+      canShareFiles: false,
+      clipboardAvailable: false,
+      expectClipboard: false,
+    },
+  ] as const
+
+  describe('capability matrix for fallbacks', () => {
+    capabilityMatrix.forEach((scenario) => {
+      it(scenario.title, async () => {
+        supportsNavigatorShareMock.mockReturnValue(scenario.supportsNavigatorShare)
+        canShareFilesMock.mockReturnValue(scenario.canShareFiles)
+        supportsClipboardImageMock.mockReturnValue(scenario.clipboardAvailable)
+        isMobileDeviceMock.mockReturnValue(false)
+
+        render(
+          <LocaleProvider>
+            <QRPreview
+              value="https://example.com"
+              ecLevel="M"
+              fgColor="#000000"
+              bgColor="#ffffff"
+              size={200}
+            />
+          </LocaleProvider>,
+        )
+
+        const shareButton = screen.getByRole('button', { name: 'Share QR code' })
+        await userEvent.click(shareButton)
+
+        if (scenario.expectClipboard) {
+          await waitFor(() => expect(copyPayloadToClipboardMock).toHaveBeenCalledWith(mockPayload))
+          expect(downloadPayloadMock).not.toHaveBeenCalled()
+        } else {
+          await waitFor(() => expect(downloadPayloadMock).toHaveBeenCalledWith(mockPayload))
+          expect(copyPayloadToClipboardMock).not.toHaveBeenCalled()
+        }
+      })
+    })
   })
 })
