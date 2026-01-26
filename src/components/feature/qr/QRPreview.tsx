@@ -111,9 +111,11 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
       </div>
     )
 
-    if (!value) {
-      return (
-        <div className={`flex flex-col items-center ${className ?? ''}`} style={{ width: size }}>
+    return (
+      <div
+        className={`inline-flex flex-col items-center p-4 bg-white rounded-lg shadow-sm border border-gray-200 ${className ?? ''}`}
+      >
+        {!value ? (
           <div
             className="flex items-center justify-center bg-gray-100 text-gray-400 rounded-lg border-2 border-dashed border-gray-300"
             style={{ width: size, height: size }}
@@ -122,29 +124,22 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
           >
             <span className="text-sm">{placeholderCopy}</span>
           </div>
-          {shareControls}
-        </div>
-      )
-    }
-
-    return (
-      <div
-        className={`inline-block p-4 bg-white rounded-lg shadow-sm border border-gray-200 ${className ?? ''}`}
-      >
-        <QRCodeCanvas
-          ref={(node) => {
-            canvasRef.current = node
-            assignForwardedRef(node)
-          }}
-          value={value}
-          size={size}
-          level={ecLevel}
-          fgColor={fgColor}
-          bgColor={bgColor}
-          marginSize={0}
-          role="img"
-          aria-label={formatValueLabel(ariaValueTemplate, { value })}
-        />
+        ) : (
+          <QRCodeCanvas
+            ref={(node) => {
+              canvasRef.current = node
+              assignForwardedRef(node)
+            }}
+            value={value}
+            size={size}
+            level={ecLevel}
+            fgColor={fgColor}
+            bgColor={bgColor}
+            marginSize={0}
+            role="img"
+            aria-label={formatValueLabel(ariaValueTemplate, { value })}
+          />
+        )}
         {shareControls}
       </div>
     )
