@@ -178,7 +178,8 @@ describe('QRShareFallback', () => {
       expectClipboard: true,
     },
     {
-      title: 'falls back to download when native share cannot share files and clipboard unsupported',
+      title:
+        'falls back to download when native share cannot share files and clipboard unsupported',
       supportsNavigatorShare: true,
       canShareFiles: false,
       clipboardAvailable: false,
