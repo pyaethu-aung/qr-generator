@@ -37,3 +37,9 @@ The share handler lives inside `src/hooks/useQRShare.ts`, so that every tap goes
   - Technical failures (browser API rejection, payload generation errors) should be aggregated to monitor the 1% threshold.
   - User cancellations (`AbortError`) should be excluded from the technical failure rate but monitored for UX friction.
   - Log the `method` (navigator-share, clipboard, download) alongside failures to identify environment-specific issues.
+
+8) Permission UX & Error Handling (T026)
+- **Automatic Fallback**: If `navigator.share` or clipboard access is denied (`NotAllowedError`), the system automatically triggers the next fallback (usually download).
+- **Explicit Messaging**: Users receive a brief "Permission denied" message before the fallback completes, informing them why the behavior changed.
+- **Persistence**: Once a permission is denied in the current session, the hook remembers this and skips the failing method in subsequent attempts to avoid repeated, intrusive prompts.
+- **Non-blocking Flow**: All share interactions use non-blocking status messages below the button rather than obstructive modal dialogs, maintaining a smooth generation-to-export flow.
