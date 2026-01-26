@@ -28,3 +28,12 @@ The share handler lives inside `src/hooks/useQRShare.ts`, so that every tap goes
 
 6) Build verification
 - `npm run build` to ensure Vite build succeeds after changes.
+
+7) Observability & Supportability (SC-005)
+- **Target**: Maintain a “cannot share QR” rate of ≤1% for technical failures.
+- **Monitoring Approach**:
+  - Instrument the `useQRShare` hook to log `shareRequest` outcomes.
+  - Specifically track `status === 'failed'` vs `status === 'canceled'`. 
+  - Technical failures (browser API rejection, payload generation errors) should be aggregated to monitor the 1% threshold.
+  - User cancellations (`AbortError`) should be excluded from the technical failure rate but monitored for UX friction.
+  - Log the `method` (navigator-share, clipboard, download) alongside failures to identify environment-specific issues.

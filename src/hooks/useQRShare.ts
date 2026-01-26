@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ShareMethod, SharePayload, ShareRequest } from '../types/qr'
 import {
   canShareFiles,
@@ -42,6 +42,24 @@ const buildRequest = (
 export const useQRShare = () => {
   const [shareRequest, setShareRequest] = useState<ShareRequest | null>(null)
   const shareInFlight = useRef(false)
+
+  // Instrumentation for SC-005: Monitor "cannot share QR" rate
+  // In a real app, this would send data to an analytics/logging service (e.g. Sentry, Datadog)
+  useEffect(() => {
+    if (
+      shareRequest?.status === 'shared' ||
+      shareRequest?.status === 'failed' ||
+      shareRequest?.status === 'canceled'
+    ) {
+      // Placeholder for actual observability service call
+      console.log('[Observation] Share outcome:', {
+        method: shareRequest.method,
+        status: shareRequest.status,
+        error: shareRequest.errorMessage,
+        isTechnicalFailure: shareRequest.status === 'failed',
+      })
+    }
+  }, [shareRequest])
 
   const isSharing = shareRequest?.status === 'pending'
 
