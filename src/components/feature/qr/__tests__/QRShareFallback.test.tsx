@@ -220,4 +220,93 @@ describe('QRShareFallback', () => {
       })
     })
   })
+
+  describe('Permission denied handling', () => {
+    afterEach(() => {
+      vi.unstubAllGlobals()
+    })
+
+    it('automatically triggers download fallback when navigator.share permission is denied', async () => {
+      supportsNavigatorShareMock.mockReturnValue(true)
+      canShareFilesMock.mockReturnValue(true)
+      supportsClipboardImageMock.mockReturnValue(false) // Force download fallback
+
+      const notAllowedError = new Error('Permission denied')
+      notAllowedError.name = 'NotAllowedError'
+      const shareSpy = vi.fn().mockRejectedValue(notAllowedError)
+      vi.stubGlobal('navigator', {
+        ...global.navigator,
+        share: shareSpy,
+      })
+
+      render(
+        <LocaleProvider>
+          <QRPreview
+            value="https://example.com"
+            ecLevel="M"
+            fgColor="#000000"
+            bgColor="#ffffff"
+            size={200}
+          />
+        </LocaleProvider>,
+      )
+
+      const shareButton = screen.getByRole('button', { name: 'Share QR code' })
+      await userEvent.click(shareButton)
+
+      // Verify that it eventually reaches the 'shared' state via fallback
+      await waitFor(() => {
+        expect(screen.getByTestId('share-status')).toHaveTextContent(/QR code downloaded/i)
+      })
+
+      expect(downloadPayloadMock).toHaveBeenCalledWith(mockPayload)
+
+      // Persistence check: Subsequent attempts should skip navigator.share
+      shareSpy.mockClear()
+      downloadPayloadMock.mockClear()
+
+      await userEvent.click(shareButton)
+
+      await waitFor(() => {
+        expect(downloadPayloadMock).toHaveBeenCalledWith(mockPayload)
+      })
+      expect(shareSpy).not.toHaveBeenCalled()
+    })
+
+    it('remembers blocked permission state and uses fallback immediately', async () => {
+      supportsNavigatorShareMock.mockReturnValue(true)
+      canShareFilesMock.mockReturnValue(true)
+      supportsClipboardImageMock.mockReturnValue(true)
+
+      const notAllowedError = new Error('Permission denied')
+      notAllowedError.name = 'NotAllowedError'
+      const shareSpy = vi.fn().mockRejectedValue(notAllowedError)
+      vi.stubGlobal('navigator', {
+        ...global.navigator,
+        share: shareSpy,
+      })
+
+      render(
+        <LocaleProvider>
+          <QRPreview value="test" ecLevel="M" fgColor="#000" bgColor="#fff" />
+        </LocaleProvider>,
+      )
+
+      const shareButton = screen.getByRole('button', { name: 'Share QR code' })
+
+      // First attempt: Navigator share is called, fails with NotAllowedError, triggers clipboard fallback
+      await userEvent.click(shareButton)
+      await waitFor(() => expect(shareSpy).toHaveBeenCalled())
+      await waitFor(() => expect(copyPayloadToClipboardMock).toHaveBeenCalled())
+
+      // Reset mocks for second attempt
+      shareSpy.mockClear()
+      copyPayloadToClipboardMock.mockClear()
+
+      // Second attempt: Navigator share should be skipped (persistent block)
+      await userEvent.click(shareButton)
+      await waitFor(() => expect(copyPayloadToClipboardMock).toHaveBeenCalled())
+      expect(shareSpy).not.toHaveBeenCalled()
+    })
+  })
 })
