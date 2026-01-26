@@ -97,7 +97,9 @@ describe('QRSharePerf', () => {
     const shareButton = screen.getByRole('button', { name: 'Share QR code' })
     fireEvent.click(shareButton)
 
-    const hookInstance = vi.mocked(useQRShare).mock.results[0].value as ReturnType<typeof useQRShare>
+    const hookInstance = vi.mocked(useQRShare).mock.results[0].value as ReturnType<
+      typeof useQRShare
+    >
     expect(hookInstance.share).toHaveBeenCalledWith(expect.any(HTMLCanvasElement))
 
     expect(hookInstance.isSharing).toBe(true)
@@ -127,9 +129,11 @@ describe('QRSharePerf', () => {
     const shareButton = screen.getByRole('button', { name: 'Share QR code' })
     fireEvent.click(shareButton)
 
-        const hookInstance = vi.mocked(useQRShare).mock.results[0].value as ReturnType<typeof useQRShare>
+    const hookInstance = vi.mocked(useQRShare).mock.results[0].value as ReturnType<
+      typeof useQRShare
+    >
 
-        expect(hookInstance.isSharing).toBe(true)
+    expect(hookInstance.isSharing).toBe(true)
     expect(hookInstance.shareRequest?.status).toBe('pending')
 
     const errorMessage = 'Share operation failed!'
