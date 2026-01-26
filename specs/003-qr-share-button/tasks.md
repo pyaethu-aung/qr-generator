@@ -103,7 +103,7 @@
 - [x] T024 [P] Add reliability test simulating multiple share attempts with mixed capabilities to assert ≥95% success when APIs are available in `src/components/feature/qr/__tests__/QRShareReliability.test.tsx` (covers SC-002).
 - [x] T025 Define supportability/observability plan for “cannot share QR” rate (≤1%): document monitoring approach in `specs/003-qr-share-button/quickstart.md` and add an instrumentation hook stub or comments in `src/hooks/useQRShare.ts` (covers SC-005).
 - [x] T026 Define and implement explicit UX for permission-denied/blocked share or clipboard: non-blocking toast copy, auto-offer download fallback, no repeated prompts; document in `specs/003-qr-share-button/quickstart.md`.
-- [ ] T027 [P] Add tests for permission-denied/blocked paths ensuring fallback selection and messaging consistency in `src/components/feature/qr/__tests__/QRShareFallback.test.tsx`.
+- [x] T027 [P] Add tests for permission-denied/blocked paths ensuring fallback selection and messaging consistency in `src/components/feature/qr/__tests__/QRShareFallback.test.tsx`.
 
 ---
 
