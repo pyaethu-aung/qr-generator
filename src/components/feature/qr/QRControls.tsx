@@ -66,6 +66,11 @@ export const QRControls = ({
             placeholder={contentPlaceholder}
             value={value}
             onChange={(e) => onValueChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && canGenerate && !isGenerating) {
+                onGenerate()
+              }
+            }}
             disabled={isGenerating}
             fullWidth
             error={inputError}
