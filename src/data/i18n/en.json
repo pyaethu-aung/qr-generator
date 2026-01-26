@@ -61,6 +61,7 @@
     "shareStatusClipboard": "QR code copied to clipboard",
     "shareStatusDownloaded": "QR code downloaded",
     "shareStatusFailed": "Unable to share QR code",
-    "shareStatusCanceled": "Share canceled"
+    "shareStatusCanceled": "Share canceled",
+    "shareStatusPermissionDenied": "Permission denied. Downloading instead..."
   }
 }

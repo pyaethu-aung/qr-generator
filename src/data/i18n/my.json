@@ -61,6 +61,7 @@
     "shareStatusClipboard": "QR ကို clipboard သို့ မိတ္တူယူပြီးပြီ",
     "shareStatusDownloaded": "QR ကို ဒေါင်းလုဒ် ပြုလုပ်ပြီးပြီ",
     "shareStatusFailed": "QR ကို မျှဝေပေးလို့ မရနိုင်ပါ",
-    "shareStatusCanceled": "မျှဝေပေးခြင်း ပယ်ဖျက်လိုက်သည်"
+    "shareStatusCanceled": "မျှဝေပေးခြင်း ပယ်ဖျက်လိုက်သည်",
+    "shareStatusPermissionDenied": "ခွင့်ပြုချက်မရှိပါ။ ဒေါင်းလုဒ်လုပ်နေပါသည်..."
   }
 }

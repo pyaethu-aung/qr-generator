@@ -68,6 +68,7 @@ export interface PreviewStrings {
   shareStatusDownloaded: string
   shareStatusFailed: string
   shareStatusCanceled: string
+  shareStatusPermissionDenied: string
 }
 
 export interface LocaleConfig {
@@ -121,6 +122,7 @@ export type TranslationKey =
   | 'preview.shareStatusDownloaded'
   | 'preview.shareStatusFailed'
   | 'preview.shareStatusCanceled'
+  | 'preview.shareStatusPermissionDenied'
   | 'preview.sectionTitle'
   | 'preview.placeholder'
   | 'preview.ariaValue'
