@@ -105,6 +105,7 @@
 - [x] T021 [P] Ensure all workflows use consistent Node.js version management via `.nvmrc` or setup-node
 - [ ] T022 Final validation of all workflows in the GitHub Actions dashboard
 - [x] T023 Fix asset path 404 issue by setting `base: './'` in `vite.config.ts` and adding `.nojekyll`
+- [x] T024 Generate and integrate premium website logo as favicon and OG image
 
 ---
 
