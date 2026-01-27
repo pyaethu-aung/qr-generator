@@ -5,6 +5,13 @@
 **Status**: Draft  
 **Input**: User description: "I want to implement GitHub workflows to deploy the website to GitHub Pages, check the lint and check the security."
 
+## Clarifications
+
+### Session 2026-01-27
+- Q: Which tool should be used for security scanning? → A: Use a combination of npm audit, GitHub CodeQL, and Snyk.
+- Q: When should the automated deployment to GitHub Pages occur? → A: Only on push to main branch.
+- Q: How strict should the automated linting checks be for Pull Requests? → A: Fail build on any error (block merging).
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Automated Deployment to GitHub Pages (Priority: P1)
@@ -60,11 +67,11 @@ As a project owner, I want the project's dependencies to be scanned for known se
 
 ### Functional Requirements
 
-- **FR-001**: System MUST trigger a deployment process on every push to the project's primary production branch.
+- **FR-001**: System MUST trigger an automated deployment process exclusively on every push or merge to the `main` branch.
 - **FR-002**: System MUST trigger code quality and security checks on every pull request targeting the primary production branch.
 - **FR-003**: The deployment process MUST include building the production-ready assets of the application.
-- **FR-004**: The code quality check MUST verify adherence to the project's established styling and coding guidelines.
-- **FR-005**: Security checks MUST identify known vulnerabilities in the project's external dependencies.
+- **FR-004**: The code quality check MUST verify adherence to the project's established styling and coding guidelines, and any detected errors MUST fail the build and block merging.
+- **FR-005**: Security checks MUST include comprehensive scanning using `npm audit`, GitHub CodeQL (static analysis), and Snyk (dependency management).
 - **FR-006**: Automated check results MUST be visible within the code hosting platform for visibility to developers and maintainers.
 
 ## Success Criteria *(mandatory)*
