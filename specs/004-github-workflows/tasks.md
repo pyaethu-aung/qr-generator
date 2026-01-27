@@ -104,7 +104,7 @@
 - [x] T020 [P] Update `README.md` with status badges for build, lint, and security
 - [x] T021 [P] Ensure all workflows use consistent Node.js version management via `.nvmrc` or setup-node
 - [ ] T022 Final validation of all workflows in the GitHub Actions dashboard
-- [x] T023 Fix asset path 404 issue by setting `base: '/qr-generator/'` in `vite.config.ts`
+- [x] T023 Fix asset path 404 issue by setting `base: './'` in `vite.config.ts` and adding `.nojekyll`
 
 ---
 
