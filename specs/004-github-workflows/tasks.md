@@ -26,7 +26,7 @@
 **Purpose**: Project initialization and basic structure
 
 - [x] T001 Create GitHub Actions workflow directory in `.github/workflows/`
-- [ ] T002 Configure GitHub Pages settings in repository (manual instruction in README/Spec)
+- [x] T002 Configure GitHub Pages settings in repository (manual instruction in README/Spec)
 
 ---
 
@@ -103,7 +103,7 @@
 
 - [x] T020 [P] Update `README.md` with status badges for build, lint, and security
 - [x] T021 [P] Ensure all workflows use consistent Node.js version management via `.nvmrc` or setup-node
-- [ ] T022 Final validation of all workflows in the GitHub Actions dashboard
+- [x] T022 Final validation of all workflows in the GitHub Actions dashboard
 - [x] T023 Fix asset path 404 issue by setting `base: './'` in `vite.config.ts` and adding `.nojekyll`
 - [x] T024 Generate and integrate premium website logo as favicon and OG image
 
