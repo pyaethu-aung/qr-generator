@@ -1,5 +1,9 @@
 # QR Generator
 
+[![Deploy to GitHub Pages](https://github.com/pyaethu-aung/qr-generator/actions/workflows/deploy.yml/badge.badge.svg)](https://github.com/pyaethu-aung/qr-generator/actions/workflows/deploy.yml)
+[![Lint and Type Check](https://github.com/pyaethu-aung/qr-generator/actions/workflows/lint.yml/badge.svg)](https://github.com/pyaethu-aung/qr-generator/actions/workflows/lint.yml)
+[![Security Scan](https://github.com/pyaethu-aung/qr-generator/actions/workflows/security.yml/badge.svg)](https://github.com/pyaethu-aung/qr-generator/actions/workflows/security.yml)
+
 Single-page app for generating QR codes with real-time preview and download.
 
 ## Stack

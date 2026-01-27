@@ -25,7 +25,7 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create GitHub Actions workflow directory in `.github/workflows/`
+- [x] T001 Create GitHub Actions workflow directory in `.github/workflows/`
 - [ ] T002 Configure GitHub Pages settings in repository (manual instruction in README/Spec)
 
 ---
@@ -36,8 +36,8 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 [P] Create base workflow template with Node.js 20 environment in `.github/workflows/base-node.yml.example`
-- [ ] T004 Define environment secrets schema for `SNYK_TOKEN` in `specs/004-github-workflows/quickstart.md`
+- [x] T003 [P] Create base workflow template with Node.js 20 environment in `.github/workflows/base-node.yml.example`
+- [x] T004 Define environment secrets schema for `SNYK_TOKEN` in `specs/004-github-workflows/quickstart.md`
 
 **Checkpoint**: Foundation ready - workflow implementation can now begin
 
@@ -51,11 +51,11 @@
 
 ### Implementation for User Story 1
 
-- [ ] T005 [US1] Create deployment workflow file in `.github/workflows/deploy.yml`
-- [ ] T006 [US1] Define build job in `.github/workflows/deploy.yml` using `npm run build`
-- [ ] T007 [US1] Configure artifact upload for `dist/` directory in `.github/workflows/deploy.yml`
-- [ ] T008 [US1] Configure deployment job using `actions/deploy-pages` in `.github/workflows/deploy.yml`
-- [ ] T009 [US1] Add permissions for `id-token` and `pages` in `.github/workflows/deploy.yml`
+- [x] T005 [US1] Create deployment workflow file in `.github/workflows/deploy.yml`
+- [x] T006 [US1] Define build job in `.github/workflows/deploy.yml` using `npm run build`
+- [x] T007 [US1] Configure artifact upload for `dist/` directory in `.github/workflows/deploy.yml`
+- [x] T008 [US1] Configure deployment job using `actions/deploy-pages` in `.github/workflows/deploy.yml`
+- [x] T009 [US1] Add permissions for `id-token` and `pages` in `.github/workflows/deploy.yml`
 
 **Checkpoint**: User Story 1 is fully functional.
 
@@ -69,11 +69,11 @@
 
 ### Implementation for User Story 2
 
-- [ ] T010 [US2] Create linting workflow file in `.github/workflows/lint.yml`
-- [ ] T011 [US2] Configure PR trigger for `main` branch in `.github/workflows/lint.yml`
-- [ ] T012 [US2] Implement `npm run lint` step in `.github/workflows/lint.yml`
-- [ ] T013 [US2] Implement `tsc --noEmit` type-check step in `.github/workflows/lint.yml`
-- [ ] T014 [US2] Implement `npm run build` verification step in `.github/workflows/lint.yml`
+- [x] T010 [US2] Create linting workflow file in `.github/workflows/lint.yml`
+- [x] T011 [US2] Configure PR trigger for `main` branch in `.github/workflows/lint.yml`
+- [x] T012 [US2] Implement `npm run lint` step in `.github/workflows/lint.yml`
+- [x] T013 [US2] Implement `tsc --noEmit` type-check step in `.github/workflows/lint.yml`
+- [x] T014 [US2] Implement `npm run build` verification step in `.github/workflows/lint.yml`
 
 **Checkpoint**: User Story 2 is fully functional.
 
@@ -87,11 +87,11 @@
 
 ### Implementation for User Story 3
 
-- [ ] T015 [US3] Create security workflow file in `.github/workflows/security.yml`
-- [ ] T016 [P] [US3] Implement `npm audit` step in `.github/workflows/security.yml`
-- [ ] T017 [P] [US3] Integrate GitHub CodeQL analysis in `.github/workflows/security.yml`
-- [ ] T018 [P] [US3] Integrate Snyk scanning using `SNYK_TOKEN` in `.github/workflows/security.yml`
-- [ ] T019 [US3] Configure failure conditions to alert on high-severity vulnerabilities in `.github/workflows/security.yml`
+- [x] T015 [US3] Create security workflow file in `.github/workflows/security.yml`
+- [x] T016 [P] [US3] Implement `npm audit` step in `.github/workflows/security.yml`
+- [x] T017 [P] [US3] Integrate GitHub CodeQL analysis in `.github/workflows/security.yml`
+- [x] T018 [P] [US3] Integrate Snyk scanning using `SNYK_TOKEN` in `.github/workflows/security.yml`
+- [x] T019 [US3] Configure failure conditions to alert on high-severity vulnerabilities in `.github/workflows/security.yml`
 
 **Checkpoint**: User Story 3 is fully functional.
 
@@ -101,8 +101,8 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T020 [P] Update `README.md` with status badges for build, lint, and security
-- [ ] T021 [P] Ensure all workflows use consistent Node.js version management via `.nvmrc` or setup-node
+- [x] T020 [P] Update `README.md` with status badges for build, lint, and security
+- [x] T021 [P] Ensure all workflows use consistent Node.js version management via `.nvmrc` or setup-node
 - [ ] T022 Final validation of all workflows in the GitHub Actions dashboard
 
 ---
