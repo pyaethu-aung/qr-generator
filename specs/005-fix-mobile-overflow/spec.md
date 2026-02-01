@@ -40,10 +40,17 @@ As a mobile user, I want all buttons and inputs to be visible and accessible wit
 
 ---
 
+### Clarifications
+
+### Session 2026-02-01
+- Q: How does system handle extremely long words or URLs that don't break naturally? → A: Force break (break-all) to ensure content fits.
+- Q: How should form labels and inputs be arranged on mobile? → A: Stacked layout (labels above inputs).
+- Q: How should navigation menu be handled on mobile? → A: Hamburger Menu (collapse items behind icon).
+
 ### Edge Cases
 
 - What happens when a user rotates the device (landscape mode)?
-- How does system handle extremely long words or URLs that don't break naturally?
+- Handling of extremely long strings: ADDRESSED (See FR-003: force break strategy).
 - What happens on very small screens (e.g., 320px width vs 375px)?
 
 ## Requirements *(mandatory)*
@@ -52,8 +59,10 @@ As a mobile user, I want all buttons and inputs to be visible and accessible wit
 
 - **FR-001**: The application layout MUST be responsive and adapt to viewport widths from 320px to 768px without triggering a page-level horizontal scrollbar.
 - **FR-002**: All container elements MUST be contained within the viewport width or allow for internal scrolling if content is inherently wider (e.g., data tables) without breaking the page layout.
-- **FR-003**: Text content MUST wrap correctly to fit within the mobile viewport.
+- **FR-003**: Text content MUST wrap correctly to fit within the mobile viewport; extremely long words or URLs MUST be forced to break (e.g., `word-break: break-all` behavior) to prevent overflow.
 - **FR-004**: Images and media MUST scale down to fit within the viewport width.
+- **FR-005**: Form layouts MUST switch to a vertical stacked orientation (label above input) on mobile viewports to maximize input width.
+- **FR-006**: Navigation links MUST collapse into a hamburger menu (or equivalent disclosure pattern) on mobile viewports to prevent header overflow.
 
 ### Non-Functional Requirements
 
