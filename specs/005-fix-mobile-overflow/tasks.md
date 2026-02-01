@@ -22,8 +22,8 @@ description: "Task list template for feature implementation"
 
 **Purpose**: Project initialization and basic structure updates for mobile responsiveness
 
-- [ ] T001 Verify project running and tests passing locally in `npm run test`
-- [ ] T002 Update `tailwind.config.js` or `index.css` to ensure standard breakpoints (sm: 640px, md: 768px) and utilities (break-all, break-words) are available
+- [X] T001 Verify project running and tests passing locally in `npm run test`
+- [X] T002 Update `tailwind.config.js` or `index.css` to ensure standard breakpoints (sm: 640px, md: 768px) and utilities (break-all, break-words) are available
 
 ---
 
