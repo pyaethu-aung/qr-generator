@@ -26,13 +26,19 @@ As a mobile user, I want to view the application content without having to scrol
 
 ---
 
-### User Story 2 - Access All Interactive Elements (Priority: P1)
-
-As a mobile user, I want all buttons and inputs to be visible and accessible within the screen bounds, so that I can use the application features.
+### User Story 2: Access All Interactive Elements
+**As a** mobile user,
+**I want** all forms, buttons, and settings to be visible and usable,
+**So that** I don't miss functionality due to layout constraints.
 
 **Why this priority**: Layout overflows often push interactive elements off-screen, blocking functionality.
 
 **Independent Test**: Verify that all primary actions (buttons, links) are clickable and visible on a small screen (320px width).
+
+**Acceptance Criteria:**
+- Form inputs stack vertically on viewports < 640px.
+- Action buttons scale to full width or stack appropriately.
+- All interactive elements are fully visible without horizontal scrolling.
 
 **Acceptance Scenarios**:
 
@@ -45,7 +51,7 @@ As a mobile user, I want all buttons and inputs to be visible and accessible wit
 ### Session 2026-02-01
 - Q: How does system handle extremely long words or URLs that don't break naturally? → A: Force break (break-all) to ensure content fits.
 - Q: How should form labels and inputs be arranged on mobile? → A: Stacked layout (labels above inputs).
-- Q: How should navigation menu be handled on mobile? → A: Hamburger Menu (collapse items behind icon).
+- Q: How should navigation menu be handled on mobile? → A: No hamburger menu needed; navigation should remain minimal and accessible (e.g., scaled typography).
 
 ### Edge Cases
 
@@ -62,7 +68,7 @@ As a mobile user, I want all buttons and inputs to be visible and accessible wit
 - **FR-003**: Text content MUST wrap correctly to fit within the mobile viewport; extremely long words or URLs MUST be forced to break (e.g., `word-break: break-all` behavior) to prevent overflow.
 - **FR-004**: Images and media MUST scale down to fit within the viewport width.
 - **FR-005**: Form layouts MUST switch to a vertical stacked orientation (label above input) on mobile viewports to maximize input width.
-- **FR-006**: Navigation links MUST collapse into a hamburger menu (or equivalent disclosure pattern) on mobile viewports to prevent header overflow.
+- **FR-006**: Navigation elements MUST remain visible and scale appropriately to fit mobile headers without causing overflow.
 
 ### Non-Functional Requirements
 

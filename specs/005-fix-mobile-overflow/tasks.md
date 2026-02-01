@@ -66,10 +66,7 @@ description: "Task list template for feature implementation"
 
 ### Implementation for User Story 2 (Navigation)
 
-- [X] T010 [P] [US2] Install `lucide-react` (if not present) for Menu/X icons
-- [X] T011 [US2] Implement `src/components/Navigation/HamburgerMenu.tsx` component with `isOpen` state
-- [X] T012 [US2] Update `src/components/Navigation/Navbar.tsx` to switch between Desktop Links and Hamburger Button at `md` breakpoint
-- [X] T013 [US2] Add mobile menu overlay logic in `src/components/Navigation/Navbar.tsx` (toggle visibility on click)
+- [X] T011 [US2] Optimize `src/components/Navigation/Navbar.tsx` for mobile viewports (typography, spacing) without hamburger menu or lucide-react dependency
 
 ### Implementation for User Story 2 (Forms)
 
@@ -113,5 +110,5 @@ description: "Task list template for feature implementation"
 
 1. **Fix Text Overflow (US1)**: This is "low hanging fruit" to stop huge URLs from breaking layout.
 2. **Fix Form Layout (US2)**: Often the widest element on the page; stacking it solves significant overflow.
-3. **Fix Navigation (US2)**: The final step to make the header usable.
+3. **Fix Navigation (US2)**: Optimize the header for narrow viewports (typography/padding).
 4. **Validate**: Check 320px viewport for all pages.
