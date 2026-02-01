@@ -25,25 +25,25 @@ export const QRGenerator = () => {
   const { translate } = useLocaleContext()
 
   return (
-    <section className="relative isolate overflow-hidden px-4 pb-12 pt-14 sm:px-6 lg:px-8">
+    <section className="relative isolate overflow-hidden px-2 pb-12 pt-8 sm:px-6 lg:px-8">
       <div aria-hidden className="pointer-events-none absolute inset-0 opacity-60">
         <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-sky-400/40 to-transparent blur-3xl" />
         <div className="absolute right-1/3 top-6 h-64 w-64 rounded-full bg-fuchsia-500/40 blur-3xl" />
         <div className="absolute left-0 bottom-6 h-72 w-72 rounded-full bg-indigo-500/30 blur-[120px]" />
       </div>
-
+      
       <div className="relative mx-auto max-w-6xl space-y-6">
-        <div className="text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.5em] text-indigo-200">
+        <div className="text-center px-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-indigo-200">
             {translate('hero.badge')}
           </p>
-          <h2 className="mt-3 text-3xl font-semibold text-white sm:text-4xl">
+          <h2 className="mt-2 text-2xl font-bold text-white sm:text-4xl">
             {translate('hero.title')}
           </h2>
-          <p className="mt-2 text-base text-indigo-100/80">{translate('hero.subtitle')}</p>
+          <p className="mt-2 text-sm text-indigo-100/80 sm:text-base">{translate('hero.subtitle')}</p>
         </div>
 
-        <div className="rounded-[32px] border border-white/10 bg-slate-900/70 p-6 shadow-2xl shadow-black/50 backdrop-blur-xl">
+        <div className="rounded-[32px] border border-white/10 bg-slate-900/70 p-4 sm:p-6 shadow-2xl shadow-black/50 backdrop-blur-xl w-full max-w-full overflow-hidden">
           <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-10">
             <div className="space-y-5">
               <div>
@@ -82,8 +82,8 @@ export const QRGenerator = () => {
                   {translate('preview.sectionTitle')}
                 </h3>
               </div>
-              <div className="flex flex-1 items-center justify-center rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_30px_80px_rgba(15,23,42,0.5)]">
-                <QRPreview {...config} className="w-full" />
+              <div className="flex flex-1 items-center justify-center rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-6 shadow-[0_30px_80px_rgba(15,23,42,0.5)]">
+                <QRPreview {...config} className="w-full max-w-full" style={{ width: '100%', height: 'auto', maxWidth: '100%' }} />
               </div>
             </div>
           </div>

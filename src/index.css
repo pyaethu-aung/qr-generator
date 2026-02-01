@@ -6,7 +6,7 @@
   }
 
   body {
-    @apply min-h-screen bg-slate-950 text-slate-50;
+    @apply min-h-screen bg-slate-950 text-slate-50 break-words;
   }
 
   a {

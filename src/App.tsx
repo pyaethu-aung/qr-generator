@@ -18,8 +18,8 @@ function App() {
     <Layout>
       <Navbar />
 
-      <main className="relative z-10 py-12 sm:py-16 lg:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <main className="relative z-10 py-8 sm:py-16 lg:py-20">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <QRGenerator />
         </div>
       </main>
