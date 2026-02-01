@@ -19,13 +19,10 @@
 - Shrinking labels: Hard to read on small screens.
 
 ### 3. Navigation Pattern
-**Decision**: "Hamburger" Disclosure Menu.
-- **State**: standard React `useState` for `isMenuOpen`.
-- **Accessibility**: 
-  - Trigger button: `aria-label="Toggle menu"`, `aria-expanded={isMenuOpen}`.
-  - Menu container: `role="navigation"`.
-  - Focus management: Trap focus if modal-like, or just flow layout if distinct. We will use a standard "Absolute positioned overlay" or "Expand inline" approach. Overlay is better for saving vertical space.
-**Rationale**: 
-- Cleans up mobile header.
-- Scalable if more links are added.
-**Implementation**: React component `Navbar` with conditional rendering for mobile menu.
+**Decision**: Simple, scalable header without hamburger menu.
+- **Approach**: Maintain always-visible navigation elements (e.g., Logo, Title, Language Toggle) but scale their typography and spacing for mobile viewports.
+- **Rationale**: 
+  - Reduced complexity for the current feature set.
+  - Avoids hiding critical controls (like Language) behind a click.
+  - Simplifies accessibility by keeping all elements in the primary tab order.
+**Implementation**: Update `Navbar.tsx` to handle responsive font sizes and padding instead of a toggle state.
