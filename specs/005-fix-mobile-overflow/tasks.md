@@ -33,8 +33,8 @@ description: "Task list template for feature implementation"
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 [P] Create `src/components/Navigation/Navbar.tsx` shell for navigation logic
-- [ ] T004 [P] Ensure `src/components/Layout/Layout.tsx` (or equivalent main wrapper) has `max-w-full overflow-x-hidden` on the root container
+- [X] T003 [P] Create `src/components/Navigation/Navbar.tsx` shell for navigation logic
+- [X] T004 [P] Ensure `src/components/Layout/Layout.tsx` (or equivalent main wrapper) has `max-w-full overflow-x-hidden` on the root container
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
