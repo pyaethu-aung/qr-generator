@@ -48,6 +48,7 @@ The app supports multiple languages (English and Burmese) via custom locale conf
 
 - Every change must add/update relevant unit tests, maintain ≥85% coverage, and all tests must pass before merge.
 - Run `npm run test`, `npm run lint`, and `npm run build` after every change before opening a PR.
+- UI must be fully functional and consistent across desktop/mobile and major browsers via responsive design.
 - Remove unused code/assets; keep files in the agreed structure above.
 - CI gates: lint, test, build must pass; PR review required.
 

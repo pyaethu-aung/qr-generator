@@ -33,6 +33,7 @@
 
 - Tests, lint, and build MUST be run locally after every change via `npm run test`, `npm run lint`, and `npm run build` per constitution.
 - Unit and integration tests MUST be added/updated for each change; maintain coverage ≥85%.
+- UI MUST be fully functional and consistent across desktop/mobile and major browsers via responsive design.
 - Structure adherence: UI in `src/components`, hooks in `src/hooks`, utilities in `src/utils`, data shapers in `src/data`, shared types in `src/types`.
 - Remove unused code/assets; no commented-out blocks committed.
 - Commit discipline: commit each task; commit titles ≤50 chars and body lines ≤72 chars.
