@@ -48,11 +48,11 @@ description: "Task list template for feature implementation"
 
 ### Implementation for User Story 1
 
-- [ ] T005 [P] [US1] Create reproduction test case for horizontal overflow if possible, or manual verification script in `tests/manual-verification.md`
-- [ ] T006 [P] [US1] Update global CSS in `src/index.css` to enforce `word-break: break-word` on body or standard text containers
-- [ ] T007 [US1] Apply `word-break: break-all` utility to QR code hash/URL display containers in `src/components/QRCodeDisplay.tsx` (or relevant component)
-- [ ] T008 [US1] Audit and fix main container widths in `src/App.tsx` or page components to ensure `max-w-[100vw]` or `w-full` usage
-- [ ] T009 [US1] Verify no horizontal scroll on 320px viewport manually
+- [X] T005 [P] [US1] Create reproduction test case for horizontal overflow if possible, or manual verification script in `tests/manual-verification.md`
+- [X] T006 [P] [US1] Update global CSS in `src/index.css` to enforce `word-break: break-word` on body or standard text containers
+- [X] T007 [US1] Apply `word-break: break-all` utility to QR code hash/URL display containers in `src/components/QRCodeDisplay.tsx` (or relevant component)
+- [X] T008 [US1] Audit and fix main container widths in `src/App.tsx` or page components to ensure `max-w-[100vw]` or `w-full` usage
+- [X] T009 [US1] Verify no horizontal scroll on 320px viewport manually
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
