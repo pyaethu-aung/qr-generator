@@ -66,15 +66,15 @@ description: "Task list template for feature implementation"
 
 ### Implementation for User Story 2 (Navigation)
 
-- [ ] T010 [P] [US2] Install `lucide-react` (if not present) for Menu/X icons
-- [ ] T011 [US2] Implement `src/components/Navigation/HamburgerMenu.tsx` component with `isOpen` state
-- [ ] T012 [US2] Update `src/components/Navigation/Navbar.tsx` to switch between Desktop Links and Hamburger Button at `md` breakpoint
-- [ ] T013 [US2] Add mobile menu overlay logic in `src/components/Navigation/Navbar.tsx` (toggle visibility on click)
+- [X] T010 [P] [US2] Install `lucide-react` (if not present) for Menu/X icons
+- [X] T011 [US2] Implement `src/components/Navigation/HamburgerMenu.tsx` component with `isOpen` state
+- [X] T012 [US2] Update `src/components/Navigation/Navbar.tsx` to switch between Desktop Links and Hamburger Button at `md` breakpoint
+- [X] T013 [US2] Add mobile menu overlay logic in `src/components/Navigation/Navbar.tsx` (toggle visibility on click)
 
 ### Implementation for User Story 2 (Forms)
 
-- [ ] T014 [P] [US2] Update `src/components/QRForm.tsx` (or main input form) to use `flex-col` on mobile and `flex-row` on desktop (`md:flex-row`)
-- [ ] T015 [US2] Ensure all button containers wrap or stack correctly on mobile in `src/components/QRForm.tsx`
+- [X] T014 [P] [US2] Update `src/components/feature/qr/QRControls.tsx` (main input form) to ensure stacking on mobile
+- [X] T015 [US2] Ensure all button containers wrap or stack correctly on mobile in `src/components/feature/qr/QRControls.tsx`
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -84,9 +84,9 @@ description: "Task list template for feature implementation"
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T016 [P] Run full build `npm run build` and verify output size
-- [ ] T017 Cross-browser manual check (Safari/Chrome Mobile Simulator)
-- [ ] T018 Code cleanup (remove any temporary styles used for debugging)
+- [X] T016 [P] Run full build `npm run build` and verify output size
+- [X] T017 Cross-browser manual check (Safari/Chrome Mobile Simulator)
+- [X] T018 Code cleanup (remove any temporary styles used for debugging)
 
 ---
 
