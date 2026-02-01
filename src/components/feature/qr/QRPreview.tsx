@@ -4,13 +4,16 @@ import { useQRShare } from '../../../hooks/useQRShare'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import type { QRConfig } from '../../../types/qr'
 
+import type { CSSProperties } from 'react'
+
 interface QRPreviewProps extends QRConfig {
   className?: string
   size?: number
+  style?: CSSProperties
 }
 
 export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
-  ({ value, ecLevel, fgColor, bgColor, size = 256, className }, forwardedRef) => {
+  ({ value, ecLevel, fgColor, bgColor, size = 256, className, style }, forwardedRef) => {
     const { translate } = useLocaleContext()
     const placeholderCopy = translate('preview.placeholder')
     const ariaPlaceholder = translate('preview.ariaPlaceholder')
@@ -113,7 +116,8 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
 
     return (
       <div
-        className={`inline-flex flex-col items-center p-4 bg-white rounded-lg shadow-sm border border-gray-200 ${className ?? ''}`}
+        style={style}
+        className={`flex flex-col items-center p-3 sm:p-4 bg-white rounded-lg shadow-sm border border-gray-200 w-full ${className ?? ''}`}
       >
         {!value ? (
           <div
