@@ -13,7 +13,7 @@ export function Navbar() {
             <span className="text-xl sm:text-2xl">✨</span>
             {translate('layout.headerTitle')}
           </h1>
-          <p className="mt-1 text-xs sm:text-sm text-slate-500 transition-colors duration-300 dark:text-slate-300">{translate('layout.headerSubtitle')}</p>
+          <p className="mt-1 text-xs sm:text-sm text-slate-600 transition-colors duration-300 dark:text-slate-300">{translate('layout.headerSubtitle')}</p>
         </div>
 
         <div className="flex items-center gap-2">
