@@ -8,6 +8,9 @@
       "my": "Switch to Burmese"
     }
   },
+  "common": {
+    "comingSoon": "Coming soon"
+  },
   "seo": {
     "title": "QR Code Generator",
     "description": "Generate, style, and download high-quality QR codes without touching a backend.",

@@ -40,9 +40,9 @@ We will first build the new `Toast` component to satisfy the "visual feedback" r
 **Goal**: Update UI to reflect disabled state and provide feedback.
 **Independent Test**: Button looks disabled and shows toast on hover.
 
-- [ ] T005 [US2] Update `src/components/common/ThemeToggle.tsx` to add visual disabled state (opacity, cursor)
-- [ ] T006 [US2] Implement hover interaction in `src/components/common/ThemeToggle.tsx` to trigger `Toast`
-- [ ] T007 [US2] Add "Coming soon" message to `ThemeToggle` hover logic
+- [x] T005 [US2] Update `src/components/common/ThemeToggle.tsx` to add visual disabled state (opacity, cursor)
+- [x] T006 [US2] Implement hover interaction in `src/components/common/ThemeToggle.tsx` to trigger `Toast`
+- [x] T007 [US2] Add "Coming soon" message to `ThemeToggle` hover logic
 
 ## Phase 5: Polish & Verification
 **Goal**: Final clean up and comprehensive testing.
