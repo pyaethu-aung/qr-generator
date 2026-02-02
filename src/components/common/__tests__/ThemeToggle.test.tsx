@@ -1,7 +1,8 @@
-import { render, screen, fireEvent } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { ThemeToggle } from '../ThemeToggle'
 import { ThemeProvider } from '../../../hooks/ThemeProvider'
+import { LocaleProvider } from '../../../hooks/LocaleProvider'
 
 // Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {
@@ -18,52 +19,78 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 })
 
-describe('ThemeToggle', () => {
+describe('ThemeToggle (Sticky Dark)', () => {
   beforeEach(() => {
     window.localStorage.clear()
     vi.clearAllMocks()
   })
 
-  it('renders correctly', () => {
-    render(
-      <ThemeProvider>
-        <ThemeToggle />
-      </ThemeProvider>
+  const renderWithProviders = (ui: React.ReactNode) => {
+    return render(
+      <LocaleProvider>
+        <ThemeProvider>
+          {ui}
+        </ThemeProvider>
+      </LocaleProvider>
     )
-    expect(screen.getByRole('button')).toBeDefined()
+  }
+
+  it('renders with disabled styles', () => {
+    renderWithProviders(<ThemeToggle />)
+    const button = screen.getByRole('button')
+    
+    // Check for disabled visual classes
+    expect(button).toHaveClass('opacity-50')
+    expect(button).toHaveClass('cursor-not-allowed')
+    expect(button).toHaveAttribute('aria-disabled', 'true')
   })
 
-  it('toggles theme on click', () => {
-    render(
-      <ThemeProvider>
-        <ThemeToggle />
-      </ThemeProvider>
-    )
-    
+  it('does NOT toggle theme on click (stays dark)', () => {
+    renderWithProviders(<ThemeToggle />)
     const button = screen.getByRole('button')
-    // Default mock is light (matches: false)
-    // Target icon should be moon 🌙
-    expect(button.textContent).toContain('🌙')
+    
+    // Should be sun icon (indicating we are in dark mode looking to switch to light, 
+    // or arguably if stuck in dark, maybe it should show sun? 
+    // Current logic: isDark ? '☀️' : '🌙'. Since pinned to dark, it shows sun.)
+    expect(button.textContent).toContain('☀️')
     
     fireEvent.click(button)
-    // After click it should be dark theme
-    // Target icon should be sun ☀️
+    
+    // Should still be sun (dark mode)
     expect(button.textContent).toContain('☀️')
   })
 
-  it('has correct aria-label based on theme', () => {
-    render(
-      <ThemeProvider>
-        <ThemeToggle />
-      </ThemeProvider>
-    )
-    
+  it('shows "Coming soon" toast on hover', async () => {
+    renderWithProviders(<ThemeToggle />)
     const button = screen.getByRole('button')
-    // Starts in light theme
-    expect(button.getAttribute('aria-label')).toBe('Switch to dark theme')
     
-    fireEvent.click(button)
-    // Switched to dark theme
-    expect(button.getAttribute('aria-label')).toBe('Switch to light theme')
+    // Toast should not be visible initially (or not present in a way that suggests visibility)
+    // My Toast component uses opacity-0 when hidden but is in DOM.
+    // Let's query by text.
+    const toastMessage = screen.queryByText('Coming soon')
+    // It might be present in DOM but hidden. 
+    // Testing-library's queryByText finds hidden elements too usually unless constrained.
+    // But `Toast` has `opacity-0` when hidden.
+    
+    expect(toastMessage).toBeInTheDocument()
+    // It's technically in the document, checking parent class or visibility might be triggered by styles.
+    // Let's check styling if possible or aria-hidden.
+    // The Toast wrapper has aria-hidden={!isVisible}
+    
+    // Initial state: hidden
+    expect(toastMessage).toHaveAttribute('aria-hidden', 'true')
+
+    // Hover
+    fireEvent.mouseEnter(button)
+    
+    // Expect visible
+    expect(toastMessage).toHaveAttribute('aria-hidden', 'false')
+    expect(screen.getByText('Coming soon')).toBeVisible() // requires jest-dom style checks which might imply opacity > 0 logic if configured well, or just display != none.
+    expect(toastMessage).toHaveClass('opacity-100')
+
+    // Unhover
+    fireEvent.mouseLeave(button)
+    expect(toastMessage).toHaveAttribute('aria-hidden', 'true')
+    expect(toastMessage).toHaveClass('opacity-0')
   })
 })
