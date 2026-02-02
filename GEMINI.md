@@ -28,7 +28,6 @@ TypeScript 5.9, Node.js 20+ (Vite environment): Follow standard conventions
 - 006-theme-toggle: Added TypeScript 5.9 + React 19 + Tailwind CSS 4, React Contex
 - 005-fix-mobile-overflow: Added TypeScript 5.9+ + React 19, Tailwind CSS 4
 
-- 004-github-workflows: Added TypeScript 5.9, Node.js 20+ (Vite environment) + GitHub Actions, `npm audit`, GitHub CodeQL, Snyk
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->
