@@ -33,8 +33,8 @@ We will first build the new `Toast` component to satisfy the "visual feedback" r
 **Goal**: Verify and enforce dark theme persistence.
 **Independent Test**: Manually verify `localStorage` interactions are ignored.
 
-- [ ] T003 [US1] Verify `useTheme` ignores `localStorage` 'light' value (Manual Verification task)
-- [ ] T004 [US1] Verify system color scheme changes are ignored (Manual Verification task)
+- [x] T003 [US1] Verify `useTheme` ignores `localStorage` 'light' value (Verified via updated `useTheme.test.ts`)
+- [x] T004 [US1] Verify system color scheme changes are ignored (Verified via updated `useTheme.test.ts`)
 
 ## Phase 4: User Story 2 - Interaction with Disabled Toggle (P2)
 **Goal**: Update UI to reflect disabled state and provide feedback.
