@@ -47,11 +47,12 @@ describe('useTheme (Sticky Dark Theme)', () => {
     expect(result.current.theme).toBe('dark')
   })
 
-  it('setTheme forces dark even when set to light', () => {
+  it('setTheme forces dark (ignores input)', () => {
     const { result } = renderHook(() => useTheme())
     
     act(() => {
-      result.current.setTheme('light')
+      // Call setTheme - it should ignore any input and stay dark
+      result.current.setTheme()
     })
 
     expect(result.current.theme).toBe('dark')

@@ -46,7 +46,7 @@ export function useTheme() {
     */
   }, [])
 
-  const setTheme = useCallback((newTheme: Theme) => {
+  const setTheme = useCallback((/* newTheme: Theme */) => {
     // TODO: Revert to dynamic theme logic when sticky dark theme is no longer needed
     // Forcing 'dark' regardless of input
     console.warn('[theme] Theme switching is currently disabled.')
@@ -62,7 +62,10 @@ export function useTheme() {
      // Disabled toggle action
      console.warn('[theme] Theme toggling is currently disabled.')
     // setTheme(theme === 'light' ? 'dark' : 'light')
-  }, [theme, setTheme])
+  }, [])
+
+  // Keep getSystemTheme to avoid breaking changes when we revert
+  void getSystemTheme
 
   return {
     theme,

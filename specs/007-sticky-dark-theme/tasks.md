@@ -47,6 +47,6 @@ We will first build the new `Toast` component to satisfy the "visual feedback" r
 ## Phase 5: Polish & Verification
 **Goal**: Final clean up and comprehensive testing.
 
-- [ ] T008 Verify no console errors related to theme switching
-- [ ] T009 [P] Run full build and lint check
-- [ ] T010 Prepare final walkthrough with screenshots of disabled toggle and toast
+- [x] T008 Verify no console errors related to theme switching
+- [x] T009 [P] Run full build and lint check
+- [x] T010 Prepare final walkthrough with screenshots of disabled toggle and toast
