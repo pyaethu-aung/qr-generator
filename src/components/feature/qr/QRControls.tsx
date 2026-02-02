@@ -58,7 +58,7 @@ export const QRControls = ({
   const downloadSvgLabel = translate('controls.downloadSvg')
 
   return (
-    <div className="flex flex-col gap-6 w-full p-4 sm:p-6 bg-white rounded-lg shadow-sm border border-gray-100">
+    <div className="flex flex-col gap-6 w-full p-4 sm:p-6 bg-white rounded-lg shadow-sm border border-slate-100 transition-all duration-300 dark:bg-slate-900/40 dark:border-white/5 dark:shadow-none">
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
           <Input
@@ -75,14 +75,14 @@ export const QRControls = ({
             fullWidth
             error={inputError}
           />
-          <p className="text-xs text-slate-500">{helperText}</p>
+          <p className="text-xs text-slate-600 dark:text-slate-400 transition-colors duration-300">{helperText}</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-slate-900">{correctionLabel}</label>
+            <label className="text-sm font-medium text-slate-900 dark:text-slate-300 transition-colors duration-300">{correctionLabel}</label>
             <select
-              className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors disabled:bg-slate-100 disabled:text-slate-500"
+              className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 dark:border-white/10 dark:bg-slate-950 dark:text-white dark:focus:ring-sky-500 dark:focus:border-sky-500 disabled:bg-slate-100 disabled:text-slate-500 dark:disabled:bg-slate-800 dark:disabled:text-slate-400"
               value={ecLevel}
               onChange={(e) => onEcLevelChange(e.target.value as QRErrorCorrectionLevel)}
               disabled={isGenerating}
@@ -97,9 +97,9 @@ export const QRControls = ({
 
           <div className="flex flex-wrap gap-4">
             <div className="min-w-[120px] flex-1 flex flex-col gap-1">
-              <label className="text-sm font-medium text-slate-900">{foregroundLabel}</label>
+              <label className="text-sm font-medium text-slate-900 dark:text-slate-300 transition-colors duration-300">{foregroundLabel}</label>
               <div className="flex items-center gap-2">
-                <div className="relative w-10 h-8 sm:w-12 sm:h-9 overflow-hidden rounded-md border border-slate-300 shadow-sm">
+                <div className="relative w-10 h-8 sm:w-12 sm:h-9 overflow-hidden rounded-md border border-slate-300 shadow-sm transition-colors duration-300 dark:border-white/20">
                   <input
                     type="color"
                     value={fgColor}
@@ -108,16 +108,16 @@ export const QRControls = ({
                     className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] p-0 cursor-pointer border-0"
                   />
                 </div>
-                <span className="text-xs text-slate-500 font-mono uppercase truncate max-w-[3rem] sm:max-w-[4rem]">
+                <span className="text-xs text-slate-600 dark:text-slate-400 font-mono uppercase truncate max-w-[3rem] sm:max-w-[4rem] transition-colors duration-300">
                   {fgColor}
                 </span>
               </div>
             </div>
 
             <div className="min-w-[120px] flex-1 flex flex-col gap-1">
-              <label className="text-sm font-medium text-slate-900">{backgroundLabel}</label>
+              <label className="text-sm font-medium text-slate-900 dark:text-slate-300 transition-colors duration-300">{backgroundLabel}</label>
               <div className="flex items-center gap-2">
-                <div className="relative w-10 h-8 sm:w-12 sm:h-9 overflow-hidden rounded-md border border-slate-300 shadow-sm">
+                <div className="relative w-10 h-8 sm:w-12 sm:h-9 overflow-hidden rounded-md border border-slate-300 shadow-sm transition-colors duration-300 dark:border-white/20">
                   <input
                     type="color"
                     value={bgColor}
@@ -126,7 +126,7 @@ export const QRControls = ({
                     className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] p-0 cursor-pointer border-0"
                   />
                 </div>
-                <span className="text-xs text-slate-500 font-mono uppercase truncate max-w-[3rem] sm:max-w-[4rem]">
+                <span className="text-xs text-slate-600 dark:text-slate-400 font-mono uppercase truncate max-w-[3rem] sm:max-w-[4rem] transition-colors duration-300">
                   {bgColor}
                 </span>
               </div>
@@ -146,8 +146,8 @@ export const QRControls = ({
       </div>
 
       {(onDownloadPng || onDownloadSvg) && (
-        <div className="pt-6 border-t border-slate-100 flex flex-col gap-3">
-          <h3 className="text-sm font-medium text-slate-700">{downloadsTitle}</h3>
+        <div className="pt-6 border-t border-slate-100 dark:border-white/5 flex flex-col gap-3 transition-colors duration-300">
+          <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 transition-colors duration-300">{downloadsTitle}</h3>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
             {onDownloadPng && (
               <Button
