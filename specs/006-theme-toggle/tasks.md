@@ -83,10 +83,10 @@
 
 ### Implementation for User Story 3
 
-- [ ] T017 [US3] Add system preference detection tests to `src/hooks/__tests__/useTheme.test.ts`
-- [ ] T018 [US3] Add system preference change listener tests to `src/hooks/__tests__/useTheme.test.ts`
-- [ ] T019 [US3] Test fallback behavior when prefers-color-scheme unavailable
-- [ ] T020 [US3] Manual verification: clear storage, change OS theme, verify app follows
+- [x] T017 [US3] Add system preference detection tests to `src/hooks/__tests__/useTheme.test.ts`
+- [x] T018 [US3] Add system preference change listener tests to `src/hooks/__tests__/useTheme.test.ts`
+- [x] T019 [US3] Test fallback behavior when prefers-color-scheme unavailable
+- [x] T020 [US3] Manual verification: clear storage, change OS theme, verify app follows
 
 **Checkpoint**: User Story 3 complete - system preference detection works
 
