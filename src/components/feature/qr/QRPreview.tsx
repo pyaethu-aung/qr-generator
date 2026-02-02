@@ -83,11 +83,11 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
         aria-disabled={isShareDisabled}
         aria-describedby={shareStatusMessage ? shareStatusId : undefined}
         onClick={handleShareClick}
-        className={`w-full rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+        className={`w-full rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
           value
-            ? 'border border-slate-900 bg-slate-900 text-white focus-visible:ring-slate-900'
-            : 'border border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
-        } ${isShareDisabled ? 'cursor-not-allowed opacity-70' : 'hover:bg-slate-800'} ${
+            ? 'border border-slate-900 bg-slate-900 text-white focus-visible:ring-slate-900 dark:border-sky-500 dark:bg-sky-600 dark:focus-visible:ring-sky-500'
+            : 'border border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed dark:border-white/5 dark:bg-slate-800 dark:text-slate-500'
+        } ${isShareDisabled ? 'cursor-not-allowed opacity-70' : 'hover:bg-slate-800 dark:hover:bg-sky-500'} ${
           isSharing ? 'cursor-wait' : ''
         }`}
       >
@@ -101,7 +101,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
         role="status"
         aria-live="polite"
         id={shareStatusId}
-        className="text-sm text-slate-500"
+        className="text-sm text-slate-500 dark:text-slate-400 transition-colors duration-300"
       >
         {shareStatusMessage}
       </p>
@@ -117,11 +117,11 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
     return (
       <div
         style={style}
-        className={`flex flex-col items-center p-3 sm:p-4 bg-white rounded-lg shadow-sm border border-gray-200 w-full ${className ?? ''}`}
+        className={`flex flex-col items-center p-3 sm:p-4 bg-white rounded-lg shadow-sm border border-slate-200 w-full transition-all duration-300 dark:bg-slate-900 dark:border-white/10 ${className ?? ''}`}
       >
         {!value ? (
           <div
-            className="flex items-center justify-center bg-gray-100 text-gray-400 rounded-lg border-2 border-dashed border-gray-300"
+            className="flex items-center justify-center bg-slate-50 text-slate-500 rounded-lg border-2 border-dashed border-slate-200 transition-all duration-300 dark:bg-slate-800/50 dark:text-slate-500 dark:border-white/10"
             style={{ width: size, height: size }}
             role="img"
             aria-label={ariaPlaceholder}
