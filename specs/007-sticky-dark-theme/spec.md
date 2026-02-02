@@ -5,6 +5,11 @@
 **Status**: Draft  
 **Input**: User description: "don't remove code for theme and theme toggle, set the default theme as dark and cannot be changed, disable the theme toggle, when user hover the mouse pointer on theme toggle, show the toast like it will coming soon"
 
+## Clarifications
+
+### Session 2026-02-03
+- Q: Should the theme toggle button visually appear disabled or look normal but be unresponsive? → A: Option A - Visually Disabled.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Dark Theme as Perpetual Default (Priority: P1)
@@ -49,8 +54,8 @@ As a user, I should see the theme toggle button in the navigation, but find it u
 
 - **FR-001**: System MUST force the dark theme as the only active theme upon initialization.
 - **FR-002**: System MUST preserve all existing theme-related CSS variables and context logic to facilitate future re-enablement.
-- **FR-003**: The theme toggle component MUST remain in the UI architecture but MUST be disabled to prevent state changes.
-- **FR-004**: System MUST trigger a "Coming soon" toast notification upon mouse hover over the theme toggle.
+- **FR-003**: The theme toggle component MUST remain in the UI architecture but MUST be disabled and visually styled as such (e.g., lower opacity, disabled cursor) to prevent state changes.
+- **FR-004**: System MUST trigger a "Coming soon" toast notification upon mouse hover over the disabled theme toggle.
 - **FR-005**: System MUST NOT allow the browser's `localStorage` or system color scheme media queries to override the dark theme.
 
 ### Non-Functional Requirements
