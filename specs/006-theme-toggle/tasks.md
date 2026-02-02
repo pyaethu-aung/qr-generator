@@ -30,12 +30,12 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 Implement `useTheme` hook with system preference detection in `src/hooks/useTheme.ts`
-- [ ] T004 Create `ThemeProvider` context with document class application in `src/hooks/ThemeProvider.tsx`
-- [ ] T005 Add unit tests for `useTheme` hook in `src/hooks/__tests__/useTheme.test.ts`
-- [ ] T006 Update CSS with theme variables and transition in `src/index.css`
-- [ ] T007 Wrap app with `ThemeProvider` in `src/main.tsx`
-- [ ] T008 Update `Layout` component for theme-aware styling in `src/components/Layout/Layout.tsx`
+- [x] T003 Implement `useTheme` hook with system preference detection in `src/hooks/useTheme.ts`
+- [x] T004 Create `ThemeProvider` context with document class application in `src/hooks/ThemeProvider.tsx`
+- [x] T005 Add unit tests for `useTheme` hook in `src/hooks/__tests__/useTheme.test.ts`
+- [x] T006 Update CSS with theme variables and transition in `src/index.css`
+- [x] T007 Wrap app with `ThemeProvider` in `src/main.tsx`
+- [x] T008 Update `Layout` component for theme-aware styling in `src/components/Layout/Layout.tsx`
 
 **Checkpoint**: Foundation ready - theme infrastructure works, user story implementation can begin
 
