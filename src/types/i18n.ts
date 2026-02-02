@@ -71,8 +71,13 @@ export interface PreviewStrings {
   shareStatusPermissionDenied: string
 }
 
+export interface CommonStrings {
+  comingSoon: string
+}
+
 export interface LocaleConfig {
   locale: LocaleMetadata
+  common: CommonStrings
   seo: SeoMetadata
   layout: LayoutStrings
   hero: HeroStrings
@@ -84,6 +89,7 @@ export interface LocaleConfig {
 export type TranslationKey =
   | 'locale.toggleLabel'
   | `locale.switchTo.${SupportedLocale}`
+  | 'common.comingSoon'
   | 'seo.title'
   | 'seo.description'
   | 'seo.ogTitle'

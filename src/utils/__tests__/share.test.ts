@@ -48,29 +48,31 @@ describe('share utils', () => {
       const mockedShare = vi.fn().mockImplementation(function(this: void) {
         return Promise.resolve()
       })
-      // @ts-expect-error - overriding for test
+      // @ts-ignore - overriding for test
       navigator.share = mockedShare
       expect(supportsNavigatorShare()).toBe(true)
 
-      // @ts-expect-error - overriding for test
+      // @ts-ignore - overriding for test
       delete (navigator as Partial<Navigator>).share
       expect(supportsNavigatorShare()).toBe(false)
 
-      navigator.share = originalShare
+      if (originalShare) {
+        navigator.share = originalShare
+      }
     })
   })
 
   describe('supportsClipboardImage', () => {
     it('checks if clipboard image sharing is supported', () => {
       const originalClipboard = navigator.clipboard
-      // @ts-expect-error - ClipboardItem might not be in the global type
+      // @ts-ignore - ClipboardItem might not be in the global type
       const originalClipboardItem = global.ClipboardItem
 
       Object.defineProperty(navigator, 'clipboard', {
         value: { write: vi.fn() },
         configurable: true
       })
-      // @ts-expect-error - ClipboardItem might not be in the global type
+      // @ts-ignore - ClipboardItem might not be in the global type
       global.ClipboardItem = vi.fn()
 
       expect(supportsClipboardImage()).toBe(true)
@@ -82,7 +84,7 @@ describe('share utils', () => {
       expect(supportsClipboardImage()).toBe(false)
 
       Object.defineProperty(navigator, 'clipboard', { value: originalClipboard, configurable: true })
-      // @ts-expect-error - ClipboardItem might not be in the global type
+      // @ts-ignore - ClipboardItem might not be in the global type
       global.ClipboardItem = originalClipboardItem
     })
   })

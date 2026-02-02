@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { ThemeToggle } from '../ThemeToggle'
 import { ThemeProvider } from '../../../hooks/ThemeProvider'
@@ -60,7 +60,7 @@ describe('ThemeToggle (Sticky Dark)', () => {
     expect(button.textContent).toContain('☀️')
   })
 
-  it('shows "Coming soon" toast on hover', async () => {
+  it('shows "Coming soon" toast on hover', () => {
     renderWithProviders(<ThemeToggle />)
     const button = screen.getByRole('button')
     
