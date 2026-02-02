@@ -10,6 +10,11 @@ export function useTheme() {
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   }, [])
 
+  // TODO: Revert to dynamic theme logic when sticky dark theme is no longer needed
+  // Original logic was: dynamic state from localStorage or system theme.
+  const [theme, setThemeState] = useState<Theme>('dark')
+
+  /*
   const [theme, setThemeState] = useState<Theme>(() => {
     if (!isBrowser) return 'dark'
     try {
@@ -20,10 +25,14 @@ export function useTheme() {
     }
     return getSystemTheme()
   })
+  */
 
   useEffect(() => {
     if (!isBrowser || !window.matchMedia) return
 
+    // TODO: Revert to dynamic theme logic when sticky dark theme is no longer needed
+    // Effectively disabling the system preference listener for now
+    /*
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     const handleChange = (e: MediaQueryListEvent) => {
       const stored = localStorage.getItem(STORAGE_KEY)
@@ -34,23 +43,31 @@ export function useTheme() {
 
     mediaQuery.addEventListener('change', handleChange)
     return () => mediaQuery.removeEventListener('change', handleChange)
+    */
   }, [])
 
   const setTheme = useCallback((newTheme: Theme) => {
-    setThemeState(newTheme)
+    // TODO: Revert to dynamic theme logic when sticky dark theme is no longer needed
+    // Forcing 'dark' regardless of input
+    console.warn('[theme] Theme switching is currently disabled.')
+    setThemeState('dark')
     if (isBrowser) {
-      localStorage.setItem(STORAGE_KEY, newTheme)
+      // We still update storage to 'dark' to ensure it sticks if we revert logic later
+      localStorage.setItem(STORAGE_KEY, 'dark')
     }
   }, [])
 
   const toggleTheme = useCallback(() => {
-    setTheme(theme === 'light' ? 'dark' : 'light')
+     // TODO: Revert to dynamic theme logic when sticky dark theme is no longer needed
+     // Disabled toggle action
+     console.warn('[theme] Theme toggling is currently disabled.')
+    // setTheme(theme === 'light' ? 'dark' : 'light')
   }, [theme, setTheme])
 
   return {
     theme,
     setTheme,
     toggleTheme,
-    isDark: theme === 'dark'
+    isDark: true // Force true
   }
 }

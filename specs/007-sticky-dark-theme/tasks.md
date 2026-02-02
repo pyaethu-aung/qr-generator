@@ -24,7 +24,7 @@ We will first build the new `Toast` component to satisfy the "visual feedback" r
 **Goal**: Implement the core logic override for forced dark mode.
 **Independent Test**: Application loads in dark mode regardless of `localStorage` or system settings.
 
-- [ ] T002 Implement forced dark mode logic in `src/hooks/useTheme.ts`
+- [x] T002 Implement forced dark mode logic in `src/hooks/useTheme.ts`
     - **Constraint**: Initialize state to 'dark' always.
     - **Constraint**: Disable `toggleTheme` functionality.
     - **Constraint**: Add `// TODO` comments for reversibility as per plan.
