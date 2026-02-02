@@ -18,7 +18,7 @@ We will first build the new `Toast` component to satisfy the "visual feedback" r
 **Goal**: Create reusable components required for the feature.
 **Independent Test**: `Toast` component renders correctly and accepts message props.
 
-- [ ] T001 Create `Toast` component in `src/components/common/Toast.tsx` with Prop interface
+- [x] T001 Create `Toast` component in `src/components/common/Toast.tsx` with Prop interface
 
 ## Phase 2: Foundational
 **Goal**: Implement the core logic override for forced dark mode.
