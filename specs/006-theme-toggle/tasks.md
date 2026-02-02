@@ -67,9 +67,9 @@
 
 ### Implementation for User Story 2
 
-- [ ] T014 [US2] Add localStorage persistence tests to `src/hooks/__tests__/useTheme.test.ts`
-- [ ] T015 [US2] Verify localStorage key `qr-generator:theme-preference` stores correctly - manual test
-- [ ] T016 [US2] Test persistence across browser restart - manual verification
+- [x] T014 [US2] Add localStorage persistence tests to `src/hooks/__tests__/useTheme.test.ts`
+- [x] T015 [US2] Verify localStorage key `qr-generator:theme-preference` stores correctly - manual test
+- [x] T016 [US2] Test persistence across browser restart - manual verification
 
 **Checkpoint**: User Story 2 complete - theme persists across sessions
 
