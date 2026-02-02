@@ -115,4 +115,24 @@ describe('QRPreview', () => {
     expect(canvas).toHaveAttribute('width', '128')
     expect(canvas).toHaveAttribute('height', '128')
   })
+
+  it('handles forwardedRef as a function', () => {
+    const ref = vi.fn()
+    render(
+      <LocaleProvider>
+        <QRPreview {...defaultProps} value="https://example.com" ref={ref} />
+      </LocaleProvider>,
+    )
+    expect(ref).toHaveBeenCalledWith(expect.any(HTMLCanvasElement))
+  })
+
+  it('handles forwardedRef as an object', () => {
+    const ref = { current: null }
+    render(
+      <LocaleProvider>
+        <QRPreview {...defaultProps} value="https://example.com" ref={ref} />
+      </LocaleProvider>,
+    )
+    expect(ref.current).toBeInstanceOf(HTMLCanvasElement)
+  })
 })

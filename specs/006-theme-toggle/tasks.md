@@ -96,12 +96,12 @@
 
 **Purpose**: Final verification, accessibility, and cross-browser testing
 
-- [ ] T021 [P] Verify keyboard accessibility (Tab, Enter/Space) on ThemeToggle
-- [ ] T022 [P] Verify ARIA attributes and screen reader announcement
-- [ ] T023 Test on Chrome, Safari, Firefox, Edge - desktop
-- [ ] T024 Test on mobile viewport (responsive design)
-- [ ] T025 Run `npm run test:coverage` and verify ≥85% coverage maintained
-- [ ] T026 Final cleanup: remove any unused code, run lint
+- [x] T021 [P] Verify keyboard accessibility (Tab, Enter/Space) on ThemeToggle
+- [x] T022 [P] Verify ARIA attributes and screen reader announcement
+- [x] T023 Test on Chrome, Safari, Firefox, Edge - desktop
+- [x] T024 Test on mobile viewport (responsive design)
+- [x] T025 Run `npm run test:coverage` and verify ≥85% coverage maintained
+- [x] T026 Final cleanup: remove any unused code, run lint
 
 ---
 

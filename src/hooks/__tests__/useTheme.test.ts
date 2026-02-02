@@ -157,4 +157,16 @@ describe('useTheme', () => {
     // or if matchMedia fails.
     expect(result.current.theme).toBe('dark')
   })
+
+  it('gracefully handles localStorage errors', () => {
+    const getItemSpy = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new Error('Storage access denied')
+    })
+    
+    // Should not crash and should fall back to system theme
+    const { result } = renderHook(() => useTheme())
+    expect(result.current.theme).toBe('light')
+    
+    getItemSpy.mockRestore()
+  })
 })
