@@ -88,4 +88,73 @@ describe('useTheme', () => {
     })
     expect(result.current.isDark).toBe(false)
   })
+
+  it('responds to system preference changes when no user preference is stored', () => {
+    let changeHandler: ((e: MediaQueryListEvent) => void) | null = null
+    const addListenerMock = vi.fn().mockImplementation((_event: string, handler: (e: MediaQueryListEvent) => void) => {
+      changeHandler = handler
+    })
+
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: vi.fn().mockImplementation((query: string) => ({
+        matches: false,
+        media: query,
+        addEventListener: addListenerMock,
+        removeEventListener: vi.fn(),
+      })),
+    })
+
+    const { result } = renderHook(() => useTheme())
+    expect(result.current.theme).toBe('light')
+
+    act(() => {
+      if (changeHandler) {
+        changeHandler({ matches: true } as MediaQueryListEvent)
+      }
+    })
+
+    expect(result.current.theme).toBe('dark')
+  })
+
+  it('ignores system preference changes if user has a stored preference', () => {
+    window.localStorage.setItem('qr-generator:theme-preference', 'light')
+    
+    let changeHandler: ((e: MediaQueryListEvent) => void) | null = null
+    const addListenerMock = vi.fn().mockImplementation((_event: string, handler: (e: MediaQueryListEvent) => void) => {
+      changeHandler = handler
+    })
+
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: vi.fn().mockImplementation((query: string) => ({
+        matches: false,
+        media: query,
+        addEventListener: addListenerMock,
+        removeEventListener: vi.fn(),
+      })),
+    })
+
+    const { result } = renderHook(() => useTheme())
+    expect(result.current.theme).toBe('light')
+
+    act(() => {
+      if (changeHandler) {
+        changeHandler({ matches: true } as MediaQueryListEvent)
+      }
+    })
+
+    // Should stay light because of stored preference
+    expect(result.current.theme).toBe('light')
+  })
+
+  it('falls back to dark if matchMedia is unavailable', () => {
+    // @ts-expect-error - testing missing API
+    delete window.matchMedia
+    
+    const { result } = renderHook(() => useTheme())
+    // Fallback in useTheme: getSystemTheme returns 'dark' if !isBrowser
+    // or if matchMedia fails.
+    expect(result.current.theme).toBe('dark')
+  })
 })
