@@ -49,11 +49,11 @@
 
 ### Implementation for User Story 1
 
-- [ ] T009 [P] [US1] Create `ThemeToggle` component with target icon in `src/components/common/ThemeToggle.tsx`
-- [ ] T010 [P] [US1] Add unit tests for `ThemeToggle` in `src/components/common/__tests__/ThemeToggle.test.tsx`
-- [ ] T011 [US1] Add `ThemeToggle` to `Navbar` in `src/components/Navigation/Navbar.tsx`
-- [ ] T012 [US1] Update Navbar header styling for both themes in `src/components/Navigation/Navbar.tsx`
-- [ ] T013 [US1] Verify smooth transition (<300ms) on toggle - manual browser test
+- [x] T009 [P] [US1] Create `ThemeToggle` component with target icon in `src/components/common/ThemeToggle.tsx`
+- [x] T010 [P] [US1] Add unit tests for `ThemeToggle` in `src/components/common/__tests__/ThemeToggle.test.tsx`
+- [x] T011 [US1] Add `ThemeToggle` to `Navbar` in `src/components/Navigation/Navbar.tsx`
+- [x] T012 [US1] Update Navbar header styling for both themes in `src/components/Navigation/Navbar.tsx`
+- [x] T013 [US1] Verify smooth transition (<300ms) on toggle - manual browser test
 
 **Checkpoint**: User Story 1 complete - users can toggle theme manually with smooth transitions
 
