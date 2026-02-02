@@ -16,10 +16,10 @@ export interface ButtonProps
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    'bg-indigo-600 text-white shadow-sm hover:bg-indigo-500 active:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500',
+    'bg-indigo-600 text-white shadow-sm transition-all duration-300 hover:bg-indigo-500 active:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 dark:bg-sky-600 dark:hover:bg-sky-500 dark:active:bg-sky-700 dark:focus-visible:outline-sky-500',
   secondary:
-    'bg-white text-slate-900 border border-slate-200 shadow-sm hover:bg-slate-50 active:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500',
-  ghost: 'bg-transparent text-slate-900 hover:bg-slate-100 active:bg-slate-200',
+    'bg-white text-slate-900 border border-slate-200 shadow-sm transition-all duration-300 hover:bg-slate-50 active:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500 dark:bg-slate-900 dark:text-white dark:border-white/10 dark:hover:bg-slate-800 dark:active:bg-slate-700',
+  ghost: 'bg-transparent text-slate-900 transition-colors duration-300 hover:bg-slate-100 active:bg-slate-200 dark:text-slate-300 dark:hover:bg-white/5 dark:active:bg-white/10',
 }
 
 const sizeStyles: Record<ButtonSize, string> = {
