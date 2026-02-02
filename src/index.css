@@ -2,15 +2,31 @@
 
 @layer base {
   :root {
-    @apply text-slate-50 bg-slate-950 font-sans antialiased;
+    --bg-primary: #ffffff;
+    --text-primary: #0f172a;
+    --bg-secondary: #f8fafc;
+    --border-primary: rgba(0, 0, 0, 0.1);
+    
+    @apply font-sans antialiased transition-colors duration-300;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+  }
+
+  :root.dark {
+    --bg-primary: #020617;
+    --text-primary: #f8fafc;
+    --bg-secondary: #0f172a;
+    --border-primary: rgba(255, 255, 255, 0.1);
   }
 
   body {
-    @apply min-h-screen bg-slate-950 text-slate-50 break-words;
+    @apply min-h-screen break-words transition-colors duration-300;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
   }
 
   a {
-    @apply text-indigo-600 underline-offset-4 hover:underline;
+    @apply text-indigo-600 underline-offset-4 hover:underline dark:text-indigo-400;
   }
 }
 
