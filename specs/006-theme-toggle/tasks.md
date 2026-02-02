@@ -19,8 +19,8 @@
 
 **Purpose**: Type definitions and core theme hook infrastructure
 
-- [ ] T001 [P] Create theme type definitions in `src/types/theme.ts`
-- [ ] T002 [P] Add inline theme script to prevent flash in `index.html`
+- [x] T001 [P] Create theme type definitions in `src/types/theme.ts`
+- [x] T002 [P] Add inline theme script to prevent flash in `index.html`
 
 ---
 
