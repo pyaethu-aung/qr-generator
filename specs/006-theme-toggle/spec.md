@@ -5,6 +5,12 @@
 **Status**: Draft  
 **Input**: User description: "I want to implement light/dark theme support and toggle"
 
+## Clarifications
+
+### Session 2026-02-02
+
+- Q: Should the toggle icon show the current theme or the target theme? → A: Target theme (icon shows what clicking will switch to, e.g., moon icon in light mode means "click for dark")
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Toggle Theme Manually (Priority: P1)
@@ -70,7 +76,7 @@ A first-time user visits the website without any stored preference. The website 
 - **FR-004**: System MUST persist the user's theme preference in local storage
 - **FR-005**: System MUST respect the user's stored preference on subsequent visits
 - **FR-006**: System MUST detect and apply the user's OS theme preference when no stored preference exists
-- **FR-007**: Toggle control MUST display an appropriate icon indicating the current or target theme state
+- **FR-007**: Toggle control MUST display an icon indicating the **target** theme state (e.g., moon icon when in light mode to indicate clicking will switch to dark mode)
 - **FR-008**: Theme change MUST apply to all UI elements consistently (backgrounds, text, buttons, cards, borders, etc.)
 
 ### Non-Functional Requirements
