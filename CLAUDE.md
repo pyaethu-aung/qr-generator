@@ -3,6 +3,8 @@
 Auto-generated from all feature plans. Last updated: 2026-02-01
 
 ## Active Technologies
+- TypeScript 5.9 + React 19 + Tailwind CSS 4, React Contex (006-theme-toggle)
+- Browser localStorage for preference persistence (006-theme-toggle)
 
 - TypeScript 5.9+ + React 19, Tailwind CSS 4, Lucide React (or existing icon lib for menu icon) (005-fix-mobile-overflow)
 
@@ -22,6 +24,7 @@ npm test && npm run lint
 TypeScript 5.9+: Follow standard conventions
 
 ## Recent Changes
+- 006-theme-toggle: Added TypeScript 5.9 + React 19 + Tailwind CSS 4, React Contex
 
 - 005-fix-mobile-overflow: Added TypeScript 5.9+ + React 19, Tailwind CSS 4, Lucide React (or existing icon lib for menu icon)
 
