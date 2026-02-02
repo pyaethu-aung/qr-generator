@@ -4,20 +4,40 @@ import { describe, expect, it, beforeEach } from 'vitest'
 
 import App from './App'
 import { LocaleProvider } from './hooks/LocaleProvider'
+import { ThemeProvider } from './hooks/ThemeProvider'
 import { locales } from './data/i18n'
+import { vi } from 'vitest'
+
+// Mock matchMedia
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+})
 
 describe('App integration', () => {
   beforeEach(() => {
     window.localStorage.clear()
+    vi.clearAllMocks()
   })
 
   it('updates UI copy and metadata when the language toggle switches to Burmese', async () => {
     const user = userEvent.setup()
 
     render(
-      <LocaleProvider>
-        <App />
-      </LocaleProvider>,
+      <ThemeProvider>
+        <LocaleProvider>
+          <App />
+        </LocaleProvider>
+      </ThemeProvider>,
     )
 
     expect(screen.getByRole('heading', { name: /sculpt standout qr codes/i })).toBeInTheDocument()
@@ -49,9 +69,11 @@ describe('App integration', () => {
   it('applies the toggle and metadata updates within 1 second', async () => {
     const user = userEvent.setup()
     render(
-      <LocaleProvider>
-        <App />
-      </LocaleProvider>,
+      <ThemeProvider>
+        <LocaleProvider>
+          <App />
+        </LocaleProvider>
+      </ThemeProvider>,
     )
 
     const toggle = screen.getByRole('button', { name: locales.en.locale.switchTo.my })
@@ -75,9 +97,11 @@ describe('App integration', () => {
     window.localStorage.setItem('qr-generator:locale-preference', 'my')
 
     render(
-      <LocaleProvider>
-        <App />
-      </LocaleProvider>,
+      <ThemeProvider>
+        <LocaleProvider>
+          <App />
+        </LocaleProvider>
+      </ThemeProvider>,
     )
 
     expect(document.documentElement.lang).toBe('my')
