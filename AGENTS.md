@@ -17,7 +17,7 @@ npm run test:watch # Watch mode for tests
 
 - **Framework**: React 19 + TypeScript 5.9 + Vite 7
 - **Styling**: Tailwind CSS v4 (`@tailwindcss/vite` + `@tailwindcss/postcss`)
-- **QR**: `qrcode.react` (preview), `qrcode` (generation)
+- **QR**: `qrcode.react` (preview), `qrcode` (generation), `jspdf` (PDF export)
 - **Testing**: Vitest + React Testing Library + jest-dom
 - **Linting**: ESLint (type-aware) + Prettier
 
