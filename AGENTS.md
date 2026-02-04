@@ -41,6 +41,7 @@ src/
 
 ### Testing (NON-NEGOTIABLE)
 - Every code change MUST add/update unit tests
+- **Every utility function in `src/utils/` MUST have a corresponding unit test**
 - Maintain coverage ≥85%
 - Tests must be deterministic, fast, independent
 - TDD encouraged
@@ -60,6 +61,7 @@ src/
 - React components MUST be audited against `vercel-react-best-practices` skill
 - UI/UX decisions MUST adhere to `web-design-guidelines` skill:
   - **WCAG accessibility**: keyboard-accessible, proper ARIA labels, AA contrast
+  - **ARIA requirement**: All components MUST include appropriate ARIA attributes
   - **Responsive layouts**: mobile-first, correct viewport adaptation
 
 ### Execution Discipline (NON-NEGOTIABLE)
