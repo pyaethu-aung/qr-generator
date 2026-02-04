@@ -36,11 +36,11 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 [P] Create `src/utils/export/exportCalculations.ts` with `calculateScaleFactor()`, `dpiToPageSize()`, `generateFilename()` functions
-- [ ] T005 [P] Create `src/utils/export/__tests__/exportCalculations.test.ts` with unit tests for scale factor, DPI conversion, filename generation
-- [ ] T006 Create `src/hooks/useExportState.ts` with useReducer-based state management (OPEN_MODAL, CLOSE_MODAL, SET_FORMAT, SET_DIMENSION, SET_DPI, START_EXPORT, EXPORT_SUCCESS, EXPORT_ERROR actions)
-- [ ] T007 Create `src/hooks/__tests__/useExportState.test.ts` with unit tests for reducer state transitions
-- [ ] T008 Run validation: `npm run test && npm run lint && npm run build`
+- [x] T004 [P] Create `src/utils/export/exportCalculations.ts` with `calculateScaleFactor()`, `dpiToPageSize()`, `generateFilename()` functions
+- [x] T005 [P] Create `src/utils/export/__tests__/exportCalculations.test.ts` with unit tests for scale factor, DPI conversion, filename generation
+- [x] T006 Create `src/hooks/useExportState.ts` with useReducer-based state management (OPEN_MODAL, CLOSE_MODAL, SET_FORMAT, SET_DIMENSION, SET_DPI, START_EXPORT, EXPORT_SUCCESS, EXPORT_ERROR actions)
+- [x] T007 Create `src/hooks/__tests__/useExportState.test.ts` with unit tests for reducer state transitions
+- [x] T008 Run validation: `npm run test && npm run lint && npm run build`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
