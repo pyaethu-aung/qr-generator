@@ -1,13 +1,16 @@
 <!--
 SYNC IMPACT REPORT
-Version: 1.4.0 -> 1.5.0
+Version: 1.5.0 -> 1.6.0
 Modified Principles:
-- VII. Cross-Platform & Browser Compatibility (NEW: ensure UI works on desktop/mobile and major browsers)
-- Governance (Removed branch name prefix requirement)
+- VIII. Theme Support Planning (NEW: mandate dark/light theme planning from the start)
+- Governance (Enhanced commit discipline with 50/72 rule and phase-based commits)
+Added Sections:
+- Principle VIII: Theme Support Planning
 Templates Updated:
 - .specify/templates/plan-template.md ✅
+- .specify/templates/spec-template.md ✅
 - .specify/templates/tasks-template.md ✅
-- README.md ✅
+- README.md (No update needed - already references commit discipline)
 Deferred Items:
 - None
 -->
@@ -36,6 +39,11 @@ After completing each task, the project MUST be validated with a successful `npm
 ### VII. Cross-Platform & Browser Compatibility
 The user interface MUST be fully functional and aesthetically consistent across desktop and mobile browsers, including all major browsers (Chrome, Safari, Firefox, Edge). Responsive design is mandatory, and testing must be performed on both screen types before marking UI tasks as complete.
 
+### VIII. Theme Support Planning
+All UI features MUST be planned and implemented with dark/light theme support from the start. Never hard-code colors or theme-specific values that would create technical debt when adding theme switching. The default theme MUST match the user's system preference (using `prefers-color-scheme` media query). User theme choice MUST be persisted in browser storage (localStorage) and take precedence over system preference for returning users. Design tokens and CSS custom properties are required for all color and theme-related styling.
+
+**Rationale**: Retrofitting theme support is expensive and error-prone. Planning for themes from the beginning ensures maintainable, accessible UI with minimal technical debt. Respecting system preferences improves user experience, while persisting explicit user choices ensures preference continuity.
+
 ## Documentation & Standards
 
 All public APIs and libraries must be documented. The README must be kept up to date with the latest features and usage instructions. Internal documentation should use Markdown and be co-located with the code. Architecture and structure decisions must be reflected in docs and code owners should prune obsolete references.
@@ -46,7 +54,11 @@ All code changes require a Pull Request review. Continuous Integration (CI) chec
 
 ## Governance
 
-This Constitution supersedes previous ad-hoc practices. Amendments require a Pull Request with justification and team approval. Each task must be committed individually; commit titles must be ≤50 characters and commit body lines ≤72 characters. Versioning follows Semantic Versioning (MAJOR for principle changes, MINOR for additions, PATCH for clarifications). Compliance is verified during Code Review and CI.
+This Constitution supersedes previous ad-hoc practices. Amendments require a Pull Request with justification and team approval.
 
-**Version**: 1.5.0 | **Ratified**: 2026-01-15 | **Last Amended**: 2026-02-01
+**Commit Discipline (MANDATORY)**: Each phase in `tasks.md` MUST be committed individually after completion. Commit messages MUST follow the 50/72 rule: subject line ≤50 characters (imperative mood, no period), followed by a blank line, then optional body text with lines ≤72 characters. Subject lines should start with a conventional commit type prefix (e.g., `feat:`, `fix:`, `docs:`, `refactor:`, `test:`). Every commit must represent a complete, testable unit of work.
+
+Versioning follows Semantic Versioning (MAJOR for principle changes, MINOR for additions, PATCH for clarifications). Compliance is verified during Code Review and CI.
+
+**Version**: 1.6.0 | **Ratified**: 2026-01-15 | **Last Amended**: 2026-02-03
 
