@@ -5,6 +5,14 @@
 **Status**: Draft  
 **Input**: User description: "Define the requirements for a High-Resolution Export Suite with format support (SVG, PDF, PNG), custom dimensions, accessible download UI, and error handling."
 
+## Clarifications
+
+### Session 2026-02-05
+
+- Q: Should the export options appear in a modal dialog or a dropdown menu? → A: Modal dialog (centered overlay with backdrop)
+- Q: Should users be able to enter custom pixel dimensions beyond the presets? → A: No, presets only (simpler UI)
+- Q: Which format should be the default selection when the modal opens? → A: PNG (most common, best for web/digital)
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Download QR Code as PNG (Priority: P1)
@@ -80,9 +88,9 @@ A user navigating with a keyboard or screen reader needs to access the download 
 
 ### Functional Requirements
 
-- **FR-001**: System MUST provide a download modal/dropdown accessible from the main QR code view.
+- **FR-001**: System MUST provide a **modal dialog** (centered overlay with backdrop) accessible from the main QR code view for export options.
 - **FR-002**: System MUST support export in PNG, SVG, and PDF formats.
-- **FR-003**: Users MUST be able to select from preset dimension options (500px, 1000px, 2000px) for raster exports.
+- **FR-003**: Users MUST be able to select from preset dimension options only (500px, 1000px, 2000px) for raster exports. Custom input is not supported.
 - **FR-004**: Users MUST be able to select DPI presets (72 DPI for screen, 150 DPI for standard print, 300 DPI for high-quality print).
 - **FR-005**: System MUST validate that QR code content is non-empty before enabling export options.
 - **FR-006**: System MUST preserve QR code styling (colors, patterns) in all export formats.
@@ -90,6 +98,7 @@ A user navigating with a keyboard or screen reader needs to access the download 
 - **FR-008**: Download modal MUST be fully keyboard navigable with proper focus management.
 - **FR-009**: All format options and controls MUST have appropriate ARIA labels for screen readers.
 - **FR-010**: Download modal MUST be responsive and usable on mobile devices.
+- **FR-011**: PNG format MUST be pre-selected as the default when the export modal opens.
 
 ### Non-Functional Requirements
 
