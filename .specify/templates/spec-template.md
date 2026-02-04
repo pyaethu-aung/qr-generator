@@ -95,6 +95,7 @@
 - **NFR-001**: UI MUST be fully functional and consistent across desktop/mobile and major browsers (Chrome, Safari, Firefox, Edge).
 - **NFR-002**: System MUST adhere to responsive design principles for all UI components.
 - **NFR-003**: All UI features MUST be planned and implemented with dark/light theme support from the start; default theme MUST match system preference; user theme choice MUST be persisted in browser storage.
+- **NFR-004**: React components MUST be audited against `vercel-react-best-practices` skill; UI/UX decisions MUST adhere to `web-design-guidelines` skill (WCAG accessibility + responsive layouts).
 
 *Example of marking unclear requirements:*
 

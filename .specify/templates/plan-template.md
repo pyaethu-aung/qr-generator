@@ -35,6 +35,7 @@
 - Unit and integration tests MUST be added/updated for each change; maintain coverage ≥85%.
 - UI MUST be fully functional and consistent across desktop/mobile and major browsers via responsive design.
 - Theme support: all UI MUST be planned with dark/light theme support from the start; never hard-code colors; default theme matches system preference; user choice persisted in localStorage.
+- Skill audits: React components MUST be audited against `vercel-react-best-practices`; UI/UX decisions MUST adhere to `web-design-guidelines` (WCAG accessibility + responsive layouts).
 - Structure adherence: UI in `src/components`, hooks in `src/hooks`, utilities in `src/utils`, data shapers in `src/data`, shared types in `src/types`.
 - Remove unused code/assets; no commented-out blocks committed.
 - Commit discipline: commit each phase after completion; follow 50/72 rule (subject ≤50 chars, body lines ≤72 chars); use conventional commit prefixes.

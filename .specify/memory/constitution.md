@@ -1,16 +1,15 @@
 <!--
 SYNC IMPACT REPORT
-Version: 1.5.0 -> 1.6.0
+Version: 1.6.0 -> 1.7.0
 Modified Principles:
-- VIII. Theme Support Planning (NEW: mandate dark/light theme planning from the start)
-- Governance (Enhanced commit discipline with 50/72 rule and phase-based commits)
+- IX. Skill-Driven Development (NEW: mandate skill audits for React and UI/UX)
 Added Sections:
-- Principle VIII: Theme Support Planning
+- Principle IX: Skill-Driven Development
 Templates Updated:
 - .specify/templates/plan-template.md ✅
 - .specify/templates/spec-template.md ✅
 - .specify/templates/tasks-template.md ✅
-- README.md (No update needed - already references commit discipline)
+- AGENT.md ✅
 Deferred Items:
 - None
 -->
@@ -44,6 +43,13 @@ All UI features MUST be planned and implemented with dark/light theme support fr
 
 **Rationale**: Retrofitting theme support is expensive and error-prone. Planning for themes from the beginning ensures maintainable, accessible UI with minimal technical debt. Respecting system preferences improves user experience, while persisting explicit user choices ensures preference continuity.
 
+### IX. Skill-Driven Development (NON-NEGOTIABLE)
+All React components MUST be audited against the `vercel-react-best-practices` skill (`.agents/skills/vercel-react-best-practices/SKILL.md`) before marking component work as complete. All UI/UX decisions MUST adhere to the `web-design-guidelines` skill (`.agents/skills/web-design-guidelines/SKILL.md`), specifically regarding:
+- **Accessibility (WCAG)**: All interactive elements must be keyboard-accessible, have proper ARIA labels, and meet WCAG 2.1 AA contrast ratios.
+- **Responsive Layouts**: All layouts must be mobile-first and adapt correctly to desktop, tablet, and mobile viewports.
+
+**Rationale**: Skill files encode institutional knowledge and best practices. Mandating audits against these skills ensures consistent quality, prevents common anti-patterns, and maintains accessibility standards across all UI work.
+
 ## Documentation & Standards
 
 All public APIs and libraries must be documented. The README must be kept up to date with the latest features and usage instructions. Internal documentation should use Markdown and be co-located with the code. Architecture and structure decisions must be reflected in docs and code owners should prune obsolete references.
@@ -60,5 +66,4 @@ This Constitution supersedes previous ad-hoc practices. Amendments require a Pul
 
 Versioning follows Semantic Versioning (MAJOR for principle changes, MINOR for additions, PATCH for clarifications). Compliance is verified during Code Review and CI.
 
-**Version**: 1.6.0 | **Ratified**: 2026-01-15 | **Last Amended**: 2026-02-03
-
+**Version**: 1.7.0 | **Ratified**: 2026-01-15 | **Last Amended**: 2026-02-04
