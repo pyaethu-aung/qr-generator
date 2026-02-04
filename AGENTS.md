@@ -56,6 +56,12 @@ src/
 - Support Chrome, Safari, Firefox, Edge
 - Responsive design is mandatory
 
+### Skill-Driven Development (Principle IX - NON-NEGOTIABLE)
+- React components MUST be audited against `vercel-react-best-practices` skill
+- UI/UX decisions MUST adhere to `web-design-guidelines` skill:
+  - **WCAG accessibility**: keyboard-accessible, proper ARIA labels, AA contrast
+  - **Responsive layouts**: mobile-first, correct viewport adaptation
+
 ### Execution Discipline (NON-NEGOTIABLE)
 Run after EVERY task completion:
 ```bash
