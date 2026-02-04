@@ -24,9 +24,9 @@
 
 **Purpose**: Project initialization and dependency installation
 
-- [ ] T001 Install jspdf dependency via `npm install jspdf`
-- [ ] T002 [P] Create export types in `src/types/export.ts` (ExportFormat, DimensionPreset, DpiPreset, ExportState, ExportAction, ExportPayload)
-- [ ] T003 [P] Create export directory structure `src/utils/export/`
+- [x] T001 Install jspdf dependency via `npm install jspdf`
+- [x] T002 [P] Create export types in `src/types/export.ts` (ExportFormat, DimensionPreset, DpiPreset, ExportState, ExportAction, ExportPayload)
+- [x] T003 [P] Create export directory structure `src/utils/export/`
 
 ---
 
