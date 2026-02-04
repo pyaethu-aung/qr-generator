@@ -1,17 +1,17 @@
 <!--
 SYNC IMPACT REPORT
-Version: 1.7.1 -> 1.7.2
+Version: 1.7.2 -> 1.7.3
 Modified Principles:
-- Governance (CLARIFIED: AGENTS.md must be updated with constitution amendments)
+- IX. Skill-Driven Development -> IX. Skill-Driven Development & Agentic Workflow (expanded skill integration duties)
 Added Sections:
 - None
 Templates Updated:
-- .specify/templates/plan-template.md ✅
-- .specify/templates/spec-template.md ✅
-- .specify/templates/tasks-template.md ✅
-- AGENTS.md ✅
+- .specify/templates/plan-template.md ⚠ pending
+- .specify/templates/spec-template.md ⚠ pending
+- .specify/templates/tasks-template.md ⚠ pending
+- AGENTS.md ⚠ pending
 Deferred Items:
-- None
+- Update templates and AGENTS.md to reflect new agentic workflow duties
 -->
 # QR Generator Constitution
 
@@ -43,12 +43,13 @@ All UI features MUST be planned and implemented with dark/light theme support fr
 
 **Rationale**: Retrofitting theme support is expensive and error-prone. Planning for themes from the beginning ensures maintainable, accessible UI with minimal technical debt. Respecting system preferences improves user experience, while persisting explicit user choices ensures preference continuity.
 
-### IX. Skill-Driven Development (NON-NEGOTIABLE)
-All React components MUST be audited against the `vercel-react-best-practices` skill (`.agents/skills/vercel-react-best-practices/SKILL.md`) before marking component work as complete. All UI/UX decisions MUST adhere to the `web-design-guidelines` skill (`.agents/skills/web-design-guidelines/SKILL.md`), specifically regarding:
-- **Accessibility (WCAG)**: All interactive elements must be keyboard-accessible, have proper ARIA labels, and meet WCAG 2.1 AA contrast ratios. **Every component MUST include appropriate ARIA attributes** (`aria-label`, `aria-describedby`, `role`, etc.).
-- **Responsive Layouts**: All layouts must be mobile-first and adapt correctly to desktop, tablet, and mobile viewports.
+### IX. Skill-Driven Development & Agentic Workflow (NON-NEGOTIABLE)
+The Agent MUST treat the following skills as "Primary Source Truth" during all phases of the spec-kit workflow (`/specify`, `/plan`, `/implement`):
+- **React Standards**: Use `.agents/skills/vercel-react-best-practices/SKILL.md`. Every `/plan` must explicitly verify state management and hook usage against these rules.
+- **UI/UX & Design**: Use `.agents/skills/web-design-guidelines/SKILL.md`. Every `/specify` phase must define accessibility (ARIA) and responsive requirements based on these guidelines.
+- **TS Learning Mode**: When implementing code, the Agent should provide brief comments (1-sentence) explaining *why* a certain TypeScript pattern was used (e.g., Discriminated Unions vs. Interfaces) if it relates to a guideline in the skills.
 
-**Rationale**: Skill files encode institutional knowledge and best practices. Mandating audits against these skills ensures consistent quality, prevents common anti-patterns, and maintains accessibility standards across all UI work.
+**Rationale**: This ensures the AI doesn't just "generate code," but acts as a senior mentor that follows industry-standard guidelines. By integrating skills into the planning phase, we prevent technical debt before it is even written.
 
 ## Documentation & Standards
 
@@ -68,4 +69,4 @@ This Constitution supersedes previous ad-hoc practices. Amendments require a Pul
 
 Versioning follows Semantic Versioning (MAJOR for principle changes, MINOR for additions, PATCH for clarifications). Compliance is verified during Code Review and CI.
 
-**Version**: 1.7.2 | **Ratified**: 2026-01-15 | **Last Amended**: 2026-02-04
+**Version**: 1.7.3 | **Ratified**: 2026-01-15 | **Last Amended**: 2026-02-05
