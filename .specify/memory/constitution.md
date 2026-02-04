@@ -1,15 +1,15 @@
 <!--
 SYNC IMPACT REPORT
-Version: 1.6.0 -> 1.7.0
+Version: 1.7.1 -> 1.7.2
 Modified Principles:
-- IX. Skill-Driven Development (NEW: mandate skill audits for React and UI/UX)
+- Governance (CLARIFIED: AGENTS.md must be updated with constitution amendments)
 Added Sections:
-- Principle IX: Skill-Driven Development
+- None
 Templates Updated:
 - .specify/templates/plan-template.md ✅
 - .specify/templates/spec-template.md ✅
 - .specify/templates/tasks-template.md ✅
-- AGENT.md ✅
+- AGENTS.md ✅
 Deferred Items:
 - None
 -->
@@ -21,7 +21,7 @@ Deferred Items:
 Code must be readable, maintainable, and idiomatic. Automated linting and formatting are required on every commit. No dead code, unused assets, or commented-out blocks are permitted; remove unreferenced resources as part of each change. Refactoring is continuous, and complexity is managed through modular design.
 
 ### II. Testing & Execution Discipline (NON-NEGOTIABLE)
-Testing is mandatory (Unit & Integration). Run `npm run test`, `npm run lint`, and `npm run build` locally after every task and before opening a PR. Every code change MUST add or update relevant unit tests, and all tests MUST pass locally and in CI before merge. Regression tests are required for bug fixes. Maintain coverage at or above 85%. Tests must be deterministic, fast, and independent. TDD is encouraged.
+Testing is mandatory (Unit & Integration). Run `npm run test`, `npm run lint`, and `npm run build` locally after every task and before opening a PR. Every code change MUST add or update relevant unit tests, and all tests MUST pass locally and in CI before merge. **Every utility function in `src/utils/` MUST have a corresponding unit test file** (Vitest/Jest). Regression tests are required for bug fixes. Maintain coverage at or above 85%. Tests must be deterministic, fast, and independent. TDD is encouraged.
 
 ### III. User Experience Consistency
 Interfaces (CLI, API, UI) must be predictable and consistent. Standardize flags, error messages, and return codes across the application. Documentation must match implementation. Prioritize user intent and minimize cognitive load in workflows.
@@ -45,7 +45,7 @@ All UI features MUST be planned and implemented with dark/light theme support fr
 
 ### IX. Skill-Driven Development (NON-NEGOTIABLE)
 All React components MUST be audited against the `vercel-react-best-practices` skill (`.agents/skills/vercel-react-best-practices/SKILL.md`) before marking component work as complete. All UI/UX decisions MUST adhere to the `web-design-guidelines` skill (`.agents/skills/web-design-guidelines/SKILL.md`), specifically regarding:
-- **Accessibility (WCAG)**: All interactive elements must be keyboard-accessible, have proper ARIA labels, and meet WCAG 2.1 AA contrast ratios.
+- **Accessibility (WCAG)**: All interactive elements must be keyboard-accessible, have proper ARIA labels, and meet WCAG 2.1 AA contrast ratios. **Every component MUST include appropriate ARIA attributes** (`aria-label`, `aria-describedby`, `role`, etc.).
 - **Responsive Layouts**: All layouts must be mobile-first and adapt correctly to desktop, tablet, and mobile viewports.
 
 **Rationale**: Skill files encode institutional knowledge and best practices. Mandating audits against these skills ensures consistent quality, prevents common anti-patterns, and maintains accessibility standards across all UI work.
@@ -62,8 +62,10 @@ All code changes require a Pull Request review. Continuous Integration (CI) chec
 
 This Constitution supersedes previous ad-hoc practices. Amendments require a Pull Request with justification and team approval.
 
+**AGENTS.md Sync (MANDATORY)**: Whenever this Constitution is amended, `AGENTS.md` MUST be updated to reflect the changes. This ensures AI coding assistants (Antigravity, Gemini CLI, GitHub Copilot, etc.) always operate with current project guidelines.
+
 **Commit Discipline (MANDATORY)**: Each phase in `tasks.md` MUST be committed individually after completion. Commit messages MUST follow the 50/72 rule: subject line ≤50 characters (imperative mood, no period), followed by a blank line, then optional body text with lines ≤72 characters. Subject lines should start with a conventional commit type prefix (e.g., `feat:`, `fix:`, `docs:`, `refactor:`, `test:`). Every commit must represent a complete, testable unit of work.
 
 Versioning follows Semantic Versioning (MAJOR for principle changes, MINOR for additions, PATCH for clarifications). Compliance is verified during Code Review and CI.
 
-**Version**: 1.7.0 | **Ratified**: 2026-01-15 | **Last Amended**: 2026-02-04
+**Version**: 1.7.2 | **Ratified**: 2026-01-15 | **Last Amended**: 2026-02-04
