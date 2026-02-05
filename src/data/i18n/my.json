@@ -66,5 +66,27 @@
     "shareStatusFailed": "QR ကို မျှဝေပေးလို့ မရနိုင်ပါ",
     "shareStatusCanceled": "မျှဝေပေးခြင်း ပယ်ဖျက်လိုက်သည်",
     "shareStatusPermissionDenied": "ခွင့်ပြုချက်မရှိပါ။ ဒေါင်းလုဒ်လုပ်နေပါသည်..."
+  },
+  "export": {
+    "modalTitle": "QR ကုဒ် တင်ပို့ရန်",
+    "exportButton": "တင်ပို့ပါ",
+    "cancelButton": "ပယ်ဖျက်ပါ",
+    "dimensionLabel": "အရွယ်အစား",
+    "dpiLabel": "ပရင့်အရည်အသွေး (DPI)",
+    "formatLabels": {
+      "png": "PNG",
+      "svg": "SVG",
+      "pdf": "PDF"
+    },
+    "formatDescriptions": {
+      "png": "Raster ပုံဖော်မတ်၊ ဝဘ်နှင့် ဒစ်ဂျစ်တယ်အသုံးအတွက် အကောင်းဆုံး",
+      "svg": "အရွယ်အစား ပြောင်းလဲနိုင်သော vector graphics၊ အပြည့်အဝ ကြည်လင်ပြတ်သားမှု",
+      "pdf": "ပရင့်လုပ်ရန် အသင့် စာရွက်စာတမ်း ဖော်မတ်"
+    },
+    "errors": {
+      "emptyContent": "QR ကုဒ်ဖန်တီးရန် အကြောင်းအရာ ထည့်ပါ",
+      "exportFailed": "တင်ပို့မှု မအောင်မြင်ပါ။ ထပ်စမ်းကြည့်ပါ။",
+      "canvasNotFound": "QR ကုဒ် canvas မတွေ့ပါ"
+    }
   }
 }
