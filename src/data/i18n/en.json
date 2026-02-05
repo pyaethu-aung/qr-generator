@@ -66,5 +66,27 @@
     "shareStatusFailed": "Unable to share QR code",
     "shareStatusCanceled": "Share canceled",
     "shareStatusPermissionDenied": "Permission denied. Downloading instead..."
+  },
+  "export": {
+    "modalTitle": "Export QR Code",
+    "exportButton": "Export",
+    "cancelButton": "Cancel",
+    "dimensionLabel": "Dimension",
+    "dpiLabel": "Print Quality (DPI)",
+    "formatLabels": {
+      "png": "PNG",
+      "svg": "SVG",
+      "pdf": "PDF"
+    },
+    "formatDescriptions": {
+      "png": "Raster image format, best for web and digital use",
+      "svg": "Scalable vector graphics, infinite resolution",
+      "pdf": "Print-ready document format"
+    },
+    "errors": {
+      "emptyContent": "Please enter content to generate QR code",
+      "exportFailed": "Export failed. Please try again.",
+      "canvasNotFound": "QR code canvas not found"
+    }
   }
 }

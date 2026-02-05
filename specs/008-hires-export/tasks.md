@@ -54,17 +54,17 @@
 
 ### Implementation for User Story 1
 
-- [ ] T009 [P] [US1] Create `src/utils/export/pngExporter.ts` with `exportPng(canvas, dimension)` function using Canvas scaling (OffscreenCanvas for 2000px per react-best-practices)
-- [ ] T010 [P] [US1] Create `src/utils/export/__tests__/pngExporter.test.ts` with unit tests for blob generation, dimension accuracy, worker fallback
-- [ ] T011 [P] [US1] Create `src/components/common/ExportModal.tsx` with modal overlay, backdrop click to close, focus trap, Escape key handling, ARIA attributes (`role="dialog"`, `aria-modal="true"`, `aria-labelledby`)
-- [ ] T012 [P] [US1] Create `src/components/common/FormatSelector.tsx` with radio group for PNG/SVG/PDF selection, ARIA labels, format descriptions
-- [ ] T013 [P] [US1] Create `src/components/common/DimensionSelector.tsx` with preset buttons (500px, 1000px, 2000px), DPI selector, ARIA labels
-- [ ] T014 [US1] Modify `src/components/feature/qr/QRPreview.tsx` to add Download button next to Share button, disabled when QR empty with tooltip
-- [ ] T015 [US1] Integrate ExportModal into QRPreview via React portal
-- [ ] T016 [US1] Add i18n keys to `src/data/i18n/en.json`: modal title, PNG format label, dimension labels, download button, error messages
-- [ ] T017 [US1] Add i18n keys to `src/data/i18n/my.json` with Burmese translations
-- [ ] T018 [P] [US1] Create `src/components/common/__tests__/ExportModal.test.tsx` with tests for open/close, keyboard navigation, ARIA attributes, format selection
-- [ ] T019 [US1] Run validation: `npm run test && npm run lint && npm run build`
+- [x] T009 [P] [US1] Create `src/utils/export/pngExporter.ts` with `exportPng(canvas, dimension)` function using Canvas scaling (OffscreenCanvas for 2000px per react-best-practices)
+- [x] T010 [P] [US1] Create `src/utils/export/__tests__/pngExporter.test.ts` with unit tests for blob generation, dimension accuracy, worker fallback
+- [x] T011 [P] [US1] Create `src/components/common/ExportModal.tsx` with modal overlay, backdrop click to close, focus trap, Escape key handling, ARIA attributes (`role="dialog"`, `aria-modal="true"`, `aria-labelledby`)
+- [x] T012 [P] [US1] Create `src/components/common/FormatSelector.tsx` with radio group for PNG/SVG/PDF selection, ARIA labels, format descriptions
+- [x] T013 [P] [US1] Create `src/components/common/DimensionSelector.tsx` with preset buttons (500px, 1000px, 2000px), DPI selector, ARIA labels
+- [x] T014 [US1] Modify `src/components/feature/qr/QRPreview.tsx` to add Download button next to Share button, disabled when QR empty with tooltip
+- [x] T015 [US1] Integrate ExportModal into QRPreview via React portal
+- [x] T016 [US1] Add i18n keys to `src/data/i18n/en.json`: modal title, PNG format label, dimension labels, download button, error messages
+- [x] T017 [US1] Add i18n keys to `src/data/i18n/my.json` with Burmese translations
+- [x] T018 [P] [US1] Create `src/components/common/__tests__/ExportModal.test.tsx` with tests for open/close, keyboard navigation, ARIA attributes, format selection
+- [x] T019 [US1] Run validation: `npm run test && npm run lint && npm run build`
 
 **Checkpoint**: User Story 1 complete - users can download QR codes as PNG
 
