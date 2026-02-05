@@ -7,6 +7,7 @@ import { useQRShare } from '../../../hooks/useQRShare'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import { useExportState } from '../../../hooks/useExportState'
 import { exportPng } from '../../../utils/export/pngExporter'
+import { exportSvg } from '../../../utils/export/svgExporter'
 import { generateFilename } from '../../../utils/export/exportCalculations'
 import { downloadBlob } from '../../../utils/download'
 import { ExportModal } from '../../common/ExportModal'
@@ -43,9 +44,9 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
       exportError,
     } = useExportState()
 
-    // Export handler for PNG (Phase 3 - US1)
+    // Export handler for PNG and SVG (Phase 3-4)
     const handleExport = useCallback(async () => {
-      if (!canvasRef.current || !value) {
+      if (!value) {
         // Type assertion for new translation keys not yet in type def
         exportError(translate('export.errors.emptyContent' as any))
         return
@@ -54,16 +55,33 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
       startExport()
 
       try {
-        // Currently only PNG is implemented (Phase 3 - US1)
         if (exportState.format === 'png') {
+          // PNG export requires canvas
+          if (!canvasRef.current) {
+            exportError(translate('export.errors.canvasNotFound' as any))
+            return
+          }
+
           const blob = await exportPng(canvasRef.current, exportState.dimension)
           const filename = generateFilename('png', 'qrcode')
           downloadBlob(blob, filename)
           exportSuccess()
-          // Close modal after successful export
+          setTimeout(() => closeModal(), 500)
+        } else if (exportState.format === 'svg') {
+          // SVG export uses QR config (server-side generation)
+          const blob = await exportSvg(value, {
+            value,
+            ecLevel,
+            fgColor,
+            bgColor,
+            margin: 0,
+          })
+          const filename = generateFilename('svg', 'qrcode')
+          downloadBlob(blob, filename)
+          exportSuccess()
           setTimeout(() => closeModal(), 500)
         } else {
-          // SVG and PDF will be implemented in Phase 4 and 5
+          // PDF will be implemented in Phase 5
           exportError(`${exportState.format.toUpperCase()} export coming soon`)
         }
       } catch (error) {
@@ -71,7 +89,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
           error instanceof Error ? error.message : translate('export.errors.exportFailed' as any),
         )
       }
-    }, [exportState.format, exportState.dimension, value, translate, startExport, exportSuccess, exportError, closeModal])
+    }, [exportState.format, exportState.dimension, value, ecLevel, fgColor, bgColor, translate, startExport, exportSuccess, exportError, closeModal])
 
     const assignForwardedRef = useCallback(
       (node: HTMLCanvasElement | null) => {
