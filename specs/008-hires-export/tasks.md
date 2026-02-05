@@ -78,11 +78,11 @@
 
 ### Implementation for User Story 2
 
-- [ ] T020 [P] [US2] Create `src/utils/export/svgExporter.ts` with `exportSvg(value, config)` function using `qrcode.toString({ type: 'svg' })`, preserving colors
-- [ ] T021 [P] [US2] Create `src/utils/export/__tests__/svgExporter.test.ts` with unit tests for SVG string validity, color preservation
-- [ ] T022 [US2] Integrate SVG export into ExportModal flow in `src/components/common/ExportModal.tsx`
-- [ ] T023 [US2] Add SVG-specific i18n keys to `src/data/i18n/en.json` and `src/data/i18n/my.json`
-- [ ] T024 [US2] Run validation: `npm run test && npm run lint && npm run build`
+- [x] T020 [P] [US2] Create `src/utils/export/svgExporter.ts` with `exportSvg(value, config)` function using `qrcode.toString({ type: 'svg' })`, preserving colors
+- [x] T021 [P] [US2] Create `src/utils/export/__tests__/svgExporter.test.ts` with unit tests for SVG string validity, color preservation
+- [x] T022 [US2] Integrate SVG export into ExportModal flow in `src/components/common/ExportModal.tsx`
+- [x] T023 [US2] Add SVG-specific i18n keys to `src/data/i18n/en.json` and `src/data/i18n/my.json`
+- [x] T024 [US2] Run validation: `npm run test && npm run lint && npm run build`
 
 **Checkpoint**: User Stories 1 AND 2 complete - users can download PNG or SVG
 
