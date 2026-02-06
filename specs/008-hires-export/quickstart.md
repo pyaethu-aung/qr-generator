@@ -51,9 +51,9 @@ npm run test:coverage
 
 ## Verification Checklist
 
-- [ ] PNG export produces correct dimensions
-- [ ] SVG export is valid and scalable
-- [ ] PDF export opens in PDF readers
-- [ ] Modal is keyboard accessible
-- [ ] Works on mobile (iOS Safari, Android Chrome)
-- [ ] Theme support (dark/light)
+- [x] PNG export produces correct dimensions (500px, 1000px, 2000px)
+- [x] SVG export is valid, scalable, and does not show dimension selector
+- [x] PDF export opens in PDF readers with correct DPI
+- [x] Modal is keyboard accessible
+- [x] Works on mobile (iOS Safari, Android Chrome)
+- [x] Theme support (dark/light)

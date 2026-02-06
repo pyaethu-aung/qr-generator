@@ -43,6 +43,7 @@ A designer wants to download the QR code as a scalable vector graphic (SVG) for 
 
 1. **Given** a valid QR code is displayed, **When** the user selects SVG format and downloads, **Then** a valid SVG file is saved that renders correctly in modern browsers and design software.
 2. **Given** a valid QR code with custom colors, **When** downloading as SVG, **Then** the exported SVG preserves the exact colors and styling.
+3. **Given** the user selects SVG format, **When** viewing the export modal, **Then** the dimension selector is hidden as SVG is resolution-independent and infinitely scalable.
 
 ---
 
@@ -90,8 +91,8 @@ A user navigating with a keyboard or screen reader needs to access the download 
 
 - **FR-001**: System MUST provide a **modal dialog** (centered overlay with backdrop) accessible from the main QR code view for export options.
 - **FR-002**: System MUST support export in PNG, SVG, and PDF formats.
-- **FR-003**: Users MUST be able to select from preset dimension options only (500px, 1000px, 2000px) for raster exports. Custom input is not supported.
-- **FR-004**: Users MUST be able to select DPI presets (72 DPI for screen, 150 DPI for standard print, 300 DPI for high-quality print).
+- **FR-003**: Users MUST be able to select from preset dimension options (500px, 1000px, 2000px) for **PNG and PDF** formats only. SVG format does not display dimension options as it is resolution-independent. Custom input is not supported.
+- **FR-004**: Users MUST be able to select DPI presets (72 DPI for screen, 150 DPI standard print, 300 DPI for high-quality print) **for PDF format only**.
 - **FR-005**: System MUST validate that QR code content is non-empty before enabling export options.
 - **FR-006**: System MUST preserve QR code styling (colors, patterns) in all export formats.
 - **FR-007**: System MUST provide clear error messages when export fails.
