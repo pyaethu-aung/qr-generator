@@ -44,16 +44,42 @@ export function dpiToPageSize(dimension: DimensionPreset, dpi: DpiPreset): numbe
 /**
  * Generate a filename for the exported QR code.
  *
- * @why Consistent naming convention with timestamp ensures unique filenames
- * and makes it clear what format the file is.
+ * @why Consistent naming convention with timestamp, dimension, and DPI ensures unique filenames
+ * and makes it clear what format and quality the file is.
  * @param format - Export format (png, svg, pdf)
  * @param prefix - Optional prefix for the filename (default: 'qrcode')
- * @returns Filename with appropriate extension
+ * @param dimension - Optional dimension in pixels (included for PNG/PDF)
+ * @param dpi - Optional DPI setting (included for PDF only)
+ * @returns Filename with appropriate extension and metadata
+ * 
+ * @example
+ * generateFilename('png', 'qrcode', 1000)        // qrcode-1000px_2024-02-07T12-30-45.png
+ * generateFilename('svg', 'qrcode')              // qrcode_2024-02-07T12-30-45.svg
+ * generateFilename('pdf', 'qrcode', 2000, 300)   // qrcode-2000px-300dpi_2024-02-07T12-30-45.pdf
  */
-export function generateFilename(format: ExportFormat, prefix: string = 'qrcode'): string {
+export function generateFilename(
+  format: ExportFormat,
+  prefix: string = 'qrcode',
+  dimension?: number,
+  dpi?: number,
+): string {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
   const extension = FORMAT_CONFIGS[format].extension
-  return `${prefix}_${timestamp}${extension}`
+
+  // Build filename with dimension and DPI metadata
+  let filename = prefix
+
+  // Add dimension for PNG and PDF (SVG is resolution-independent)
+  if (dimension && (format === 'png' || format === 'pdf')) {
+    filename += `-${dimension}px`
+  }
+
+  // Add DPI for PDF only
+  if (dpi && format === 'pdf') {
+    filename += `-${dpi}dpi`
+  }
+
+  return `${filename}_${timestamp}${extension}`
 }
 
 /**
@@ -73,7 +99,7 @@ export function isValidDimension(dimension: number): boolean {
  * @why SVG dimensions are specified in the viewBox, PNG uses pixel dimensions,
  * and PDF uses points calculated from DPI.
  * @param format - Export format
- * @param dimension - Base dimension in pixels
+ * @param dimension -Base dimension in pixels
  * @param dpi - DPI setting (only affects PDF)
  * @returns Object with width and height in appropriate units
  */
