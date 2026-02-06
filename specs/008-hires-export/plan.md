@@ -151,8 +151,8 @@ src/
 
 #### [NEW] [DimensionSelector.tsx](file:///Users/pyaethuaung/go/src/github.com/pyaethu-aung/qr-generator/src/components/common/DimensionSelector.tsx)
 
-- Preset buttons for 500px/1000px/2000px
-- DPI selector for PDF format
+- Preset buttons for 500px/1000px/2000px (hidden for SVG format)
+- DPI selector (shown only for PDF format)
 - ARIA labels for each option
 
 #### [MODIFY] [QRPreview.tsx](file:///Users/pyaethuaung/go/src/github.com/pyaethu-aung/qr-generator/src/components/feature/qr/QRPreview.tsx)
