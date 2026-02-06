@@ -152,6 +152,17 @@ export function ExportModal({
           </button>
         </div>
 
+        {/* Screen reader-only status announcements (T034) */}
+        <div
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          className="sr-only"
+        >
+          {isExporting && 'Exporting QR code, please wait...'}
+          {!isExporting && error && `Export failed: ${error}`}
+        </div>
+
         {/* Error display */}
         {error && (
           <div
