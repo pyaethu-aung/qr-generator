@@ -57,3 +57,24 @@ npm run test:coverage
 - [x] Modal is keyboard accessible
 - [x] Works on mobile (iOS Safari, Android Chrome)
 - [x] Theme support (dark/light)
+
+## FAQ
+
+### Why do all PDF DPI settings produce the same file size?
+
+**Answer:** This is correct and expected behavior!
+
+DPI controls the **physical print size**, not the file size:
+
+- All PDFs contain the same pixel data (e.g., 2000×2000px PNG)
+- DPI is metadata telling the printer how large to print it
+- **Same dimension + different DPI = same file size**
+
+Example with 2000px dimension:
+- **72 DPI**: Prints at 27.78 inches (screen quality)
+- **150 DPI**: Prints at 13.33 inches (standard print)
+- **300 DPI**: Prints at 6.67 inches (high-quality print)
+
+**To change file size**, change the **dimension** (500px, 1000px, 2000px), not the DPI.
+
+**Higher DPI** = Smaller print size = **Better quality** at that size ✓

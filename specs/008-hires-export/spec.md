@@ -133,3 +133,15 @@ A user navigating with a keyboard or screen reader needs to access the download 
 - Browser APIs for file download (Blob, download attribute, or Web Share API for mobile) are sufficient without server-side processing.
 - PDF generation can be handled client-side using existing or new libraries.
 - Maximum export dimension will be capped at 4000px to prevent browser memory issues.
+
+**Technical Note - DPI and File Size:**
+
+DPI (Dots Per Inch) controls the **physical print size**, not the file size. When exporting a 2000px QR code as PDF:
+
+- **All DPI settings produce identical file sizes** because they embed the same 2000×2000px PNG image
+- **DPI determines the page size** in the PDF, which controls how large the QR code prints:
+  - **72 DPI** → 2000px ÷ 72 = 27.78 inches (large print, screen quality)
+  - **150 DPI** → 2000px ÷ 150 = 13.33 inches (medium print, standard quality)
+  - **300 DPI** → 2000px ÷ 300 = 6.67 inches (small print, high quality)
+- **Higher DPI = smaller physical print size = better quality** at that size
+- To change file size, users must change the **dimension** (500px, 1000px, 2000px), not the DPI
