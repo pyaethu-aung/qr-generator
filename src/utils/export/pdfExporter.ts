@@ -49,6 +49,12 @@ export async function exportPdf(value: string, config: PdfExportConfig): Promise
     })
 
     // Calculate PDF page size based on DPI
+    // NOTE: DPI controls physical print size, NOT file size. All DPI settings embed
+    // the same pixel data (e.g., 2000x2000px PNG), but create different page sizes:
+    // - 72 DPI: 2000px/72 = 27.78" (large print, screen quality)
+    // - 150 DPI: 2000px/150 = 13.33" (medium print, standard quality)
+    // - 300 DPI: 2000px/300 = 6.67" (small print, high quality)
+    // Therefore, file sizes are identical for same dimension with different DPI.
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
     const pageSize = dpiToPageSize(config.dimension as any, config.dpi)
 
