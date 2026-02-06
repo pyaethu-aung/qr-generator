@@ -64,24 +64,34 @@ describe('exportCalculations', () => {
       vi.useRealTimers()
     })
 
-    it('generates PNG filename with timestamp', () => {
+    it('generates PNG filename with dimension', () => {
+      const filename = generateFilename('png', 'qrcode', 1000)
+      expect(filename).toBe('qrcode-1000px_2026-02-05T12-30-45.png')
+    })
+
+    it('generates SVG filename without dimension (resolution-independent)', () => {
+      const filename = generateFilename('svg', 'qrcode')
+      expect(filename).toBe('qrcode_2026-02-05T12-30-45.svg')
+    })
+
+    it('generates PDF filename with dimension and DPI', () => {
+      const filename = generateFilename('pdf', 'qrcode', 2000, 300)
+      expect(filename).toBe('qrcode-2000px-300dpi_2026-02-05T12-30-45.pdf')
+    })
+
+    it('uses custom prefix when provided', () => {
+      const filename = generateFilename('png', 'mycode', 500)
+      expect(filename).toBe('mycode-500px_2026-02-05T12-30-45.png')
+    })
+
+    it('omits dimension when not provided for PNG', () => {
       const filename = generateFilename('png')
       expect(filename).toBe('qrcode_2026-02-05T12-30-45.png')
     })
 
-    it('generates SVG filename with timestamp', () => {
-      const filename = generateFilename('svg')
-      expect(filename).toBe('qrcode_2026-02-05T12-30-45.svg')
-    })
-
-    it('generates PDF filename with timestamp', () => {
-      const filename = generateFilename('pdf')
-      expect(filename).toBe('qrcode_2026-02-05T12-30-45.pdf')
-    })
-
-    it('uses custom prefix when provided', () => {
-      const filename = generateFilename('png', 'mycode')
-      expect(filename).toBe('mycode_2026-02-05T12-30-45.png')
+    it('includes dimension but omits DPI for PNG', () => {
+      const filename = generateFilename('png', 'qrcode', 1000, 300)
+      expect(filename).toBe('qrcode-1000px_2026-02-05T12-30-45.png') // No DPI for PNG
     })
   })
 

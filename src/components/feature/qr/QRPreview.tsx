@@ -64,7 +64,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
           }
 
           const blob = await exportPng(canvasRef.current, exportState.dimension)
-          const filename = generateFilename('png', 'qrcode')
+          const filename = generateFilename('png', 'qrcode', exportState.dimension)
           downloadBlob(blob, filename)
           exportSuccess()
           setTimeout(() => closeModal(), 500)
@@ -92,7 +92,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
             dpi: exportState.dpi,
             dimension: exportState.dimension,
           })
-          const filename = generateFilename('pdf', 'qrcode')
+          const filename = generateFilename('pdf', 'qrcode', exportState.dimension, exportState.dpi)
           downloadBlob(blob, filename)
           exportSuccess()
           setTimeout(() => closeModal(), 500)
