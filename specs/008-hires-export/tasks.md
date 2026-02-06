@@ -115,12 +115,12 @@
 
 ### Implementation for User Story 4
 
-- [ ] T031 [US4] Audit ExportModal for keyboard navigation: Tab through all controls, Enter to select, Escape to close
-- [ ] T032 [US4] Verify focus management: focus trapped inside modal, focus returns to Download button on close
-- [ ] T033 [US4] Add `aria-describedby` for format descriptions, DPI descriptions
-- [ ] T034 [US4] Add screen reader-only status announcements for export progress and completion
-- [ ] T035 [P] [US4] Add accessibility tests to `src/components/common/__tests__/ExportModal.test.tsx` for focus trap, keyboard events, ARIA announcements
-- [ ] T036 [US4] Run validation: `npm run test && npm run lint && npm run build`
+- [x] T031 [US4] Audit ExportModal for keyboard navigation: Tab through all controls, Enter to select, Escape to close
+- [x] T032 [US4] Verify focus management: focus trapped inside modal, focus returns to Download button on close
+- [x] T033 [US4] Add `aria-describedby` for format descriptions, DPI descriptions
+- [x] T034 [US4] Add screen reader-only status announcements for export progress and completion
+- [x] T035 [P] [US4] Add accessibility tests to `src/components/common/__tests__/ExportModal.test.tsx` for focus trap, keyboard events, ARIA announcements
+- [x] T036 [US4] Run validation: `npm run test && npm run lint && npm run build`
 
 **Checkpoint**: All user stories complete with full accessibility
 

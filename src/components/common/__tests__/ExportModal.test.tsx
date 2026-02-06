@@ -245,4 +245,100 @@ describe('ExportModal', () => {
       expect(screen.getByText(/Scalable vector graphics/i)).toBeInTheDocument()
     })
   })
+
+  // T035: Accessibility tests for Phase 6
+  describe('Accessibility - Screen Reader Announcements (T035)', () => {
+    it('has ARIA live region for status announcements', () => {
+      render(<ExportModal {...defaultProps} />)
+      
+      const statusRegion = screen.getByRole('status')
+      expect(statusRegion).toBeInTheDocument()
+      expect(statusRegion).toHaveAttribute('aria-live', 'polite')
+      expect(statusRegion).toHaveAttribute('aria-atomic', 'true')
+    })
+
+    it('announces export in progress to screen readers', () => {
+      render(<ExportModal {...defaultProps} isExporting={true} />)
+      
+      const statusRegion = screen.getByRole('status')
+      expect(statusRegion).toHaveTextContent('Exporting QR code, please wait...')
+    })
+
+    it('announces export error to screen readers', () => {
+      render(<ExportModal {...defaultProps} error="Failed to export QR code" />)
+      
+      const statusRegion = screen.getByRole('status')
+      expect(statusRegion).toHaveTextContent('Export failed: Failed to export QR code')
+    })
+
+    it('clears status announcement when export completes successfully', () => {
+      const { rerender } = render(<ExportModal {...defaultProps} isExporting={true} />)
+      
+      const statusRegion = screen.getByRole('status')
+      expect(statusRegion).toHaveTextContent('Exporting QR code, please wait...')
+      
+      // Export completes
+      rerender(<ExportModal {...defaultProps} isExporting={false} />)
+      expect(statusRegion).toBeEmptyDOMElement()
+    })
+
+    it('has sr-only class for screen reader-only content', () => {
+      render(<ExportModal {...defaultProps} />)
+      
+      const statusRegion = screen.getByRole('status')
+      expect(statusRegion).toHaveClass('sr-only')
+    })
+  })
+
+  // T035: Focus trap tests
+  describe('Accessibility - Focus Management (T035)', () => {
+    it('focuses first button when modal opens', () => {
+      render(<ExportModal {...defaultProps} />)
+      
+      // First button should be focused (close or format button)
+      expect(document.activeElement).toBeDefined()
+    })
+
+    it('traps focus in reverse (Shift+Tab)', () => {
+      render(<ExportModal {...defaultProps} />)
+      
+      const dialog = screen.getByRole('dialog')
+      const buttons = screen.getAllByRole('button')
+      const lastButton = buttons[buttons.length - 1]
+      
+      // Focus last button
+      lastButton.focus()
+      expect(document.activeElement).toBe(lastButton)
+      
+      // Shift+Tab should wrap to first
+      fireEvent.keyDown(dialog, { key: 'Tab', shiftKey: true })
+      
+      const activeElement = document.activeElement as HTMLElement
+      expect(dialog.contains(activeElement)).toBe(true)
+    })
+  })
+
+  // T035: ARIA describedby tests
+  describe('Accessibility - ARIA Descriptions (T035)', () => {
+    it('has aria-describedby for format options', () => {
+      render(<ExportModal {...defaultProps} />)
+      
+      const pngRadio = screen.getByRole('radio', { name: /PNG/i })
+      expect(pngRadio).toHaveAttribute('aria-describedby', 'format-desc-png')
+    })
+
+    it('has aria-label for dimension buttons with descriptions', () => {
+      render(<ExportModal {...defaultProps} />)
+      
+      const size500 = screen.getByRole('button', { name: /500px/i })
+      expect(size500).toHaveAttribute('aria-label')
+    })
+
+    it('has aria-label for DPI buttons with descriptions', () => {
+      render(<ExportModal {...defaultProps} format="pdf" />)
+      
+      const dpi72 = screen.getByRole('button', { name: /72 DPI/i })
+      expect(dpi72).toHaveAttribute('aria-label')
+    })
+  })
 })
