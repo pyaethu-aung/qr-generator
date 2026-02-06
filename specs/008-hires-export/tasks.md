@@ -130,12 +130,12 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T037 [P] Verify dark/light theme support in ExportModal and all child components
-- [ ] T038 [P] Test mobile responsiveness: stack layout on small screens, touch-friendly targets
-- [ ] T039 [P] Test mobile export: iOS Safari share sheet, Android Chrome direct download
-- [ ] T040 Run full test suite with coverage: `npm run test:coverage`
-- [ ] T041 Run quickstart.md validation manually
-- [ ] T042 Final validation: `npm run test && npm run lint && npm run build`
+- [x] T037 [P] Verify dark/light theme support in ExportModal and all child components
+- [x] T038 [P] Test mobile responsiveness: stack layout on small screens, touch-friendly targets
+- [x] T039 [P] Test mobile export: iOS Safari share sheet, Android Chrome direct download
+- [x] T040 Run full test suite with coverage: `npm run test:coverage`
+- [x] T041 Run quickstart.md validation manually
+- [x] T042 Final validation: `npm run test && npm run lint && npm run build`
 
 ---
 
