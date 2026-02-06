@@ -96,12 +96,12 @@
 
 ### Implementation for User Story 3
 
-- [ ] T025 [P] [US3] Create `src/utils/export/pdfExporter.ts` with `exportPdf(value, config)` function using jspdf with SVG embedding for vector quality
-- [ ] T026 [P] [US3] Create `src/utils/export/__tests__/pdfExporter.test.ts` with unit tests for PDF blob generation, dimension accuracy
-- [ ] T027 [US3] Integrate PDF export into ExportModal flow in `src/components/common/ExportModal.tsx`
-- [ ] T028 [US3] Show DPI selector only when PDF format is selected in DimensionSelector
-- [ ] T029 [US3] Add PDF-specific i18n keys to `src/data/i18n/en.json` and `src/data/i18n/my.json`
-- [ ] T030 [US3] Run validation: `npm run test && npm run lint && npm run build`
+- [x] T025 [P] [US3] Create `src/utils/export/pdfExporter.ts` with `exportPdf(value, config)` function using jspdf with SVG embedding for vector quality
+- [x] T026 [P] [US3] Create `src/utils/export/__tests__/pdfExporter.test.ts` with unit tests for PDF blob generation, dimension accuracy
+- [x] T027 [US3] Integrate PDF export into ExportModal flow in `src/components/common/ExportModal.tsx`
+- [x] T028 [US3] Show DPI selector only when PDF format is selected in DimensionSelector
+- [x] T029 [US3] Add PDF-specific i18n keys to `src/data/i18n/en.json` and `src/data/i18n/my.json`
+- [x] T030 [US3] Run validation: `npm run test && npm run lint && npm run build`
 
 **Checkpoint**: User Stories 1, 2, AND 3 complete - users can download PNG, SVG, or PDF
 
