@@ -8,6 +8,7 @@ import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import { useExportState } from '../../../hooks/useExportState'
 import { exportPng } from '../../../utils/export/pngExporter'
 import { exportSvg } from '../../../utils/export/svgExporter'
+import { exportPdf } from '../../../utils/export/pdfExporter'
 import { generateFilename } from '../../../utils/export/exportCalculations'
 import { downloadBlob } from '../../../utils/download'
 import { ExportModal } from '../../common/ExportModal'
@@ -44,7 +45,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
       exportError,
     } = useExportState()
 
-    // Export handler for PNG and SVG (Phase 3-4)
+    // Export handler for PNG, SVG, and PDF (Phase 3-5)
     const handleExport = useCallback(async () => {
       if (!value) {
         // Type assertion for new translation keys not yet in type def
@@ -80,16 +81,28 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
           downloadBlob(blob, filename)
           exportSuccess()
           setTimeout(() => closeModal(), 500)
-        } else {
-          // PDF will be implemented in Phase 5
-          exportError(`${exportState.format.toUpperCase()} export coming soon`)
+        } else if (exportState.format === 'pdf') {
+          // PDF export with DPI-aware sizing (Phase 5 - US3)
+          const blob = await exportPdf(value, {
+            value,
+            ecLevel,
+            fgColor,
+            bgColor,
+            margin: 0,
+            dpi: exportState.dpi,
+            dimension: exportState.dimension,
+          })
+          const filename = generateFilename('pdf', 'qrcode')
+          downloadBlob(blob, filename)
+          exportSuccess()
+          setTimeout(() => closeModal(), 500)
         }
       } catch (error) {
         exportError(
           error instanceof Error ? error.message : translate('export.errors.exportFailed' as any),
         )
       }
-    }, [exportState.format, exportState.dimension, value, ecLevel, fgColor, bgColor, translate, startExport, exportSuccess, exportError, closeModal])
+    }, [exportState.format, exportState.dimension, exportState.dpi, value, ecLevel, fgColor, bgColor, translate, startExport, exportSuccess, exportError, closeModal])
 
     const assignForwardedRef = useCallback(
       (node: HTMLCanvasElement | null) => {
