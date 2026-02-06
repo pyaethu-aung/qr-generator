@@ -37,7 +37,8 @@ export function DimensionSelector({
 }: DimensionSelectorProps) {
   return (
     <div className="space-y-4">
-      {/* Dimension presets */}
+      {/* Dimension presets - hide for SVG (resolution-independent) */}
+      {format !== 'svg' && (
       <div>
         <label
           id="dimension-label"
@@ -79,6 +80,7 @@ export function DimensionSelector({
           })}
         </div>
       </div>
+      )}
 
       {/* DPI selector - only for PDF */}
       {format === 'pdf' && (
