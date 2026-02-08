@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    # Enable version updates to keep deps healthy, which reduces security delta
+    open-pull-requests-limit: 10
+    groups:
+       # Optional: group dev dependencies to reduce noise
+       dev-dependencies:
+          patterns:
+            - "*"
+          update-types:
+            - "minor"
+            - "patch"
+          dependency-type: "development"

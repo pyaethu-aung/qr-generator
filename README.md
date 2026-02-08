@@ -74,7 +74,15 @@ To enable automated deployments:
 2. Under **Build and deployment > Source**, select **GitHub Actions**.
 3. Push to `main` to trigger the `deploy.yml` workflow.
 
-### Security Scanning (Snyk)
-To enable Snyk dependency scanning:
-1. Create a free account at [snyk.io](https://snyk.io/).
-2. Generate an API token and add it to your repository **Settings > Secrets and variables > Actions** as `SNYK_TOKEN`.
+### Auto Vulnerability Updates (009)
+This project uses **GitHub Dependabot** for automated vulnerability patching.
+
+**Configuration**:
+- Configured in `.github/dependabot.yml`
+- Targets `npm` ecosystem
+- Runs daily
+- **No auto-merge** (Manual review required)
+
+**Setup Requirement**:
+Repo admins must enable **Dependabot alerts** and **Dependabot security updates** in repository settings for this to function.
+
