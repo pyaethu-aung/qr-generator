@@ -4,10 +4,17 @@
 
 ## Implementation
 
-- [ ] Configure Dependabot <!-- id: 8 -->
+- [x] Configure Dependabot <!-- id: 8 -->
     - Create `.github/dependabot.yml`
     - Verify YAML syntax
     - Ensure `npm` ecosystem is configured without auto-merge
+
+- [x] Update README <!-- id: 10 -->
+    - Document Dependabot usage
+    - Add instruction on enabling repo-level security settings
+
+
+
 
 ## Verification
 
