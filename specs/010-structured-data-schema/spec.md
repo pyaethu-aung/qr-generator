@@ -5,6 +5,14 @@
 **Status**: Draft  
 **Input**: User description: "Implement Structured Data: Add 'SoftwareApplication' JSON-LD schema markup to the main page. It must explicitly define the app as a 'UtilitiesApplication', price as '0', and operating system as 'Web' to target Google rich results."
 
+## Clarifications
+
+### Session 2026-02-11
+
+- Q: Should we explicitly include a `url` property in the JSON-LD, and if so, what should it be? → A: Use `https://pyaethu-aung.github.io/qr-generator/` and add note to README to update it if the URL changes.
+- Q: Should we reuse `./logo.png` for the JSON-LD `image` property? → A: Yes, reuse `./logo.png`.
+
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Search Engine Rich Results (Priority: P1)
@@ -36,6 +44,10 @@ As a site owner, I want search engines to recognize the QR Code Generator as a s
 - **FR-005**: System MUST include an `offers` object with `@type`: `Offer`, `price`: `0`, and `priceCurrency`: `USD`.
 - **FR-006**: JSON-LD MUST include the `name` of the application ("QR Code Generator").
 - **FR-007**: JSON-LD MUST include a `description` matching the meta description ("Generate high-quality QR codes instantly with real-time preview.").
+- **FR-008**: JSON-LD MUST include a `url` property set to `https://pyaethu-aung.github.io/qr-generator/`.
+- **FR-009**: `README.md` MUST be updated with a section documentation that the application URL in `index.html`'s JSON-LD needs to be updated if the hosting URL changes.
+- **FR-010**: JSON-LD MUST include an `image` property set to `./logo.png`.
+
 
 ### Non-Functional Requirements
 
