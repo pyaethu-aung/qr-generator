@@ -28,8 +28,8 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 Define `SoftwareApplicationJSONLD` interface in `src/types/seo.ts`
-- [ ] T004 Create `SEOHead` component boilerplate in `src/components/common/SEOHead.tsx`
+- [x] T003 Define `SoftwareApplicationJSONLD` interface in `src/types/seo.ts`
+- [x] T004 Create `SEOHead` component boilerplate in `src/components/common/SEOHead.tsx`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
