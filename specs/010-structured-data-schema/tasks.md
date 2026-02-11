@@ -17,8 +17,8 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Install `react-helmet-async` dependency in `package.json`
-- [ ] T002 Configure `HelmetProvider` in `src/main.tsx`
+- [x] T001 Install `react-helmet-async` dependency in `package.json`
+- [x] T002 Configure `HelmetProvider` in `src/main.tsx`
 
 ---
 
