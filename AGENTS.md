@@ -15,7 +15,7 @@ npm run test:watch # Watch mode for tests
 
 ## Stack
 
-- **Framework**: React 19 + TypeScript 5.9 + Vite 7
+- **Framework**: React 19 + TypeScript 5.9 + Vite 7 + `react-helmet-async`
 - **Styling**: Tailwind CSS v4 (`@tailwindcss/vite` + `@tailwindcss/postcss`)
 - **QR**: `qrcode.react` (preview), `qrcode` (generation), `jspdf` (PDF export)
 - **Testing**: Vitest + React Testing Library + jest-dom
@@ -98,6 +98,11 @@ Reference `.agents/skills/` for specialized guidance:
 ### Theme Context
 - `useTheme` hook for theme state
 - System preference detection + localStorage persistence
+
+### SEO & Metadata
+- `SEOHead` component manages document head via `react-helmet-async`
+- Injects `SoftwareApplication` JSON-LD for rich results
+- `url` property in `SEOHead` MUST remain sync with deployment URL
 
 ## CI/CD
 
