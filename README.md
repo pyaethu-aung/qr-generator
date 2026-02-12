@@ -10,6 +10,7 @@ Single-page app for generating QR codes with real-time preview and download.
 
 - React 19, TypeScript, Vite 7
 - Tailwind CSS v4 (via `@tailwindcss/vite` + `@tailwindcss/postcss`)
+- `react-helmet-async`: For managing document head and SEO metadata
 - `qrcode.react` for preview, `qrcode` for asset generation
 - Testing: Vitest + React Testing Library + jest-dom
 - Linting/formatting: ESLint (type-aware) + Prettier
@@ -86,3 +87,10 @@ This project uses **GitHub Dependabot** for automated vulnerability patching.
 **Setup Requirement**:
 Repo admins must enable **Dependabot alerts** and **Dependabot security updates** in repository settings for this to function.
 
+## SEO Maintenance
+
+The application injects `SoftwareApplication` JSON-LD structured data into the document head for rich search results.
+
+**Key Configuration:**
+- The application URL is hardcoded in `src/components/common/SEOHead.tsx`.
+- If the hosting URL changes (e.g., from `pyaethu-aung.github.io` to a custom domain), you **MUST** update the `url` property in `SEOHead.tsx` to maintain valid schema markup.

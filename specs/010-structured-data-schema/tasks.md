@@ -45,13 +45,13 @@
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T005 [P] [US1] Create unit test for `SEOHead` schema injection in `src/components/common/__tests__/SEOHead.test.tsx`
+- [x] T005 [P] [US1] Create unit test for `SEOHead` schema injection in `src/components/common/__tests__/SEOHead.test.tsx`
 
 ### Implementation for User Story 1
 
-- [ ] T006 [US1] Implement `SEOHead` component using `react-helmet-async` to inject JSON-LD in `src/components/common/SEOHead.tsx`
-- [ ] T007 [US1] Integrate `SEOHead` component into the application root in `src/App.tsx`
-- [ ] T008 [US1] Verify schema validity via `npm run test` and browser inspection
+- [x] T006 [US1] Implement `SEOHead` component using `react-helmet-async` to inject JSON-LD in `src/components/common/SEOHead.tsx`
+- [x] T007 [US1] Integrate `SEOHead` component into the application root in `src/App.tsx`
+- [x] T008 [US1] Verify schema validity via `npm run test` and browser inspection
 
 **Checkpoint**: User Story 1 is fully functional and testable independently.
 
@@ -61,8 +61,8 @@
 
 **Purpose**: Documentation and final quality verification
 
-- [ ] T009 [P] Update `README.md` with SEO maintenance documentation regarding URL updates
-- [ ] T010 Run final project-wide verification: `npm run lint` and `npm run build`
+- [x] T009 [P] Update `README.md` with SEO maintenance documentation regarding URL updates
+- [x] T010 Run final project-wide verification: `npm run lint` and `npm run build`
 
 ---
 
