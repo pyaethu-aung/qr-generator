@@ -6,6 +6,7 @@ import { useLocaleContext } from './hooks/LocaleProvider'
 import { applySeoMetadata } from './utils/metadata'
 import { Navbar } from './components/Navigation/Navbar'
 import { Layout } from './components/Layout/Layout'
+import SEOHead from './components/common/SEOHead'
 
 function App() {
   const { translate, seo } = useLocaleContext()
@@ -16,6 +17,7 @@ function App() {
 
   return (
     <Layout>
+      <SEOHead />
       <Navbar />
 
       <main className="relative z-10 py-8 sm:py-16 lg:py-20">

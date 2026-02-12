@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, beforeEach } from 'vitest'
 
+import { HelmetProvider } from 'react-helmet-async'
 import App from './App'
 import { LocaleProvider } from './hooks/LocaleProvider'
 import { ThemeProvider } from './hooks/ThemeProvider'
@@ -34,9 +35,11 @@ describe('App integration', () => {
 
     render(
       <ThemeProvider>
-        <LocaleProvider>
-          <App />
-        </LocaleProvider>
+        <HelmetProvider>
+          <LocaleProvider>
+            <App />
+          </LocaleProvider>
+        </HelmetProvider>
       </ThemeProvider>,
     )
 
@@ -70,9 +73,11 @@ describe('App integration', () => {
     const user = userEvent.setup()
     render(
       <ThemeProvider>
-        <LocaleProvider>
-          <App />
-        </LocaleProvider>
+        <HelmetProvider>
+          <LocaleProvider>
+            <App />
+          </LocaleProvider>
+        </HelmetProvider>
       </ThemeProvider>,
     )
 
@@ -98,9 +103,11 @@ describe('App integration', () => {
 
     render(
       <ThemeProvider>
-        <LocaleProvider>
-          <App />
-        </LocaleProvider>
+        <HelmetProvider>
+          <LocaleProvider>
+            <App />
+          </LocaleProvider>
+        </HelmetProvider>
       </ThemeProvider>,
     )
 
