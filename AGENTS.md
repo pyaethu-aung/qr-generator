@@ -57,12 +57,14 @@ src/
 - Support Chrome, Safari, Firefox, Edge
 - Responsive design is mandatory
 
-### Skill-Driven Development (Principle IX - NON-NEGOTIABLE)
+### Skill-Driven Development & Agentic Workflow (Principle IX - NON-NEGOTIABLE)
+- Skills are "Primary Source Truth" across all spec-kit phases (`/specify`, `/plan`, `/implement`)
 - React components MUST be audited against `react-vite-essentials` skill
 - UI/UX decisions MUST adhere to `web-design-guidelines` skill:
   - **WCAG accessibility**: keyboard-accessible, proper ARIA labels, AA contrast
   - **ARIA requirement**: All components MUST include appropriate ARIA attributes
   - **Responsive layouts**: mobile-first, correct viewport adaptation
+- **TS Learning Mode**: Provide brief comments explaining *why* a TypeScript pattern was chosen when it relates to a skill guideline
 
 ### Execution Discipline (NON-NEGOTIABLE)
 Run after EVERY task completion:
@@ -108,3 +110,7 @@ The Agent MUST consult these skills during planning and implementation:
 - **Deploy**: GitHub Actions → GitHub Pages (push to `main`)
 - **Gates**: lint, test, build must pass
 - **Security**: Snyk dependency scanning (requires `SNYK_TOKEN`)
+
+---
+
+> Synced with Constitution v1.7.4 (2026-02-17). See `.specify/memory/constitution.md` for full governance details.
