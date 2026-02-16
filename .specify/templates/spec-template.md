@@ -90,14 +90,6 @@
 - **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
 - **FR-005**: System MUST [behavior, e.g., "log all security events"]
 
-### Non-Functional Requirements
-
-- **NFR-001**: UI MUST be fully functional and consistent across desktop/mobile and major browsers (Chrome, Safari, Firefox, Edge).
-- **NFR-002**: System MUST adhere to responsive design principles for all UI components.
-- **NFR-003**: All UI features MUST be planned and implemented with dark/light theme support from the start; default theme MUST match system preference; user theme choice MUST be persisted in browser storage.
-- **NFR-004**: React components MUST be audited against `vercel-react-best-practices` skill; UI/UX decisions MUST adhere to `web-design-guidelines` skill (WCAG accessibility + responsive layouts). **All components MUST include appropriate ARIA attributes.**
-- **NFR-005**: Every utility function in `src/utils/` MUST have a corresponding unit test file (Vitest/Jest).
-
 *Example of marking unclear requirements:*
 
 - **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
