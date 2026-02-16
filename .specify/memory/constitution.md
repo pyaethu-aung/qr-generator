@@ -1,17 +1,18 @@
 <!--
 SYNC IMPACT REPORT
-Version: 1.7.2 -> 1.7.3
+Version: 1.7.3 -> 1.7.4
 Modified Principles:
-- IX. Skill-Driven Development -> IX. Skill-Driven Development & Agentic Workflow (expanded skill integration duties)
+- IX. Skill-Driven Development & Agentic Workflow: corrected skill paths
+  (.agents/skills/vercel-react-best-practices -> .agent/skills/react-vite-essentials)
+  (.agents/skills/web-design-guidelines -> .agent/skills/web-design-guidelines)
 Added Sections:
 - None
+Removed Sections:
+- None
 Templates Updated:
-- .specify/templates/plan-template.md ⚠ pending
-- .specify/templates/spec-template.md ⚠ pending
-- .specify/templates/tasks-template.md ⚠ pending
-- AGENTS.md ⚠ pending
+- AGENTS.md ✅ updated
 Deferred Items:
-- Update templates and AGENTS.md to reflect new agentic workflow duties
+- None
 -->
 # QR Generator Constitution
 
@@ -45,8 +46,8 @@ All UI features MUST be planned and implemented with dark/light theme support fr
 
 ### IX. Skill-Driven Development & Agentic Workflow (NON-NEGOTIABLE)
 The Agent MUST treat the following skills as "Primary Source Truth" during all phases of the spec-kit workflow (`/specify`, `/plan`, `/implement`):
-- **React Standards**: Use `.agents/skills/vercel-react-best-practices/SKILL.md`. Every `/plan` must explicitly verify state management and hook usage against these rules.
-- **UI/UX & Design**: Use `.agents/skills/web-design-guidelines/SKILL.md`. Every `/specify` phase must define accessibility (ARIA) and responsive requirements based on these guidelines.
+- **React Standards**: Use `.agent/skills/react-vite-essentials/SKILL.md`. Every `/plan` must explicitly verify state management and hook usage against these rules.
+- **UI/UX & Design**: Use `.agent/skills/web-design-guidelines/SKILL.md`. Every `/specify` phase must define accessibility (ARIA) and responsive requirements based on these guidelines.
 - **TS Learning Mode**: When implementing code, the Agent should provide brief comments (1-sentence) explaining *why* a certain TypeScript pattern was used (e.g., Discriminated Unions vs. Interfaces) if it relates to a guideline in the skills.
 
 **Rationale**: This ensures the AI doesn't just "generate code," but acts as a senior mentor that follows industry-standard guidelines. By integrating skills into the planning phase, we prevent technical debt before it is even written.
@@ -69,4 +70,4 @@ This Constitution supersedes previous ad-hoc practices. Amendments require a Pul
 
 Versioning follows Semantic Versioning (MAJOR for principle changes, MINOR for additions, PATCH for clarifications). Compliance is verified during Code Review and CI.
 
-**Version**: 1.7.3 | **Ratified**: 2026-01-15 | **Last Amended**: 2026-02-05
+**Version**: 1.7.4 | **Ratified**: 2026-01-15 | **Last Amended**: 2026-02-17
