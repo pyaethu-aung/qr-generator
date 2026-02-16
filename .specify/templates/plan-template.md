@@ -31,16 +31,7 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-- Tests, lint, and build MUST be run locally after every change via `npm run test`, `npm run lint`, and `npm run build` per constitution.
-- Unit and integration tests MUST be added/updated for each change; maintain coverage ≥85%. **Every utility function in `src/utils/` MUST have a corresponding unit test.**
-- UI MUST be fully functional and consistent across desktop/mobile and major browsers via responsive design.
-- Theme support: all UI MUST be planned with dark/light theme support from the start; never hard-code colors; default theme matches system preference; user choice persisted in localStorage.
-- Skill audits: React components MUST be audited against `vercel-react-best-practices`; UI/UX decisions MUST adhere to `web-design-guidelines` (WCAG accessibility + responsive layouts). **All components MUST include ARIA attributes.**
-- Structure adherence: UI in `src/components`, hooks in `src/hooks`, utilities in `src/utils`, data shapers in `src/data`, shared types in `src/types`.
-- Remove unused code/assets; no commented-out blocks committed.
-- Commit discipline: commit each phase after completion; follow 50/72 rule (subject ≤50 chars, body lines ≤72 chars); use conventional commit prefixes.
-- **AGENTS.md sync**: when constitution is amended, AGENTS.md MUST be updated to keep AI assistants aligned.
-- CI gates (lint, test, build) MUST pass; PR review is mandatory.
+[Gates determined based on constitution file]
 
 ## Project Structure
 
@@ -61,20 +52,16 @@ specs/[###-feature]/
   ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
   for this feature. Delete unused options and expand the chosen structure with
   real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels. For this project, default SPA layout uses
-  src/components (UI), src/hooks (stateful logic), src/utils (pure helpers),
-  and src/data (data shapers/models); prefer these locations unless the plan
-  justifies a different structure.
+  not include Option labels.
 -->
 
 ```text
 # [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
 src/
-├── components/
-├── hooks/
-├── utils/
-├── data/
-└── types/
+├── models/
+├── services/
+├── cli/
+└── lib/
 
 tests/
 ├── contract/

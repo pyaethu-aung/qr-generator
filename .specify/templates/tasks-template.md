@@ -8,7 +8,7 @@ description: "Task list template for feature implementation"
 **Input**: Design documents from `/specs/[###-feature-name]/`
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
 
-**Tests**: Testing is MANDATORY per Constitution Principle II. Run `npm run test`, `npm run lint`, and `npm run build` after every change. Every code change must add or update unit tests, all tests must pass before merge, and every user story implementation must include corresponding unit and integration tests unless explicitly waived. **Every utility function in `src/utils/` MUST have a corresponding unit test.** Maintain project-wide coverage at or above 85%. Additionally, UI changes MUST be verified on both desktop and mobile browsers per Principle VII, MUST consider dark/light theme support per Principle VIII, and React components MUST be audited against `vercel-react-best-practices` and UI/UX decisions against `web-design-guidelines` per Principle IX. **All components MUST include ARIA attributes.** Commit discipline: commit each phase after completion following the 50/72 rule (subject ≤50 chars, body ≤72 chars per line) with conventional commit prefixes.
+**Tests**: The examples below include test tasks. Tests are OPTIONAL - only include them if explicitly requested in the feature specification.
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 
@@ -23,7 +23,6 @@ description: "Task list template for feature implementation"
 - **Single project**: `src/`, `tests/` at repository root
 - **Web app**: `backend/src/`, `frontend/src/`
 - **Mobile**: `api/src/`, `ios/src/` or `android/src/`
-- For this project, default web SPA structure uses `src/components`, `src/hooks`, `src/utils`, `src/data`, and `src/types`; keep feature code in these directories unless the plan justifies another layout.
 - Paths shown below assume single project - adjust based on plan.md structure
 
 <!-- 
