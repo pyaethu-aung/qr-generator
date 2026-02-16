@@ -58,7 +58,7 @@ src/
 - Responsive design is mandatory
 
 ### Skill-Driven Development (Principle IX - NON-NEGOTIABLE)
-- React components MUST be audited against `vercel-react-best-practices` skill
+- React components MUST be audited against `react-vite-essentials` skill
 - UI/UX decisions MUST adhere to `web-design-guidelines` skill:
   - **WCAG accessibility**: keyboard-accessible, proper ARIA labels, AA contrast
   - **ARIA requirement**: All components MUST include appropriate ARIA attributes
@@ -84,10 +84,9 @@ npm run test && npm run lint && npm run build
 
 ## Skills Available
 
-Reference `.agents/skills/` for specialized guidance:
-- `vercel-composition-patterns` - React component architecture
-- `vercel-react-best-practices` - Performance optimization
-- `web-design-guidelines` - UI/UX best practices
+The Agent MUST consult these skills during planning and implementation:
+- **React & Vite Essentials**: `.agent/skills/react-vite-essentials/SKILL.md`
+- **UI/UX & Design**: `.agent/skills/web-design-guidelines/SKILL.md`
 
 ## Key Patterns
 
