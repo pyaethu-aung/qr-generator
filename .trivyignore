@@ -1,0 +1,19 @@
+# =============================================================================
+# .trivyignore — Suppress known unfixable CVEs for Trivy scanning
+#
+# Add CVE IDs here ONLY when:
+#   1. The vulnerability has no available fix in Alpine upstream
+#   2. The risk has been assessed and accepted
+#   3. A comment explains WHY the CVE is suppressed
+#
+# Format: One CVE ID per line, with explanatory comment above
+# Example:
+#   # nginx:alpine - buffer overflow in libxml2, no fix available as of 2026-02
+#   CVE-2024-XXXXX
+#
+# Review this file regularly and remove entries when fixes become available.
+# Trivy CI uses: --ignore-unfixed --severity CRITICAL,HIGH --trivyignores .trivyignore
+# =============================================================================
+
+# No known unfixable CVEs at initial setup.
+# Add entries here as discovered during CI scanning.

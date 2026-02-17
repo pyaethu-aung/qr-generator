@@ -23,8 +23,8 @@ For Docker tasks, testing involves `docker build` validation, `hadolint` linting
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create `.docker/` directory and `.dockerignore` file in project root
-- [ ] T002 Create `.trivyignore` file in project root for unfixable CVE suppressions
+- [x] T001 Create `.docker/` directory and `.dockerignore` file in project root
+- [x] T002 Create `.trivyignore` file in project root for unfixable CVE suppressions
 
 ---
 
