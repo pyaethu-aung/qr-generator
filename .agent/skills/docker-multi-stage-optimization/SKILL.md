@@ -9,16 +9,19 @@ metadata:
 
 # Docker Multi-Stage Build Optimization Skill
 
-Optimization guide tailored to this project's architecture: a **React + Vite SPA** built with `node:20-alpine` and served by `nginx:alpine`.
+Optimization guide tailored to this project's architecture: a **React 19 + TypeScript + Vite 7 SPA** (with Tailwind CSS v4) built with `node:20-alpine` and served by `nginx:alpine`.
 
 ## Project Context
 
 | Aspect | Detail |
 |--------|--------|
-| **App type** | React + Vite single-page application |
+| **App type** | React 19 + TypeScript 5.9 + Vite 7 single-page application |
+| **Styling** | Tailwind CSS v4 (`@tailwindcss/vite` + `@tailwindcss/postcss`) |
+| **Build command** | `tsc -b && vite build` (TypeScript check + Vite build) |
+| **Vite config** | `vite.config.ts` (TypeScript) |
 | **Build output** | Static files in `dist/` |
-| **Dockerfile** | 2-stage: `node:20-alpine` (builder) → `nginx:alpine` (runtime) |
-| **Nginx config** | `.docker/nginx.conf` (security headers, gzip, SPA routing, `/health`) |
+| **Dockerfile** | ⚠️ To be implemented: 2-stage `node:20-alpine` (builder) → `nginx:alpine` (runtime) |
+| **Nginx config** | ⚠️ To be implemented: `.docker/nginx.conf` (security headers, gzip, SPA routing, `/health`) |
 | **Non-root user** | `app` (UID 1000) |
 | **Runtime port** | 80 (Nginx) |
 | **CI cache** | GitHub Actions cache (`type=gha`) |
@@ -40,9 +43,9 @@ Optimization guide tailored to this project's architecture: a **React + Vite SPA
    - Recommends BuildKit features
    - Analyzes `.dockerignore` coverage
 
-## Current Dockerfile
+## Recommended Dockerfile
 
-The project's actual Dockerfile:
+The Dockerfile should follow this pattern (to be created at project root):
 
 ```dockerfile
 # Stage 1: Build
@@ -54,7 +57,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
-# Copy source and build
+# Copy source and build (includes TypeScript compilation)
 COPY . .
 RUN npm run build && npm prune --production
 
@@ -84,13 +87,21 @@ CMD ["nginx", "-g", "daemon off;"]
 
 ### Why This Architecture Works Well
 
-1. **Builder stage** contains Node.js, npm, and all dev dependencies (~300MB+)
+1. **Builder stage** contains Node.js, npm, TypeScript compiler, and all dev dependencies (~300MB+)
 2. **Runtime stage** contains only Nginx + static HTML/JS/CSS (~40MB)
 3. **Result**: ~95% size reduction compared to a single-stage build
 
+### TypeScript Build Considerations
+
+Unlike a plain JavaScript project, this project runs `tsc -b` before `vite build`. This means:
+- TypeScript compiler (`typescript` package) is required in the builder stage
+- `tsconfig.json`, `tsconfig.app.json`, and `tsconfig.node.json` must be present during build
+- Type-checking errors will fail the Docker build, acting as an additional safety gate
+- All TypeScript config files are automatically included via `COPY . .`
+
 ## Layer Caching Analysis
 
-### Current Cache-Efficient Ordering ✅
+### Optimal Cache-Efficient Ordering ✅
 
 ```dockerfile
 # 1. Copy dependency manifests first (changes infrequently)
@@ -102,7 +113,7 @@ COPY . .
 RUN npm run build && npm prune --production
 ```
 
-This is already optimal — dependency installation is cached unless `package.json` or `package-lock.json` change.
+This is optimal — dependency installation is cached unless `package.json` or `package-lock.json` change.
 
 ### What Would Break Caching ❌
 
@@ -113,9 +124,9 @@ RUN npm ci
 RUN npm run build
 ```
 
-## .dockerignore Analysis
+## Recommended .dockerignore
 
-The project's current `.dockerignore`:
+The `.dockerignore` should be created with these entries:
 
 ```
 node_modules
@@ -125,7 +136,6 @@ node_modules
 Dockerfile*
 README.md
 LICENSE
-Makefile
 docs
 specs
 coverage
@@ -135,40 +145,49 @@ coverage
 .DS_Store
 dist
 .specify
+.agent
+.github
+.eslintcache
+.trivyignore
+.mailmap
+.npmignore
+.prettierignore
+.prettierrc
+.nvmrc
+AGENTS.md
+tests
 ```
 
-### What's Excluded ✅
+### What Should Be Excluded ✅
 - `node_modules` — Builder installs fresh via `npm ci`
 - `.git` — Not needed for build, large directory
 - `dist` — Builder creates fresh via `npm run build`
 - `coverage`, `docs`, `specs` — Not needed at runtime
+- `.agent`, `.github`, `.specify` — Development/CI tooling, not needed in image
+- `tests` — Test files not needed in production image
+- `*.log`, `.DS_Store` — System/editor artifacts
+- `.prettierrc`, `.prettierignore`, `.nvmrc`, `.npmignore`, `.eslintcache` — Dev config files
 
-### Recommended Additions
-
-```
-# Add these to .dockerignore
-.agent          # Agent skills and workflows
-.github         # CI/CD workflows not needed in image
-.docker         # Only nginx.conf is needed (COPY'd explicitly)
-.eslintcache    # Linter cache
-.trivyignore    # Trivy config
-.mailmap        # Git mailmap
-AGENTS.md       # Agent documentation
-*.md            # All markdown (broader than just README.md)
-```
-
-> **Note**: `.docker/nginx.conf` is explicitly `COPY`'d in the Dockerfile, so excluding `.docker` from context doesn't affect it — the `COPY` still works because `.dockerignore` excludes files from the build context but the Dockerfile COPY instruction references the build context. Actually, if `.docker` is in `.dockerignore`, the `COPY .docker/nginx.conf` would fail. So `.docker` must NOT be added to `.dockerignore`.
+### What Must NOT Be Excluded ⚠️
+- `.docker/` — Contains `nginx.conf` which is `COPY`'d in the Dockerfile
+- `src/` — Source code needed for build
+- `index.html` — Entry point for Vite
+- `package.json`, `package-lock.json` — Dependency manifests
+- `vite.config.ts` — Build configuration
+- `tsconfig*.json` — TypeScript configuration
+- `postcss.config.cjs` — PostCSS/Tailwind configuration
+- `tailwind.config.js` — Tailwind CSS configuration
 
 ## Size Reduction Techniques
 
-### 1. Alpine Base Images (Already Using ✅)
+### 1. Alpine Base Images (Recommended ✅)
 
 ```dockerfile
 FROM node:20-alpine AS builder   # ~180MB (vs ~1GB full node)
 FROM nginx:alpine AS runtime     # ~40MB (vs ~140MB full nginx)
 ```
 
-### 2. npm prune (Already Using ✅)
+### 2. npm prune (Recommended ✅)
 
 ```dockerfile
 RUN npm run build && npm prune --production
@@ -176,7 +195,7 @@ RUN npm run build && npm prune --production
 
 This removes dev dependencies after the build, but since we don't copy `node_modules` to the runtime stage, this primarily reduces the build context for cache purposes.
 
-### 3. Combine RUN Commands (Already Doing ✅)
+### 3. Combine RUN Commands (Recommended ✅)
 
 ```dockerfile
 # Runtime stage combines all setup in one RUN layer
@@ -203,7 +222,7 @@ RUN adduser -D -H -u 1000 -s /bin/false app && \
 
 ## BuildKit Features
 
-### GitHub Actions Cache (Currently Using ✅)
+### GitHub Actions Cache (Recommended ✅)
 
 ```yaml
 # In docker-publish.yml
@@ -239,17 +258,17 @@ RUN npm run build
 
 ```bash
 # Build with timing output
-DOCKER_BUILDKIT=1 docker build --progress=plain -t uuid-generator:local .
+DOCKER_BUILDKIT=1 docker build --progress=plain -t qr-generator:local .
 
 # Check final image size
-docker images uuid-generator:local
+docker images qr-generator:local
 
 # Analyze image layers
-docker history uuid-generator:local
+docker history qr-generator:local
 
 # Interactive layer analysis with dive
 brew install dive
-dive uuid-generator:local
+dive qr-generator:local
 ```
 
 ### Expected Metrics
@@ -270,7 +289,7 @@ When reviewing this project's Dockerfile:
 - [x] **Layer ordering** — `package*.json` + `npm ci` before `COPY . .`
 - [x] **Minimal base** — Alpine images for both stages
 - [x] **Dependency caching** — package files copied before source
-- [x] **.dockerignore** — Excludes node_modules, .git, dist, etc.
+- [x] **.dockerignore** — Excludes node_modules, .git, dist, tests, .agent, etc.
 - [x] **Combine commands** — Runtime setup in single RUN layer
 - [x] **CI cache** — GitHub Actions cache (`type=gha`)
 - [ ] **BuildKit cache mounts** — Optional for local development
@@ -295,6 +314,8 @@ npm run docker:build
 npm run docker:run
 # → http://localhost:8080 with read-only filesystem
 ```
+
+> **Note**: `docker:build` and `docker:run` scripts are not yet defined in `package.json`. They should be added when the Dockerfile is implemented.
 
 ### Production (CI/CD)
 
