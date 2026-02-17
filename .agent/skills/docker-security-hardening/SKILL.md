@@ -9,19 +9,20 @@ metadata:
 
 # Docker Security Hardening Skill
 
-Security analysis and hardening guide tailored to this project: a **React + Vite SPA** served by **Nginx** in a multi-stage Docker build with Cosign signing and Trivy scanning.
+Security analysis and hardening guide tailored to this project: a **React 19 + TypeScript + Vite 7 SPA** (with Tailwind CSS v4) served by **Nginx** in a multi-stage Docker build with Cosign signing and Trivy scanning.
 
 ## Project Context
 
 | Aspect | Detail |
 |--------|--------|
-| **App type** | React + Vite SPA (static files only) |
-| **Dockerfile** | 2-stage: `node:20-alpine` → `nginx:alpine` |
+| **App type** | React 19 + TypeScript 5.9 + Vite 7 SPA (static files only) |
+| **Styling** | Tailwind CSS v4 (`@tailwindcss/vite` + `@tailwindcss/postcss`) |
+| **Dockerfile** | ⚠️ To be implemented: 2-stage `node:20-alpine` → `nginx:alpine` |
 | **Non-root user** | `app` (UID 1000, no home dir, no shell) |
 | **Runtime port** | 80 (Nginx) |
 | **Runtime security** | `--read-only`, `--cap-drop ALL`, tmpfs mounts |
 | **Image signing** | Cosign keyless via Sigstore/Fulcio |
-| **Vulnerability scanning** | Trivy (Docker image), Hadolint (Dockerfile), Snyk (npm) |
+| **Vulnerability scanning** | Trivy (Docker image), Hadolint (Dockerfile), Snyk + CodeQL (npm/code) |
 | **Ignored CVEs** | `.trivyignore` for unfixable vulnerabilities |
 
 ## What This Skill Does
@@ -35,7 +36,7 @@ Security analysis and hardening guide tailored to this project: a **React + Vite
 2. **Image Vulnerability Scanning**
    - Trivy scan integrated in CI (blocks CRITICAL/HIGH)
    - `.trivyignore` for known unfixable CVEs
-   - npm audit + Snyk for dependency scanning
+   - npm audit + Snyk + CodeQL for dependency/code scanning
 
 3. **Runtime Security**
    - Read-only root filesystem
@@ -45,21 +46,20 @@ Security analysis and hardening guide tailored to this project: a **React + Vite
 
 ## Security Audit: Current Project Status
 
-### ✅ What's Already Secured
+### ✅ What's Already Secured / Planned
 
 | Security Control | Status | Implementation |
 |-----------------|--------|----------------|
-| Multi-stage build | ✅ | Builder → Runtime, no build tools in final image |
-| Non-root user | ✅ | `app` (UID 1000, no home, `/bin/false` shell) |
-| Minimal base image | ✅ | `nginx:alpine` |
-| Read-only filesystem | ✅ | `--read-only` flag in `docker:run` script |
-| Capabilities dropped | ✅ | `--cap-drop ALL` in `docker:run` script |
-| Security headers | ✅ | X-Frame-Options, CSP, X-Content-Type-Options, Referrer-Policy |
-| Dockerfile linting | ✅ | Hadolint in CI pipeline |
-| Image scanning | ✅ | Trivy with `exit-code: 1` on CRITICAL/HIGH |
-| Image signing | ✅ | Cosign keyless signing on tag push |
-| Dependency scanning | ✅ | npm audit + Snyk in separate workflow |
-| `.dockerignore` | ✅ | Excludes secrets, source control, dev files |
+| Multi-stage build | 📋 Planned | Builder → Runtime, no build tools in final image |
+| Non-root user | 📋 Planned | `app` (UID 1000, no home, `/bin/false` shell) |
+| Minimal base image | 📋 Planned | `nginx:alpine` |
+| Read-only filesystem | 📋 Planned | `--read-only` flag in `docker:run` script |
+| Capabilities dropped | 📋 Planned | `--cap-drop ALL` in `docker:run` script |
+| Security headers | 📋 Planned | X-Frame-Options, CSP, X-Content-Type-Options, Referrer-Policy |
+| Dockerfile linting | 📋 Planned | Hadolint in CI pipeline |
+| Image scanning | 📋 Planned | Trivy with `exit-code: 1` on CRITICAL/HIGH |
+| Image signing | 📋 Planned | Cosign keyless signing on tag push |
+| Dependency scanning | ✅ Active | npm audit + Snyk + CodeQL in `security.yml` |
 
 ### ⚠️ Areas to Review
 
@@ -67,8 +67,8 @@ Security analysis and hardening guide tailored to this project: a **React + Vite
 |------|------|
 | No `HEALTHCHECK` in Dockerfile | Health is at Nginx `/health` endpoint, but Docker won't track it natively |
 | `curl` installed in runtime | Adds attack surface (~5MB); needed for health checks |
-| No `--security-opt=no-new-privileges` | Could add to `docker:run` command |
-| CSP allows `unsafe-inline` / `unsafe-eval` | Needed for React, but worth tightening if possible |
+| No `--security-opt=no-new-privileges` | Should be added to `docker:run` command |
+| CSP may need `unsafe-inline` / `unsafe-eval` | Needed for React/Tailwind, but worth tightening if possible |
 
 ## Security Checklist (Project-Specific)
 
@@ -86,6 +86,7 @@ Security analysis and hardening guide tailored to this project: a **React + Vite
 - [x] Excludes `node_modules`, `.git`, `dist`
 - [x] Excludes documentation and config files
 - [x] Excludes `coverage`, `.vscode`, `.idea`
+- [x] Excludes `.agent`, `.github`, `.specify`, `tests`
 - [x] Does NOT exclude `.docker/` (needed for `COPY .docker/nginx.conf`)
 
 ### Runtime Security
@@ -110,6 +111,7 @@ Security analysis and hardening guide tailored to this project: a **React + Vite
 - [x] Hadolint Dockerfile linting
 - [x] Cosign keyless image signing
 - [x] npm audit + Snyk dependency scanning
+- [x] CodeQL static analysis for JavaScript/TypeScript
 - [x] Minimal GH Actions permissions (`contents: read`, `packages: write`)
 
 ### Secrets Management
@@ -127,16 +129,16 @@ Security analysis and hardening guide tailored to this project: a **React + Vite
 brew install aquasecurity/trivy/trivy
 
 # Scan the Docker image
-trivy image uuid-generator:local
+trivy image qr-generator:local
 
 # Scan Dockerfile config
 trivy config Dockerfile
 
 # Scan with .trivyignore
-trivy image --ignorefile .trivyignore uuid-generator:local
+trivy image --ignorefile .trivyignore qr-generator:local
 
 # Generate SBOM
-trivy image --format cyclonedx uuid-generator:local
+trivy image --format cyclonedx qr-generator:local
 ```
 
 ### 2. Hadolint (Dockerfile Linter)
@@ -156,8 +158,8 @@ hadolint Dockerfile
 
 ```bash
 # Verify a signed image
-cosign verify ghcr.io/pyaethu-aung/uuid-generator:1.0.0 \
-  --certificate-identity-regexp="https://github.com/pyaethu-aung/uuid-generator" \
+cosign verify ghcr.io/pyaethu-aung/qr-generator:1.0.0 \
+  --certificate-identity-regexp="https://github.com/pyaethu-aung/qr-generator" \
   --certificate-oidc-issuer="https://token.actions.githubusercontent.com"
 ```
 
@@ -165,28 +167,28 @@ cosign verify ghcr.io/pyaethu-aung/uuid-generator:1.0.0 \
 
 ```bash
 # Analyze image for vulnerabilities and recommendations
-docker scout cves uuid-generator:local
-docker scout recommendations uuid-generator:local
+docker scout cves qr-generator:local
+docker scout recommendations qr-generator:local
 ```
 
 ## Secure Docker Run Command
 
-The project's `package.json` includes a hardened run command:
+The planned `docker:run` npm script should use this hardened command:
 
 ```bash
-docker run --rm -p 8080:80 --name uuid-app \
+docker run --rm -p 8080:80 --name qr-app \
   --read-only \
   --cap-drop ALL \
   --tmpfs /var/cache/nginx:mode=1777 \
   --tmpfs /var/run:mode=1777 \
   --tmpfs /tmp:mode=1777 \
-  uuid-generator:local
+  qr-generator:local
 ```
 
 ### Enhanced Version (Recommended)
 
 ```bash
-docker run --rm -p 8080:80 --name uuid-app \
+docker run --rm -p 8080:80 --name qr-app \
   --read-only \
   --cap-drop ALL \
   --security-opt=no-new-privileges \
@@ -195,7 +197,7 @@ docker run --rm -p 8080:80 --name uuid-app \
   --tmpfs /var/cache/nginx:mode=1777,size=10m \
   --tmpfs /var/run:mode=1777,size=1m \
   --tmpfs /tmp:mode=1777,size=10m \
-  uuid-generator:local
+  qr-generator:local
 ```
 
 Additions explained:
@@ -206,7 +208,7 @@ Additions explained:
 
 ## Nginx Security Headers Deep Dive
 
-Current configuration in `.docker/nginx.conf`:
+Planned configuration for `.docker/nginx.conf`:
 
 ```nginx
 # Prevents the page from being embedded in iframes (anti-clickjacking)
@@ -237,7 +239,7 @@ server_tokens off;
 
 ## CI/CD Security Pipeline
 
-The actual security scanning flow in this project:
+The planned security scanning flow:
 
 ```
 Push/PR → Hadolint → Build Image → Trivy Scan (gate) → Push (tags only) → Cosign Sign
@@ -246,9 +248,9 @@ Push/PR → Hadolint → Build Image → Trivy Scan (gate) → Push (tags only) 
                                   (skip known unfixable CVEs)
 ```
 
-Separate workflow for npm dependencies:
+Existing workflow for code & npm dependencies (`security.yml`):
 ```
-Package changes → npm audit → Snyk scan → Upload SARIF to GitHub Security
+Push/PR/Weekly → npm audit → Snyk scan → CodeQL Analysis → GitHub Security
 ```
 
 ## Output Format
@@ -258,7 +260,7 @@ When analyzing this project's Docker security:
 ### Example Analysis
 
 ```
-🔒 Docker Security Analysis — uuid-generator
+🔒 Docker Security Analysis — qr-generator
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ✅ PASSED (11/15):
@@ -271,7 +273,7 @@ When analyzing this project's Docker security:
   • Trivy scanning in CI (CRITICAL/HIGH gate)
   • Hadolint Dockerfile linting
   • Cosign image signing
-  • Dependency scanning (npm audit + Snyk)
+  • Dependency scanning (npm audit + Snyk + CodeQL)
   • No hardcoded secrets
 
 ⚠️ REVIEW (4/15):
@@ -290,7 +292,7 @@ When analyzing this project's Docker security:
 
   4. [INFO] CSP allows 'unsafe-inline' and 'unsafe-eval'
      Impact: XSS mitigation is weakened
-     Note: Typically required for React/Vite SPA bundles
+     Note: Typically required for React/Vite/Tailwind SPA bundles
 ```
 
 ## References

@@ -9,15 +9,18 @@ metadata:
 
 # Docker CI/CD Integration Skill
 
-Comprehensive guide for integrating Docker into CI/CD pipelines, tailored to this project's architecture: a **React + Vite SPA** served by **Nginx** in a multi-stage Docker build, published to **GitHub Container Registry (GHCR)**.
+Comprehensive guide for integrating Docker into CI/CD pipelines, tailored to this project's architecture: a **React 19 + TypeScript + Vite 7 SPA** (with Tailwind CSS v4) served by **Nginx** in a multi-stage Docker build, published to **GitHub Container Registry (GHCR)**.
 
 ## Project Context
 
 | Aspect | Detail |
 |--------|--------|
-| **App type** | React + Vite single-page application |
-| **Dockerfile** | 2-stage: `node:20-alpine` (builder) → `nginx:alpine` (runtime) |
-| **Nginx config** | `.docker/nginx.conf` with security headers, gzip, SPA routing, `/health` endpoint |
+| **App type** | React 19 + TypeScript 5.9 + Vite 7 single-page application |
+| **Styling** | Tailwind CSS v4 (`@tailwindcss/vite` + `@tailwindcss/postcss`) |
+| **Build command** | `tsc -b && vite build` |
+| **Vite config** | `vite.config.ts` (TypeScript) |
+| **Dockerfile** | ⚠️ To be implemented: 2-stage `node:20-alpine` (builder) → `nginx:alpine` (runtime) |
+| **Nginx config** | ⚠️ To be implemented: `.docker/nginx.conf` with security headers, gzip, SPA routing, `/health` endpoint |
 | **Non-root user** | `app` (UID 1000) |
 | **Runtime port** | 80 (Nginx) |
 | **Registry** | `ghcr.io` (GitHub Container Registry) |
@@ -50,9 +53,9 @@ Comprehensive guide for integrating Docker into CI/CD pipelines, tailored to thi
    - Tag-based Docker image publishing to GHCR
    - GitHub Pages deployment for the static site (separate workflow)
 
-## Current CI/CD Pipeline
+## Docker Publish Workflow (To Be Implemented)
 
-The project's actual workflow is `.github/workflows/docker-publish.yml`:
+The Docker CI/CD workflow should be created at `.github/workflows/docker-publish.yml`:
 
 ```yaml
 name: Docker
@@ -193,48 +196,57 @@ This project uses **semver tags only** (no branch-based latest tags):
 
 ## Security Scanning Workflow
 
-The project also has a separate npm dependency security workflow at `.github/workflows/security.yml`:
+The project has a separate security workflow at `.github/workflows/security.yml`:
 
 ```yaml
-name: Security
+name: Security Scan
 
 on:
   push:
-    branches: [main]
-    paths:
-      - "package.json"
-      - "package-lock.json"
+    branches: ["main"]
   pull_request:
-    branches: [main]
-    paths:
-      - "package.json"
-      - "package-lock.json"
+    branches: ["main"]
   schedule:
-    - cron: "0 2 * * 0"  # Weekly on Sunday at 2 AM
+    - cron: '0 0 * * 1' # Weekly on Mondays
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
 
 jobs:
-  security-scan:
+  security:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "npm"
-      - run: npm ci
-      - run: npm audit --audit-level=moderate
-      - name: Run Snyk vulnerability scanner
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: NPM Audit
+        run: npm audit --audit-level=high
+
+      - name: Snyk Scan
         uses: snyk/actions/node@master
-        with:
-          args: --severity-threshold=high --sarif-file-output=snyk.sarif
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        continue-on-error: true
-      - name: Upload Snyk results
-        uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: snyk.sarif
-        if: always()
+          args: --severity-threshold=high
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
 ```
 
 ## Container Registry: GHCR
@@ -252,21 +264,23 @@ This project uses GitHub Container Registry exclusively:
 
 ## Testing the Docker Image Locally
 
-Use the npm scripts defined in `package.json`:
+> **Note**: Docker npm scripts (`docker:build`, `docker:run`) are **not yet defined** in `package.json`. They should be added when the Dockerfile is implemented.
+
+Planned npm scripts:
 
 ```bash
 # Build the image
 npm run docker:build
-# → docker build -t uuid-generator:local .
+# → docker build -t qr-generator:local .
 
 # Run with security hardening
 npm run docker:run
-# → docker run --rm -p 8080:80 --name uuid-app \
+# → docker run --rm -p 8080:80 --name qr-app \
 #     --read-only --cap-drop ALL \
 #     --tmpfs /var/cache/nginx:mode=1777 \
 #     --tmpfs /var/run:mode=1777 \
 #     --tmpfs /tmp:mode=1777 \
-#     uuid-generator:local
+#     qr-generator:local
 
 # Test health endpoint
 curl http://localhost:8080/health
@@ -275,7 +289,7 @@ curl http://localhost:8080/health
 
 ## Container Health Verification
 
-The health check is handled by Nginx at the `/health` endpoint (defined in `.docker/nginx.conf`), not by a `HEALTHCHECK` instruction in the Dockerfile:
+The health check should be handled by Nginx at the `/health` endpoint (defined in `.docker/nginx.conf`), not by a `HEALTHCHECK` instruction in the Dockerfile:
 
 ```nginx
 location /health {
@@ -322,81 +336,66 @@ This project uses **keyless signing** with Sigstore/Fulcio (no private key requi
 
 To verify a signed image:
 ```bash
-cosign verify ghcr.io/pyaethu-aung/uuid-generator:1.0.0 \
-  --certificate-identity-regexp="https://github.com/pyaethu-aung/uuid-generator" \
+cosign verify ghcr.io/pyaethu-aung/qr-generator:1.0.0 \
+  --certificate-identity-regexp="https://github.com/pyaethu-aung/qr-generator" \
   --certificate-oidc-issuer="https://token.actions.githubusercontent.com"
 ```
 
 ## GitHub Pages Deployment
 
-The static site is also deployed to GitHub Pages via `.github/workflows/deploy.yml`:
+The static site is deployed to GitHub Pages via `.github/workflows/deploy.yml`:
 
 ```yaml
 name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
-    paths:
-      - "src/**"
-      - "index.html"
-      - "package.json"
-      - "package-lock.json"
-      - "vite.config.js"
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npm test
-      - run: npm run lint
-      - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Disable Jekyll
+        run: touch dist/.nojekyll
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: './dist'
 
   deploy:
-    needs: build
-    runs-on: ubuntu-latest
     environment:
       name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
     steps:
-      - uses: actions/deploy-pages@v4
-```
-
-## Makefile Docker Targets (Recommended Addition)
-
-The current `Makefile` only has npm targets. To add Docker targets:
-
-```makefile
-.PHONY: docker-build docker-run docker-scan docker-clean
-
-IMAGE_NAME := uuid-generator
-TAG := local
-
-docker-build:
-	docker build -t $(IMAGE_NAME):$(TAG) .
-
-docker-run:
-	docker run --rm -p 8080:80 --name uuid-app \
-		--read-only --cap-drop ALL \
-		--tmpfs /var/cache/nginx:mode=1777 \
-		--tmpfs /var/run:mode=1777 \
-		--tmpfs /tmp:mode=1777 \
-		$(IMAGE_NAME):$(TAG)
-
-docker-scan:
-	trivy image $(IMAGE_NAME):$(TAG)
-	hadolint Dockerfile
-
-docker-clean:
-	docker rmi $(IMAGE_NAME):$(TAG) 2>/dev/null || true
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 ```
 
 ## References
