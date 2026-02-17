@@ -27,9 +27,9 @@ COPY package.json package-lock.json ./
 RUN npm ci --ignore-scripts
 
 # Copy configuration files needed by the build pipeline
-COPY tsconfig.json tsconfig.app.json ./
+COPY tsconfig.json tsconfig.app.json tsconfig.node.json ./
 COPY vite.config.ts ./
-COPY postcss.config.cjs ./
+COPY postcss.config.cjs tailwind.config.js ./
 COPY index.html ./
 
 # Copy source code and public assets (changes here don't invalidate npm ci cache)
