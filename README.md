@@ -45,7 +45,29 @@ The app supports multiple languages (English and Burmese) via custom locale conf
 - Tests: `npm run test` (watch: `npm run test:watch`, coverage: `npm run test:coverage`)
 - Build: `npm run build`
 
-## Quality & Constitution Highlights
+## Docker Support
+49: 
+50: [![Docker Build](https://github.com/pyaethu-aung/qr-generator/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/pyaethu-aung/qr-generator/actions/workflows/docker-publish.yml)
+51: 
+52: Included Dockerfile supports multi-stage builds (Node.js builder → Nginx runtime) for a secure, optimized (<25MB) production image.
+53: 
+54: ### Local Development
+55: 
+56: ```bash
+57: # Build image locally
+58: npm run docker:build
+59: 
+60: # Run container at http://localhost:8080
+61: npm run docker:run
+62: ```
+63: 
+64: ### CI/CD Pipeline
+65: 
+66: - **Triggers**: Push to `main`, PRs, and daily schedule (Build + Scan only).
+67: - **Publish**: Images are pushed to GHCR **only** on version tags (e.g., `git tag v1.0.0`).
+68: - **Security**: Integrated Trivy scanning (blocking high/critical CVEs), Hadolint linting, and Cosign image signing.
+69: 
+70: ## Quality & Constitution Highlights
 
 - Every change must add/update relevant unit tests, maintain ≥85% coverage, and all tests must pass before merge.
 - Run `npm run test`, `npm run lint`, and `npm run build` after every change before opening a PR.

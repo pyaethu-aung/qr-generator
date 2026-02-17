@@ -101,8 +101,8 @@ For Docker tasks, testing involves `docker build` validation, `hadolint` linting
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T022 [P] Update `README.md` with Docker instructions section (build, run, verify, scan commands from `quickstart.md`)
-- [ ] T023 [P] Validate `specs/019-docker-containerization/quickstart.md` instructions against final implementation — run each command, fix any discrepancies
+- [x] T022 [P] Update `README.md` with Docker instructions section (build, run, verify, scan commands from `quickstart.md`)
+- [x] T023 [P] Validate `specs/019-docker-containerization/quickstart.md` instructions against final implementation — run each command, fix any discrepancies
 
 ---
 
