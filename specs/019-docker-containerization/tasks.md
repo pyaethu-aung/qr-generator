@@ -90,8 +90,8 @@ For Docker tasks, testing involves `docker build` validation, `hadolint` linting
 
 ### Implementation for User Story 3
 
-- [ ] T020 [US3] Verify daily schedule cron (`35 6 * * *`) in `.github/workflows/docker-publish.yml` triggers build + Trivy scan (no push) — already configured in T007 trigger, validate the scheduled path builds and scans correctly
-- [ ] T021 [US3] Populate `.trivyignore` with any known unfixable false positives discovered during T012/T018 validation (if none found, add header comment explaining purpose)
+- [x] T020 [US3] Verify daily schedule cron (`35 6 * * *`) in `.github/workflows/docker-publish.yml` triggers build + Trivy scan (no push) — already configured in T007 trigger, validate the scheduled path builds and scans correctly
+- [x] T021 [US3] Populate `.trivyignore` with any known unfixable false positives discovered during T012/T018 validation (if none found, add header comment explaining purpose)
 
 **Checkpoint**: All user stories should now be independently functional
 
