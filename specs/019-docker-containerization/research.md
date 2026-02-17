@@ -64,9 +64,11 @@
 
 **Key findings**:
 - Build-then-scan pattern: build and `load` locally → Trivy scan → then build and `push` on tag.
+- Push strategy: images are pushed to GHCR ONLY on semver tag pushes (`v*.*.*`). Main branch pushes, PRs, and scheduled runs only build + scan (no push). This is controlled via `push: ${{ startsWith(github.ref, 'refs/tags/') }}` in the build-push-action.
 - `--ignore-unfixed` flag prevents blocking on unpatched Alpine CVEs (per clarification).
-- GHA cache (`type=gha`, `mode=max`) persists layers between pushes.
+- GHA cache (`type=gha`, `mode=max`) persists layers between builds.
 - Single platform (`linux/amd64`) keeps CI under 5 minutes.
+- Workflow triggers: `push` to main (build+scan), tags `v*.*.*` (build+scan+push+sign), PRs (build+scan), daily cron (build+scan for new CVEs).
 
 ### 5. Cosign Keyless Image Signing
 

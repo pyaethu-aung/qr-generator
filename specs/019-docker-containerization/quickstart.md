@@ -96,10 +96,16 @@ trivy image --ignore-unfixed --severity CRITICAL,HIGH qr-generator:local
 
 ## CI/CD: Publish to GHCR
 
+> **Note**: Images are pushed to GHCR ONLY on semver tag pushes. Main branch pushes, PRs, and daily scheduled runs only build + scan (no push).
+
 ```bash
-# Tag a release (triggers docker-publish.yml)
+# Tag a release (triggers docker-publish.yml → build + scan + push + sign)
 git tag v1.0.0
 git push origin v1.0.0
+
+# Main branch push only builds and scans (no push to GHCR)
+git push origin main
+# → docker-publish.yml runs: build ✅ → Trivy scan ✅ → push ❌ (skipped)
 
 # Verify published image
 docker pull ghcr.io/pyaethu-aung/qr-generator:1.0.0

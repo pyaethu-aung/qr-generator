@@ -26,10 +26,11 @@ As a DevOps engineer, I want the QR Generator application to be packaged as a se
 
 **Acceptance Scenarios**:
 
-1. **Given** a commit is pushed to main, **When** the CI pipeline runs, **Then** a `linux/amd64` Docker image is built and pushed to GHCR.
-2. **Given** the image is built, **When** Trivy scans it, **Then** no fixable critical or high vulnerabilities are reported.
-3. **Given** the container is running in production, **When** inspected, **Then** it runs as a non-root user with a read-only filesystem (except required temp dirs).
-4. **Given** the container is running, **When** a request is made to the health endpoint, **Then** it returns a 200 OK status.
+1. **Given** a semver tag (`v*.*.*`) is pushed, **When** the CI pipeline runs, **Then** a `linux/amd64` Docker image is built, scanned, pushed to GHCR, and signed with Cosign.
+2. **Given** a commit is pushed to main or a PR is opened, **When** the CI pipeline runs, **Then** the Docker image is built and scanned but NOT pushed to GHCR.
+3. **Given** the image is built, **When** Trivy scans it, **Then** no fixable critical or high vulnerabilities are reported.
+4. **Given** the container is running in production, **When** inspected, **Then** it runs as a non-root user with a read-only filesystem (except required temp dirs).
+5. **Given** the container is running, **When** a request is made to the health endpoint, **Then** it returns a 200 OK status.
 
 ---
 
@@ -95,7 +96,7 @@ As a security engineer, I want automated checks for Dockerfile best practices an
 - **FR-002**: System MUST target a final image size of < 25MB (compressed) to minimize storage and transfer time.
 - **FR-003**: System MUST run the Nginx process as a non-root user (custom `app` user with UID 1000, no home directory, no shell).
 - **FR-004**: System MUST mount the root filesystem as read-only, with exceptions only for strictly necessary writable directories (e.g., `/var/cache/nginx`, `/var/run`, `/tmp`).
-- **FR-005**: System MUST include a GitHub Actions workflow that builds, scans, and pushes the image to GitHub Container Registry (GHCR).
+- **FR-005**: System MUST include a GitHub Actions workflow that builds and scans the image on every push to `main`, PR, and daily schedule, but pushes to GHCR ONLY on semver tag pushes (`v*.*.*`).
 - **FR-006**: System MUST implement semantic versioning for image tags based on Git tags (`v*`), with `type=sha` for commit traceability.
 - **FR-007**: System MUST scan images for CVEs using Trivy in the CI/CD pipeline and fail on `CRITICAL` or `HIGH` severity vulnerabilities ONLY if a fix is available (using `--ignore-unfixed`).
 - **FR-008**: System MUST validate the `Dockerfile` syntax and best practices using `hadolint` during CI.

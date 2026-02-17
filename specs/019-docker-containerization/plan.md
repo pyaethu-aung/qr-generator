@@ -7,7 +7,7 @@
 
 ## Summary
 
-Implement a production-grade Docker containerization strategy for the QR Generator SPA (React 19 + TypeScript 5.9 + Vite 7 + Tailwind CSS v4). The approach uses a multi-stage Dockerfile (Node 20 Builder → Nginx Alpine Runtime) to optimize image size (<25MB compressed target) and security (non-root, read-only fs). Includes a comprehensive CI/CD pipeline with GitHub Actions for automated linting (Hadolint), security scanning (Trivy), Cosign keyless image signing, and publishing to GHCR with semantic versioning.
+Implement a production-grade Docker containerization strategy for the QR Generator SPA (React 19 + TypeScript 5.9 + Vite 7 + Tailwind CSS v4). The approach uses a multi-stage Dockerfile (Node 20 Builder → Nginx Alpine Runtime) to optimize image size (<25MB compressed target) and security (non-root, read-only fs). Includes a comprehensive CI/CD pipeline with GitHub Actions for automated linting (Hadolint), security scanning (Trivy), and Cosign keyless image signing. Images are pushed to GHCR only on semver tag pushes (`v*.*.*`); main/PR/schedule triggers only build and scan.
 
 ## Technical Context
 
