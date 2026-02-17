@@ -34,8 +34,8 @@ For Docker tasks, testing involves `docker build` validation, `hadolint` linting
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 Create Nginx configuration in `.docker/nginx.conf` with SPA routing (`try_files $uri $uri/ /index.html`), gzip compression, security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, CSP with `unsafe-inline`/`unsafe-eval`), and `/health` endpoint
-- [ ] T004 Create multi-stage `Dockerfile` in project root with builder stage (`node:20-alpine`, `npm ci`, `tsc -b && vite build`) and runtime stage (`nginx:alpine`, non-root `app` user UID 1000, read-only fs prep, `COPY` dist + nginx.conf)
+- [x] T003 Create Nginx configuration in `.docker/nginx.conf` with SPA routing (`try_files $uri $uri/ /index.html`), gzip compression, security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, CSP with `unsafe-inline`/`unsafe-eval`), and `/health` endpoint
+- [x] T004 Create multi-stage `Dockerfile` in project root with builder stage (`node:20-alpine`, `npm ci`, `tsc -b && vite build`) and runtime stage (`nginx:alpine`, non-root `app` user UID 1000, read-only fs prep, `COPY` dist + nginx.conf)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
