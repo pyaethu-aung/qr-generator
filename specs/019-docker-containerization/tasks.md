@@ -73,10 +73,10 @@ For Docker tasks, testing involves `docker build` validation, `hadolint` linting
 
 ### Implementation for User Story 2
 
-- [ ] T016 [US2] Add `docker:build` script to `package.json`: `docker build -t qr-generator:local .`
-- [ ] T017 [US2] Add `docker:run` script to `package.json`: `docker run --rm -p 8080:80 --name qr-app --read-only --cap-drop ALL --tmpfs /var/cache/nginx:mode=1777 --tmpfs /var/run:mode=1777 --tmpfs /tmp:mode=1777 qr-generator:local`
-- [ ] T018 [US2] Validate local build: run `npm run docker:build`, verify image size < 25MB compressed (`docker save qr-generator:local | gzip | wc -c`), document findings in `specs/019-docker-containerization/research.md`
-- [ ] T019 [US2] Validate non-root execution: run `npm run docker:run`, verify `docker exec qr-app whoami` returns `app` and `docker exec qr-app touch /test-file` fails with read-only error
+- [x] T016 [US2] Add `docker:build` script to `package.json`: `docker build -t qr-generator:local .`
+- [x] T017 [US2] Add `docker:run` script to `package.json`: `docker run --rm -p 8080:80 --name qr-app --read-only --cap-drop ALL --tmpfs /var/cache/nginx:mode=1777 --tmpfs /var/run:mode=1777 --tmpfs /tmp:mode=1777 qr-generator:local`
+- [x] T018 [US2] Validate local build: run `npm run docker:build`, verify image size < 25MB compressed (`docker save qr-generator:local | gzip | wc -c`), document findings in `specs/019-docker-containerization/research.md`
+- [x] T019 [US2] Validate non-root execution: run `npm run docker:run`, verify `docker exec qr-app whoami` returns `app` and `docker exec qr-app touch /test-file` fails with read-only error
 
 **Checkpoint**: User Stories 1 AND 2 should both work independently
 
