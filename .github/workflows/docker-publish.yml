@@ -1,0 +1,127 @@
+# =============================================================================
+# Docker CI/CD Pipeline — QR Generator
+#
+# Triggers:
+#   - push to main:        Build + Scan (no push)
+#   - tag v*.*.*:          Build + Scan + Push to GHCR + Cosign Sign
+#   - pull_request to main: Build + Scan (no push)
+#   - daily cron:          Build + Scan for new CVEs (no push)
+# =============================================================================
+
+name: Docker
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ 'v*.*.*' ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: '35 6 * * *'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      # Required for Cosign keyless signing via Sigstore/Fulcio OIDC
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # --- Dockerfile Linting (FR-008) ---
+      - name: Run Hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+
+      # --- Cosign Setup (FR-018) ---
+      # Install Cosign for image signing (skip on PRs — no push occurs)
+      - name: Install cosign
+        if: github.event_name != 'pull_request'
+        uses: sigstore/cosign-installer@v3.5.0
+        with:
+          cosign-release: 'v2.2.4'
+
+      # --- Docker Buildx Setup ---
+      - name: Setup Docker buildx
+        uses: docker/setup-buildx-action@v3
+
+      # --- Registry Login (FR-005) ---
+      # Login to GHCR (skip on PRs — no push occurs)
+      - name: Log into registry ${{ env.REGISTRY }}
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # --- Image Metadata (FR-006) ---
+      # Extract semver tags and SHA for image tagging
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha
+
+      # --- Build for Scanning (FR-007) ---
+      # Build and load locally so Trivy can scan before push
+      - name: Build and load Docker image for scan
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # --- Vulnerability Scanning (FR-007) ---
+      # Fail on fixable CRITICAL/HIGH CVEs only (--ignore-unfixed)
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          trivyignores: .trivyignore
+
+      # --- Build and Push (FR-005, FR-013) ---
+      # Push to GHCR ONLY on semver tag pushes (v*.*.*)
+      # Single platform: linux/amd64 only (per clarification)
+      - name: Build and push Docker image
+        id: build-and-push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64
+          push: ${{ startsWith(github.ref, 'refs/tags/') }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # --- Image Signing (FR-018) ---
+      # Sign with Cosign keyless (Sigstore/Fulcio OIDC) on tag pushes only
+      - name: Sign the published Docker image
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+          DIGEST: ${{ steps.build-and-push.outputs.digest }}
+        run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}

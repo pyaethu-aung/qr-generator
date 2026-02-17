@@ -49,17 +49,17 @@ For Docker tasks, testing involves `docker build` validation, `hadolint` linting
 
 ### Implementation for User Story 1
 
-- [ ] T005 [US1] Finalize `Dockerfile` builder stage: copy `package.json` + `package-lock.json` first, `npm ci`, then copy source + config files, run `tsc -b && vite build` (layer cache optimization per FR-016)
-- [ ] T006 [US1] Finalize `Dockerfile` runtime stage: create non-root `app` user (UID 1000, no home, no shell), copy `dist/` from builder, copy `.docker/nginx.conf`, set writable dirs (`/var/cache/nginx`, `/var/run`, `/tmp`), expose port 80, `HEALTHCHECK` instruction
-- [ ] T007 [US1] Create GitHub Actions workflow `.github/workflows/docker-publish.yml` with triggers (`push` main, `tags v*.*.*`, `pull_request` main, daily cron `35 6 * * *`), env vars (`REGISTRY: ghcr.io`, `IMAGE_NAME`), and permissions (`contents: read`, `packages: write`, `id-token: write`)
-- [ ] T008 [US1] Add Hadolint linting step to `.github/workflows/docker-publish.yml` using `hadolint/hadolint-action@v3.1.0`
-- [ ] T009 [US1] Add Cosign installer step to `.github/workflows/docker-publish.yml` (skip on PRs) using `sigstore/cosign-installer@v3.5.0`
-- [ ] T010 [US1] Add Docker Buildx setup, GHCR login (skip on PRs), and metadata extraction steps to `.github/workflows/docker-publish.yml` with semver tags (`{{version}}`, `{{major}}.{{minor}}`, `{{major}}`, `sha`)
-- [ ] T011 [US1] Add build-and-load step to `.github/workflows/docker-publish.yml` for local Trivy scanning (with GHA cache)
-- [ ] T012 [US1] Add Trivy vulnerability scanning step to `.github/workflows/docker-publish.yml` (`exit-code: 1`, `ignore-unfixed: true`, `severity: CRITICAL,HIGH`, `trivyignores: .trivyignore`)
-- [ ] T013 [US1] Add build-and-push step to `.github/workflows/docker-publish.yml` with `push: ${{ startsWith(github.ref, 'refs/tags/') }}` (tag-only push), `platforms: linux/amd64`, GHA cache
-- [ ] T014 [US1] Add Cosign signing step to `.github/workflows/docker-publish.yml` (tag-only, signs `{}@${DIGEST}`)
-- [ ] T015 [US1] Add health check endpoint `/health` returning `200 OK` in `.docker/nginx.conf` (verify with `curl http://localhost:8080/health` after local `docker run`)
+- [x] T005 [US1] Finalize `Dockerfile` builder stage: copy `package.json` + `package-lock.json` first, `npm ci`, then copy source + config files, run `tsc -b && vite build` (layer cache optimization per FR-016)
+- [x] T006 [US1] Finalize `Dockerfile` runtime stage: create non-root `app` user (UID 1000, no home, no shell), copy `dist/` from builder, copy `.docker/nginx.conf`, set writable dirs (`/var/cache/nginx`, `/var/run`, `/tmp`), expose port 80, `HEALTHCHECK` instruction
+- [x] T007 [US1] Create GitHub Actions workflow `.github/workflows/docker-publish.yml` with triggers (`push` main, `tags v*.*.*`, `pull_request` main, daily cron `35 6 * * *`), env vars (`REGISTRY: ghcr.io`, `IMAGE_NAME`), and permissions (`contents: read`, `packages: write`, `id-token: write`)
+- [x] T008 [US1] Add Hadolint linting step to `.github/workflows/docker-publish.yml` using `hadolint/hadolint-action@v3.1.0`
+- [x] T009 [US1] Add Cosign installer step to `.github/workflows/docker-publish.yml` (skip on PRs) using `sigstore/cosign-installer@v3.5.0`
+- [x] T010 [US1] Add Docker Buildx setup, GHCR login (skip on PRs), and metadata extraction steps to `.github/workflows/docker-publish.yml` with semver tags (`{{version}}`, `{{major}}.{{minor}}`, `{{major}}`, `sha`)
+- [x] T011 [US1] Add build-and-load step to `.github/workflows/docker-publish.yml` for local Trivy scanning (with GHA cache)
+- [x] T012 [US1] Add Trivy vulnerability scanning step to `.github/workflows/docker-publish.yml` (`exit-code: 1`, `ignore-unfixed: true`, `severity: CRITICAL,HIGH`, `trivyignores: .trivyignore`)
+- [x] T013 [US1] Add build-and-push step to `.github/workflows/docker-publish.yml` with `push: ${{ startsWith(github.ref, 'refs/tags/') }}` (tag-only push), `platforms: linux/amd64`, GHA cache
+- [x] T014 [US1] Add Cosign signing step to `.github/workflows/docker-publish.yml` (tag-only, signs `{}@${DIGEST}`)
+- [x] T015 [US1] Add health check endpoint `/health` returning `200 OK` in `.docker/nginx.conf` (verify with `curl http://localhost:8080/health` after local `docker run`)
 
 **Checkpoint**: User Story 1 fully functional and testable independently
 
