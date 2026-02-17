@@ -1,0 +1,85 @@
+# =============================================================================
+# .dockerignore — Minimize build context for Docker multi-stage builds
+# Only files needed by Dockerfile COPY instructions should pass through.
+# =============================================================================
+
+# --- Version Control ---
+.git
+.gitignore
+.gitattributes
+
+# --- Build Artifacts & Dependencies ---
+node_modules
+dist
+build
+dist-ssr
+coverage
+
+# --- Development Tooling ---
+.vscode
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+*.tmp
+*.local
+
+# --- Environment & Secrets ---
+.env*
+.cache
+.tmp
+
+# --- Documentation ---
+README.md
+LICENSE
+CHANGELOG.md
+CONTRIBUTING.md
+*.md
+docs/
+
+# --- Specifications & Agent Config ---
+.agent/
+.specify/
+specs/
+AGENTS.md
+
+# --- CI/CD & GitHub ---
+.github/
+
+# --- Docker (self-referential) ---
+Dockerfile
+.dockerignore
+.trivyignore
+
+# --- Test Files ---
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+vitest.config.*
+__tests__/
+__mocks__/
+
+# --- Logs ---
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# =============================================================================
+# IMPORTANT: Do NOT ignore these files (needed by builder stage):
+#   - package.json
+#   - package-lock.json
+#   - tsconfig.json / tsconfig.*.json
+#   - vite.config.ts
+#   - postcss.config.cjs
+#   - src/              (application source code)
+#   - public/           (static assets)
+#   - index.html        (Vite entry point)
+#   - .docker/          (nginx.conf used by runtime stage)
+# =============================================================================
