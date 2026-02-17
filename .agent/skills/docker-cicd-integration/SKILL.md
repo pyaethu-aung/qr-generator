@@ -3,194 +3,116 @@ name: docker-cicd-integration
 description: Integrate Docker builds, testing, and deployment into CI/CD pipelines. Use when asked to "add Docker to CI/CD", "automate Docker builds", "setup container deployment", or "configure Docker in GitHub Actions".
 metadata:
   author: custom
-  version: "1.0.0"
+  version: "2.0.0"
   argument-hint: <ci-platform>
 ---
 
 # Docker CI/CD Integration Skill
 
-Comprehensive guide for integrating Docker into CI/CD pipelines with build automation, testing, security scanning, and deployment.
+Comprehensive guide for integrating Docker into CI/CD pipelines, tailored to this project's architecture: a **React + Vite SPA** served by **Nginx** in a multi-stage Docker build, published to **GitHub Container Registry (GHCR)**.
+
+## Project Context
+
+| Aspect | Detail |
+|--------|--------|
+| **App type** | React + Vite single-page application |
+| **Dockerfile** | 2-stage: `node:20-alpine` (builder) → `nginx:alpine` (runtime) |
+| **Nginx config** | `.docker/nginx.conf` with security headers, gzip, SPA routing, `/health` endpoint |
+| **Non-root user** | `app` (UID 1000) |
+| **Runtime port** | 80 (Nginx) |
+| **Registry** | `ghcr.io` (GitHub Container Registry) |
+| **Signing** | Cosign keyless signing via Sigstore/Fulcio |
+| **Scanning** | Trivy (image) + Hadolint (Dockerfile) |
+| **Push strategy** | Only on semver tags (`v*.*.*`) |
+| **Platforms** | `linux/amd64`, `linux/arm64` |
+| **Static deployment** | GitHub Pages (separate workflow) |
 
 ## What This Skill Does
 
 1. **CI/CD Pipeline Setup**
-   - Configures automated Docker builds
-   - Implements multi-platform builds
-   - Sets up image tagging strategies
-   - Manages container registry integration
+   - Configures automated Docker builds for a static SPA
+   - Implements multi-platform builds (amd64/arm64)
+   - Sets up semver-based image tagging
+   - Manages GHCR integration with Cosign image signing
 
-2. **Automated Testing**
-   - Container testing in CI
-   - Integration test orchestration
-   - Health check validation
-   - Performance testing
+2. **Automated Testing & Scanning**
+   - Hadolint Dockerfile linting
+   - Trivy vulnerability scanning (build-then-scan pattern)
+   - `.trivyignore` for known unfixable CVEs
+   - npm audit / Snyk for dependency scanning (separate workflow)
 
 3. **Security Integration**
-   - Vulnerability scanning in pipeline
-   - Image signing and verification
-   - Secret management
-   - Compliance checking
+   - Cosign keyless image signing on tag pushes
+   - Trivy scan gates (`exit-code: 1` on CRITICAL/HIGH)
+   - Read-only container runtime with `--cap-drop ALL`
 
-4. **Deployment Automation**
-   - Registry push automation
-   - Multi-environment deployment
-   - Rollback strategies
-   - Version management
+4. **Deployment**
+   - Tag-based Docker image publishing to GHCR
+   - GitHub Pages deployment for the static site (separate workflow)
 
-## GitHub Actions Workflows
+## Current CI/CD Pipeline
 
-### Complete CI/CD Pipeline
-
-`.github/workflows/docker-ci.yml`:
+The project's actual workflow is `.github/workflows/docker-publish.yml`:
 
 ```yaml
-name: Docker CI/CD Pipeline
+name: Docker
 
 on:
   push:
-    branches: [main, develop]
-    tags:
-      - 'v*'
+    branches: [ "main" ]
+    tags: [ 'v*.*.*' ]
   pull_request:
-    branches: [main]
+    branches: [ "main" ]
+  schedule:
+    - cron: '35 6 * * *'
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  # Job 1: Lint and Security Check
-  lint-and-security:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write  # Required for Cosign keyless signing
+
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Run Hadolint (Dockerfile linter)
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Lint the Dockerfile
+      - name: Run Hadolint
         uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: Dockerfile
-          failure-threshold: warning
-      
-      - name: Run Trivy config scan
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'config'
-          scan-ref: 'Dockerfile'
-          exit-code: '1'
-          severity: 'CRITICAL,HIGH'
 
-  # Job 2: Build and Test
-  build-and-test:
-    needs: lint-and-security
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      
-      - name: Log in to Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha,prefix={{branch}}-
-      
-      - name: Build Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: false
-          load: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          build-args: |
-            BUILDKIT_INLINE_CACHE=1
-      
-      - name: Run container tests
-        run: |
-          # Start container
-          docker run -d --name test-container \
-            -p 3000:3000 \
-            ${{ steps.meta.outputs.tags }}
-          
-          # Wait for container to be healthy
-          timeout 30s bash -c 'until docker exec test-container wget -q --spider http://localhost:3000/health; do sleep 2; done'
-          
-          # Run tests
-          docker exec test-container npm test
-          
-          # Cleanup
-          docker stop test-container
-          docker rm test-container
-      
-      - name: Scan image for vulnerabilities
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ steps.meta.outputs.tags }}
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH'
-      
-      - name: Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v2
-        if: always()
-        with:
-          sarif_file: 'trivy-results.sarif'
-      
-      - name: Push Docker image
+      # Install Cosign for image signing (skip on PRs)
+      - name: Install cosign
         if: github.event_name != 'pull_request'
-        uses: docker/build-push-action@v5
+        uses: sigstore/cosign-installer@v3.5.0
         with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cosign-release: 'v2.2.4'
 
-  # Job 3: Multi-platform Build (for releases)
-  multi-platform-build:
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - uses: actions/checkout@v4
-      
+      # QEMU for multi-platform builds
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-      
-      - name: Set up Docker Buildx
+
+      - name: Setup Docker buildx
         uses: docker/setup-buildx-action@v3
-      
-      - name: Log in to Container Registry
+
+      # Login to GHCR (skip on PRs)
+      - name: Log into registry ${{ env.REGISTRY }}
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Extract metadata
+
+      # Extract semver tags from git tags
+      - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
@@ -199,122 +121,128 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-      
-      - name: Build and push multi-platform
+            type=sha
+
+      # Build and load locally for Trivy scan
+      - name: Build and load Docker image for scan
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Scan for vulnerabilities before pushing
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          trivyignores: .trivyignore
+
+      # Multi-platform build and push (only on tags)
+      - name: Build and push Docker image
+        id: build-and-push
         uses: docker/build-push-action@v5
         with:
           context: .
           platforms: linux/amd64,linux/arm64
-          push: true
+          push: ${{ startsWith(github.ref, 'refs/tags/') }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-```
 
-### Separate Security Scanning Workflow
-
-`.github/workflows/docker-security.yml`:
-
-```yaml
-name: Docker Security Scan
-
-on:
-  schedule:
-    # Run daily at 2 AM UTC
-    - cron: '0 2 * * *'
-  workflow_dispatch:
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-
-jobs:
-  security-scan:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
-    steps:
-      - name: Log in to Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Pull latest image
-        run: docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-      
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH,MEDIUM'
-      
-      - name: Upload results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: 'trivy-results.sarif'
-      
-      - name: Generate SBOM
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          format: 'cyclonedx'
-          output: 'sbom.json'
-      
-      - name: Upload SBOM artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: sbom
-          path: sbom.json
+      # Cosign keyless signing (only on tags)
+      - name: Sign the published Docker image
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+          DIGEST: ${{ steps.build-and-push.outputs.digest }}
+        run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
 ```
 
 ## Image Tagging Strategy
 
-### Semantic Versioning Tags
+This project uses **semver tags only** (no branch-based latest tags):
 
 ```yaml
-# Automatically create tags based on git events
 - name: Docker metadata
   id: meta
   uses: docker/metadata-action@v5
   with:
     images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
     tags: |
-      # Branch name
-      type=ref,event=branch
-      
-      # PR number
-      type=ref,event=pr
-      
-      # Semantic versioning
-      type=semver,pattern={{version}}
-      type=semver,pattern={{major}}.{{minor}}
-      type=semver,pattern={{major}}
-      
-      # Git SHA (short)
-      type=sha,prefix={{branch}}-,format=short
-      
-      # Latest tag for main branch
-      type=raw,value=latest,enable={{is_default_branch}}
+      # Semantic versioning from git tags
+      type=semver,pattern={{version}}    # e.g., 1.2.3
+      type=semver,pattern={{major}}.{{minor}}  # e.g., 1.2
+      type=semver,pattern={{major}}       # e.g., 1
+      # Git SHA for traceability
+      type=sha
 ```
 
 ### Tag Examples
-- `v1.2.3` → Tags: `1.2.3`, `1.2`, `1`, `latest`
-- `main` branch → Tag: `main`
-- PR #42 → Tag: `pr-42`
-- Commit on develop → Tag: `develop-a1b2c3d`
+- `v1.2.3` → Tags: `1.2.3`, `1.2`, `1`, `sha-a1b2c3d`
+- `main` branch push → Build + scan only, no push
+- PR → Build + scan only, no push
 
-## Container Registry Options
+## Security Scanning Workflow
 
-### GitHub Container Registry (GHCR)
+The project also has a separate npm dependency security workflow at `.github/workflows/security.yml`:
 
 ```yaml
-- name: Log in to GHCR
+name: Security
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "package.json"
+      - "package-lock.json"
+  pull_request:
+    branches: [main]
+    paths:
+      - "package.json"
+      - "package-lock.json"
+  schedule:
+    - cron: "0 2 * * 0"  # Weekly on Sunday at 2 AM
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+      - run: npm ci
+      - run: npm audit --audit-level=moderate
+      - name: Run Snyk vulnerability scanner
+        uses: snyk/actions/node@master
+        with:
+          args: --severity-threshold=high --sarif-file-output=snyk.sarif
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        continue-on-error: true
+      - name: Upload Snyk results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: snyk.sarif
+        if: always()
+```
+
+## Container Registry: GHCR
+
+This project uses GitHub Container Registry exclusively:
+
+```yaml
+- name: Log into GHCR
   uses: docker/login-action@v3
   with:
     registry: ghcr.io
@@ -322,168 +250,153 @@ jobs:
     password: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-### Docker Hub
+## Testing the Docker Image Locally
 
-```yaml
-- name: Log in to Docker Hub
-  uses: docker/login-action@v3
-  with:
-    username: ${{ secrets.DOCKER_USERNAME }}
-    password: ${{ secrets.DOCKER_PASSWORD }}
+Use the npm scripts defined in `package.json`:
+
+```bash
+# Build the image
+npm run docker:build
+# → docker build -t uuid-generator:local .
+
+# Run with security hardening
+npm run docker:run
+# → docker run --rm -p 8080:80 --name uuid-app \
+#     --read-only --cap-drop ALL \
+#     --tmpfs /var/cache/nginx:mode=1777 \
+#     --tmpfs /var/run:mode=1777 \
+#     --tmpfs /tmp:mode=1777 \
+#     uuid-generator:local
+
+# Test health endpoint
+curl http://localhost:8080/health
+# → OK
 ```
 
-### AWS ECR
+## Container Health Verification
 
-```yaml
-- name: Configure AWS credentials
-  uses: aws-actions/configure-aws-credentials@v4
-  with:
-    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    aws-region: us-east-1
+The health check is handled by Nginx at the `/health` endpoint (defined in `.docker/nginx.conf`), not by a `HEALTHCHECK` instruction in the Dockerfile:
 
-- name: Log in to Amazon ECR
-  id: login-ecr
-  uses: aws-actions/amazon-ecr-login@v2
-
-- name: Build and push
-  uses: docker/build-push-action@v5
-  with:
-    push: true
-    tags: ${{ steps.login-ecr.outputs.registry }}/myapp:${{ github.sha }}
+```nginx
+location /health {
+    access_log off;
+    return 200 'OK';
+    add_header Content-Type text/plain;
+}
 ```
 
-## Testing Strategies
-
-### Unit Tests in Container
-
-```dockerfile
-# In Dockerfile
-FROM node:20-alpine AS test
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm test
-```
-
+To verify in CI:
 ```yaml
-# In GitHub Actions
-- name: Run tests in container
+- name: Verify container health
   run: |
-    docker build --target test -t myapp:test .
-```
-
-### Integration Tests
-
-```yaml
-- name: Start services with Docker Compose
-  run: docker-compose up -d
-
-- name: Wait for services
-  run: |
-    timeout 30s bash -c 'until curl -f http://localhost:3000/health; do sleep 2; done'
-
-- name: Run integration tests
-  run: npm run test:integration
-
-- name: Collect logs
-  if: failure()
-  run: docker-compose logs
-
-- name: Cleanup
-  if: always()
-  run: docker-compose down -v
-```
-
-## Security Best Practices in CI/CD
-
-### 1. Scan Before Push
-
-```yaml
-- name: Scan before pushing
-  uses: aquasecurity/trivy-action@master
-  with:
-    image-ref: myapp:${{ github.sha }}
-    exit-code: '1'  # Fail build if vulnerabilities found
-    severity: 'CRITICAL,HIGH'
-```
-
-### 2. Sign Images
-
-```yaml
-- name: Install Cosign
-  uses: sigstore/cosign-installer@v3
-
-- name: Sign image
-  env:
-    COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
-  run: |
-    cosign sign --key cosign.key \
+    docker run -d --name test-app -p 8080:80 \
+      --read-only --cap-drop ALL \
+      --tmpfs /var/cache/nginx:mode=1777 \
+      --tmpfs /var/run:mode=1777 \
+      --tmpfs /tmp:mode=1777 \
       ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+    
+    timeout 15s bash -c 'until curl -sf http://localhost:8080/health; do sleep 1; done'
+    
+    docker stop test-app
+    docker rm test-app
 ```
 
-### 3. Secret Scanning
+## Cosign Image Signing
+
+This project uses **keyless signing** with Sigstore/Fulcio (no private key required):
 
 ```yaml
-- name: Scan for secrets
-  uses: trufflesecurity/trufflehog@main
-  with:
-    path: ./
-    base: ${{ github.event.repository.default_branch }}
-    head: HEAD
+# Install Cosign
+- name: Install cosign
+  uses: sigstore/cosign-installer@v3.5.0
+
+# Sign after push (uses OIDC identity from GitHub Actions)
+- name: Sign the published Docker image
+  if: ${{ startsWith(github.ref, 'refs/tags/') }}
+  env:
+    TAGS: ${{ steps.meta.outputs.tags }}
+    DIGEST: ${{ steps.build-and-push.outputs.digest }}
+  run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
 ```
 
-## Deployment Integration
+To verify a signed image:
+```bash
+cosign verify ghcr.io/pyaethu-aung/uuid-generator:1.0.0 \
+  --certificate-identity-regexp="https://github.com/pyaethu-aung/uuid-generator" \
+  --certificate-oidc-issuer="https://token.actions.githubusercontent.com"
+```
 
-### Deploy to Production
+## GitHub Pages Deployment
 
-`.github/workflows/deploy.yml`:
+The static site is also deployed to GitHub Pages via `.github/workflows/deploy.yml`:
 
 ```yaml
-name: Deploy to Production
+name: Deploy to GitHub Pages
 
 on:
-  release:
-    types: [published]
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "index.html"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.js"
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    environment: production
     steps:
-      - name: Deploy to Kubernetes
-        run: |
-          kubectl set image deployment/myapp \
-            myapp=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.event.release.tag_name }}
-          
-          kubectl rollout status deployment/myapp
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run lint
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/deploy-pages@v4
 ```
 
-## Makefile for Local Development
+## Makefile Docker Targets (Recommended Addition)
+
+The current `Makefile` only has npm targets. To add Docker targets:
 
 ```makefile
-.PHONY: build test push scan
+.PHONY: docker-build docker-run docker-scan docker-clean
 
-IMAGE_NAME := myapp
-REGISTRY := ghcr.io/username
-TAG := $(shell git rev-parse --short HEAD)
+IMAGE_NAME := uuid-generator
+TAG := local
 
-build:
+docker-build:
 	docker build -t $(IMAGE_NAME):$(TAG) .
-	docker tag $(IMAGE_NAME):$(TAG) $(IMAGE_NAME):latest
 
-test:
-	docker run --rm $(IMAGE_NAME):$(TAG) npm test
+docker-run:
+	docker run --rm -p 8080:80 --name uuid-app \
+		--read-only --cap-drop ALL \
+		--tmpfs /var/cache/nginx:mode=1777 \
+		--tmpfs /var/run:mode=1777 \
+		--tmpfs /tmp:mode=1777 \
+		$(IMAGE_NAME):$(TAG)
 
-scan:
+docker-scan:
 	trivy image $(IMAGE_NAME):$(TAG)
+	hadolint Dockerfile
 
-push:
-	docker tag $(IMAGE_NAME):$(TAG) $(REGISTRY)/$(IMAGE_NAME):$(TAG)
-	docker push $(REGISTRY)/$(IMAGE_NAME):$(TAG)
-
-ci: build test scan
+docker-clean:
+	docker rmi $(IMAGE_NAME):$(TAG) 2>/dev/null || true
 ```
 
 ## References
@@ -491,4 +404,5 @@ ci: build test scan
 - [GitHub Actions for Docker](https://docs.github.com/en/actions/publishing-packages/publishing-docker-images)
 - [Docker Build Push Action](https://github.com/docker/build-push-action)
 - [Trivy Action](https://github.com/aquasecurity/trivy-action)
+- [Cosign Keyless Signing](https://docs.sigstore.dev/signing/quickstart/)
 - [Container Security Best Practices](https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html)

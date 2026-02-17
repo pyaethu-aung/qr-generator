@@ -3,211 +3,294 @@ name: docker-security-hardening
 description: Analyze and harden Docker configurations for security best practices. Use when asked to "secure my Docker setup", "scan for vulnerabilities", "check Docker security", or "harden container security".
 metadata:
   author: custom
-  version: "1.0.0"
+  version: "2.0.0"
   argument-hint: <dockerfile-path>
 ---
 
 # Docker Security Hardening Skill
 
-Comprehensive security analysis and hardening recommendations for Docker configurations.
+Security analysis and hardening guide tailored to this project: a **React + Vite SPA** served by **Nginx** in a multi-stage Docker build with Cosign signing and Trivy scanning.
+
+## Project Context
+
+| Aspect | Detail |
+|--------|--------|
+| **App type** | React + Vite SPA (static files only) |
+| **Dockerfile** | 2-stage: `node:20-alpine` → `nginx:alpine` |
+| **Non-root user** | `app` (UID 1000, no home dir, no shell) |
+| **Runtime port** | 80 (Nginx) |
+| **Runtime security** | `--read-only`, `--cap-drop ALL`, tmpfs mounts |
+| **Image signing** | Cosign keyless via Sigstore/Fulcio |
+| **Vulnerability scanning** | Trivy (Docker image), Hadolint (Dockerfile), Snyk (npm) |
+| **Ignored CVEs** | `.trivyignore` for unfixable vulnerabilities |
 
 ## What This Skill Does
 
 1. **Dockerfile Security Analysis**
    - Scans for security anti-patterns
-   - Checks for proper multi-stage builds
-   - Validates non-root user configuration
-   - Identifies exposed secrets or credentials
-   - Verifies minimal base image usage
+   - Validates multi-stage build (no build tools in runtime)
+   - Verifies non-root user configuration
+   - Checks Nginx security headers
 
 2. **Image Vulnerability Scanning**
-   - Recommends and configures Trivy scanner
-   - Integrates CVE scanning into CI/CD
-   - Generates SBOM (Software Bill of Materials)
-   - Checks for outdated dependencies
+   - Trivy scan integrated in CI (blocks CRITICAL/HIGH)
+   - `.trivyignore` for known unfixable CVEs
+   - npm audit + Snyk for dependency scanning
 
-3. **Runtime Security Checks**
-   - Container privilege escalation prevention
-   - Network isolation verification
-   - Volume mount security review
-   - Resource limit validation
+3. **Runtime Security**
+   - Read-only root filesystem
+   - All capabilities dropped (`--cap-drop ALL`)
+   - tmpfs mounts for writable directories
+   - No shell access for the app user
 
-## Security Checklist
+## Security Audit: Current Project Status
 
-When reviewing a Dockerfile, verify:
+### ✅ What's Already Secured
 
-### Base Image Security
-- [ ] Using official, minimal base images (Alpine, distroless, or slim variants)
-- [ ] Base image version is pinned with specific tag (not `latest`)
-- [ ] Base image is from trusted registry
-- [ ] Regular updates documented
+| Security Control | Status | Implementation |
+|-----------------|--------|----------------|
+| Multi-stage build | ✅ | Builder → Runtime, no build tools in final image |
+| Non-root user | ✅ | `app` (UID 1000, no home, `/bin/false` shell) |
+| Minimal base image | ✅ | `nginx:alpine` |
+| Read-only filesystem | ✅ | `--read-only` flag in `docker:run` script |
+| Capabilities dropped | ✅ | `--cap-drop ALL` in `docker:run` script |
+| Security headers | ✅ | X-Frame-Options, CSP, X-Content-Type-Options, Referrer-Policy |
+| Dockerfile linting | ✅ | Hadolint in CI pipeline |
+| Image scanning | ✅ | Trivy with `exit-code: 1` on CRITICAL/HIGH |
+| Image signing | ✅ | Cosign keyless signing on tag push |
+| Dependency scanning | ✅ | npm audit + Snyk in separate workflow |
+| `.dockerignore` | ✅ | Excludes secrets, source control, dev files |
 
-### Build Security
-- [ ] Multi-stage builds used to minimize final image
-- [ ] No secrets in build arguments or ENV variables
-- [ ] .dockerignore excludes sensitive files
-- [ ] Build cache doesn't expose sensitive data
+### ⚠️ Areas to Review
+
+| Area | Note |
+|------|------|
+| No `HEALTHCHECK` in Dockerfile | Health is at Nginx `/health` endpoint, but Docker won't track it natively |
+| `curl` installed in runtime | Adds attack surface (~5MB); needed for health checks |
+| No `--security-opt=no-new-privileges` | Could add to `docker:run` command |
+| CSP allows `unsafe-inline` / `unsafe-eval` | Needed for React, but worth tightening if possible |
+
+## Security Checklist (Project-Specific)
+
+### Dockerfile Security
+- [x] Using official minimal base images (`node:20-alpine`, `nginx:alpine`)
+- [x] Base image versions pinned (e.g., `node:20-alpine`, not `node:latest`)
+- [x] Multi-stage build — no build tools in final image
+- [x] Non-root user with no shell (`/bin/false`) and no home directory
+- [x] `WORKDIR` properly set in builder stage
+- [x] Commands combined in single `RUN` layer (runtime stage)
+- [x] Exec form used for `CMD` (`["nginx", "-g", "daemon off;"]`)
+- [ ] `HEALTHCHECK` directive in Dockerfile (optional — handled by Nginx `/health`)
+
+### .dockerignore
+- [x] Excludes `node_modules`, `.git`, `dist`
+- [x] Excludes documentation and config files
+- [x] Excludes `coverage`, `.vscode`, `.idea`
+- [x] Does NOT exclude `.docker/` (needed for `COPY .docker/nginx.conf`)
 
 ### Runtime Security
-- [ ] Non-root user created and used (USER directive)
-- [ ] WORKDIR properly set
-- [ ] Minimal packages installed (only what's needed)
-- [ ] No interactive shells in production images
-- [ ] HEALTHCHECK defined
-- [ ] Proper signal handling (exec form for ENTRYPOINT/CMD)
+- [x] Read-only root filesystem (`--read-only`)
+- [x] All capabilities dropped (`--cap-drop ALL`)
+- [x] tmpfs for writable directories (`/var/cache/nginx`, `/var/run`, `/tmp`)
+- [x] Only port 80 exposed
+- [ ] `--security-opt=no-new-privileges` (recommended addition)
+- [ ] Memory/CPU limits (recommended for production)
 
-### Network & Permissions
-- [ ] Only necessary ports exposed
-- [ ] Read-only root filesystem where possible
-- [ ] No privileged mode required
-- [ ] Capabilities properly dropped/added
+### Nginx Security Headers
+- [x] `X-Frame-Options: DENY` — Prevents clickjacking
+- [x] `X-Content-Type-Options: nosniff` — Prevents MIME sniffing
+- [x] `Referrer-Policy: strict-origin-when-cross-origin` — Controls referrer info
+- [x] `Content-Security-Policy` — Restricts resource loading
+- [ ] `Strict-Transport-Security` (HSTS) — Add if serving over HTTPS
+- [ ] `Permissions-Policy` — Restrict browser features
+
+### CI/CD Security
+- [x] Trivy image scan blocks on CRITICAL/HIGH
+- [x] `.trivyignore` for unfixable CVEs
+- [x] Hadolint Dockerfile linting
+- [x] Cosign keyless image signing
+- [x] npm audit + Snyk dependency scanning
+- [x] Minimal GH Actions permissions (`contents: read`, `packages: write`)
 
 ### Secrets Management
-- [ ] No hardcoded credentials, API keys, or tokens
-- [ ] Environment variables for configuration
-- [ ] Docker secrets or external secret management for sensitive data
-- [ ] ARG values don't leak into final image
+- [x] No hardcoded credentials in Dockerfile
+- [x] `GITHUB_TOKEN` used for registry auth (auto-provided)
+- [x] `SNYK_TOKEN` stored as GitHub secret
+- [x] Cosign uses keyless signing (no private key to manage)
 
 ## Recommended Tools
 
 ### 1. Trivy (Vulnerability Scanner)
+
 ```bash
 # Install Trivy
 brew install aquasecurity/trivy/trivy
 
-# Scan Dockerfile
+# Scan the Docker image
+trivy image uuid-generator:local
+
+# Scan Dockerfile config
 trivy config Dockerfile
 
-# Scan built image
-trivy image <image-name>
+# Scan with .trivyignore
+trivy image --ignorefile .trivyignore uuid-generator:local
 
 # Generate SBOM
-trivy image --format cyclonedx <image-name>
+trivy image --format cyclonedx uuid-generator:local
 ```
 
 ### 2. Hadolint (Dockerfile Linter)
+
 ```bash
 # Install Hadolint
 brew install hadolint
 
 # Lint Dockerfile
 hadolint Dockerfile
+
+# Example output for this project:
+# Dockerfile:19 DL3018 Pin versions in apk add (suppressed with inline ignore)
 ```
 
-### 3. Docker Bench Security
+### 3. Cosign (Image Verification)
+
 ```bash
-# Run CIS Docker Benchmark
-docker run --rm --net host --pid host --cap-add audit_control \
-  -e DOCKER_CONTENT_TRUST=$DOCKER_CONTENT_TRUST \
-  -v /var/lib:/var/lib \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  -v /usr/lib/systemd:/usr/lib/systemd \
-  -v /etc:/etc --label docker_bench_security \
-  docker/docker-bench-security
+# Verify a signed image
+cosign verify ghcr.io/pyaethu-aung/uuid-generator:1.0.0 \
+  --certificate-identity-regexp="https://github.com/pyaethu-aung/uuid-generator" \
+  --certificate-oidc-issuer="https://token.actions.githubusercontent.com"
 ```
 
-## Usage Examples
+### 4. Docker Scout (Optional)
 
-### Example 1: Basic Security Review
-```
-USER: Can you check my Dockerfile for security issues?
-ASSISTANT: [Reads SKILL.md for docker-security-hardening]
-ASSISTANT: [Reviews Dockerfile against security checklist]
-ASSISTANT: [Provides findings and recommendations]
+```bash
+# Analyze image for vulnerabilities and recommendations
+docker scout cves uuid-generator:local
+docker scout recommendations uuid-generator:local
 ```
 
-### Example 2: CI/CD Integration
+## Secure Docker Run Command
+
+The project's `package.json` includes a hardened run command:
+
+```bash
+docker run --rm -p 8080:80 --name uuid-app \
+  --read-only \
+  --cap-drop ALL \
+  --tmpfs /var/cache/nginx:mode=1777 \
+  --tmpfs /var/run:mode=1777 \
+  --tmpfs /tmp:mode=1777 \
+  uuid-generator:local
 ```
-USER: Add vulnerability scanning to my GitHub Actions
-ASSISTANT: [Reads SKILL.md]
-ASSISTANT: [Creates .github/workflows/security-scan.yml with Trivy]
-ASSISTANT: [Configures automated scanning on PR and push]
+
+### Enhanced Version (Recommended)
+
+```bash
+docker run --rm -p 8080:80 --name uuid-app \
+  --read-only \
+  --cap-drop ALL \
+  --security-opt=no-new-privileges \
+  --memory=128m \
+  --cpus=0.5 \
+  --tmpfs /var/cache/nginx:mode=1777,size=10m \
+  --tmpfs /var/run:mode=1777,size=1m \
+  --tmpfs /tmp:mode=1777,size=10m \
+  uuid-generator:local
 ```
 
-## Secure Dockerfile Template
+Additions explained:
+- `--security-opt=no-new-privileges` — Prevents privilege escalation
+- `--memory=128m` — Limits memory usage
+- `--cpus=0.5` — Limits CPU usage
+- `size=` on tmpfs — Limits writable space
 
-```dockerfile
-# Stage 1: Build
-FROM node:20-alpine AS builder
+## Nginx Security Headers Deep Dive
 
-# Install dependencies only when needed
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
+Current configuration in `.docker/nginx.conf`:
 
-# Stage 2: Runtime
-FROM node:20-alpine AS runtime
+```nginx
+# Prevents the page from being embedded in iframes (anti-clickjacking)
+add_header X-Frame-Options "DENY" always;
 
-# Security: Create non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
+# Prevents browsers from MIME-sniffing content types
+add_header X-Content-Type-Options "nosniff" always;
 
-# Set working directory
-WORKDIR /app
+# Controls how much referrer info is shared
+add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 
-# Copy only necessary files from builder
-COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
-COPY --chown=nodejs:nodejs . .
+# Content Security Policy — controls resource loading
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self';" always;
+```
 
-# Security: Switch to non-root user
-USER nodejs
+### Recommended Additional Headers
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node healthcheck.js
+```nginx
+# HTTP Strict Transport Security (if behind HTTPS)
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
-# Security: Use exec form
-ENTRYPOINT ["node", "index.js"]
+# Restrict browser feature access
+add_header Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()" always;
+
+# Prevent information leakage
+server_tokens off;
+```
+
+## CI/CD Security Pipeline
+
+The actual security scanning flow in this project:
+
+```
+Push/PR → Hadolint → Build Image → Trivy Scan (gate) → Push (tags only) → Cosign Sign
+                                        ↓
+                                  .trivyignore
+                                  (skip known unfixable CVEs)
+```
+
+Separate workflow for npm dependencies:
+```
+Package changes → npm audit → Snyk scan → Upload SARIF to GitHub Security
 ```
 
 ## Output Format
 
-When analyzing Dockerfile security:
+When analyzing this project's Docker security:
 
-1. **Critical Issues** (must fix)
-2. **High Priority** (should fix)
-3. **Medium Priority** (recommended)
-4. **Low Priority** (nice to have)
-5. **Best Practices** (suggestions)
+### Example Analysis
 
-For each issue, provide:
-- Line number or section
-- Description of the issue
-- Security impact
-- Recommended fix
-- Example code
+```
+🔒 Docker Security Analysis — uuid-generator
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-## Integration with CI/CD
+✅ PASSED (11/15):
+  • Multi-stage build separates build and runtime
+  • Non-root user (app, UID 1000, no shell)
+  • Alpine base images
+  • Read-only root filesystem
+  • All capabilities dropped
+  • Security headers configured
+  • Trivy scanning in CI (CRITICAL/HIGH gate)
+  • Hadolint Dockerfile linting
+  • Cosign image signing
+  • Dependency scanning (npm audit + Snyk)
+  • No hardcoded secrets
 
-Add to `.github/workflows/docker-security.yml`:
+⚠️ REVIEW (4/15):
+  1. [LOW] No HEALTHCHECK in Dockerfile
+     Impact: Docker doesn't natively track container health
+     Note: /health endpoint exists via Nginx config
+     Fix: Optional — add HEALTHCHECK CMD curl -f http://localhost:80/health
 
-```yaml
-name: Docker Security Scan
+  2. [LOW] curl installed in runtime image
+     Impact: Increases attack surface by ~5MB
+     Fix: Remove if health checks are handled externally
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  3. [LOW] No --security-opt=no-new-privileges in docker:run
+     Impact: Privilege escalation theoretically possible
+     Fix: Add to the docker:run npm script
 
-jobs:
-  security-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'config'
-          scan-ref: 'Dockerfile'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-      
-      - name: Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: 'trivy-results.sarif'
+  4. [INFO] CSP allows 'unsafe-inline' and 'unsafe-eval'
+     Impact: XSS mitigation is weakened
+     Note: Typically required for React/Vite SPA bundles
 ```
 
 ## References
@@ -216,3 +299,5 @@ jobs:
 - [OWASP Docker Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html)
 - [Trivy Documentation](https://aquasecurity.github.io/trivy/)
 - [Docker Security Best Practices](https://docs.docker.com/develop/security-best-practices/)
+- [Cosign Keyless Signing](https://docs.sigstore.dev/signing/quickstart/)
+- [Mozilla Observatory — Security Headers](https://observatory.mozilla.org/)
