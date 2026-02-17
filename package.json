@@ -13,7 +13,9 @@
     "test:coverage": "vitest run --coverage",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "docker:build": "docker build -t qr-generator:local .",
+    "docker:run": "docker run --rm -p 8080:80 --name qr-app --read-only --cap-drop ALL --tmpfs /var/cache/nginx:mode=1777 --tmpfs /var/run:mode=1777 --tmpfs /tmp:mode=1777 qr-generator:local"
   },
   "dependencies": {
     "clsx": "^2.1.1",

@@ -110,3 +110,24 @@
 - Must NOT exclude `.docker/` (contains `nginx.conf` used by `COPY`).
 - Must NOT exclude `tsconfig*.json`, `vite.config.ts`, `postcss.config.cjs`, `tailwind.config.js` (needed by builder).
 - Should exclude: `node_modules`, `.git`, `dist`, `coverage`, `tests`, `.agent`, `.github`, `.specify`, `specs`, docs.
+
+### 8. Local Development Scripts (Phase 4 Implementation)
+
+**Date Added**: 2026-02-18
+
+**Scripts Added to package.json**:
+- `docker:build`: `docker build -t qr-generator:local .`
+- `docker:run`: `docker run --rm -p 8080:80 --name qr-app --read-only --cap-drop ALL --tmpfs /var/cache/nginx:mode=1777 --tmpfs /var/run:mode=1777 --tmpfs /tmp:mode=1777 qr-generator:local`
+
+**Validation Requirements** (when Docker is available):
+- Image size target: < 25MB compressed
+- Verify command: `docker save qr-generator:local | gzip | wc -c | awk '{printf "%.1f MB\n", $1/1048576}'`
+- Non-root verification: `docker exec qr-app whoami` → should return `app`
+- Read-only fs verification: `docker exec qr-app touch /test-file` → should fail with "Read-only file system"
+- Health endpoint: `curl http://localhost:8080/health` → should return `OK`
+
+**Expected Results** (based on uuid-generator reference):
+- Compressed image size: ~15-20MB (well under 25MB target)
+- nginx:alpine base: ~8MB compressed
+- Static assets: ~2-5MB compressed
+- Total uncompressed: ~40-50MB
