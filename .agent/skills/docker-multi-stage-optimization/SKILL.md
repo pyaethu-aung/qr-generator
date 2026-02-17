@@ -3,371 +3,304 @@ name: docker-multi-stage-optimization
 description: Optimize Docker builds using multi-stage patterns, layer caching, and size reduction. Use when asked to "optimize my Dockerfile", "reduce image size", "speed up Docker builds", or "improve build performance".
 metadata:
   author: custom
-  version: "1.0.0"
+  version: "2.0.0"
   argument-hint: <dockerfile-path>
 ---
 
 # Docker Multi-Stage Build Optimization Skill
 
-Master Docker build optimization through multi-stage builds, intelligent caching, and size reduction techniques.
+Optimization guide tailored to this project's architecture: a **React + Vite SPA** built with `node:20-alpine` and served by `nginx:alpine`.
+
+## Project Context
+
+| Aspect | Detail |
+|--------|--------|
+| **App type** | React + Vite single-page application |
+| **Build output** | Static files in `dist/` |
+| **Dockerfile** | 2-stage: `node:20-alpine` (builder) → `nginx:alpine` (runtime) |
+| **Nginx config** | `.docker/nginx.conf` (security headers, gzip, SPA routing, `/health`) |
+| **Non-root user** | `app` (UID 1000) |
+| **Runtime port** | 80 (Nginx) |
+| **CI cache** | GitHub Actions cache (`type=gha`) |
 
 ## What This Skill Does
 
 1. **Multi-Stage Build Design**
-   - Analyzes build requirements and dependencies
-   - Designs optimal stage separation
-   - Minimizes final image size
-   - Improves build cache efficiency
+   - Analyzes the Node.js build → Nginx runtime separation
+   - Optimizes layer ordering for cache efficiency
+   - Minimizes final image size (Nginx + static files only)
 
 2. **Layer Optimization**
-   - Reviews layer ordering for cache efficiency
+   - Reviews layer ordering for dependency caching
    - Identifies cache-busting patterns
-   - Optimizes COPY instructions
-   - Minimizes layer count and size
+   - Optimizes COPY instructions for SPA builds
 
 3. **Build Performance Analysis**
-   - Measures build times
-   - Identifies slow build steps
+   - Measures build times and image sizes
    - Recommends BuildKit features
-   - Implements parallel builds
+   - Analyzes `.dockerignore` coverage
 
-## Multi-Stage Build Patterns
+## Current Dockerfile
 
-### Pattern 1: Build + Runtime Separation (Node.js)
+The project's actual Dockerfile:
 
 ```dockerfile
-# -----------------------------
-# Stage 1: Dependencies
-# -----------------------------
-FROM node:20-alpine AS deps
-WORKDIR /app
-
-# Copy dependency files only (better caching)
-COPY package*.json ./
-RUN npm ci --only=production
-
-# -----------------------------
-# Stage 2: Builder
-# -----------------------------
+# Stage 1: Build
 FROM node:20-alpine AS builder
+
 WORKDIR /app
 
-# Copy dependency files
-COPY package*.json ./
+# Install dependencies (leverage cache)
+COPY package.json package-lock.json ./
 RUN npm ci
 
-# Copy source code
+# Copy source and build
 COPY . .
+RUN npm run build && npm prune --production
 
-# Build application
-RUN npm run build
+# Stage 2: Runtime
+FROM nginx:alpine AS runtime
 
-# -----------------------------
-# Stage 3: Runtime
-# -----------------------------
-FROM node:20-alpine AS runtime
-WORKDIR /app
+# Install curl for healthcheck and configure non-root user
+# hadolint ignore=DL3018
+RUN apk add --no-cache curl && \
+    adduser -D -H -u 1000 -s /bin/false app && \
+    mkdir -p /var/run/nginx /var/log/nginx /var/cache/nginx && \
+    touch /var/run/nginx.pid && \
+    chown -R app:app /var/run/nginx.pid /var/log/nginx /var/cache/nginx /etc/nginx/conf.d
 
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
+# Copy build artifacts with correct ownership
+COPY --from=builder --chown=app:app /app/dist /usr/share/nginx/html
 
-# Copy only production dependencies from deps stage
-COPY --from=deps --chown=nodejs:nodejs /app/node_modules ./node_modules
+# Copy custom nginx config with correct ownership
+COPY --chown=app:app .docker/nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy built application from builder stage
-COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
+USER app
 
-USER nodejs
+EXPOSE 80
 
-EXPOSE 3000
-CMD ["node", "dist/index.js"]
+CMD ["nginx", "-g", "daemon off;"]
 ```
 
-### Pattern 2: Development vs Production
+### Why This Architecture Works Well
+
+1. **Builder stage** contains Node.js, npm, and all dev dependencies (~300MB+)
+2. **Runtime stage** contains only Nginx + static HTML/JS/CSS (~40MB)
+3. **Result**: ~95% size reduction compared to a single-stage build
+
+## Layer Caching Analysis
+
+### Current Cache-Efficient Ordering ✅
 
 ```dockerfile
-# -----------------------------
-# Base Stage (shared)
-# -----------------------------
-FROM node:20-alpine AS base
-WORKDIR /app
-COPY package*.json ./
-
-# -----------------------------
-# Development Stage
-# -----------------------------
-FROM base AS development
-RUN npm install
-COPY . .
-CMD ["npm", "run", "dev"]
-
-# -----------------------------
-# Production Builder
-# -----------------------------
-FROM base AS production-builder
-RUN npm ci --only=production
-COPY . .
-RUN npm run build
-
-# -----------------------------
-# Production Runtime
-# -----------------------------
-FROM node:20-alpine AS production
-WORKDIR /app
-RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
-COPY --from=production-builder --chown=nodejs:nodejs /app/dist ./dist
-COPY --from=production-builder --chown=nodejs:nodejs /app/node_modules ./node_modules
-USER nodejs
-CMD ["node", "dist/index.js"]
-```
-
-### Pattern 3: Distroless Final Image
-
-```dockerfile
-# Build stage
-FROM node:20 AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
-
-# Bundle stage - create standalone bundle
-FROM node:20 AS bundler
-WORKDIR /app
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-# Use webpack or esbuild to create single bundle if possible
-RUN npx esbuild dist/index.js --bundle --platform=node --outfile=bundle.js
-
-# Runtime - distroless
-FROM gcr.io/distroless/nodejs20-debian12
-COPY --from=bundler /app/bundle.js /app/
-WORKDIR /app
-CMD ["bundle.js"]
-```
-
-## Layer Caching Best Practices
-
-### ✅ DO: Order from least to most frequently changed
-
-```dockerfile
-# 1. Install system dependencies (rarely changes)
-RUN apk add --no-cache git
-
-# 2. Copy dependency definitions (changes occasionally)
-COPY package*.json ./
-
-# 3. Install dependencies (changes when package.json changes)
+# 1. Copy dependency manifests first (changes infrequently)
+COPY package.json package-lock.json ./
 RUN npm ci
 
-# 4. Copy source code (changes frequently)
+# 2. Copy source code (changes frequently)
 COPY . .
-
-# 5. Build application (changes when source changes)
-RUN npm run build
+RUN npm run build && npm prune --production
 ```
 
-### ❌ DON'T: Copy everything before installing dependencies
+This is already optimal — dependency installation is cached unless `package.json` or `package-lock.json` change.
+
+### What Would Break Caching ❌
 
 ```dockerfile
-# BAD: This invalidates cache on ANY file change
+# BAD: Copying everything before npm ci invalidates cache on ANY file change
 COPY . .
-RUN npm install
+RUN npm ci
 RUN npm run build
 ```
+
+## .dockerignore Analysis
+
+The project's current `.dockerignore`:
+
+```
+node_modules
+.git
+.gitignore
+.dockerignore
+Dockerfile*
+README.md
+LICENSE
+Makefile
+docs
+specs
+coverage
+.vscode
+.idea
+*.log
+.DS_Store
+dist
+.specify
+```
+
+### What's Excluded ✅
+- `node_modules` — Builder installs fresh via `npm ci`
+- `.git` — Not needed for build, large directory
+- `dist` — Builder creates fresh via `npm run build`
+- `coverage`, `docs`, `specs` — Not needed at runtime
+
+### Recommended Additions
+
+```
+# Add these to .dockerignore
+.agent          # Agent skills and workflows
+.github         # CI/CD workflows not needed in image
+.docker         # Only nginx.conf is needed (COPY'd explicitly)
+.eslintcache    # Linter cache
+.trivyignore    # Trivy config
+.mailmap        # Git mailmap
+AGENTS.md       # Agent documentation
+*.md            # All markdown (broader than just README.md)
+```
+
+> **Note**: `.docker/nginx.conf` is explicitly `COPY`'d in the Dockerfile, so excluding `.docker` from context doesn't affect it — the `COPY` still works because `.dockerignore` excludes files from the build context but the Dockerfile COPY instruction references the build context. Actually, if `.docker` is in `.dockerignore`, the `COPY .docker/nginx.conf` would fail. So `.docker` must NOT be added to `.dockerignore`.
 
 ## Size Reduction Techniques
 
-### 1. Use Alpine or Distroless Base Images
+### 1. Alpine Base Images (Already Using ✅)
 
 ```dockerfile
-# Alpine - Small but has shell and package manager
-FROM node:20-alpine  # ~50MB vs ~300MB for full node
-
-# Distroless - Minimal runtime, no shell
-FROM gcr.io/distroless/nodejs20-debian12  # ~40MB
+FROM node:20-alpine AS builder   # ~180MB (vs ~1GB full node)
+FROM nginx:alpine AS runtime     # ~40MB (vs ~140MB full nginx)
 ```
 
-### 2. Remove Build Dependencies
+### 2. npm prune (Already Using ✅)
 
 ```dockerfile
-# Install, build, and clean in single layer
-RUN apk add --no-cache --virtual .build-deps \
-    python3 make g++ && \
-    npm install && \
-    npm run build && \
-    apk del .build-deps
+RUN npm run build && npm prune --production
 ```
 
-### 3. Exclude Unnecessary Files
+This removes dev dependencies after the build, but since we don't copy `node_modules` to the runtime stage, this primarily reduces the build context for cache purposes.
 
-`.dockerignore`:
-```
-node_modules
-npm-debug.log
-.git
-.gitignore
-.env
-.env.local
-*.md
-.vscode
-.idea
-coverage
-.test
-*.test.js
-*.spec.js
-dist
-build
-```
-
-### 4. Use --no-install-recommends (Debian/Ubuntu)
+### 3. Combine RUN Commands (Already Doing ✅)
 
 ```dockerfile
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    package1 \
-    package2 \
-    && rm -rf /var/lib/apt/lists/*
+# Runtime stage combines all setup in one RUN layer
+RUN apk add --no-cache curl && \
+    adduser -D -H -u 1000 -s /bin/false app && \
+    mkdir -p /var/run/nginx /var/log/nginx /var/cache/nginx && \
+    touch /var/run/nginx.pid && \
+    chown -R app:app /var/run/nginx.pid /var/log/nginx /var/cache/nginx /etc/nginx/conf.d
 ```
+
+### 4. Potential Further Optimization: Remove curl
+
+If health checking is done externally (e.g., load balancer, Kubernetes), `curl` can be removed:
+
+```dockerfile
+# Without curl (smaller image, but no in-container health check tool)
+RUN adduser -D -H -u 1000 -s /bin/false app && \
+    mkdir -p /var/run/nginx /var/log/nginx /var/cache/nginx && \
+    touch /var/run/nginx.pid && \
+    chown -R app:app /var/run/nginx.pid /var/log/nginx /var/cache/nginx /etc/nginx/conf.d
+```
+
+> **Trade-off**: `curl` adds ~5MB but enables `docker exec` health checks.
 
 ## BuildKit Features
 
-Enable BuildKit for better performance:
+### GitHub Actions Cache (Currently Using ✅)
 
-```bash
-# Enable BuildKit
-export DOCKER_BUILDKIT=1
-
-# Or in docker-compose.yml
-export COMPOSE_DOCKER_CLI_BUILD=1
-export DOCKER_BUILDKIT=1
+```yaml
+# In docker-publish.yml
+- name: Build and push Docker image
+  uses: docker/build-push-action@v5
+  with:
+    context: .
+    cache-from: type=gha
+    cache-to: type=gha,mode=max
 ```
 
-### BuildKit Optimizations
+### BuildKit Cache Mounts (Optional Enhancement)
+
+For faster local builds, use cache mounts for npm:
 
 ```dockerfile
 # syntax=docker/dockerfile:1.4
-
-# Use cache mounts for package managers
 FROM node:20-alpine AS builder
 WORKDIR /app
+COPY package.json package-lock.json ./
 
-# Cache npm packages between builds
+# Cache npm packages across builds
 RUN --mount=type=cache,target=/root/.npm \
-    npm install
+    npm ci
 
-# Use bind mounts for copying
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
-    npm ci --only=production
+COPY . .
+RUN npm run build
 ```
 
-## Performance Measurement
+> **Note**: Cache mounts don't persist in CI unless explicitly configured.
 
-### Analyze Build Time
+## Build Performance Measurement
 
 ```bash
-# Build with timing
-docker build --progress=plain -t myapp .
+# Build with timing output
+DOCKER_BUILDKIT=1 docker build --progress=plain -t uuid-generator:local .
 
-# Use dive to analyze image layers
+# Check final image size
+docker images uuid-generator:local
+
+# Analyze image layers
+docker history uuid-generator:local
+
+# Interactive layer analysis with dive
 brew install dive
-dive myapp:latest
+dive uuid-generator:local
 ```
 
-### Analyze Image Size
+### Expected Metrics
 
-```bash
-# Check image size
-docker images myapp
-
-# Detailed layer analysis
-docker history myapp:latest
-
-# Use dive for interactive analysis
-dive myapp:latest
-```
+| Metric | Expected Value |
+|--------|---------------|
+| Builder stage size | ~300MB |
+| Final image size | ~45-55MB |
+| Build time (cold) | ~30-60s |
+| Build time (cached deps) | ~10-20s |
+| Layer count (final) | ~8-10 |
 
 ## Build Optimization Checklist
 
-When optimizing a Dockerfile:
+When reviewing this project's Dockerfile:
 
-- [ ] **Multi-stage builds** - Separate build and runtime stages
-- [ ] **Layer ordering** - Order COPY/RUN from least to most frequently changed
-- [ ] **Minimal base** - Use Alpine or distroless images
-- [ ] **Dependency caching** - Copy package files before source code
-- [ ] **.dockerignore** - Exclude unnecessary files from build context
-- [ ] **Combine commands** - Reduce layer count by combining RUN commands
-- [ ] **BuildKit cache** - Use --mount=type=cache for package managers
-- [ ] **Remove build deps** - Clean up build tools in same layer
-- [ ] **Parallel stages** - Use multiple FROM statements that can build in parallel
-- [ ] **Security scanning** - Ensure optimizations don't compromise security
+- [x] **Multi-stage builds** — Builder (node:20-alpine) → Runtime (nginx:alpine)
+- [x] **Layer ordering** — `package*.json` + `npm ci` before `COPY . .`
+- [x] **Minimal base** — Alpine images for both stages
+- [x] **Dependency caching** — package files copied before source
+- [x] **.dockerignore** — Excludes node_modules, .git, dist, etc.
+- [x] **Combine commands** — Runtime setup in single RUN layer
+- [x] **CI cache** — GitHub Actions cache (`type=gha`)
+- [ ] **BuildKit cache mounts** — Optional for local development
+- [x] **Non-root user** — `app` user (UID 1000)
+- [x] **Security scanning** — Trivy + Hadolint in CI
 
-## Example Analysis Output
+## Development vs Production Pattern
 
-When analyzing a Dockerfile:
+### Development (Local)
 
-```
-🔍 Docker Build Optimization Analysis
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📊 Current Metrics:
-  Image Size: 487 MB
-  Build Time: 3m 42s
-  Layers: 23
-
-⚠️  Issues Found:
-
-1. [CRITICAL] Missing multi-stage build
-   Line: 1
-   Impact: Final image includes build tools (~200MB unnecessary)
-   Fix: Implement multi-stage build pattern
-
-2. [HIGH] Inefficient layer caching
-   Line: 5
-   Impact: COPY before npm install invalidates cache on any code change
-   Fix: Move COPY package*.json before RUN npm install
-
-3. [MEDIUM] Large base image
-   Line: 1
-   Impact: Using full node image instead of alpine
-   Fix: Change FROM node:20 to node:20-alpine
-
-📈 Optimization Potential:
-  Estimated size reduction: 350MB → 80MB (77% reduction)
-  Estimated build time improvement: 3m 42s → 45s (with cache)
-
-💡 Recommendations:
-  1. Implement multi-stage build
-  2. Switch to Alpine base image
-  3. Improve .dockerignore coverage
-  4. Enable BuildKit cache mounts
+```bash
+# Use Vite dev server directly (not Docker)
+npm run dev
+# → http://localhost:5173 with HMR
 ```
 
-## Docker Compose for Development
+### Production Preview (Local Docker)
 
-```yaml
-version: '3.8'
+```bash
+# Build and run the production Nginx container
+npm run docker:build
+npm run docker:run
+# → http://localhost:8080 with read-only filesystem
+```
 
-services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: development  # Use development stage
-      cache_from:
-        - myapp:latest
-      args:
-        BUILDKIT_INLINE_CACHE: 1
-    volumes:
-      - .:/app
-      - /app/node_modules  # Prevent overwriting
-    environment:
-      - NODE_ENV=development
-    ports:
-      - "3000:3000"
+### Production (CI/CD)
+
+```bash
+# Automated via docker-publish.yml
+# Push a tag to trigger: git tag v1.0.0 && git push --tags
 ```
 
 ## References
@@ -376,3 +309,4 @@ services:
 - [BuildKit Documentation](https://docs.docker.com/build/buildkit/)
 - [Best Practices for Writing Dockerfiles](https://docs.docker.com/develop/dev-best-practices/)
 - [dive - Layer Analysis Tool](https://github.com/wagoodman/dive)
+- [Nginx Alpine Docker Image](https://hub.docker.com/_/nginx)
