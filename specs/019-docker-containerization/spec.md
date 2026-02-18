@@ -8,7 +8,7 @@
 ## Clarifications
 
 ### Session 2026-02-17
-- Q: How should we balance multi-platform build requirements (AMD64+ARM64) against CI time limits? → A: Prioritize speed; build only for `linux/amd64` (same decision as uuid-generator project).
+- Q: How should we balance multi-platform build requirements (AMD64+ARM64) against CI time limits? → A: Enable multi-platform builds (`linux/amd64` + `linux/arm64`) to support modern development environments (M1/M2/M3 Macs) and ARM servers, accepting slightly longer CI times.
 - Q: Should the build fail on ALL Critical/High vulnerabilities, even if no patch exists in Alpine upstream? → A: Fail only on "fixable" vulnerabilities to avoid blocking releases on unpatched upstream issues (same decision as uuid-generator project).
 - Q: Does TypeScript compilation in the Docker build stage change the image size target? → A: No — TypeScript compiler only runs in the builder stage and is discarded. The final image contains the same static assets as a JS project. Target remains < 25MB compressed.
 - Q: Should the CI/CD pipeline include Cosign keyless image signing for supply chain security? → A: Yes — include Cosign keyless signing on tag pushes (same as uuid-generator project).
@@ -84,7 +84,7 @@ As a security engineer, I want automated checks for Dockerfile best practices an
 - **IV. Performance Requirements**: Image size must be minimized (< 25MB compressed target). Nginx configuration must enable gzip compression and cache headers.
 - **V. Architecture & Structure**: Docker related files (`Dockerfile`, `.dockerignore`, `.docker/nginx.conf`) placed in root or appropriate config folder.
 - **VI. Execution Discipline**: `docker build` and scan commands are integrated into `npm` scripts.
-- **VII. Cross-Platform & Browser Compatibility**: Application functionality is preserved; Docker image supports `linux/amd64` only.
+- **VII. Cross-Platform & Browser Compatibility**: Application functionality is preserved; Docker image supports `linux/amd64` and `linux/arm64`.
 - **VIII. Theme Support Planning**: N/A for Docker infra, but containerized app must preserve theme switching functionality.
 - **IX. Skill-Driven Development**: Adheres to `docker-multi-stage-optimization` and `docker-security-hardening` skills.
 
@@ -108,7 +108,7 @@ As a security engineer, I want automated checks for Dockerfile best practices an
     - `Referrer-Policy: strict-origin-when-cross-origin`
     - `Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self';`
 - **FR-012**: System MUST expose a lightweight health check endpoint (`/health` serving a 200 OK) configured in Nginx.
-- **FR-013**: System MUST support single-platform builds for `linux/amd64` only (multi-platform disabled for speed).
+- **FR-013**: System MUST support multi-platform builds for `linux/amd64` and `linux/arm64` to support both standard servers and Apple Silicon/ARM devices.
 - **FR-014**: System MUST provide a `.dockerignore` file that excludes build artifacts, development tooling, test files, documentation, agent skills, and version control metadata from the build context.
 - **FR-015**: System MUST provide npm scripts (`docker:build`, `docker:run`) for building and running the Docker container locally with security-hardened defaults.
 - **FR-016**: System MUST order Dockerfile layers to maximize build cache efficiency, with dependency manifests (`package.json`, `package-lock.json`) copied and installed before source code.
@@ -127,7 +127,7 @@ As a security engineer, I want automated checks for Dockerfile best practices an
 ### Measurable Outcomes
 
 - **SC-001**: Final Docker image size is under 25MB (compressed layer size as reported by registry or `docker save | gzip`).
-- **SC-002**: CI pipeline completes successfully (build, scan, push) in under 5 minutes (single platform `linux/amd64`).
+- **SC-002**: CI pipeline completes successfully (build, scan, push) in under 15 minutes (multi-platform `linux/amd64` + `linux/arm64` via QEMU).
 - **SC-003**: Trivy scan reports 0 fixable `CRITICAL` and 0 fixable `HIGH` vulnerabilities in the final image.
 - **SC-004**: Application within container is accessible via HTTP on port 8080 and renders the QR Generator homepage correctly with all features functional.
 - **SC-005**: Health check endpoint returns HTTP 200 status code.

@@ -15,10 +15,10 @@ Implement a production-grade Docker containerization strategy for the QR Generat
 **Primary Dependencies**: Docker, GitHub Actions, Trivy, Hadolint, Cosign  
 **Storage**: N/A (Stateless container)  
 **Testing**: Container smoke tests (curl healthcheck), Trivy image scan, Hadolint static analysis  
-**Target Platform**: Docker (Linux/AMD64), deploying to GHCR  
+**Target Platform**: Docker (Linux/AMD64 & Linux/ARM64), deploying to GHCR  
 **Project Type**: Single-page Application (SPA) container  
 **Performance Goals**: Image size < 25MB (compressed), CI build time < 5 min, cached rebuild < 30s  
-**Constraints**: Non-root execution, Read-only filesystem, No secrets in image, Single platform (amd64)  
+**Constraints**: Non-root execution, Read-only filesystem, No secrets in image  
 **Scale/Scope**: Single container image, no orchestration complexity required
 
 ## Constitution Check
@@ -31,7 +31,7 @@ Implement a production-grade Docker containerization strategy for the QR Generat
 - **IV. Performance Requirements**: Optimized Nginx config (gzip, caching) ensures fast load times; small image size (<25MB compressed) ensures fast scale-up and deployment.
 - **V. Architecture & Structure**: `Dockerfile` and `.dockerignore` in project root (standard convention). Nginx config in `.docker/nginx.conf` to keep root clean.
 - **VI. Execution Discipline**: CI pipeline enforcing `docker build` success, Trivy scan, and Hadolint validation before push. Local validation via `npm run docker:build`.
-- **VII. Cross-Platform & Browser Compatibility**: Browser compatibility handled by React app; Container targets Linux/AMD64 only (ARM64 dropped for CI speed per clarification).
+- **VII. Cross-Platform & Browser Compatibility**: Browser compatibility handled by React app; Container targets `linux/amd64` and `linux/arm64`.
 - **VIII. Theme Support Planning**: N/A for Docker infra, but containerized app preserves theme switching functionality.
 - **IX. Skill-Driven Development**: Strictly adhering to `docker-multi-stage-optimization` and `docker-security-hardening` skills.
 
