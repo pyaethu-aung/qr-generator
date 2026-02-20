@@ -16,13 +16,13 @@ Concise guidelines for building maintainable, performant React applications with
 Avoid "God Components" with many boolean props. Use composition to build flexible UIs.
 
 **❌ AVOID:**
-```jsx
+```tsx
 // Too many boolean props make this hard to maintain and test
 <Button primary icon="search" loading size="large" onClick={...}>Search</Button>
 ```
 
 **✅ PREFER:**
-```jsx
+```tsx
 // Composition makes it flexible and easy to read
 <Button variant="primary" size="large" onClick={...}>
   <Icon name="search" />
@@ -33,7 +33,7 @@ Avoid "God Components" with many boolean props. Use composition to build flexibl
 ### File Structure
 - **One Component per File**: Default export the main component. Named exports for sub-components or types.
 - **Colocation**: Keep styles (CSS/Modules), tests, and sub-components near where they are used.
-- **Barrel Files**: Avoid purely re-exporting `index.js` files for internal components (can cause circular deps and tree-shaking issues). Import directly from the file.
+- **Barrel Files**: Avoid purely re-exporting `index.ts` or `index.tsx` files for internal components (can cause circular deps and tree-shaking issues). Import directly from the file.
 
 ## 2. Hooks & State Management
 
@@ -41,7 +41,7 @@ Avoid "God Components" with many boolean props. Use composition to build flexibl
 `useEffect` is for synchronization with external systems (DOM, network, subscriptions), NOT for derived state.
 
 **❌ AVOID:**
-```jsx
+```tsx
 const [firstName, setFirstName] = useState('John');
 const [lastName, setLastName] = useState('Doe');
 const [fullName, setFullName] = useState('');
@@ -52,7 +52,7 @@ useEffect(() => {
 ```
 
 **✅ PREFER:**
-```jsx
+```tsx
 const [firstName, setFirstName] = useState('John');
 const [lastName, setLastName] = useState('Doe');
 // ✅ Derived during render - faster, less code, no sync bugs
@@ -70,8 +70,8 @@ Extract complex stateful logic into `useName` hooks.
 ### Code Splitting
 Use `React.lazy` and `Suspense` for route-level code splitting. This keeps the initial bundle size small, which is critical for SPA load performance.
 
-```jsx
-// In App.jsx or router config
+```tsx
+// In App.tsx or router config
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));
 const Settings = React.lazy(() => import('./pages/Settings'));
 
@@ -89,10 +89,10 @@ function App() {
 
 ### Bundle Optimization
 - **Dynamic Imports**: Use `import('heavy-lib')` for heavy libraries that are only used in specific interactions (e.g., exporting a PDF).
-- **Asset Handling**: Import images/assets directly in JS (`import logo from './logo.svg'`) to let Vite optimize distinct files vs inlining.
+- **Asset Handling**: Import images/assets directly in TS/TSX (`import logo from './logo.svg'`) to let Vite optimize distinct files vs inlining.
 
 ## 4. Testing (Vitest)
-- **Unit Logic**: Test utility functions and hooks in isolation (`.test.js`).
+- **Unit Logic**: Test utility functions and hooks in isolation (`.test.ts` or `.test.tsx`).
 - **Component Behavior**: Test user interactions (clicks, inputs) and accessible outputs (text, aria-labels) rather than internal state implementation details.
 - **Globals**: Use `vi` for mocks, `describe/it` for structure.
 
