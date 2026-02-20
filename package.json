@@ -58,6 +58,8 @@
     "vitest": "^4.0.17"
   },
   "overrides": {
+    "ajv": "^8.18.0",
+    "minimatch": "^10.2.1",
     "react-helmet-async": {
       "react": "$react",
       "react-dom": "$react-dom"
