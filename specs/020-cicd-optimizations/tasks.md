@@ -45,9 +45,9 @@ description: "Task list for CI/CD Optimizations"
 
 ### Implementation for User Story 1
 
-- [ ] T002 [P] [US1] Update CodeQL to `v4` and pin Snyk to `v1.0.0` in `.github/workflows/security.yml`
-- [ ] T003 [P] [US1] Pin Trivy action to `0.34.1` in `.github/workflows/docker-publish.yml`
-- [ ] T004 [US1] Add `continue-on-error` behavior for Snyk step in `.github/workflows/security.yml` (depends on T002)
+- [x] T002 [P] [US1] Update CodeQL to `v4` and pin Snyk to `v1.0.0` in `.github/workflows/security.yml`
+- [x] T003 [P] [US1] Pin Trivy action to `0.34.1` in `.github/workflows/docker-publish.yml`
+- [x] T004 [US1] Add `continue-on-error` behavior for Snyk step in `.github/workflows/security.yml` (depends on T002)
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 

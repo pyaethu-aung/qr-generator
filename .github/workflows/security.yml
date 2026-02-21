@@ -33,16 +33,17 @@ jobs:
         run: npm audit --audit-level=high
 
       - name: Snyk Scan
-        uses: snyk/actions/node@master
+        uses: snyk/actions/node@v1.0.0
+        continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           args: --severity-threshold=high
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: javascript-typescript
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
