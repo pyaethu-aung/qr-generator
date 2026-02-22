@@ -97,9 +97,9 @@ description: "Task list for CI/CD Optimizations"
 
 ### Implementation for User Story 3
 
-- [ ] T015 [P] [US3] Update `actions/setup-node` to use `node-version-file: '.nvmrc'` in `.github/workflows/security.yml`
-- [ ] T016 [P] [US3] Update `actions/setup-node` to use `node-version-file: '.nvmrc'` in `.github/workflows/lint.yml`
-- [ ] T017 [P] [US3] Update `actions/setup-node` to use `node-version-file: '.nvmrc'` in `.github/workflows/deploy.yml`
+- [x] T015 [P] [US3] Update `actions/setup-node` to use `node-version-file: '.nvmrc'` in `.github/workflows/security.yml`
+- [x] T016 [P] [US3] Update `actions/setup-node` to use `node-version-file: '.nvmrc'` in `.github/workflows/lint.yml`
+- [x] T017 [P] [US3] Update `actions/setup-node` to use `node-version-file: '.nvmrc'` in `.github/workflows/deploy.yml`
 
 **Checkpoint**: All user stories should now be independently functional
 
