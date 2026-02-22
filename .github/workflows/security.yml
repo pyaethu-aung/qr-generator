@@ -3,10 +3,28 @@ name: Security Scan
 on:
   push:
     branches: ["main"]
+    paths:
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'eslint.config.js'
+      - 'tsconfig.*'
+      - '.github/workflows/security.yml'
   pull_request:
     branches: ["main"]
+    paths:
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'eslint.config.js'
+      - 'tsconfig.*'
+      - '.github/workflows/security.yml'
   schedule:
     - cron: '0 0 * * 1' # Weekly on Mondays
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -38,7 +56,13 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          args: --severity-threshold=high
+          args: --severity-threshold=high --sarif-file-output=snyk.sarif
+
+      - name: Upload Snyk results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        with:
+          sarif_file: snyk.sarif
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4

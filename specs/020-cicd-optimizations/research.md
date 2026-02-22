@@ -17,17 +17,17 @@
 - **Decision**: Add `timeout-minutes: 15` at the job level in `deploy.yml` (jobs `build` and `deploy`), `docker-publish.yml` (job `build`), `lint.yml` (job `lint-and-build`), and `security.yml` (job `security`).
 - **Rationale**: Prevents hung jobs from consuming infinite CI minutes.
 
-## 5. Handle Missing Optional Secrets (Snyk)
-- **Decision**: Use `continue-on-error: true` on the Snyk step in `security.yml`.
-- **Rationale**: In GitHub Actions, `continue-on-error: true` allows the step to fail without failing the entire job, matching the "non-blocking" (allow-failure) requirement.
+## 5. Handle Missing Optional Secrets & SARIF Integration (Snyk)
+- **Decision**: Use `continue-on-error: true` on the Snyk step in `security.yml`. Output results using `--sarif-file-output=snyk.sarif` and push using `github/codeql-action/upload-sarif@v4` with `if: always()`.
+- **Rationale**: `continue-on-error: true` fulfills the "non-blocking" requirement. Uploading the SARIF payload integrates the scan natively with GitHub's Security dashboard, providing superior visibility compared to console logs alone. The `if: always()` condition guarantees the upload executes even if the Snyk step "fails" due to found vulnerabilities.
 
 ## 6. Deploy After Validation
 - **Decision**: Add `npm run lint` before `npm run build` in `deploy.yml`.
 - **Rationale**: Ensures the code conforms to lint rules before deploying to GitHub pages.
 
-## 7. Container Build Triggers
-- **Decision**: Add `paths` filter to `push` and `pull_request` triggers in `docker-publish.yml` for `docker-publish.yml`, `src/**`, `index.html`, `package.json`, `package-lock.json`, `vite.config.js`, `eslint.config.js`.
-- **Rationale**: Prevents heavy docker builds when only markdown or unrelated config files are changed.
+## 7. Workflow Implementation Triggers
+- **Decision**: Add `paths` inclusion filters to `push` and `pull_request` triggers across `docker-publish.yml`, `lint.yml`, and `security.yml`. Specific paths include `.github/workflows/*`, `src/**`, `package.json`, `eslint.config.js`, `tsconfig.*`, etc.
+- **Rationale**: Prevents heavy docker builds, code analysis (CodeQL), and node linting cycles when only markdown or unrelated config files are changed, vastly reducing wasted CI minutes.
 
 ## 8. Run `lint.yml` on Default Branch
 - **Decision**: Add `push: branches: ["main"]` trigger to `lint.yml`.
@@ -42,5 +42,5 @@
 - **Rationale**: Speeds up successive lint runs.
 
 ## 11. Docker Multi-Arch Build Efficiency
-- **Decision**: In `docker-publish.yml`, the "Build and load Docker image for scan" step is currently loading a multi-arch image or a single arch image. `load: true` only supports single-arch. We'll specify `platforms: linux/amd64` in the scan build step to avoid multi-arch loading overhead during the Trivy scan, and only build multi-arch during the final push step. Or, if it's already single-arch (default), we just ensure we only scan the tarball. The spec suggests OCI tar archive or optimizing the two-phase build. We'll use `--output type=docker,dest=image.tar` in a buildx `--output` or just rely on the existing `load: true` but ensure `cache-from` and `cache-to` are optimized. Let's use `outputs: type=docker,dest=/tmp/image.tar` to export it, then point Trivy to `input: /tmp/image.tar` directly.
-- **Rationale**: Exporting directly to tar and scanning the tarball avoids the Docker daemon load overhead.
+- **Decision**: In `docker-publish.yml`, the "Build and load Docker image for scan" step will use `outputs: type=docker,dest=/tmp/image.tar` to export the built image straight to disk as an OCI-compliant tarball.
+- **Rationale**: Bypasses the heavy local Docker daemon initialization and architecture restrictions. The Trivy scanner reads the `/tmp/image.tar` directly via its `input:` configuration for maximum scan efficiency.
