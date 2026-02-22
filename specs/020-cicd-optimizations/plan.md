@@ -84,9 +84,9 @@ specs/020-cicd-optimizations/
 
 - **Action Version Pinning**: Update Snyk action to `snyk/actions/node@v1.0.0`.
 - **CodeQL Upgrade**: Update `github/codeql-action/upload-sarif@v3` to `v4`.
-- **Concurrency**: Add concurrency control to cancel in-progress runs for the same branch/PR, e.g., `group: ${{ github.workflow }}-${{ github.ref }}`.
+- **Concurrency & Triggers**: Add concurrency control (`cancel-in-progress: true`) and `paths` filters to push/pull_request events to prevent redundant pipeline runs.
 - **Job Timeout**: Add `timeout-minutes: 15` at the job level.
-- **Graceful Failure**: Update the Snyk step to use `continue-on-error: true` (which it already has) and ideally an `if: env.SNYK_TOKEN != ''` condition if secrets exist or are optional. But as per clarification, we should rely on `continue-on-error: true`. Actually, the spec says "attempt vulnerability scans even when required environment secrets are absent, but properly configure them to allow failure".
+- **Graceful Failure & SARIF**: Ensure Snyk step uses `continue-on-error: true`. Modify Snyk `args` to yield `--sarif-file-output=snyk.sarif` and append an `upload-sarif@v4` step using `if: always()` to forward results to the GitHub Security tab natively, even if absent tokens cause the Snyk step to fail smoothly.
 - **Node.js Centralization**: Update `actions/setup-node` to use `node-version-file: '.nvmrc'` instead of hardcoded `20`.
 
 #### [MODIFY] .github/workflows/docker-publish.yml
@@ -94,13 +94,13 @@ specs/020-cicd-optimizations/
 - **Action Version Pinning**: Update Trivy action to `aquasecurity/trivy-action@master`'s nearest stable `0.34.1` (or `0.28.0` etc. We will use `0.34.1`).
 - **Job Timeout**: Add `timeout-minutes: 15` at the job level.
 - **Build Triggers**: Add `paths` filter for `push` and `pull_request` including: `.github/workflows/docker-publish.yml`, `src/**`, `index.html`, `package.json`, `package-lock.json`, `vite.config.js`, `eslint.config.js`.
-- **Multi-Arch Optimization**: Optimize the build architecture by directly using `docker buildx` with `--load` natively for Trivy, or using `tar` export.
+- **Multi-Arch Optimization**: Optimize the build architecture environment dynamically by stripping the Docker Daemon dependency from Trivy scanning. Use BuildKit's `outputs: type=docker,dest=/tmp/image.tar` for the initial build instead of `--load` natively, supplying that tarball to Trivy.
 
 #### [MODIFY] .github/workflows/lint.yml
 
 - **Concurrency**: Add concurrency control.
 - **Job Timeout**: Add `timeout-minutes: 15`.
-- **Main Branch Trigger**: Add `push` with `branches: ["main"]` to calculate populated caches on direct pushes.
+- **Triggers**: Add `push` with `branches: ["main"]` to calculate populated caches on direct pushes. Add `paths` filters to both `push` and `pull_request` to avoid unnecessary runs when only markdown or unrelated configuration is changed.
 - **ESLint Caching**: 
   - Add `actions/cache` step before `npm run lint` prioritizing `.eslintcache`.
   - Ensure the `npm run lint` step caches correctly.
