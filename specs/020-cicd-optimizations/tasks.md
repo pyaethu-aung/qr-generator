@@ -109,7 +109,7 @@ description: "Task list for CI/CD Optimizations"
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T018 [P] Verify documentation workflows and ensure testing/linting scripts work securely in `package.json`
+- [x] T018 [P] Verify documentation workflows and ensure testing/linting scripts work securely in `package.json`
 
 ---
 
