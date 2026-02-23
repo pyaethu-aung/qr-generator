@@ -22,6 +22,7 @@ export default defineConfig([
     '*.log',
     '*.tmp',
     '.env*',
+    '.eslintcache',
   ]),
   {
     files: ['**/*.{ts,tsx}'],
