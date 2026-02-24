@@ -22,7 +22,8 @@
 - [ ] T001 Confirm `.github/workflows/lint.yml` requires no changes — read the file,
   verify `eslint.config.js` and `tsconfig.*` are correctly included in both `push:` and
   `pull_request:` `paths:` blocks (lint/tsc config changes legitimately affect this
-  workflow), and record that no edit is needed
+  workflow); the no-change finding is already documented in `specs/021-fix-cicd-issues/
+  spec.md` Assumptions — verification only, no additional write needed
 
 **Checkpoint**: Scope confirmed — three targeted edits across two files, lint.yml untouched.
 
@@ -42,7 +43,7 @@ run. Push a `src/` file change → deploy workflow DOES run. (See quickstart.md 
   `.github/workflows/deploy.yml` with these entries (in order):
   `.github/workflows/deploy.yml`, `src/**`, `index.html`, `public/**`,
   `package.json`, `package-lock.json`, `vite.config.*`, `tsconfig.*`, `.nvmrc` —
-  leave the `workflow_dispatch:` block unchanged (no `paths:` entry)
+  leave the `workflow_dispatch:` block unchanged with no `paths:` entry [FR-003]
 
 **Checkpoint**: `deploy.yml` updated. Push a doc-only commit to validate via GitHub
 Actions UI before proceeding.
@@ -63,7 +64,7 @@ does NOT run. Push a `package.json` change → security workflow DOES run.
 - [ ] T003 [P] [US2] Remove `eslint.config.js` and `tsconfig.*` from the `paths:`
   block under the `push:` trigger in `.github/workflows/security.yml` — retain
   `src/**`, `package.json`, `package-lock.json`, and
-  `.github/workflows/security.yml`
+  `.github/workflows/security.yml` (parallelisable with T002 only; T004 follows)
 
 - [ ] T004 [US2] Remove `eslint.config.js` and `tsconfig.*` from the `paths:`
   block under the `pull_request:` trigger in `.github/workflows/security.yml` —
