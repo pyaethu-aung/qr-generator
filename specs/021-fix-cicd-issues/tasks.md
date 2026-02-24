@@ -19,7 +19,7 @@
 
 **Purpose**: Confirm scope and current state of affected workflow files before editing.
 
-- [ ] T001 Confirm `.github/workflows/lint.yml` requires no changes — read the file,
+- [X] T001 Confirm `.github/workflows/lint.yml` requires no changes — read the file,
   verify `eslint.config.js` and `tsconfig.*` are correctly included in both `push:` and
   `pull_request:` `paths:` blocks (lint/tsc config changes legitimately affect this
   workflow); the no-change finding is already documented in `specs/021-fix-cicd-issues/
