@@ -86,7 +86,7 @@ results to GitHub Security tab" step shows as **Skipped** in the run summary.
 
 ### Implementation for User Story 3
 
-- [ ] T005 [US3] Change `if: always()` to `if: success() || failure()` on the
+- [X] T005 [US3] Change `if: always()` to `if: success() || failure()` on the
   "Upload Snyk results to GitHub Security tab" step in
   `.github/workflows/security.yml` (line ~64; depends on T003/T004 being complete
   to avoid editing the file mid-sequence)
