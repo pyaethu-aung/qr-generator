@@ -105,6 +105,9 @@ paths:
   - '.nvmrc'
 ```
 
+> **Note**: `eslint.config.js` is intentionally excluded — it affects lint output only,
+> not Vite build output, and is not a deploy-triggering file (see spec FR-002).
+
 **Acceptance**: Push a `README.md`-only commit to `main` → deploy workflow does NOT
 run. Push a `src/` change → deploy workflow DOES run.
 
