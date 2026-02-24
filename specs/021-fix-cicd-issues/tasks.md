@@ -61,12 +61,12 @@ does NOT run. Push a `package.json` change → security workflow DOES run.
 
 ### Implementation for User Story 2
 
-- [ ] T003 [P] [US2] Remove `eslint.config.js` and `tsconfig.*` from the `paths:`
+- [X] T003 [P] [US2] Remove `eslint.config.js` and `tsconfig.*` from the `paths:`
   block under the `push:` trigger in `.github/workflows/security.yml` — retain
   `src/**`, `package.json`, `package-lock.json`, and
   `.github/workflows/security.yml` (parallelisable with T002 only; T004 follows)
 
-- [ ] T004 [US2] Remove `eslint.config.js` and `tsconfig.*` from the `paths:`
+- [X] T004 [US2] Remove `eslint.config.js` and `tsconfig.*` from the `paths:`
   block under the `pull_request:` trigger in `.github/workflows/security.yml` —
   retain the same four paths as T003 (depends on T003)
 

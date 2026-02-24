@@ -7,8 +7,6 @@ on:
       - 'src/**'
       - 'package.json'
       - 'package-lock.json'
-      - 'eslint.config.js'
-      - 'tsconfig.*'
       - '.github/workflows/security.yml'
   pull_request:
     branches: ["main"]
@@ -16,8 +14,6 @@ on:
       - 'src/**'
       - 'package.json'
       - 'package-lock.json'
-      - 'eslint.config.js'
-      - 'tsconfig.*'
       - '.github/workflows/security.yml'
   schedule:
     - cron: '0 0 * * 1' # Weekly on Mondays
