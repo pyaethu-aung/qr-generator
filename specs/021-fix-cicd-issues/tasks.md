@@ -100,14 +100,14 @@ a correct SARIF upload condition.
 
 **Purpose**: Final verification pass and documentation closure.
 
-- [ ] T006 [P] Run `git diff main..HEAD -- .github/workflows/lint.yml` and confirm
+- [X] T006 [P] Run `git diff main..HEAD -- .github/workflows/lint.yml` and confirm
   empty output — validate lint.yml was not modified
 
-- [ ] T007 [P] Run `git diff main..HEAD -- .github/workflows/` and review the full
+- [X] T007 [P] Run `git diff main..HEAD -- .github/workflows/` and review the full
   diff against the expected changes in `specs/021-fix-cicd-issues/plan.md` to confirm
   no unintended edits
 
-- [ ] T008 Update `specs/021-fix-cicd-issues/checklists/requirements.md` — mark all
+- [X] T008 Update `specs/021-fix-cicd-issues/checklists/requirements.md` — mark all
   items verified and add a note that CI observation tests in `quickstart.md` are the
   acceptance mechanism
 

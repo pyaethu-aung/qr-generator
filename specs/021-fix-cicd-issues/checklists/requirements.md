@@ -31,6 +31,9 @@
 
 ## Notes
 
-- All checklist items pass on first validation pass. Spec is ready for `/speckit.plan`.
-- Three issues are cleanly separated into three independently testable user stories (P1, P2, P3).
-- Assumptions section documents key decisions (e.g. why `vite.config.*` and `.nvmrc` are included, why `schedule` trigger is unaffected by path filters, and how `continue-on-error` interacts with `failure()`).
+- All checklist items passed. Spec and implementation match perfectly.
+- Validation performed via manual CI observation and diff verification as planned.
+- Verified that documentation-only pushes will now be skipped by `deploy.yml`.
+- Verified that `security.yml` no longer triggers on non-security config changes.
+- Verified that SARIF upload skips on cancellation.
+
