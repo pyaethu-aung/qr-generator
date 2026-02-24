@@ -5,6 +5,14 @@
 **Status**: Draft  
 **Input**: User description: "CI/CD workflow trigger and conditional accuracy improvements"
 
+## Clarifications
+
+### Session 2026-02-24
+
+- Q: Are `lint.yml` and `docker-publish.yml` in scope for path-filter review, or is this fix strictly limited to `deploy.yml` and `security.yml`? → A: Also review `lint.yml` if it has the same path-filter issues.
+- Q: Should `index.html` and `public/**` also be included in the deploy workflow's path filters? → A: Yes — include both `index.html` and `public/**` in deploy path filters.
+- Q: Should a dedicated acceptance scenario be added to User Story 1 explicitly covering `index.html` and `public/**` as triggering paths? → A: Yes — add an explicit acceptance scenario.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Deploy Workflow Triggers Only on Meaningful Source Changes (Priority: P1)
@@ -22,7 +30,8 @@ As a developer maintaining the QR generator project, when I push a change to `ma
 3. **Given** a push to `main` that modifies `package.json` or `package-lock.json`, **When** the CI system evaluates the workflow trigger, **Then** the deploy workflow DOES run.
 4. **Given** a push to `main` that modifies `vite.config.*`, `tsconfig.*`, or `.nvmrc`, **When** the CI system evaluates the workflow trigger, **Then** the deploy workflow DOES run.
 5. **Given** a push to `main` that modifies the deploy workflow file itself, **When** the CI system evaluates the workflow trigger, **Then** the deploy workflow DOES run.
-6. **Given** a manual `workflow_dispatch` event, **When** the CI system receives it, **Then** the deploy workflow DOES run regardless of which files changed (path filters do not apply to `workflow_dispatch`).
+6. **Given** a push to `main` that modifies `index.html` or any file under `public/`, **When** the CI system evaluates the workflow trigger, **Then** the deploy workflow DOES run.
+7. **Given** a manual `workflow_dispatch` event, **When** the CI system receives it, **Then** the deploy workflow DOES run regardless of which files changed (path filters do not apply to `workflow_dispatch`).
 
 ---
 
@@ -71,12 +80,13 @@ As a developer who manually cancels a running security workflow, the Snyk SARIF 
 ### Functional Requirements
 
 - **FR-001**: The deploy workflow (`deploy.yml`) MUST include path filters on the `push` trigger so that it only runs when files that affect the built output are changed.
-- **FR-002**: The deploy workflow path filters MUST include: all files under `src/`, `package.json`, `package-lock.json`, build and compiler configuration files (`vite.config.*`, `tsconfig.*`, `.nvmrc`), and the workflow file itself (`.github/workflows/deploy.yml`).
+- **FR-002**: The deploy workflow path filters MUST include: all files under `src/`, `index.html`, all files under `public/`, `package.json`, `package-lock.json`, build and compiler configuration files (`vite.config.*`, `tsconfig.*`, `.nvmrc`), and the workflow file itself (`.github/workflows/deploy.yml`).
 - **FR-003**: The deploy workflow MUST continue to support `workflow_dispatch` as a trigger with no path restriction (path filters only apply to event-based triggers like `push`).
 - **FR-004**: The security workflow (`security.yml`) MUST remove `eslint.config.js` and `tsconfig.*` from its path filters under both `push` and `pull_request` triggers.
 - **FR-005**: The security workflow path filters MUST retain: all files under `src/`, `package.json`, `package-lock.json`, and the workflow file itself (`.github/workflows/security.yml`).
 - **FR-006**: The "Upload Snyk results to GitHub Security tab" step in `security.yml` MUST use the condition `if: success() || failure()` instead of `if: always()`.
 - **FR-007**: The SARIF upload step condition change MUST ensure the step runs after both a successful Snyk scan and a failed Snyk scan (vulnerability found), but NOT after a manual workflow cancellation.
+- **FR-008**: The lint workflow (`lint.yml`) MUST be reviewed for path-filter correctness. If its current path filters are accurate for its purpose, no change is required; the review finding MUST be documented.
 
 ## Success Criteria *(mandatory)*
 
@@ -94,3 +104,4 @@ As a developer who manually cancels a running security workflow, the Snyk SARIF 
 - The security workflow's `schedule` trigger (weekly on Mondays) is unaffected by path filters — scheduled triggers always run regardless of path configuration.
 - `eslint.config.js` and `tsconfig.*` are correctly classified as non-security files; their removal from security path filters is intentional and does not reduce security coverage.
 - The `continue-on-error: true` on the Snyk step means that even when Snyk finds vulnerabilities and exits non-zero, the step is considered "failed" not "errored" from GitHub Actions perspective — so `failure()` correctly captures this case for the upload condition.
+- `lint.yml` path filters correctly include `eslint.config.js` and `tsconfig.*` because that workflow runs ESLint and `tsc` directly — changes to those files legitimately affect lint and type-check outcomes. No modification to `lint.yml` is required. `docker-publish.yml` is explicitly out of scope.
