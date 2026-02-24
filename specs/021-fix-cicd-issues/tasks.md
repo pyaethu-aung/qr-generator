@@ -39,7 +39,7 @@ run. Push a `src/` file change → deploy workflow DOES run. (See quickstart.md 
 
 ### Implementation for User Story 1
 
-- [ ] T002 [P] [US1] Add a `paths:` block under the `push:` trigger in
+- [X] T002 [P] [US1] Add a `paths:` block under the `push:` trigger in
   `.github/workflows/deploy.yml` with these entries (in order):
   `.github/workflows/deploy.yml`, `src/**`, `index.html`, `public/**`,
   `package.json`, `package-lock.json`, `vite.config.*`, `tsconfig.*`, `.nvmrc` —
