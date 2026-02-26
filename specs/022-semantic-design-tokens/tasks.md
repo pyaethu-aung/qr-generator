@@ -233,10 +233,11 @@ Run `npm run test` after each task to catch regressions immediately.*
   subtitle — `text-slate-600 dark:text-slate-300` → `text-text-secondary`
 
 - [ ] T020 [P] [US1] Migrate `src/components/Layout/Layout.tsx`:
-  evaluate the `dark:bg-[radial-gradient(…)]` decorative background — document as
-  FR-005 exception in `specs/022-semantic-design-tokens/research.md` (non-semantic
-  purely aesthetic gradient); replace the wrapping div's
-  `transition-colors duration-300` with nothing (global transition on `:root` covers it)
+  document the `dark:bg-[radial-gradient(…)]` radial gradient as an FR-005 exception
+  in `specs/022-semantic-design-tokens/research.md` — this is a confirmed aria-hidden
+  decorative background with no semantic colour role and is intentionally excluded from
+  token migration; remove the wrapping div's `transition-colors duration-300`
+  (covered by global `:root` transition from T004)
 
 - [ ] T021 [US1] Migrate `src/components/feature/qr/QRControls.tsx`:
   outer wrapper — `bg-white dark:bg-slate-900/40` → `bg-surface-raised`,
