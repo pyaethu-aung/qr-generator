@@ -51,7 +51,9 @@ available and the build pipeline is healthy before any CSS changes.
   `@apply … transition-colors duration-300` and add the explicit CSS declaration
   `transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease`
   (NF-002); also migrate the `a` element from `dark:text-indigo-400` to
-  `color: var(--color-link)`
+  `color: var(--color-link)`;
+  **note**: per-component `transition-colors duration-300` / `transition-colors duration-*`
+  utilities are NOT removed here — they will be audited and stripped during T029
 
 - [ ] T005 Migrate `.app-shell` and `.card-surface` component classes in `src/index.css`
   from hardcoded Tailwind colour utilities to semantic token utilities:
@@ -341,7 +343,13 @@ shows ≥85%. `npm run lint` exits 0. `npm run build` exits 0.
 - [ ] T029 [P] Perform zero-`dark:` final audit:
   `grep -rn "dark:" src/ --include="*.tsx" --include="*.ts" | grep -v "__tests__"`;
   for any remaining `dark:` hits — either migrate them or add an entry to the
-  Exceptions section of `specs/022-semantic-design-tokens/research.md` per FR-005
+  Exceptions section of `specs/022-semantic-design-tokens/research.md` per FR-005;
+  cross-reference all remaining hits against the Exceptions section to confirm
+  completeness (resolves G2);
+  **also audit and strip redundant `transition-colors duration-300` or
+  `transition-colors duration-*` utilities** from all migrated component files —
+  these are now covered by the global `:root` 200ms ease transition (T004) and
+  their presence causes a 300ms override that conflicts with NF-002 (resolves U1)
 
 - [ ] T030 [P] WCAG contrast spot-check (manual, browser DevTools):
   verify `--color-text-primary` on `--color-surface` ≥4.5:1 (light + dark),
