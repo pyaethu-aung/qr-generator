@@ -101,6 +101,14 @@ Toggle the ThemeToggle button — confirm theme switches and `localStorage` is u
   `border-slate-200 bg-white text-slate-900 dark:border-white/10 dark:bg-white/5 dark:text-white`
   with `border-border-strong bg-surface-raised text-text-primary`
 
+- [ ] T009a [US2] Write new test cases in `src/hooks/__tests__/useTheme.test.ts` for
+  the restored `prefers-color-scheme` initialization path (Constitution §II — MANDATORY
+  new coverage for new behaviour): (a) no localStorage, OS dark →
+  `useState` initializes to `'dark'`; (b) no localStorage, OS light →
+  initializes to `'light'`; (c) `localStorage` key is `'light'` and OS is dark →
+  `'light'` wins; mock `window.matchMedia` in each case; run
+  `npm run test -- useTheme` and confirm new tests pass before T009 is marked done
+
 - [ ] T010 [US2] Update `src/hooks/__tests__/useTheme.test.ts` to reflect restored
   behaviour: update any assertions that expect `isDark: true` unconditionally;
   confirm toggle and setTheme tests pass; run `npm run test -- useTheme`
