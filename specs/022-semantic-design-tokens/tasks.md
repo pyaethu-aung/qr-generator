@@ -41,9 +41,11 @@ available and the build pipeline is healthy before any CSS changes.
   following the exact values in `data-model.md § Full Token Catalogue`
 
 - [ ] T003 Add the `@theme` block in `src/index.css` immediately after the `@layer base`
-  block, mapping all 17 `--color-*` CSS variables to Tailwind utility names
-  (`--color-surface: var(--color-surface)`, etc.), following `data-model.md §
-  Tailwind Utility Mapping`
+  block, mapping all 17 `--color-*` CSS variables to Tailwind utility names;
+  **use `data-model.md § Tailwind Utility Mapping` as the authoritative source**
+  (plan.md's inline `@theme` block is illustrative only and must not be used as the
+  reference); confirm `--color-action-fg` is explicitly included so `text-action-fg`
+  and `bg-action-fg` utilities are generated
 
 - [ ] T004 Replace the global `transition` in `:root` in `src/index.css`: remove
   `@apply … transition-colors duration-300` and add the explicit CSS declaration
