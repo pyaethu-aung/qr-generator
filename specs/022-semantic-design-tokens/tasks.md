@@ -87,25 +87,25 @@ Toggle the ThemeToggle button — confirm theme switches and `localStorage` is u
 
 ### Implementation for User Story 2
 
-- [ ] T007 [US2] Restore dynamic `useState` initializer in `src/hooks/useTheme.ts`:
+- [X] T007 [US2] Restore dynamic `useState` initializer in `src/hooks/useTheme.ts`:
   uncomment the original lazy-init block (localStorage → prefers-color-scheme → light),
   remove the hardcoded `useState<Theme>('dark')` line,
   remove all `// TODO: Revert…` comments and the `void getSystemTheme` no-op
 
-- [ ] T008 [US2] Restore `setTheme` and `toggleTheme` in `src/hooks/useTheme.ts`:
+- [X] T008 [US2] Restore `setTheme` and `toggleTheme` in `src/hooks/useTheme.ts`:
   `setTheme` must accept `newTheme: Theme`, persist to localStorage, and call
   `setThemeState(newTheme)`; `toggleTheme` must call
   `setTheme(theme === 'light' ? 'dark' : 'light')`; remove `console.warn` no-ops;
   return `isDark: theme === 'dark'` instead of hardcoded `true`
 
-- [ ] T009 [US2] Re-enable `ThemeToggle` in `src/components/common/ThemeToggle.tsx`:
+- [X] T009 [US2] Re-enable `ThemeToggle` in `src/components/common/ThemeToggle.tsx`:
   remove `aria-disabled="true"` attribute, remove the static `opacity-50 cursor-not-allowed`
   classes, wire `onClick` to `toggleTheme()` from `useThemeContext()`;
   also begin dark-class migration: replace
   `border-slate-200 bg-white text-slate-900 dark:border-white/10 dark:bg-white/5 dark:text-white`
   with `border-border-strong bg-surface-raised text-text-primary`
 
-- [ ] T009a [US2] Write new test cases in `src/hooks/__tests__/useTheme.test.ts` for
+- [X] T009a [US2] Write new test cases in `src/hooks/__tests__/useTheme.test.ts` for
   the restored `prefers-color-scheme` initialization path (Constitution §II — MANDATORY
   new coverage for new behaviour): (a) no localStorage, OS dark →
   `useState` initializes to `'dark'`; (b) no localStorage, OS light →
@@ -113,7 +113,7 @@ Toggle the ThemeToggle button — confirm theme switches and `localStorage` is u
   `'light'` wins; mock `window.matchMedia` in each case; run
   `npm run test -- useTheme` and confirm new tests pass before T009 is marked done
 
-- [ ] T010 [US2] Update `src/hooks/__tests__/useTheme.test.ts` to reflect restored
+- [X] T010 [US2] Update `src/hooks/__tests__/useTheme.test.ts` to reflect restored
   behaviour: update any assertions that expect `isDark: true` unconditionally;
   confirm toggle and setTheme tests pass; run `npm run test -- useTheme`
 

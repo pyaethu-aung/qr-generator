@@ -2,12 +2,12 @@ import { renderHook, act } from '@testing-library/react'
 import { describe, expect, it, beforeEach, vi } from 'vitest'
 import { useTheme } from '../useTheme'
 
-describe('useTheme (Sticky Dark Theme)', () => {
+describe('useTheme (Restored Dynamic Theme)', () => {
   beforeEach(() => {
     window.localStorage.clear()
     vi.clearAllMocks()
-    
-    // Mock matchMedia default to light to prove overrides work
+
+    // Default matchMedia mock (light mode)
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
       value: vi.fn().mockImplementation((query: string) => ({
@@ -23,44 +23,84 @@ describe('useTheme (Sticky Dark Theme)', () => {
     })
   })
 
-  it('initializes with dark theme even if system is light', () => {
-    // System is mocked as light above
+  it('initializes with light theme when no storage and OS is light', () => {
+    const { result } = renderHook(() => useTheme())
+    expect(result.current.theme).toBe('light')
+    expect(result.current.isDark).toBe(false)
+  })
+
+  it('initializes with dark theme when no storage and OS is dark', () => {
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: vi.fn().mockImplementation((query: string) => ({
+        matches: true,
+        media: query,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      })),
+    })
+
     const { result } = renderHook(() => useTheme())
     expect(result.current.theme).toBe('dark')
     expect(result.current.isDark).toBe(true)
   })
 
-  it('initializes with dark theme even if localStorage has light', () => {
+  it('initializes with light theme when storage says light even if OS is dark', () => {
     window.localStorage.setItem('qr-generator:theme-preference', 'light')
+
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: vi.fn().mockImplementation((query: string) => ({
+        matches: true,
+        media: query,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      })),
+    })
+
+    const { result } = renderHook(() => useTheme())
+    expect(result.current.theme).toBe('light')
+  })
+
+  it('initializes with dark theme when storage says dark', () => {
+    window.localStorage.setItem('qr-generator:theme-preference', 'dark')
     const { result } = renderHook(() => useTheme())
     expect(result.current.theme).toBe('dark')
   })
 
-  it('toggleTheme does NOT change the theme', () => {
+  it('toggleTheme changes the theme and persists', () => {
     const { result } = renderHook(() => useTheme())
-    expect(result.current.theme).toBe('dark')
+    expect(result.current.theme).toBe('light')
 
     act(() => {
       result.current.toggleTheme()
     })
 
     expect(result.current.theme).toBe('dark')
+    expect(result.current.isDark).toBe(true)
+    expect(window.localStorage.getItem('qr-generator:theme-preference')).toBe('dark')
+
+    act(() => {
+      result.current.toggleTheme()
+    })
+
+    expect(result.current.theme).toBe('light')
+    expect(result.current.isDark).toBe(false)
+    expect(window.localStorage.getItem('qr-generator:theme-preference')).toBe('light')
   })
 
-  it('setTheme forces dark (ignores input)', () => {
+  it('setTheme changes the theme and persists', () => {
     const { result } = renderHook(() => useTheme())
-    
+
     act(() => {
-      // Call setTheme - it should ignore any input and stay dark
-      result.current.setTheme()
+      result.current.setTheme('dark')
     })
 
     expect(result.current.theme).toBe('dark')
-    // It should also enforce 'dark' in localStorage to keep it sticky
     expect(window.localStorage.getItem('qr-generator:theme-preference')).toBe('dark')
   })
 
-  it('ignores system preference changes', () => {
+  it('responds to system preference changes when no storage exists', () => {
     let changeHandler: ((e: MediaQueryListEvent) => void) | null = null
     const addListenerMock = vi.fn().mockImplementation((_event: string, handler: (e: MediaQueryListEvent) => void) => {
       changeHandler = handler
@@ -69,7 +109,7 @@ describe('useTheme (Sticky Dark Theme)', () => {
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
       value: vi.fn().mockImplementation((query: string) => ({
-        matches: false, // light
+        matches: false, // initial light
         media: query,
         addEventListener: addListenerMock,
         removeEventListener: vi.fn(),
@@ -77,15 +117,44 @@ describe('useTheme (Sticky Dark Theme)', () => {
     })
 
     const { result } = renderHook(() => useTheme())
-    expect(result.current.theme).toBe('dark')
+    expect(result.current.theme).toBe('light')
 
     act(() => {
       if (changeHandler) {
-        // Try to trigger a system change (though logic currently disables the listener)
         changeHandler({ matches: true } as MediaQueryListEvent)
       }
     })
 
     expect(result.current.theme).toBe('dark')
+  })
+
+  it('ignores system preference changes when storage exists', () => {
+    window.localStorage.setItem('qr-generator:theme-preference', 'light')
+
+    let changeHandler: ((e: MediaQueryListEvent) => void) | null = null
+    const addListenerMock = vi.fn().mockImplementation((_event: string, handler: (e: MediaQueryListEvent) => void) => {
+      changeHandler = handler
+    })
+
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: vi.fn().mockImplementation((query: string) => ({
+        matches: false, // initial light
+        media: query,
+        addEventListener: addListenerMock,
+        removeEventListener: vi.fn(),
+      })),
+    })
+
+    const { result } = renderHook(() => useTheme())
+    expect(result.current.theme).toBe('light')
+
+    act(() => {
+      if (changeHandler) {
+        changeHandler({ matches: true } as MediaQueryListEvent)
+      }
+    })
+
+    expect(result.current.theme).toBe('light') // Still light
   })
 })
