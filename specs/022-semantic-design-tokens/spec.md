@@ -2,7 +2,8 @@
 
 **Feature Branch**: `022-semantic-design-tokens`  
 **Created**: 2026-02-25  
-**Status**: Draft  
+**Completed**: 2026-02-26  
+**Status**: Implemented  
 **Input**: User description: "Refactor the current light/dark theme implementation to use a semantic design token system instead of hardcoded Tailwind dark variants. Establish CSS variables in index.css (like --color-surface, --color-text-primary, --color-border-subtle) that adapt automatically to the active theme. Configure Tailwind v4 to map its utility classes to these variables using the @theme directive. Update all existing UI components (Button, Input, QRControls, etc.) to consume these new semantic classes. The end result must be visually identical to the current design but rely entirely on tokens, making it easy to maintain and extend for future themes. Ensure the existing Vitest coverage is maintained."
 
 ## Clarifications
