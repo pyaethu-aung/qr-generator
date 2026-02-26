@@ -62,8 +62,8 @@ export function QRControls({
   ],
 }: QRControlsProps) {
   return (
-    <div className="flex h-full flex-col justify-between rounded-2xl border border-border-subtle bg-surface-raised/40 p-4 sm:p-6">
-      <div className="space-y-5">
+    <div className="flex flex-col gap-6 w-full rounded-2xl border border-border-subtle bg-surface-raised/40 p-4 sm:p-6">
+      <div className="flex flex-col gap-4">
         <Input
           label="Link / Text"
           placeholder={placeholder}
