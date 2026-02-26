@@ -18,10 +18,10 @@ and testing of each story. No test tasks are generated (not requested in spec).
 **Purpose**: Baseline verification — confirm Tailwind v4 `@theme` directive is
 available and the build pipeline is healthy before any CSS changes.
 
-- [ ] T001 Run `npm run test && npm run lint && npm run build` to establish a green
+- [X] T001 Run `npm run test && npm run lint && npm run build` to establish a green
   baseline and record current `dark:` count via
   `grep -rn "dark:" src/ --include="*.tsx" --include="*.ts" | grep -v "__tests__" | wc -l`
-  (expect ~78)
+  (Recorded: 77)
 
 > 📦 **Commit checkpoint** (Constitution §Governance — MANDATORY): commit Phase 1
 > before making any file changes. Suggested subject: `chore(semantic-design-token): record baseline metrics`
