@@ -35,19 +35,19 @@ available and the build pipeline is healthy before any CSS changes.
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T002 Replace the 4-variable `:root` block in `src/index.css` with the full
+- [X] T002 Replace the 4-variable `:root` block in `src/index.css` with the full
   17-token `--color-*` catalogue (surface ×4, text ×3, border ×2, action ×3,
   focus-ring ×1, link/error ×4) for both `:root` (light) and `:root.dark` (dark),
   following the exact values in `data-model.md § Full Token Catalogue`
 
-- [ ] T003 Add the `@theme` block in `src/index.css` immediately after the `@layer base`
+- [X] T003 Add the `@theme` block in `src/index.css` immediately after the `@layer base`
   block, mapping all 17 `--color-*` CSS variables to Tailwind utility names;
   **use `data-model.md § Tailwind Utility Mapping` as the authoritative source**
   (plan.md's inline `@theme` block is illustrative only and must not be used as the
   reference); confirm `--color-action-fg` is explicitly included so `text-action-fg`
   and `bg-action-fg` utilities are generated
 
-- [ ] T004 Replace the global `transition` in `:root` in `src/index.css`: remove
+- [X] T004 Replace the global `transition` in `:root` in `src/index.css`: remove
   `@apply … transition-colors duration-300` and add the explicit CSS declaration
   `transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease`
   (NF-002); also migrate the `a` element from `dark:text-indigo-400` to
@@ -55,12 +55,12 @@ available and the build pipeline is healthy before any CSS changes.
   **note**: per-component `transition-colors duration-300` / `transition-colors duration-*`
   utilities are NOT removed here — they will be audited and stripped during T029
 
-- [ ] T005 Migrate `.app-shell` and `.card-surface` component classes in `src/index.css`
+- [X] T005 Migrate `.app-shell` and `.card-surface` component classes in `src/index.css`
   from hardcoded Tailwind colour utilities to semantic token utilities:
   `.app-shell → @apply min-h-screen bg-surface`,
   `.card-surface → @apply rounded-xl bg-surface-raised shadow-md ring-1 ring-border-subtle`
 
-- [ ] T006 Run `npm run build` to confirm `@theme` compiles without errors and
+- [X] T006 Run `npm run build` to confirm `@theme` compiles without errors and
   semantic utility classes are generated; verify with browser DevTools that
   `bg-surface` resolves to `var(--color-surface)`
 
