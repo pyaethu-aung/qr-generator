@@ -23,6 +23,9 @@ available and the build pipeline is healthy before any CSS changes.
   `grep -rn "dark:" src/ --include="*.tsx" --include="*.ts" | grep -v "__tests__" | wc -l`
   (expect ~78)
 
+> 📦 **Commit checkpoint** (Constitution §Governance — MANDATORY): commit Phase 1
+> before making any file changes. Suggested subject: `chore(semantic-design-token): record baseline metrics`
+
 ---
 
 ## Phase 2: Foundational (Blocking Prerequisites)
@@ -59,6 +62,9 @@ available and the build pipeline is healthy before any CSS changes.
 
 **Checkpoint**: Token taxonomy complete — all `bg-surface`, `text-text-primary`,
 `border-border-strong`, `ring-focus-ring` etc. utilities available for component use.
+
+> 📦 **Commit checkpoint** (Constitution §Governance — MANDATORY): commit Phase 2
+> in full before starting Phase 3. Suggested subject: `feat(semantic-design-token): define token taxonomy in index.css`
 
 ---
 
@@ -101,6 +107,9 @@ Toggle the ThemeToggle button — confirm theme switches and `localStorage` is u
 
 **Checkpoint**: Theme toggle is live; app correctly initializes from localStorage /
 OS preference; `useTheme.test.ts` and `ThemeToggle.test.tsx` pass.
+
+> 📦 **Commit checkpoint** (Constitution §Governance — MANDATORY): commit Phase 3
+> before starting Phase 4. Suggested subject: `feat(semantic-design-token): restore ThemeProvider dynamic init`
 
 ---
 
@@ -276,6 +285,9 @@ Run `npm run test` after each task to catch regressions immediately.*
 0 matches (or only the documented FR-005 exceptions in `Layout.tsx` / `QRGenerator.tsx`).
 All visual output is pixel-identical to pre-refactor design.
 
+> 📦 **Commit checkpoint** (Constitution §Governance — MANDATORY): commit Phase 4
+> before starting Phase 5. Suggested subject: `refactor(semantic-design-token): migrate all components to tokens`
+
 ---
 
 ## Phase 5: User Story 3 — Tests Continue to Pass (Priority: P3) ✅
@@ -307,6 +319,9 @@ shows ≥85%. `npm run lint` exits 0. `npm run build` exits 0.
 
 **Checkpoint**: All user stories are independently functional. Full test suite passes.
 
+> 📦 **Commit checkpoint** (Constitution §Governance — MANDATORY): commit Phase 5
+> before starting Phase 6. Suggested subject: `test(semantic-design-token): verify full suite passes post-refactor`
+
 ---
 
 ## Phase 6: Polish & Cross-Cutting Concerns
@@ -335,6 +350,9 @@ shows ≥85%. `npm run lint` exits 0. `npm run build` exits 0.
 - [ ] T032 [P] Remove all `// TODO: Revert…` comments and any remaining commented-out
   theme code across `src/hooks/useTheme.ts`; ensure no dead code or
   unreferenced imports remain (Constitution §I)
+
+> 📦 **Commit checkpoint** (Constitution §Governance — MANDATORY): commit Phase 6
+> to close the feature. Suggested subject: `chore(semantic-design-token): Polish and WCAG audit`
 
 ---
 
