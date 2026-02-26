@@ -1,10 +1,3 @@
-/**
- * FormatSelector component for choosing export format.
- *
- * @why Radio group pattern for mutually exclusive selection with proper
- * ARIA attributes per web-design-guidelines.
- */
-
 import type { ExportFormat } from '../../types/export'
 import { FORMAT_CONFIGS } from '../../types/export'
 
@@ -18,12 +11,6 @@ export interface FormatSelectorProps {
 
 const FORMAT_OPTIONS: ExportFormat[] = ['png', 'svg', 'pdf']
 
-/**
- * Format selector with radio group semantics.
- *
- * @why Using role="radiogroup" with aria-label for screen reader accessibility.
- * Visual checkmark indicator for selected state.
- */
 export function FormatSelector({
   selected,
   onChange,
@@ -35,7 +22,7 @@ export function FormatSelector({
     <div>
       <label
         id="format-selector-label"
-        className="block text-sm font-semibold text-slate-900 dark:text-white mb-3"
+        className="block text-sm font-semibold text-text-primary mb-3"
       >
         {formatLabels[selected]} Format
       </label>
@@ -57,27 +44,25 @@ export function FormatSelector({
               aria-describedby={`format-desc-${format}`}
               onClick={() => onChange(format)}
               disabled={disabled}
-              className={`w-full px-4 py-3 text-left rounded-lg border-2 transition-all ${
-                isSelected
-                  ? 'border-slate-900 dark:border-sky-500 bg-slate-50 dark:bg-sky-900/20'
-                  : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-white dark:bg-slate-900'
-              } ${
-                disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-              }`}
+              className={`w-full px-4 py-3 text-left rounded-lg border-2 transition-all ${isSelected
+                ? 'border-action bg-action/10'
+                : 'border-border-strong bg-surface-raised hover:border-action/60'
+                } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                } focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2`}
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm font-semibold text-slate-900 dark:text-white uppercase">
+                    <span className="text-sm font-semibold text-text-primary uppercase">
                       {format}
                     </span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400">
+                    <span className="text-xs text-text-secondary">
                       {config.mimeType}
                     </span>
                   </div>
                   <p
                     id={`format-desc-${format}`}
-                    className="text-xs text-slate-600 dark:text-slate-400"
+                    className="text-xs text-text-secondary"
                   >
                     {formatDescriptions[format]}
                   </p>
@@ -85,7 +70,7 @@ export function FormatSelector({
                 {/* Selected indicator */}
                 {isSelected && (
                   <svg
-                    className="w-5 h-5 text-slate-900 dark:text-sky-500 flex-shrink-0"
+                    className="w-5 h-5 text-action flex-shrink-0"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                     aria-hidden="true"

@@ -26,7 +26,7 @@ function App() {
         </div>
       </main>
 
-      <footer className="relative z-10 border-t border-black/5 py-8 text-center text-sm text-slate-500 transition-colors duration-300 dark:border-white/5 dark:text-slate-400">
+      <footer className="relative z-10 border-t border-border-subtle py-8 text-center text-sm text-text-secondary">
         <p>{translate('layout.footerNote')}</p>
       </footer>
     </Layout>

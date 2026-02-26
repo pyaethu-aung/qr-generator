@@ -190,4 +190,15 @@ The following 15 source files currently contain `dark:` Tailwind variant usage a
 
 **Rationale**: Applying at `:root` means all token-consuming elements inherit the transition without needing per-component declarations. This replaces the scattered `transition-colors duration-300` utilities currently on every component (those can be removed or kept as they don't conflict).
 
-**Note**: `@apply transition-colors duration-300` on `:root` in the current code will be replaced with an explicit CSS `transition` declaration to avoid Tailwind utility dependency in this specific location and to precisely match the 200ms duration (not 300ms which is the current value).
+**Note**: `@apply transition-colors duration-300` on `:root` in the current code will be replaced with an explicit CSS `transition` declaration to avoid Tailwind utility dependency in this specific location and to 
+---
+
+## Exceptions (FR-005)
+
+The following UI elements are confirmed decorative gradients that are **exempt** from semantic token migration per FR-005. They retain their original Tailwind/CSS values even after the migration.
+
+| Location | Element | Rationale |
+|---|---|---|
+| `src/components/Layout/Layout.tsx` | Background radial-gradient | Global brand background; subtle opacity shift already handles theme adjustment. |
+| `src/components/feature/qr/QRGenerator.tsx` | Background gradient blobs (absolute divs) | Brand decorative blobs; opacity-20 (light) and opacity-60 (dark) already provide theme context. |
+| `src/components/feature/qr/QRGenerator.tsx` | Glass panel shadow | Aesthetic shadow (`shadow-slate-200/50` vs `shadow-black/50`) linked to depth, not just surface color. |

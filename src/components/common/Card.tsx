@@ -10,7 +10,7 @@ export interface CardProps extends PropsWithChildren<HTMLAttributes<HTMLDivEleme
 export function Card({ children, className, elevated = true, padded = true, ...props }: CardProps) {
   const composed = twMerge(
     clsx(
-      'rounded-xl ring-1 ring-slate-200 bg-white',
+      'rounded-xl ring-1 ring-border-subtle bg-surface-raised',
       elevated && 'shadow-sm',
       padded && 'p-6',
       className,
