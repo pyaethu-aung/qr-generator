@@ -7,7 +7,7 @@ describe('Button', () => {
   it('renders with primary styles by default', () => {
     render(<Button>Click me</Button>)
     const btn = screen.getByRole('button', { name: /click me/i })
-    expect(btn).toHaveClass('bg-indigo-600')
+    expect(btn).toHaveClass('bg-action')
     expect(btn).not.toBeDisabled()
   })
 
@@ -32,7 +32,7 @@ describe('Button', () => {
       </Button>,
     )
     const btn = screen.getByRole('button', { name: /secondary/i })
-    expect(btn).toHaveClass('bg-white')
+    expect(btn).toHaveClass('bg-surface-raised')
     expect(btn).toHaveClass('h-9')
   })
 })

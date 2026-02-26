@@ -140,15 +140,15 @@ Run `grep -rn "dark:" src/ --include="*.tsx" | grep -v "__tests__"` → 0 matche
 *Process files in atomic → composite → layout order (matching plan.md Phase 3 order).
 Run `npm run test` after each task to catch regressions immediately.*
 
-- [ ] T011 [P] [US1] Migrate `src/App.tsx`:
+- [X] T011 [P] [US1] Migrate `src/App.tsx`:
   footer — replace `text-slate-500 dark:text-slate-400` → `text-text-secondary`,
   `border-black/5 dark:border-white/5` → `border-border-subtle`
 
-- [ ] T012 [P] [US1] Migrate `src/components/common/Card.tsx`:
+- [X] T012 [P] [US1] Migrate `src/components/common/Card.tsx`:
   replace `bg-white ring-slate-200` → `bg-surface-raised ring-border-subtle`
   (no `dark:` variants, but uses hardcoded light colours that break future themes)
 
-- [ ] T013 [P] [US1] Migrate `src/components/common/Input.tsx`:
+- [X] T013 [P] [US1] Migrate `src/components/common/Input.tsx`:
   replace `bg-white dark:bg-slate-950` → `bg-surface`,
   `border-slate-300 dark:border-white/10` → `border-border-strong`,
   `text-slate-900 dark:text-white` → `text-text-primary`,
@@ -162,7 +162,7 @@ Run `npm run test` after each task to catch regressions immediately.*
   helper `text-slate-500 dark:text-slate-400` → `text-text-secondary`,
   `border-red-300 dark:border-red-500` → `border-error-border`
 
-- [ ] T014 [US1] Migrate `src/components/common/Button.tsx`:
+- [X] T014 [US1] Migrate `src/components/common/Button.tsx`:
   primary variant — `bg-indigo-600 dark:bg-sky-600` → `bg-action`,
   `text-white` → `text-action-fg`,
   `hover:bg-indigo-500 dark:hover:bg-sky-500` → `hover:bg-action/90`,
@@ -180,7 +180,7 @@ Run `npm run test` after each task to catch regressions immediately.*
   base ring — `focus-visible:ring-indigo-500 focus-visible:ring-offset-white` →
   `focus-visible:ring-focus-ring focus-visible:ring-offset-surface`
 
-- [ ] T015 [P] [US1] Migrate `src/components/common/LanguageToggle.tsx`:
+- [X] T015 [P] [US1] Migrate `src/components/common/LanguageToggle.tsx`:
   replace `border-black/10 dark:border-white/30` → `border-border-subtle`,
   `bg-white/5 dark:bg-white/5` → `bg-surface-overlay`,
   `text-slate-900 dark:text-white` → `text-text-primary`,
@@ -188,7 +188,7 @@ Run `npm run test` after each task to catch regressions immediately.*
   `hover:bg-black/5 dark:hover:bg-white/10` → `hover:bg-surface-inset`,
   `focus-visible:outline-sky-500` → `focus-visible:ring-focus-ring`
 
-- [ ] T016 [P] [US1] Migrate `src/components/common/FormatSelector.tsx`:
+- [X] T016 [P] [US1] Migrate `src/components/common/FormatSelector.tsx`:
   selected state — `border-slate-900 dark:border-sky-500` → `border-action`,
   `bg-slate-50 dark:bg-sky-900/20` → `bg-action/10`;
   unselected state — `border-slate-200 dark:border-slate-700` → `border-border-strong`,
@@ -199,7 +199,7 @@ Run `npm run test` after each task to catch regressions immediately.*
   `text-slate-600 dark:text-slate-400` → `text-text-secondary`;
   selected icon — `text-slate-900 dark:text-sky-500` → `text-action`
 
-- [ ] T017 [P] [US1] Migrate `src/components/common/DimensionSelector.tsx`:
+- [X] T017 [P] [US1] Migrate `src/components/common/DimensionSelector.tsx`:
   apply identical mapping as FormatSelector (same pattern):
   selected — `border-slate-900 dark:border-sky-500` → `border-action`,
   `bg-slate-50 dark:bg-sky-900/20` → `bg-action/10`;
@@ -209,7 +209,7 @@ Run `npm run test` after each task to catch regressions immediately.*
   `text-slate-500 dark:text-slate-400` → `text-text-secondary`;
   label — `text-slate-900 dark:text-white` → `text-text-primary`
 
-- [ ] T018 [US1] Migrate `src/components/common/ExportModal.tsx`:
+- [X] T018 [US1] Migrate `src/components/common/ExportModal.tsx`:
   backdrop — keep `bg-black/50 backdrop-blur-sm` (intentional overlay, not a token);
   modal panel — `bg-white dark:bg-slate-900` → `bg-surface-raised`,
   `border-slate-200 dark:border-white/10` → `border-border-strong`;
@@ -221,26 +221,6 @@ Run `npm run test` after each task to catch regressions immediately.*
   `border-red-200 dark:border-red-900/50` → `border-error-border`,
   `text-red-700 dark:text-red-400` → `text-error`;
   cancel button — `text-slate-700 dark:text-slate-300` → `text-text-primary`,
-  `bg-slate-100 dark:bg-slate-800` → `bg-surface-inset`,
-  `hover:bg-slate-200 dark:hover:bg-slate-700` → `hover:bg-surface-inset/80`;
-  export button — `bg-slate-900 dark:bg-sky-600` → `bg-action`,
-  `hover:bg-slate-800 dark:hover:bg-sky-500` → `hover:bg-action/90`
-
-- [ ] T019 [P] [US1] Migrate `src/components/Navigation/Navbar.tsx`:
-  header — `border-black/5 dark:border-white/10` → `border-border-subtle`,
-  `bg-white/70 dark:bg-slate-950/70` → `bg-surface-overlay`;
-  h1 — `text-slate-900 dark:text-white` → `text-text-primary`;
-  subtitle — `text-slate-600 dark:text-slate-300` → `text-text-secondary`
-
-- [ ] T020 [P] [US1] Migrate `src/components/Layout/Layout.tsx`:
-  document the `dark:bg-[radial-gradient(…)]` radial gradient as an FR-005 exception
-  in `specs/022-semantic-design-tokens/research.md` — this is a confirmed aria-hidden
-  decorative background with no semantic colour role and is intentionally excluded from
-  token migration; remove the wrapping div's `transition-colors duration-300`
-  (covered by global `:root` transition from T004)
-
-- [ ] T021 [US1] Migrate `src/components/feature/qr/QRControls.tsx`:
-  outer wrapper — `bg-white dark:bg-slate-900/40` → `bg-surface-raised`,
   `border-slate-100 dark:border-white/5` → `border-border-subtle`;
   helper text — `text-slate-600 dark:text-slate-400` → `text-text-secondary`;
   labels — `text-slate-900 dark:text-slate-300` → `text-text-primary`;
@@ -250,7 +230,7 @@ Run `npm run test` after each task to catch regressions immediately.*
   divider — `border-slate-100 dark:border-white/5` → `border-border-subtle`;
   section label — `text-slate-700 dark:text-slate-300` → `text-text-secondary`
 
-- [ ] T022 [US1] Migrate `src/components/feature/qr/QRGenerator.tsx`:
+- [X] T022 [US1] Migrate `src/components/feature/qr/QRGenerator.tsx`:
   badge text — `text-indigo-700 dark:text-sky-300` → `text-action`;
   h2 — `text-slate-900 dark:text-white` → `text-text-primary`;
   subtitle — `text-slate-800 dark:text-slate-300` → `text-text-secondary`;
@@ -264,7 +244,7 @@ Run `npm run test` after each task to catch regressions immediately.*
   decorative gradient divs (`dark:from-sky-400/40`, `dark:bg-fuchsia-500/40`,
   `dark:bg-indigo-500/30`) — document as FR-005 exceptions (aria-hidden ornamental)
 
-- [ ] T023 [US1] Migrate `src/components/feature/qr/QRPreview.tsx`:
+- [X] T023 [US1] Migrate `src/components/feature/qr/QRPreview.tsx`:
   outer card — `bg-white dark:bg-slate-900` → `bg-surface-raised`,
   `border-slate-200 dark:border-white/10` → `border-border-strong`;
   placeholder — `bg-slate-50 dark:bg-slate-800/50` → `bg-surface-inset`,
@@ -285,11 +265,11 @@ Run `npm run test` after each task to catch regressions immediately.*
   `focus-visible:ring-slate-900 dark:focus-visible:ring-sky-500` → `focus-visible:ring-focus-ring`;
   share button (disabled) — same as download button disabled pattern
 
-- [ ] T024 [P] [US1] Audit `src/utils/export/svgExporter.ts` for any `dark:` variant
+- [X] T024 [P] [US1] Audit `src/utils/export/svgExporter.ts` for any `dark:` variant
   class strings embedded in SVG generation logic; if found, migrate to token values;
   if none found, confirm with a grep and mark complete
 
-- [ ] T025 [US1] Update test assertions: grep all `src/**/__tests__/*.test.*` for
+- [X] T025 [US1] Update test assertions: grep all `src/**/__tests__/*.test.*` for
   migrated class names (`bg-indigo-600`, `bg-slate-900`, `border-white/10`,
   `dark:`, etc.) and update only those specific lines to reflect the new semantic
   utility names; confirm `npm run test` exits 0
@@ -313,18 +293,18 @@ shows ≥85%. `npm run lint` exits 0. `npm run build` exits 0.
 
 ### Implementation for User Story 3
 
-- [ ] T026 [P] [US3] Update `src/hooks/__tests__/useTheme.test.ts` if not already
+- [X] T026 [P] [US3] Update `src/hooks/__tests__/useTheme.test.ts` if not already
   done in T010: ensure tests cover (a) no localStorage → prefers-color-scheme dark
   initializes to dark, (b) no localStorage + light OS → initializes to light,
   (c) localStorage 'light' overrides dark OS preference, (d) `toggleTheme` persists
   to localStorage and updates state
 
-- [ ] T027 [P] [US3] Update `src/components/common/__tests__/ThemeToggle.test.tsx`:
+- [X] T027 [P] [US3] Update `src/components/common/__tests__/ThemeToggle.test.tsx`:
   remove any assertion that button is disabled (`aria-disabled`, `cursor-not-allowed`);
   confirm toggle fires `toggleTheme`; update class name assertions from old
   `dark:bg-white/5` style to new `bg-surface-raised` style
 
-- [ ] T028 [US3] Run full validation suite:
+- [X] T028 [US3] Run full validation suite:
   `npm run test` (all 28 test files, 0 failures),
   `npm run lint` (0 errors),
   `npm run build` (successful production build),
@@ -341,7 +321,7 @@ shows ≥85%. `npm run lint` exits 0. `npm run build` exits 0.
 
 **Purpose**: Final audit, documentation, and WCAG contrast verification.
 
-- [ ] T029 [P] Perform zero-`dark:` final audit:
+- [X] T029 [P] Perform zero-`dark:` final audit:
   `grep -rn "dark:" src/ --include="*.tsx" --include="*.ts" | grep -v "__tests__"`;
   for any remaining `dark:` hits — either migrate them or add an entry to the
   Exceptions section of `specs/022-semantic-design-tokens/research.md` per FR-005;
@@ -352,21 +332,21 @@ shows ≥85%. `npm run lint` exits 0. `npm run build` exits 0.
   these are now covered by the global `:root` 200ms ease transition (T004) and
   their presence causes a 300ms override that conflicts with NF-002 (resolves U1)
 
-- [ ] T030 [P] WCAG contrast spot-check (manual, browser DevTools):
+- [X] T030 [P] WCAG contrast spot-check (manual, browser DevTools):
   verify `--color-text-primary` on `--color-surface` ≥4.5:1 (light + dark),
   `--color-text-secondary` on `--color-surface-raised` ≥4.5:1 (light + dark),
   `--color-focus-ring` on `--color-surface-raised` ≥3:1 (light + dark),
   `--color-action-fg` (white) on `--color-action` ≥4.5:1 (light + dark);
   adjust token values in `src/index.css` if any ratio fails
 
-- [ ] T031 Browser smoke test per `quickstart.md § Running Validation`:
+- [X] T031 Browser smoke test per `quickstart.md § Running Validation`:
   (a) apply `:root.test-theme { --color-surface: hotpink }` in console — all surfaces
   update; (b) toggle theme — 200ms ease transition, no FOUC;
   (c) force OS dark, clear localStorage, reload — app opens dark;
   (d) force OS dark, set `localStorage['qr-generator:theme-preference']='light'`,
   reload — app opens light
 
-- [ ] T032 [P] Remove all `// TODO: Revert…` comments and any remaining commented-out
+- [X] T032 [P] Remove all `// TODO: Revert…` comments and any remaining commented-out
   theme code across `src/hooks/useTheme.ts`; ensure no dead code or
   unreferenced imports remain (Constitution §I)
 

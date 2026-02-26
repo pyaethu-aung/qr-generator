@@ -17,7 +17,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
     const inputClass = twMerge(
       clsx(
-        'block rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-text-primary shadow-sm placeholder:text-text-secondary transition-all',
+        'block rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-text-primary shadow-sm placeholder:text-text-secondary',
         'focus:outline-none focus:ring-2 focus:ring-focus-ring focus:border-focus-ring',
         fullWidth && 'w-full',
         disabled && 'bg-action-disabled text-text-disabled cursor-not-allowed',
@@ -29,7 +29,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className={twMerge(clsx('flex flex-col gap-1', fullWidth && 'w-full'))}>
         {label && (
-          <label htmlFor={inputId} className="text-sm font-medium text-text-primary transition-colors">
+          <label htmlFor={inputId} className="text-sm font-medium text-text-primary">
             {label}
           </label>
         )}

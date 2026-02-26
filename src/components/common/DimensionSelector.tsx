@@ -48,9 +48,9 @@ export function DimensionSelector({
                   onClick={() => onDimensionChange(preset.value)}
                   disabled={disabled}
                   aria-label={`${preset.label} - ${preset.description}`}
-                  className={`px-4 py-3 text-center rounded-lg border-2 transition-all ${isSelected
-                      ? 'border-action bg-action/10'
-                      : 'border-border-strong bg-surface-raised hover:border-action/60'
+                  className={`px-4 py-3 text-center rounded-lg border-2 ${isSelected
+                    ? 'border-action bg-action/10'
+                    : 'border-border-strong bg-surface-raised hover:border-action/60'
                     } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
                     } focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2`}
                 >
@@ -91,9 +91,9 @@ export function DimensionSelector({
                   onClick={() => onDpiChange(preset.value)}
                   disabled={disabled}
                   aria-label={`${preset.label} - ${preset.description}`}
-                  className={`px-3 py-2.5 text-center rounded-lg border-2 transition-all ${isSelected
-                      ? 'border-action bg-action/10'
-                      : 'border-border-strong bg-surface-raised hover:border-action/60'
+                  className={`px-3 py-2.5 text-center rounded-lg border-2 ${isSelected
+                    ? 'border-action bg-action/10'
+                    : 'border-border-strong bg-surface-raised hover:border-action/60'
                     } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
                     } focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2`}
                 >

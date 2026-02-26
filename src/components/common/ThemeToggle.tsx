@@ -13,7 +13,7 @@ export function ThemeToggle() {
         onClick={toggleTheme}
         className={twMerge(
           clsx(
-            'relative inline-flex h-9 w-9 items-center justify-center rounded-lg border transition-all duration-300',
+            'relative inline-flex h-9 w-9 items-center justify-center rounded-lg border transition-colors',
             'border-border-strong bg-surface-raised text-text-primary',
             'focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2'
           )

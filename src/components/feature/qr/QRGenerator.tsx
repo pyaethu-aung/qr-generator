@@ -38,13 +38,13 @@ export const QRGenerator = () => {
           <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-action">
             {translate('hero.badge')}
           </p>
-          <h2 className="mt-2 text-2xl font-bold text-text-primary transition-colors sm:text-4xl">
+          <h2 className="mt-2 text-2xl font-bold text-text-primary sm:text-4xl">
             {translate('hero.title')}
           </h2>
-          <p className="mt-2 text-sm text-text-secondary transition-colors sm:text-base">{translate('hero.subtitle')}</p>
+          <p className="mt-2 text-sm text-text-secondary sm:text-base">{translate('hero.subtitle')}</p>
         </div>
 
-        <div className="rounded-[32px] border border-border-strong bg-surface-overlay p-4 sm:p-6 shadow-2xl backdrop-blur-xl w-full max-w-full overflow-hidden transition-all">
+        <div className="rounded-[32px] border border-border-strong bg-surface-overlay p-4 sm:p-6 shadow-2xl backdrop-blur-xl w-full max-w-full overflow-hidden">
           <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-10">
             <div className="space-y-5">
               <div>
@@ -83,7 +83,7 @@ export const QRGenerator = () => {
                   {translate('preview.sectionTitle')}
                 </h3>
               </div>
-              <div className="flex flex-1 items-center justify-center rounded-2xl border border-border-subtle bg-surface-inset p-4 sm:p-6 shadow-inner transition-colors">
+              <div className="flex flex-1 items-center justify-center rounded-2xl border border-border-subtle bg-surface-inset p-4 sm:p-6 shadow-inner">
                 <QRPreview {...config} className="w-full max-w-full" style={{ width: '100%', height: 'auto', maxWidth: '100%' }} />
               </div>
             </div>

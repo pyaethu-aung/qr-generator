@@ -16,10 +16,10 @@ export interface ButtonProps
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    'bg-action text-action-fg shadow-sm transition-all hover:bg-action/90 active:bg-action/80 focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2',
+    'bg-action text-action-fg shadow-sm hover:bg-action/90 active:bg-action/80 focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2',
   secondary:
-    'bg-surface-raised text-text-primary border border-border-strong shadow-sm transition-all hover:bg-surface-raised/80 active:bg-surface-inset',
-  ghost: 'bg-transparent text-text-primary transition-colors hover:bg-surface-inset active:bg-surface-inset/80',
+    'bg-surface-raised text-text-primary border border-border-strong shadow-sm hover:bg-surface-raised/80 active:bg-surface-inset',
+  ghost: 'bg-transparent text-text-primary hover:bg-surface-inset active:bg-surface-inset/80',
 }
 
 const sizeStyles: Record<ButtonSize, string> = {
@@ -40,7 +40,7 @@ export function Button({
 }: ButtonProps) {
   const composed = twMerge(
     clsx(
-      'inline-flex items-center justify-center rounded-lg font-medium transition-colors duration-150',
+      'inline-flex items-center justify-center rounded-lg font-medium transition-colors',
       'focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-focus-ring focus-visible:ring-offset-surface',
       variantStyles[variant],
       sizeStyles[size],

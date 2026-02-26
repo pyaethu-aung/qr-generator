@@ -44,7 +44,7 @@ export function FormatSelector({
               aria-describedby={`format-desc-${format}`}
               onClick={() => onChange(format)}
               disabled={disabled}
-              className={`w-full px-4 py-3 text-left rounded-lg border-2 transition-all ${isSelected
+              className={`w-full px-4 py-3 text-left rounded-lg border-2 ${isSelected
                 ? 'border-action bg-action/10'
                 : 'border-border-strong bg-surface-raised hover:border-action/60'
                 } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
