@@ -48,7 +48,7 @@ describe('QRControls configuration updates', () => {
   it('calls onValueChange when the input text changes', () => {
     const { onValueChange } = setup()
 
-    fireEvent.change(screen.getByLabelText(/content/i), {
+    fireEvent.change(screen.getByLabelText(/Link \/ Text/i), {
       target: { value: 'https://example.com' },
     })
 
@@ -87,7 +87,7 @@ describe('QRControls configuration updates', () => {
   it('triggers onGenerate when Enter key is pressed in the content input', () => {
     const { onGenerate } = setup({ canGenerate: true, isGenerating: false })
 
-    fireEvent.keyDown(screen.getByLabelText(/content/i), {
+    fireEvent.keyDown(screen.getByLabelText(/Link \/ Text/i), {
       key: 'Enter',
       code: 'Enter',
       charCode: 13,
@@ -99,7 +99,7 @@ describe('QRControls configuration updates', () => {
   it('does not trigger onGenerate when Enter is pressed but generation is disabled', () => {
     const { onGenerate } = setup({ canGenerate: false })
 
-    fireEvent.keyDown(screen.getByLabelText(/content/i), {
+    fireEvent.keyDown(screen.getByLabelText(/Link \/ Text/i), {
       key: 'Enter',
     })
 

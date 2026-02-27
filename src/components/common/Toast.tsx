@@ -14,8 +14,8 @@ export function Toast({ message, isVisible, className }: ToastProps) {
       className={twMerge(
         clsx(
           'absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50',
-          'min-w-max rounded-lg bg-slate-800 px-3 py-1.5',
-          'text-xs font-medium text-white shadow-lg shadow-black/10',
+          'min-w-max rounded-lg bg-surface-raised px-3 py-1.5 border border-border-strong',
+          'text-xs font-medium text-text-primary shadow-lg',
           'transition-all duration-200 ease-out origin-bottom',
           isVisible
             ? 'translate-y-0 opacity-100 scale-100'
@@ -28,7 +28,7 @@ export function Toast({ message, isVisible, className }: ToastProps) {
     >
       {message}
       {/* Arrow */}
-      <div className="absolute top-full left-1/2 -ml-1 h-2 w-2 -translate-y-1 bg-slate-800 rotate-45" />
+      <div className="absolute top-full left-1/2 -ml-1 h-2 w-2 -translate-y-1 bg-surface-raised border-r border-b border-border-strong rotate-45" />
     </div>
   )
 }

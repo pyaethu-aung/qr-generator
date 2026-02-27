@@ -19,7 +19,7 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 })
 
-describe('ThemeToggle (Sticky Dark)', () => {
+describe('ThemeToggle (Restored)', () => {
   beforeEach(() => {
     window.localStorage.clear()
     vi.clearAllMocks()
@@ -35,62 +35,44 @@ describe('ThemeToggle (Sticky Dark)', () => {
     )
   }
 
-  it('renders with disabled styles', () => {
+  it('renders without disabled styles and has no toast', () => {
     renderWithProviders(<ThemeToggle />)
     const button = screen.getByRole('button')
-    
-    // Check for disabled visual classes
-    expect(button).toHaveClass('opacity-50')
-    expect(button).toHaveClass('cursor-not-allowed')
-    expect(button).toHaveAttribute('aria-disabled', 'true')
+
+    expect(button).not.toHaveClass('opacity-50')
+    expect(button).not.toHaveClass('cursor-not-allowed')
+    expect(button).not.toHaveAttribute('aria-disabled')
+
+    // Toast should be gone
+    expect(screen.queryByText('Coming soon')).not.toBeInTheDocument()
   })
 
-  it('does NOT toggle theme on click (stays dark)', () => {
+  it('toggles theme on click', () => {
     renderWithProviders(<ThemeToggle />)
     const button = screen.getByRole('button')
-    
-    // Should be sun icon (indicating we are in dark mode looking to switch to light, 
-    // or arguably if stuck in dark, maybe it should show sun? 
-    // Current logic: isDark ? '☀️' : '🌙'. Since pinned to dark, it shows sun.)
-    expect(button.textContent).toContain('☀️')
-    
+
+    // Initial: light mode (system mocked as light, no storage)
+    expect(button.textContent).toContain('🌙')
+
     fireEvent.click(button)
-    
-    // Should still be sun (dark mode)
+
+    // After click: dark mode
     expect(button.textContent).toContain('☀️')
+    expect(window.document.documentElement.classList.contains('dark')).toBe(true)
+
+    fireEvent.click(button)
+
+    // After second click: light mode
+    expect(button.textContent).toContain('🌙')
+    expect(window.document.documentElement.classList.contains('dark')).toBe(false)
   })
 
-  it('shows "Coming soon" toast on hover', () => {
+  it('reflects theme from localStorage', () => {
+    window.localStorage.setItem('qr-generator:theme-preference', 'dark')
     renderWithProviders(<ThemeToggle />)
     const button = screen.getByRole('button')
-    
-    // Toast should not be visible initially (or not present in a way that suggests visibility)
-    // My Toast component uses opacity-0 when hidden but is in DOM.
-    // Let's query by text.
-    const toastMessage = screen.queryByText('Coming soon')
-    // It might be present in DOM but hidden. 
-    // Testing-library's queryByText finds hidden elements too usually unless constrained.
-    // But `Toast` has `opacity-0` when hidden.
-    
-    expect(toastMessage).toBeInTheDocument()
-    // It's technically in the document, checking parent class or visibility might be triggered by styles.
-    // Let's check styling if possible or aria-hidden.
-    // The Toast wrapper has aria-hidden={!isVisible}
-    
-    // Initial state: hidden
-    expect(toastMessage).toHaveAttribute('aria-hidden', 'true')
 
-    // Hover
-    fireEvent.mouseEnter(button)
-    
-    // Expect visible
-    expect(toastMessage).toHaveAttribute('aria-hidden', 'false')
-    expect(screen.getByText('Coming soon')).toBeVisible() // requires jest-dom style checks which might imply opacity > 0 logic if configured well, or just display != none.
-    expect(toastMessage).toHaveClass('opacity-100')
-
-    // Unhover
-    fireEvent.mouseLeave(button)
-    expect(toastMessage).toHaveAttribute('aria-hidden', 'true')
-    expect(toastMessage).toHaveClass('opacity-0')
+    expect(button.textContent).toContain('☀️')
+    expect(window.document.documentElement.classList.contains('dark')).toBe(true)
   })
 })

@@ -56,7 +56,7 @@ describe('QRGenerator Integration', () => {
     renderWithProviders(<QRGenerator />)
 
     // User types into input
-    const input = screen.getByLabelText(/content/i)
+    const input = screen.getByLabelText(/Link \/ Text/i)
     fireEvent.change(input, { target: { value: 'https://example.com' } })
     expect(input).toHaveValue('https://example.com')
 
@@ -79,7 +79,7 @@ describe('QRGenerator Integration', () => {
   it('renders accessible preview aria labels after generation', async () => {
     renderWithProviders(<QRGenerator />)
 
-    const input = screen.getByLabelText(/content/i)
+    const input = screen.getByLabelText(/Link \/ Text/i)
     fireEvent.change(input, { target: { value: 'keyboard.com' } })
     const generateBtn = screen.getByRole('button', { name: /generate qr code/i })
     fireEvent.click(generateBtn)
@@ -95,7 +95,7 @@ describe('QRGenerator Integration', () => {
     renderWithProviders(<QRGenerator />)
     const user = userEvent.setup()
 
-    const input = screen.getByLabelText(/content/i)
+    const input = screen.getByLabelText(/Link \/ Text/i)
     await user.click(input)
     await user.keyboard('https://kb.com')
 

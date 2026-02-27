@@ -42,7 +42,7 @@ RUN npm run build
 # ---------------------------------------------------------------------------
 # Stage 2: Runtime — serve static assets with hardened Nginx
 # ---------------------------------------------------------------------------
-FROM nginx:alpine AS runtime
+FROM nginx:alpine-slim AS runtime
 
 # Create non-root user for security hardening (FR-003)
 # UID 1000, no home directory, no login shell

@@ -11,7 +11,7 @@ export function LanguageToggle() {
   return (
     <button
       type="button"
-      className="rounded-lg border border-black/10 bg-white/5 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.1em] text-slate-900 transition hover:border-black/20 hover:bg-black/5 dark:border-white/30 dark:bg-white/5 dark:text-white dark:hover:border-white dark:hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
+      className="rounded-lg border border-border-subtle bg-surface-overlay px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.1em] text-text-primary hover:border-border-strong hover:bg-surface-inset focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
       aria-label={ariaLabel}
       onClick={() => setLocale(nextLocale)}
     >
