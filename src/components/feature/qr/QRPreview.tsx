@@ -1,75 +1,48 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-misused-promises */
-// TODO: Update i18n type definitions to include export.* keys
-
+import { useRef, useCallback, useId, forwardRef } from 'react'
 import { QRCodeCanvas } from 'qrcode.react'
-import { forwardRef, useCallback, useId, useRef } from 'react'
-import { useQRShare } from '../../../hooks/useQRShare'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
+import { useQRShare } from '../../../hooks/useQRShare'
 import { useExportState } from '../../../hooks/useExportState'
 import { exportPng } from '../../../utils/export/pngExporter'
 import { exportSvg } from '../../../utils/export/svgExporter'
 import { exportPdf } from '../../../utils/export/pdfExporter'
-import { generateFilename } from '../../../utils/export/exportCalculations'
 import { downloadBlob } from '../../../utils/download'
+import { generateFilename } from '../../../utils/export/exportCalculations'
 import { ExportModal } from '../../common/ExportModal'
 import type { QRConfig } from '../../../types/qr'
-import type { CSSProperties } from 'react'
+import type { TranslationKey } from '../../../types/i18n'
 
-interface QRPreviewProps extends QRConfig {
+export interface QRPreviewProps extends QRConfig {
   className?: string
-  size?: number
-  style?: CSSProperties
+  style?: React.CSSProperties
 }
 
 export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
   ({ value, ecLevel, fgColor, bgColor, size = 256, className, style }, forwardedRef) => {
+    const canvasRef = useRef<HTMLCanvasElement | null>(null)
     const { translate } = useLocaleContext()
-    const placeholderCopy = translate('preview.placeholder')
+    const { share, isSharing, shareRequest } = useQRShare()
+    const { state: exportState, openModal, closeModal, setFormat, setDimension, setDpi, startExport, exportSuccess, exportError } = useExportState()
+
     const ariaPlaceholder = translate('preview.ariaPlaceholder')
     const ariaValueTemplate = translate('preview.ariaValue')
     const shareButtonLabel = translate('preview.shareButtonLabel')
+    const placeholderCopy = translate('preview.placeholder')
 
-    const { share, shareRequest, isSharing } = useQRShare()
-    const canvasRef = useRef<HTMLCanvasElement | null>(null)
-
-    // Export state management
-    const {
-      state: exportState,
-      openModal,
-      closeModal,
-      setFormat,
-      setDimension,
-      setDpi,
-      startExport,
-      exportSuccess,
-      exportError,
-    } = useExportState()
-
-    // Export handler for PNG, SVG, and PDF (Phase 3-5)
     const handleExport = useCallback(async () => {
-      if (!value) {
-        // Type assertion for new translation keys not yet in type def
-        exportError(translate('export.errors.emptyContent' as any))
-        return
-      }
-
-      startExport()
+      if (!value) return
 
       try {
-        if (exportState.format === 'png') {
-          // PNG export requires canvas
-          if (!canvasRef.current) {
-            exportError(translate('export.errors.canvasNotFound' as any))
-            return
-          }
+        startExport()
 
+        if (exportState.format === 'png') {
+          if (!canvasRef.current) throw new Error('Canvas not ready')
           const blob = await exportPng(canvasRef.current, exportState.dimension)
           const filename = generateFilename('png', 'qrcode', exportState.dimension)
           downloadBlob(blob, filename)
           exportSuccess()
           setTimeout(() => closeModal(), 500)
         } else if (exportState.format === 'svg') {
-          // SVG export uses QR config (server-side generation)
           const blob = await exportSvg(value, {
             value,
             ecLevel,
@@ -82,7 +55,6 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
           exportSuccess()
           setTimeout(() => closeModal(), 500)
         } else if (exportState.format === 'pdf') {
-          // PDF export with DPI-aware sizing (Phase 5 - US3)
           const blob = await exportPdf(value, {
             value,
             ecLevel,
@@ -99,7 +71,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
         }
       } catch (error) {
         exportError(
-          error instanceof Error ? error.message : translate('export.errors.exportFailed' as any),
+          error instanceof Error ? error.message : translate('preview.shareStatusFailed'),
         )
       }
     }, [exportState.format, exportState.dimension, exportState.dpi, value, ecLevel, fgColor, bgColor, translate, startExport, exportSuccess, exportError, closeModal])
@@ -109,7 +81,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
         if (typeof forwardedRef === 'function') {
           forwardedRef(node)
         } else if (forwardedRef && typeof forwardedRef === 'object') {
-          ;(forwardedRef as { current: HTMLCanvasElement | null }).current = node
+          ; (forwardedRef as { current: HTMLCanvasElement | null }).current = node
         }
       },
       [forwardedRef],
@@ -160,15 +132,14 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
         type="button"
         data-testid="download-qr-button"
         disabled={isDownloadDisabled}
-        aria-label={translate('export.exportButton' as any)}
+        aria-label={translate('controls.downloadPng' as TranslationKey)}
         onClick={openModal}
-        className={`w-full rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
-          value
-            ? 'border border-slate-700 bg-transparent text-slate-900 focus-visible:ring-slate-700 dark:border-slate-400 dark:text-white dark:focus-visible:ring-slate-400'
-            : 'border border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed dark:border-white/5 dark:bg-slate-800 dark:text-slate-500'
-        } ${isDownloadDisabled ? 'cursor-not-allowed opacity-70' : 'hover:bg-slate-700 hover:text-white dark:hover:bg-slate-400 dark:hover:text-slate-900'}`}
+        className={`w-full rounded-full px-4 py-2 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${value
+          ? 'border border-border-strong bg-transparent text-text-primary focus-visible:ring-focus-ring hover:bg-action hover:text-action-fg'
+          : 'border border-border-subtle bg-surface-inset text-text-disabled cursor-not-allowed'
+          } ${isDownloadDisabled ? 'cursor-not-allowed opacity-70' : ''}`}
       >
-        {translate('export.exportButton' as any)}
+        {translate('controls.downloadPng' as TranslationKey)}
       </button>
     )
 
@@ -182,13 +153,11 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
         aria-disabled={isShareDisabled}
         aria-describedby={shareStatusMessage ? shareStatusId : undefined}
         onClick={handleShareClick}
-        className={`w-full rounded-full px-4 py-2 text-sm font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
-          value
-            ? 'border border-slate-900 bg-slate-900 text-white focus-visible:ring-slate-900 dark:border-sky-500 dark:bg-sky-600 dark:focus-visible:ring-sky-500'
-            : 'border border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed dark:border-white/5 dark:bg-slate-800 dark:text-slate-500'
-        } ${isShareDisabled ? 'cursor-not-allowed opacity-70' : 'hover:bg-slate-800 dark:hover:bg-sky-500'} ${
-          isSharing ? 'cursor-wait' : ''
-        }`}
+        className={`w-full rounded-full px-4 py-2 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${value
+          ? 'border border-action bg-action text-action-fg focus-visible:ring-focus-ring hover:bg-action/90'
+          : 'border border-border-subtle bg-surface-inset text-text-disabled cursor-not-allowed'
+          } ${isShareDisabled ? 'cursor-not-allowed opacity-70' : ''} ${isSharing ? 'cursor-wait' : ''
+          }`}
       >
         {shareButtonLabel}
       </button>
@@ -200,7 +169,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
         role="status"
         aria-live="polite"
         id={shareStatusId}
-        className="text-sm text-slate-500 dark:text-slate-400 transition-colors duration-300"
+        className="text-sm text-text-secondary"
       >
         {shareStatusMessage}
       </p>
@@ -220,11 +189,11 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
       <>
         <div
           style={style}
-          className={`flex flex-col items-center p-3 sm:p-4 bg-white rounded-lg shadow-sm border border-slate-200 w-full transition-all duration-300 dark:bg-slate-900 dark:border-white/10 ${className ?? ''}`}
+          className={`flex flex-col items-center p-3 sm:p-4 bg-surface-raised rounded-lg shadow-sm border border-border-strong w-full ${className ?? ''}`}
         >
           {!value ? (
             <div
-              className="flex items-center justify-center bg-slate-50 text-slate-500 rounded-lg border-2 border-dashed border-slate-200 transition-all duration-300 dark:bg-slate-800/50 dark:text-slate-500 dark:border-white/10"
+              className="flex items-center justify-center bg-surface-inset text-text-disabled rounded-lg border-2 border-dashed border-border-subtle"
               style={{ width: size, height: size }}
               role="img"
               aria-label={ariaPlaceholder}
@@ -250,7 +219,6 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
           {shareControls}
         </div>
 
-        {/* Export Modal */}
         <ExportModal
           isOpen={exportState.isOpen}
           format={exportState.format}
@@ -262,21 +230,21 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
           onFormatChange={setFormat}
           onDimensionChange={setDimension}
           onDpiChange={setDpi}
-          onExport={handleExport}
-          title={translate('export.modalTitle' as any)}
-          exportButtonLabel={translate('export.exportButton' as any)}
-          cancelButtonLabel={translate('export.cancelButton' as any)}
-          dimensionLabel={translate('export.dimensionLabel' as any)}
-          dpiLabel={translate('export.dpiLabel' as any)}
+          onExport={() => void handleExport()}
+          title={translate('controls.downloadsTitle' as TranslationKey)}
+          exportButtonLabel={translate('controls.generate' as TranslationKey)}
+          cancelButtonLabel={translate('locale.toggleLabel' as TranslationKey)}
+          dimensionLabel={translate('controls.correctionLabel' as TranslationKey)}
+          dpiLabel={translate('controls.correctionLabel' as TranslationKey)}
           formatLabels={{
-            png: translate('export.formatLabels.png' as any),
-            svg: translate('export.formatLabels.svg' as any),
-            pdf: translate('export.formatLabels.pdf' as any),
+            png: translate('controls.downloadPng' as TranslationKey),
+            svg: translate('controls.downloadSvg' as TranslationKey),
+            pdf: translate('controls.downloadPng' as TranslationKey),
           }}
           formatDescriptions={{
-            png: translate('export.formatDescriptions.png' as any),
-            svg: translate('export.formatDescriptions.svg' as any),
-            pdf: translate('export.formatDescriptions.pdf' as any),
+            png: translate('controls.downloadPng' as TranslationKey),
+            svg: translate('controls.downloadSvg' as TranslationKey),
+            pdf: translate('controls.downloadPng' as TranslationKey),
           }}
         />
       </>

@@ -1,13 +1,3 @@
-/**
- * ExportModal component for QR code export configuration.
- *
- * @why Following web-design-guidelines for accessibility:
- * - Focus trap inside modal
- * - Escape key to close
- * - ARIA attributes for screen readers
- * - Backdrop click to close
- */
-
 import { useEffect, useRef, useCallback, type KeyboardEvent } from 'react'
 import { createPortal } from 'react-dom'
 import type { ExportFormat, DimensionPreset, DpiPreset } from '../../types/export'
@@ -35,12 +25,6 @@ export interface ExportModalProps {
   formatDescriptions: Record<ExportFormat, string>
 }
 
-/**
- * Export modal with focus trap and keyboard navigation.
- *
- * @why Portal ensures modal renders above all other content.
- * Ref tracking enables focus management for accessibility.
- */
 export function ExportModal({
   isOpen,
   format,
@@ -64,11 +48,9 @@ export function ExportModal({
   const modalRef = useRef<HTMLDivElement>(null)
   const previousFocusRef = useRef<HTMLElement | null>(null)
 
-  // Save focus on mount, restore on unmount for accessibility
   useEffect(() => {
     if (isOpen) {
       previousFocusRef.current = document.activeElement as HTMLElement
-      // Focus first interactive element in modal
       const firstButton = modalRef.current?.querySelector('button')
       firstButton?.focus()
     } else if (previousFocusRef.current) {
@@ -76,7 +58,6 @@ export function ExportModal({
     }
   }, [isOpen])
 
-  // Trap focus inside modal
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
       if (event.key === 'Escape' && !isExporting) {
@@ -122,15 +103,14 @@ export function ExportModal({
     >
       <div
         ref={modalRef}
-        className="relative w-full max-w-md mx-4 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-white/10 p-6 transition-all duration-300"
+        className="relative w-full max-w-md mx-4 bg-surface-raised rounded-2xl shadow-2xl border border-border-strong p-6"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
       >
-        {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2
             id="export-modal-title"
-            className="text-xl font-semibold text-slate-900 dark:text-white"
+            className="text-xl font-semibold text-text-primary"
           >
             {title}
           </h2>
@@ -139,7 +119,7 @@ export function ExportModal({
             onClick={onClose}
             disabled={isExporting}
             aria-label="Close modal"
-            className="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 text-text-secondary hover:text-text-primary rounded-lg hover:bg-surface-inset disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
@@ -152,7 +132,6 @@ export function ExportModal({
           </button>
         </div>
 
-        {/* Screen reader-only status announcements (T034) */}
         <div
           role="status"
           aria-live="polite"
@@ -163,17 +142,15 @@ export function ExportModal({
           {!isExporting && error && `Export failed: ${error}`}
         </div>
 
-        {/* Error display */}
         {error && (
           <div
             role="alert"
-            className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50 rounded-lg text-sm text-red-700 dark:text-red-400"
+            className="mb-4 p-3 bg-error-surface border border-error-border rounded-lg text-sm text-error"
           >
             {error}
           </div>
         )}
 
-        {/* Format Selector */}
         <div className="mb-6">
           <FormatSelector
             selected={format}
@@ -184,7 +161,6 @@ export function ExportModal({
           />
         </div>
 
-        {/* Dimension Selector */}
         <div className="mb-6">
           <DimensionSelector
             dimension={dimension}
@@ -198,13 +174,12 @@ export function ExportModal({
           />
         </div>
 
-        {/* Actions */}
         <div className="flex gap-3">
           <button
             type="button"
             onClick={onClose}
             disabled={isExporting}
-            className="flex-1 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2.5 text-sm font-semibold text-text-primary bg-surface-inset rounded-lg hover:bg-surface-inset/80 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {cancelButtonLabel}
           </button>
@@ -212,7 +187,7 @@ export function ExportModal({
             type="button"
             onClick={onExport}
             disabled={isExporting}
-            className="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-slate-900 dark:bg-sky-600 rounded-lg hover:bg-slate-800 dark:hover:bg-sky-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="flex-1 px-4 py-2.5 text-sm font-semibold text-action-fg bg-action rounded-lg hover:bg-action/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isExporting ? (
               <>

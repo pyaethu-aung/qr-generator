@@ -17,13 +17,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
     const inputClass = twMerge(
       clsx(
-        'block rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm placeholder:text-slate-500 transition-all duration-300',
-        'dark:border-white/10 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500',
-        'focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500',
-        'dark:focus:ring-sky-500 dark:focus:border-sky-500',
+        'block rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-text-primary shadow-sm placeholder:text-text-secondary',
+        'focus:outline-none focus:ring-2 focus:ring-focus-ring focus:border-focus-ring',
         fullWidth && 'w-full',
-        disabled && 'bg-slate-100 text-slate-500 cursor-not-allowed dark:bg-slate-800 dark:text-slate-400',
-        error && 'border-red-300 focus:ring-red-500 focus:border-red-500 dark:border-red-500',
+        disabled && 'bg-action-disabled text-text-disabled cursor-not-allowed',
+        error && 'border-error-border focus:ring-error focus:border-error',
         className,
       ),
     )
@@ -31,15 +29,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className={twMerge(clsx('flex flex-col gap-1', fullWidth && 'w-full'))}>
         {label && (
-          <label htmlFor={inputId} className="text-sm font-medium text-slate-700 dark:text-slate-300 transition-colors duration-300">
+          <label htmlFor={inputId} className="text-sm font-medium text-text-primary">
             {label}
           </label>
         )}
         <input id={inputId} ref={ref} className={inputClass} disabled={disabled} {...props} />
         {error ? (
-          <span className="text-sm text-red-600 dark:text-red-400">{error}</span>
+          <span className="text-sm text-error">{error}</span>
         ) : (
-          helperText && <span className="text-sm text-slate-500 dark:text-slate-400">{helperText}</span>
+          helperText && <span className="text-sm text-text-secondary">{helperText}</span>
         )}
       </div>
     )
