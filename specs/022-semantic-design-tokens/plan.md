@@ -21,6 +21,9 @@ Additionally, the temporary "force dark" workaround in `useTheme.ts` is removed 
 the full dynamic initialization logic (localStorage → prefers-color-scheme → light
 default) is restored.
 
+Finally, to structurally remedy the Trivy vulnerability (CVE-2026-25646), the Dockerfile
+`runtime` base image will be updated from `nginx:alpine` to `nginx:alpine-slim`, which strips the vulnerable `libpng` dependency natively, and the temporary suppression config in `.trivyignore` will be removed.
+
 ---
 
 ## Technical Context

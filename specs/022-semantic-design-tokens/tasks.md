@@ -230,6 +230,19 @@ Run `npm run test` after each task to catch regressions immediately.*
   divider — `border-slate-100 dark:border-white/5` → `border-border-subtle`;
   section label — `text-slate-700 dark:text-slate-300` → `text-text-secondary`
 
+- [X] T019 [P] [US1] Migrate `src/components/Navigation/Navbar.tsx`:
+  navigate classes ensuring `dark:border-white/10` maps to `border-border-strong`,
+  `bg-white/80 dark:bg-slate-950/80` mapping to `bg-surface-overlay`,
+  and `text-slate-900 dark:text-white` maps to `text-text-primary`
+
+- [X] T020 [P] [US1] Migrate `src/components/Layout/Layout.tsx`:
+  evaluate decorative `dark:` background shapes and log any non-functional `dark:` variants as omissions or document explicitly as FR-005 exceptions, while
+  ensuring any structural colors use proper `surface` or `surface-raised` tokens.
+
+- [X] T021 [US1] Migrate `src/components/feature/qr/QRControls.tsx`:
+  apply token structures from previous atoms (e.g., standardizing any wrapper borders to `border-border-subtle` or `border-border-strong` as appropriate,
+  while porting all text elements to `text-text-primary` and `text-text-secondary` respectively).
+
 - [X] T022 [US1] Migrate `src/components/feature/qr/QRGenerator.tsx`:
   badge text — `text-indigo-700 dark:text-sky-300` → `text-action`;
   h2 — `text-slate-900 dark:text-white` → `text-text-primary`;
@@ -349,6 +362,8 @@ shows ≥85%. `npm run lint` exits 0. `npm run build` exits 0.
 - [X] T032 [P] Remove all `// TODO: Revert…` comments and any remaining commented-out
   theme code across `src/hooks/useTheme.ts`; ensure no dead code or
   unreferenced imports remain (Constitution §I)
+
+- [X] T033 [P] Update Dockerfile to use `nginx:alpine-slim` base image to fix Trivy CVE-2026-25646 and remove the workaround from `.trivyignore`.
 
 > 📦 **Commit checkpoint** (Constitution §Governance — MANDATORY): commit Phase 6
 > to close the feature. Suggested subject: `chore(semantic-design-token): Polish and WCAG audit`

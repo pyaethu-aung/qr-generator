@@ -15,6 +15,7 @@
 - Q: What fallback strategy should be used when a future theme omits a token? → A: No explicit fallback — rely on the browser's default (typically `transparent` / no colour) as the implicit failure signal; document this expectation.
 - Q: What is the animation/transition duration for the theme switch colour change? → A: 200 ms ease
 - Q: How should interactive-state tokens (hover, focus, disabled) be expressed? → A: Discrete named tokens for focus (`--color-focus-ring`) and disabled (`--color-action-disabled`) only; hover and active states use Tailwind opacity modifiers on the base action token (e.g., `hover:bg-action/90`)
+- Q: How should we address the Trivy vulnerability (CVE-2026-25646) detected during implementation? → A: Use Option 1: switch the Dockerfile base image to `nginx:alpine-slim`, which removes the vulnerable, unused `libpng` dependency, and remove the explicit ignore from `.trivyignore`.
 
 ## User Scenarios & Testing *(mandatory)*
 

@@ -15,5 +15,3 @@
 # Trivy CI uses: --ignore-unfixed --severity CRITICAL,HIGH --trivyignores .trivyignore
 # =============================================================================
 
-# No known unfixable CVEs at initial setup.
-# Add entries here as discovered during CI scanning.
