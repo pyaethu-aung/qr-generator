@@ -7,7 +7,6 @@
 # Build:  docker build -t qr-generator:local .
 # Run:    docker run --rm -p 8080:80 --read-only --cap-drop ALL \
 #           --tmpfs /var/cache/nginx:mode=1777 \
-#           --tmpfs /var/run:mode=1777 \
 #           --tmpfs /tmp:mode=1777 \
 #           qr-generator:local
 # =============================================================================
@@ -60,8 +59,8 @@ COPY .docker/nginx.conf /etc/nginx/nginx.conf
 
 # Prepare writable directories for Nginx on read-only filesystem (FR-004)
 # These are the only directories Nginx needs to write to at runtime
-RUN mkdir -p /var/cache/nginx /var/run /tmp && \
-    chown -R app:app /var/cache/nginx /var/run /tmp && \
+RUN mkdir -p /var/cache/nginx /tmp && \
+    chown -R app:app /var/cache/nginx /tmp && \
     chown -R app:app /usr/share/nginx/html && \
     chown -R app:app /var/log/nginx
 
