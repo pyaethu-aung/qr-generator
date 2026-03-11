@@ -43,6 +43,10 @@ RUN npm run build
 # ---------------------------------------------------------------------------
 FROM nginx:alpine-slim AS runtime
 
+# Patch CVE-2026-22184: upgrade zlib to ≥1.3.2-r0 (CRITICAL, fixed upstream)
+# Targeted upgrade avoids unnecessary package bloat while eliminating the CVE
+RUN apk upgrade --no-cache zlib
+
 # Create non-root user for security hardening (FR-003)
 # UID 1000, no home directory, no login shell
 RUN addgroup -g 1000 -S app && \
