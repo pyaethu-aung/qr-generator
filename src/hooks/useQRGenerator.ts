@@ -133,7 +133,6 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
 
     try {
       // Generate SVG string using 'qrcode' library
-      // eslint-disable-next-line @typescript-eslint/no-base-to-string
       const svgString = await QRCode.toString(downloadConfig.value, {
         type: 'svg',
         errorCorrectionLevel: downloadConfig.ecLevel,

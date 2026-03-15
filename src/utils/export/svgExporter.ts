@@ -31,7 +31,6 @@ export async function exportSvg(value: string, config: SvgExportConfig): Promise
 
   try {
     // Generate SVG string using qrcode package
-    // eslint-disable-next-line @typescript-eslint/no-base-to-string
     const svgString = await QRCode.toString(value, {
       type: 'svg',
       errorCorrectionLevel: config.ecLevel,
