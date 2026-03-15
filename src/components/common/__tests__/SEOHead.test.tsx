@@ -18,11 +18,11 @@ describe('SEOHead Component', () => {
         );
 
         await waitFor(() => {
-            const script = document.head.querySelector('script[type="application/ld+json"]');
+            const script = document.querySelector('script[type="application/ld+json"]');
             expect(script).toBeTruthy();
         });
 
-        const script = document.head.querySelector('script[type="application/ld+json"]');
+        const script = document.querySelector('script[type="application/ld+json"]');
         const json = JSON.parse(script?.innerHTML || '{}') as SoftwareApplicationJSONLD;
 
         expect(json['@context']).toBe('https://schema.org');
@@ -40,11 +40,11 @@ describe('SEOHead Component', () => {
         );
 
         await waitFor(() => {
-            const script = document.head.querySelector('script[type="application/ld+json"]');
+            const script = document.querySelector('script[type="application/ld+json"]');
             expect(script).toBeTruthy();
         });
 
-        const script = document.head.querySelector('script[type="application/ld+json"]');
+        const script = document.querySelector('script[type="application/ld+json"]');
         const json = JSON.parse(script?.innerHTML || '{}') as SoftwareApplicationJSONLD;
 
         expect(json.offers).toEqual({
@@ -62,11 +62,11 @@ describe('SEOHead Component', () => {
         );
 
         await waitFor(() => {
-            const script = document.head.querySelector('script[type="application/ld+json"]');
+            const script = document.querySelector('script[type="application/ld+json"]');
             expect(script).toBeTruthy();
         });
 
-        const script = document.head.querySelector('script[type="application/ld+json"]');
+        const script = document.querySelector('script[type="application/ld+json"]');
         const json = JSON.parse(script?.innerHTML || '{}') as SoftwareApplicationJSONLD;
 
         expect(json.featureList).toContain('Client-side generation');
