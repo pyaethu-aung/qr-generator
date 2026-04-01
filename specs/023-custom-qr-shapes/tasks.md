@@ -85,8 +85,8 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T017 Verify correct DOM layering for image download operations AND ensure SVG paths are properly serialized for PDF export via `jspdf` in `src/hooks/useQRShare.ts`.
-- [ ] T018 Run validation checks: `npm run test && npm run lint && npm run build` securely in project root `package.json`.
+- [x] T017 Verify correct DOM layering for image download operations AND ensure SVG paths are properly serialized for PDF export via `jspdf` in `src/hooks/useQRShare.ts`.
+- [x] T018 Run validation checks: `npm run test && npm run lint && npm run build` securely in project root `package.json`.
 
 ---
 
