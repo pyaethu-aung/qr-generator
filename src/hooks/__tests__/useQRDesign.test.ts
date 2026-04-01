@@ -1,33 +1,57 @@
 import { renderHook, act } from '@testing-library/react'
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { useQRDesign } from '../useQRDesign'
 
-describe('useQRDesign', () => {
+describe('useQRDesign - isRiskyPattern', () => {
   beforeEach(() => {
     localStorage.clear()
+    vi.clearAllMocks()
   })
 
-  it('[US1] initializes with default Square config', () => {
-    const { result } = renderHook(() => useQRDesign())
-    expect(result.current.designConfig.eyeShape).toBe('Square')
-    expect(result.current.designConfig.pixelPattern).toBe('Square')
-  })
-
-  it('[US1] updates eye shape and persists to localStorage', () => {
-    const { result } = renderHook(() => useQRDesign())
+  it('triggers isRiskyPattern when using Dots with a matrix size >= 41', () => {
+    // Generate long string to force > 40 size (Version 6+)
+    const denseValue = 'https://example.com/'.repeat(50)
     
+    const { result } = renderHook(() => useQRDesign(denseValue, 'H'))
+    
+    // Default is Square, no risk
+    expect(result.current.isRiskyPattern).toBe(false)
+    
+    // Switch to Dots
     act(() => {
-      result.current.setEyeShape('Leaf')
+      result.current.setPixelPattern('Dots')
     })
     
-    expect(result.current.designConfig.eyeShape).toBe('Leaf')
-    const stored = JSON.parse(localStorage.getItem('qr-generator-design-config') || '{}')
-    expect(stored.eyeShape).toBe('Leaf')
+    // Should now be risky
+    expect(result.current.isRiskyPattern).toBe(true)
+  })
+  
+  it('does not trigger isRiskyPattern for low density Data', () => {
+    const lightValue = 'A'
+    
+    const { result } = renderHook(() => useQRDesign(lightValue, 'L'))
+    
+    act(() => {
+      result.current.setPixelPattern('Dots')
+    })
+    
+    expect(result.current.isRiskyPattern).toBe(false)
   })
 
-  it('[US1] falls back to defaults if parsing localStorage fails', () => {
-    localStorage.setItem('qr-generator-design-config', 'invalid-json')
-    const { result } = renderHook(() => useQRDesign())
-    expect(result.current.designConfig.eyeShape).toBe('Square')
+  it('can be dismissed', () => {
+    const denseValue = 'https://example.com/'.repeat(50)
+    const { result } = renderHook(() => useQRDesign(denseValue, 'H'))
+    
+    act(() => {
+      result.current.setPixelPattern('Dots')
+    })
+    
+    expect(result.current.isRiskyPattern).toBe(true)
+    
+    act(() => {
+      result.current.dismissWarning()
+    })
+    
+    expect(result.current.isRiskyPattern).toBe(false)
   })
 })

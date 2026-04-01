@@ -25,34 +25,41 @@ export interface SvgExportConfig extends QRConfig {
  * @why SVG format provides infinite scalability for vector editors and print.
  * Uses `qrcode` package's toString with 'svg' type for standards-compliant output.
  */
-export async function exportSvg(value: string, config: SvgExportConfig): Promise<Blob> {
+export function exportSvg(
+  value: string,
+  config: SvgExportConfig
+): Promise<Blob> {
   if (!value) {
-    throw new Error('Cannot export empty QR code')
+    return Promise.reject(new Error('Cannot export empty QR code'))
   }
 
-  try {
-    const { dataPath, eyesPath, size } = generateQRPaths(
-      value,
-      config.ecLevel,
-      config.designConfig.eyeShape,
-      config.designConfig.pixelPattern
-    );
-    const viewBoxSize = size * 10;
-    const marginSize = (config.margin ?? 0) * 10;
-    const totalSize = viewBoxSize + 2 * marginSize;
+  const {
+    margin = 4,
+    ecLevel = 'M',
+    fgColor = '#000000',
+    bgColor = '#FFFFFF',
+    designConfig = { eyeShape: 'Square', pixelPattern: 'Square' },
+  } = config
 
-    const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${totalSize} ${totalSize}" shape-rendering="crispEdges">
-      <rect width="100%" height="100%" fill="${config.bgColor}" />
-      <g transform="translate(${marginSize}, ${marginSize})">
-        <path d="${dataPath}" fill="${config.fgColor}" />
-        <path d="${eyesPath}" fill="${config.fgColor}" />
-      </g>
-    </svg>`
+  // SVG parameters
+  const cellSize = 10
+  const { dataPath, eyesPath, size } = generateQRPaths(
+    value,
+    ecLevel,
+    designConfig.eyeShape,
+    designConfig.pixelPattern,
+    cellSize
+  )
 
-    const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })
-    return blob
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    throw new Error(`Failed to export SVG: ${errorMessage}`)
-  }
+  const viewboxSize = size * cellSize + margin * 2 * cellSize
+
+  // Embed the custom geometric path
+  const svgString = `<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewboxSize} ${viewboxSize}" shape-rendering="crispEdges">
+<rect width="100%" height="100%" fill="${bgColor}"/>
+<path fill="${fgColor}" transform="translate(${margin * cellSize}, ${margin * cellSize})" d="${dataPath} ${eyesPath}" />
+</svg>`
+
+  const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })
+  return Promise.resolve(blob)
 }

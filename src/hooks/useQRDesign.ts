@@ -8,7 +8,9 @@ const DEFAULT_DESIGN_CONFIG: QRDesignConfig = {
   pixelPattern: 'Square',
 }
 
-export function useQRDesign() {
+import { getMatrixSize } from '../utils/qrShapeRenderer'
+
+export function useQRDesign(value: string = '', ecLevel: 'L' | 'M' | 'Q' | 'H' = 'M') {
   const [designConfig, setDesignConfig] = useState<QRDesignConfig>(() => {
     try {
       const stored = localStorage.getItem(DESIGN_STORAGE_KEY)
@@ -38,14 +40,30 @@ export function useQRDesign() {
     setDesignConfig(prev => ({ ...prev, pixelPattern }))
   }
 
-  // Risky pattern flagging will be fleshed out in Phase 4 (US2)
-  const isRiskyPattern = false 
+  // Risky pattern flagging for high density dots
+  const matrixSize = getMatrixSize(value, ecLevel)
+  const [isWarningDismissed, setIsWarningDismissed] = useState(false)
+  
+  // High density is defined as version 6+ (>40 modules) according to spec
+  // We use 37+ to catch the boundary or >40 as 41x41 is V6.
+  const isRiskyPattern = !isWarningDismissed && designConfig.pixelPattern === 'Dots' && matrixSize >= 41
+
+  const dismissWarning = () => setIsWarningDismissed(true)
+
+  // Reset dismissal if user changes pattern back and forth
+  // Reset dismissal if user changes pattern back and forth
+  const [prevPattern, setPrevPattern] = useState(designConfig.pixelPattern)
+  if (prevPattern !== designConfig.pixelPattern) {
+    setIsWarningDismissed(false)
+    setPrevPattern(designConfig.pixelPattern)
+  }
 
   return {
     designConfig,
     setDesignConfig,
     setEyeShape,
     setPixelPattern,
-    isRiskyPattern
+    isRiskyPattern,
+    dismissWarning
   }
 }

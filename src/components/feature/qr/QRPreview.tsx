@@ -78,7 +78,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
           error instanceof Error ? error.message : translate('preview.shareStatusFailed'),
         )
       }
-    }, [exportState.format, exportState.dimension, exportState.dpi, value, ecLevel, fgColor, bgColor, translate, startExport, exportSuccess, exportError, closeModal])
+    }, [exportState.format, exportState.dimension, exportState.dpi, value, ecLevel, fgColor, bgColor, designConfig, translate, startExport, exportSuccess, exportError, closeModal])
 
     const assignForwardedRef = useCallback(
       (node: HTMLCanvasElement | null) => {
