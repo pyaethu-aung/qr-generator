@@ -3,7 +3,7 @@
 **Input**: Design documents from `/specs/023-custom-qr-shapes/`
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md
 
-**Tests**: Tests are explicitly requested by project Constitution (Unit testing in src/utils).
+**Tests**: Tests are explicitly requested by project Constitution (Unit testing in src/utils, components, and hooks).
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 
@@ -18,7 +18,7 @@
 **Purpose**: Project initialization and basic structure updates
 
 - [ ] T001 Update `src/types/qr.ts` with explicit enums for `QREyeShape` and `QRPixelPattern` types.
-- [ ] T002 Initialize default custom shape properties inside configuration defaults in `src/hooks/useQRDesign.ts`.
+- [ ] T002 Initialize default custom shape properties and ensure `localStorage` persistence inside `src/hooks/useQRDesign.ts`.
 
 ---
 
@@ -46,12 +46,14 @@
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
 - [ ] T005 [P] [US1] Add unit test assertions for expected geometric corner offsets in `src/utils/qrShapeRenderer.test.ts`
+- [ ] T006 [P] [US1] Add unit tests for `useQRDesign` hook state updates regarding eye shapes in `src/hooks/useQRDesign.test.ts`
+- [ ] T007 [P] [US1] Add component tests for eye shape selection UI in `src/components/QRDesignOptions.test.tsx`
 
 ### Implementation for User Story 1
 
-- [ ] T006 [US1] Implement precise mathematical SVG coordinates for `Rounded`, `Diamond`, `Leaf`, and `Hexagon` inside `src/utils/qrShapeRenderer.ts`
-- [ ] T007 [US1] Refactor `src/components/QRCodePreview.tsx` to handle custom generated SVG paths when non-square eye shapes are active.
-- [ ] T008 [US1] Construct the shape selection dropdowns in `src/components/QRDesignOptions.tsx` using `role="group"` and proper ARIA labels.
+- [ ] T008 [US1] Implement precise mathematical SVG coordinates for `Rounded`, `Diamond`, `Leaf`, and `Hexagon` inside `src/utils/qrShapeRenderer.ts`
+- [ ] T009 [US1] Refactor `src/components/QRCodePreview.tsx` to handle custom generated SVG paths when non-square eye shapes are active.
+- [ ] T010 [US1] Construct the shape selection dropdowns in `src/components/QRDesignOptions.tsx` using `role="group"` and proper ARIA labels.
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -65,14 +67,15 @@
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T009 [P] [US2] Enhance testing for accurate dot radius coordinate mapping in `src/utils/qrShapeRenderer.test.ts`
+- [ ] T011 [P] [US2] Enhance testing for accurate dot radius coordinate mapping in `src/utils/qrShapeRenderer.test.ts`
+- [ ] T012 [P] [US2] Add unit tests verifying `isRiskyPattern` logic triggers correctly in `src/hooks/useQRDesign.test.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T010 [US2] Apply core data pixel styling logic (Circles instead of pure paths) in `src/utils/qrShapeRenderer.ts`
-- [ ] T011 [US2] Introduce "Pixel Pattern" mode toggle within `src/components/QRDesignOptions.tsx`
-- [ ] T012 [US2] Implement hook flagging logic (`isRiskyPattern`) for high density dots inside `src/hooks/useQRDesign.ts`
-- [ ] T013 [US2] Integrate the dismissible UI warning element directly inside `src/components/QRCodePreview.tsx`
+- [ ] T013 [US2] Apply core data pixel styling logic (Circles instead of pure paths) in `src/utils/qrShapeRenderer.ts`
+- [ ] T014 [US2] Introduce "Pixel Pattern" mode toggle within `src/components/QRDesignOptions.tsx`
+- [ ] T015 [US2] Implement hook flagging logic (`isRiskyPattern`) for high density dots inside `src/hooks/useQRDesign.ts`
+- [ ] T016 [US2] Integrate the dismissible UI warning element directly inside `src/components/QRCodePreview.tsx`
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -82,8 +85,8 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T014 Verify correct DOM layering for image download operations in `src/hooks/useQRShare.ts`
-- [ ] T015 Run validation checks: `npm run test && npm run lint && npm run build` securely in project root `package.json`
+- [ ] T017 Verify correct DOM layering for image download operations AND ensure SVG paths are properly serialized for PDF export via `jspdf` in `src/hooks/useQRShare.ts`.
+- [ ] T018 Run validation checks: `npm run test && npm run lint && npm run build` securely in project root `package.json`.
 
 ---
 
@@ -113,19 +116,17 @@
 
 - All Setup tasks marked [P] can run in parallel
 - All Foundational tasks marked [P] can run in parallel (within Phase 2)
-- Once Foundational phase completes, all user stories can start in parallel (if team capacity allows)
-- All tests for a user story marked [P] can run in parallel
-- Models within a story marked [P] can run in parallel
-- Different user stories can be worked on in parallel by different team members
+- All tests for a user story marked [P] can run in parallel (T005, T006, T007)
 
 ---
 
 ## Parallel Example: User Story 1
 
 ```bash
-# Launch tests and UI components for User Story 1 together:
+# Launch tests for User Story 1 together:
 Task: "Add unit test assertions for expected geometric corner offsets in src/utils/qrShapeRenderer.test.ts"
-Task: "Construct the shape selection dropdowns in src/components/QRDesignOptions.tsx"
+Task: "Add unit tests for useQRDesign hook state updates... in src/hooks/useQRDesign.test.ts"
+Task: "Add component tests for eye shape selection UI in src/components/QRDesignOptions.test.tsx"
 ```
 
 ---
