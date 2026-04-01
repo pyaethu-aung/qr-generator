@@ -5,6 +5,12 @@
 **Status**: Draft  
 **Input**: User description: "I want to add options to change the \"eye\" shape (square, rounded, or custom shapes) and the \"pixel\" pattern."
 
+## Clarifications
+
+### Session 2026-04-01
+- Q: Scope of "custom shapes" for eyes? → A: Additional predefined geometric shapes (e.g., diamond, leaf, hexagon).
+- Q: Handling compromised scannability? → A: Display a dismissible warning label on the UI when dense/risky patterns are used.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Change Eye Shapes (Priority: P1)
@@ -37,14 +43,13 @@ As a user, I want to change the pattern of the inner pixels (the body of the QR 
 
 ### Edge Cases
 
-- What happens if the selected combination of eye shape and pixel pattern compromises scannability?
-- How does the system handle high-density QR codes (long URLs) where dots might become too small to read cleanly?
+- **Compromised Scannability**: If a combination of custom shapes and high-density data compromises readability, the UI MUST display a dismissible warning message informing the user of the scanning risk. Export is not prevented.
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
-- **FR-001**: System MUST allow users to select an "eye" shape style from a predefined list (including Square and Rounded).
+- **FR-001**: System MUST allow users to select an "eye" shape style from a predefined list of geometric shapes (including Square, Rounded, diamond, leaf, hexagon, etc.). Custom image uploads are not supported.
 - **FR-002**: System MUST allow users to select a "pixel" pattern style for the primary QR code body (including standard squares and dots).
 - **FR-003**: System MUST update the real-time preview of the QR code instantly when shape or pattern options are modified.
 - **FR-004**: System MUST ensure that chosen styling options are preserved when downloading the QR code as a PDF or image format.
@@ -59,7 +64,7 @@ As a user, I want to change the pattern of the inner pixels (the body of the QR 
 ### Measurable Outcomes
 
 - **SC-001**: Users can successfully generate and download a QR code with customized eyes and pixels in under 30 seconds.
-- **SC-002**: 100% of generated QR codes with non-standard eye and pixel shapes retain their scannability and effectively resolve via standard mobile camera readers.
+- **SC-002**: 100% of generated QR codes with non-standard valid (non-flagged) eye and pixel shape combinations retain their scannability and effectively resolve via standard mobile camera readers.
 - **SC-003**: The user interface for selecting shapes introduces less than 50ms of additional latency to the real-time preview rendering.
 
 ## Assumptions
