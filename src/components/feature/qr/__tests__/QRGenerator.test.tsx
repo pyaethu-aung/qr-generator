@@ -1,41 +1,9 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import type { ReactElement } from 'react'
 import { LocaleProvider } from '../../../../hooks/LocaleProvider'
 import { QRGenerator } from '../QRGenerator'
-
-// Mock qrcode.react simply to avoid canvas/DOM issues and verify props
-vi.mock('qrcode.react', () => {
-  const QRCodeMock = ({
-    value,
-    fgColor,
-    bgColor,
-    size,
-  }: {
-    value: string
-    fgColor?: string
-    bgColor?: string
-    size?: number
-  }) => (
-    <div
-      data-testid="qr-code-canvas"
-      data-value={value}
-      data-fg={fgColor ?? ''}
-      data-bg={bgColor ?? ''}
-      data-size={size?.toString() ?? ''}
-      role="img"
-      aria-label={`QR Code for value: ${value}`}
-    >
-      QR Code: {value}
-    </div>
-  )
-
-  return {
-    QRCodeSVG: QRCodeMock,
-    QRCodeCanvas: QRCodeMock,
-  }
-})
 
 describe('QRGenerator Integration', () => {
   const renderWithProviders = (ui: ReactElement) => render(<LocaleProvider>{ui}</LocaleProvider>)

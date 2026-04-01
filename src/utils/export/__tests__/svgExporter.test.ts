@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { exportSvg } from '../svgExporter'
+import type { SvgExportConfig } from '../svgExporter'
 
 // Helper to read blob text in test environment
 async function blobToText(blob: Blob): Promise<string> {
@@ -12,12 +13,16 @@ async function blobToText(blob: Blob): Promise<string> {
 }
 
 describe('svgExporter', () => {
-  const mockConfig = {
+  const mockConfig: SvgExportConfig = {
     value: 'https://example.com',
     ecLevel: 'M' as const,
     fgColor: '#000000',
     bgColor: '#FFFFFF',
     margin: 0,
+    designConfig: {
+      eyeShape: 'Square',
+      pixelPattern: 'Square'
+    }
   }
 
   describe('exportSvg', () => {

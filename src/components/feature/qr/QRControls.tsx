@@ -28,6 +28,14 @@ export interface QRControlsProps {
   downloadPngLabel?: string
   downloadSvgLabel?: string
   correctionOptions?: { value: QRErrorCorrectionLevel; label: string }[]
+  eyeShape: import('../../../types/qr').QREyeShape
+  onEyeShapeChange: (shape: import('../../../types/qr').QREyeShape) => void
+  pixelPattern: import('../../../types/qr').QRPixelPattern
+  onPixelPatternChange: (pattern: import('../../../types/qr').QRPixelPattern) => void
+  eyeShapeLabel?: string
+  pixelPatternLabel?: string
+  eyeShapeOptions?: { value: import('../../../types/qr').QREyeShape; label: string }[]
+  pixelPatternOptions?: { value: import('../../../types/qr').QRPixelPattern; label: string }[]
 }
 
 export function QRControls({
@@ -60,6 +68,23 @@ export function QRControls({
     { value: 'Q', label: 'Quartile (25%)' },
     { value: 'H', label: 'High (30%)' },
   ],
+  eyeShape,
+  onEyeShapeChange,
+  pixelPattern,
+  onPixelPatternChange,
+  eyeShapeLabel = 'Eye Shape',
+  pixelPatternLabel = 'Pixel Pattern',
+  eyeShapeOptions = [
+    { value: 'Square', label: 'Square' },
+    { value: 'Rounded', label: 'Rounded' },
+    { value: 'Diamond', label: 'Diamond' },
+    { value: 'Leaf', label: 'Leaf' },
+    { value: 'Hexagon', label: 'Hexagon' },
+  ],
+  pixelPatternOptions = [
+    { value: 'Square', label: 'Square' },
+    { value: 'Dots', label: 'Dots' },
+  ],
 }: QRControlsProps) {
   return (
     <div className="flex flex-col gap-6 w-full rounded-2xl border border-border-subtle bg-surface-raised/40 p-4 sm:p-6">
@@ -86,6 +111,7 @@ export function QRControls({
               value={ecLevel}
               onChange={(e) => onEcLevelChange(e.target.value as QRErrorCorrectionLevel)}
               disabled={isGenerating}
+              aria-label={correctionLabel}
             >
               {correctionOptions.map(({ value, label }) => (
                 <option key={value} value={value}>
@@ -93,6 +119,44 @@ export function QRControls({
                 </option>
               ))}
             </select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-text-primary">{eyeShapeLabel}</label>
+              <select
+                className="block w-full rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-text-primary shadow-sm focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring disabled:bg-action-disabled disabled:text-text-disabled"
+                value={eyeShape}
+                onChange={(e) => onEyeShapeChange(e.target.value as import('../../../types/qr').QREyeShape)}
+                disabled={isGenerating}
+                role="combobox"
+                aria-label={eyeShapeLabel}
+              >
+                {eyeShapeOptions.map(({ value, label }) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-text-primary">{pixelPatternLabel}</label>
+              <select
+                className="block w-full rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-text-primary shadow-sm focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring disabled:bg-action-disabled disabled:text-text-disabled"
+                value={pixelPattern}
+                onChange={(e) => onPixelPatternChange(e.target.value as import('../../../types/qr').QRPixelPattern)}
+                disabled={isGenerating}
+                role="combobox"
+                aria-label={pixelPatternLabel}
+              >
+                {pixelPatternOptions.map(({ value, label }) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-4">
