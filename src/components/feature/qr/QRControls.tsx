@@ -36,6 +36,8 @@ export interface QRControlsProps {
   pixelPatternLabel?: string
   eyeShapeOptions?: { value: import('../../../types/qr').QREyeShape; label: string }[]
   pixelPatternOptions?: { value: import('../../../types/qr').QRPixelPattern; label: string }[]
+  isRiskyPattern?: boolean
+  onDismissWarning?: () => void
 }
 
 export function QRControls({
@@ -85,6 +87,8 @@ export function QRControls({
     { value: 'Square', label: 'Square' },
     { value: 'Dots', label: 'Dots' },
   ],
+  isRiskyPattern,
+  onDismissWarning,
 }: QRControlsProps) {
   return (
     <div className="flex flex-col gap-6 w-full rounded-2xl border border-border-subtle bg-surface-raised/40 p-4 sm:p-6">
@@ -158,6 +162,31 @@ export function QRControls({
               </select>
             </div>
           </div>
+
+          {isRiskyPattern && (
+            <div className="flex items-start justify-between rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 shadow-sm dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-200" role="alert">
+              <div className="flex items-start gap-2">
+                <svg className="h-5 w-5 shrink-0 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                <div className="flex flex-col">
+                  <strong className="font-semibold block">Readability Risk</strong>
+                  <span className="opacity-90">High density shapes may affect camera readability.</span>
+                </div>
+              </div>
+              {onDismissWarning && (
+                <button
+                  onClick={onDismissWarning}
+                  className="ml-4 shrink-0 rounded-md p-1 text-amber-500 hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:hover:bg-amber-900/50 dark:focus:ring-offset-surface"
+                  aria-label="Dismiss warning"
+                >
+                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              )}
+            </div>
+          )}
 
           <div className="flex flex-wrap gap-4">
             <div className="min-w-[120px] flex-1 flex flex-col gap-1">

@@ -5,7 +5,6 @@ import { useQRDesign } from '../../../hooks/useQRDesign'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 
 export const QRGenerator = () => {
-  const { designConfig, setEyeShape, setPixelPattern } = useQRDesign();
   const {
     config,
     inputValue,
@@ -23,6 +22,8 @@ export const QRGenerator = () => {
     inputError,
     canGenerate,
   } = useQRGenerator()
+
+  const { designConfig, setEyeShape, setPixelPattern, isRiskyPattern, dismissWarning } = useQRDesign(inputValue, inputEcLevel);
 
   const { translate } = useLocaleContext()
 
@@ -70,6 +71,8 @@ export const QRGenerator = () => {
                 onEyeShapeChange={setEyeShape}
                 pixelPattern={designConfig.pixelPattern}
                 onPixelPatternChange={setPixelPattern}
+                isRiskyPattern={isRiskyPattern}
+                onDismissWarning={dismissWarning}
                 onGenerate={generateQRCode}
                 isGenerating={isGenerating}
                 onDownloadPng={() => void downloadPng()}

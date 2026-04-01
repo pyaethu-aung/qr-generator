@@ -14,6 +14,12 @@ export interface ParsedQR {
   modules: QRModule[]
 }
 
+export function getMatrixSize(value: string, ecLevel: 'L' | 'M' | 'Q' | 'H'): number {
+  if (!value) return 21;
+  const qr = qrcode.create(value, { errorCorrectionLevel: ecLevel })
+  return qr.modules.size;
+}
+
 /**
  * Parses raw `qrcode` module matrix into a 2D-aware list specifying coordinate locations,
  * module type (positional 'eye' vs standard 'data'), and light/dark status.

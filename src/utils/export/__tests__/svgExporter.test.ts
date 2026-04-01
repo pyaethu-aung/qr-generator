@@ -30,7 +30,7 @@ describe('svgExporter', () => {
       const blob = await exportSvg('Test QR Code', mockConfig)
 
       expect(blob).toBeInstanceOf(Blob)
-      expect(blob.type).toBe('image/svg+xml')
+      expect(blob.type).toBe('image/svg+xml;charset=utf-8')
       expect(blob.size).toBeGreaterThan(0)
     })
 

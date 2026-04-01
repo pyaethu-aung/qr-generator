@@ -67,15 +67,15 @@
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T011 [P] [US2] Enhance testing for accurate dot radius coordinate mapping in `src/utils/qrShapeRenderer.test.ts`
-- [ ] T012 [P] [US2] Add unit tests verifying `isRiskyPattern` logic triggers correctly in `src/hooks/useQRDesign.test.ts`
+- [x] T011 [P] [US2] Enhance testing for accurate dot radius coordinate mapping in `src/utils/qrShapeRenderer.test.ts`
+- [x] T012 [P] [US2] Add unit tests verifying `isRiskyPattern` logic triggers correctly in `src/hooks/useQRDesign.test.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T013 [US2] Apply core data pixel styling logic (Circles instead of pure paths) in `src/utils/qrShapeRenderer.ts`
-- [ ] T014 [US2] Introduce "Pixel Pattern" mode toggle within `src/components/QRDesignOptions.tsx`
-- [ ] T015 [US2] Implement hook flagging logic (`isRiskyPattern`) for high density dots inside `src/hooks/useQRDesign.ts`
-- [ ] T016 [US2] Integrate the dismissible UI warning element directly inside `src/components/QRCodePreview.tsx`
+- [x] T013 [US2] Apply core data pixel styling logic (Circles instead of pure paths) in `src/utils/qrShapeRenderer.ts`
+- [x] T014 [US2] Introduce "Pixel Pattern" mode toggle within `src/components/QRDesignOptions.tsx`
+- [x] T015 [US2] Implement hook flagging logic (`isRiskyPattern`) for high density dots inside `src/hooks/useQRDesign.ts`
+- [x] T016 [US2] Integrate the dismissible UI warning element directly inside `src/components/QRCodePreview.tsx`
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
