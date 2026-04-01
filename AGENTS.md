@@ -73,10 +73,8 @@ npm run test && npm run lint && npm run build
 ```
 
 ### Commit Discipline (50/72 Rule)
-- Subject: ≤50 characters, imperative mood, no period
-- Body: ≤72 characters per line
-- Use conventional prefixes: `feat:`, `fix:`, `docs:`, `refactor:`, `test:`
-- Commit each phase individually
+- See `git-commit-discipline` skill for all commit requirements.
+- Commit each phase individually.
 
 ## i18n
 
@@ -89,6 +87,7 @@ npm run test && npm run lint && npm run build
 The Agent MUST consult these skills during planning and implementation:
 - **React & Vite Essentials**: `.agent/skills/react-vite-essentials/SKILL.md`
 - **UI/UX & Design**: `.agent/skills/web-design-guidelines/SKILL.md`
+- **Git Commit Discipline**: `.agents/skills/git-commit-discipline/SKILL.md`
 
 ## Key Patterns
 
@@ -113,4 +112,4 @@ The Agent MUST consult these skills during planning and implementation:
 
 ---
 
-> Synced with Constitution v1.7.4 (2026-02-17). See `.specify/memory/constitution.md` for full governance details.
+> Synced with Constitution v1.7.5 (2026-04-01). See `.specify/memory/constitution.md` for full governance details.

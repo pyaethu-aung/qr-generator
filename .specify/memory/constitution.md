@@ -1,14 +1,12 @@
 <!--
 SYNC IMPACT REPORT
-Version: 1.7.3 -> 1.7.4
+Version: 1.7.4 -> 1.7.5
 Modified Principles:
-- IX. Skill-Driven Development & Agentic Workflow: corrected skill paths
-  (.agents/skills/vercel-react-best-practices -> .agent/skills/react-vite-essentials)
-  (.agents/skills/web-design-guidelines -> .agent/skills/web-design-guidelines)
+- Governance: Removed duplicate Commit Discipline rule (delegated to .agents/skills/git-commit-discipline)
 Added Sections:
 - None
 Removed Sections:
-- None
+- Commit Discipline (from Governance)
 Templates Updated:
 - AGENTS.md ✅ updated
 Deferred Items:
@@ -66,8 +64,6 @@ This Constitution supersedes previous ad-hoc practices. Amendments require a Pul
 
 **AGENTS.md Sync (MANDATORY)**: Whenever this Constitution is amended, `AGENTS.md` MUST be updated to reflect the changes. This ensures AI coding assistants (Antigravity, Gemini CLI, GitHub Copilot, etc.) always operate with current project guidelines.
 
-**Commit Discipline (MANDATORY)**: Each phase in `tasks.md` MUST be committed individually after completion. Commit messages MUST follow the 50/72 rule: subject line ≤50 characters (imperative mood, no period), followed by a blank line, then optional body text with lines ≤72 characters. Subject lines should start with a conventional commit type prefix (e.g., `feat:`, `fix:`, `docs:`, `refactor:`, `test:`). Every commit must represent a complete, testable unit of work.
-
 Versioning follows Semantic Versioning (MAJOR for principle changes, MINOR for additions, PATCH for clarifications). Compliance is verified during Code Review and CI.
 
-**Version**: 1.7.4 | **Ratified**: 2026-01-15 | **Last Amended**: 2026-02-17
+**Version**: 1.7.5 | **Ratified**: 2026-01-15 | **Last Amended**: 2026-04-01
