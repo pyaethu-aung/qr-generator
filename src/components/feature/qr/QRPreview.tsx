@@ -1,5 +1,5 @@
 import { useRef, useCallback, useId, forwardRef } from 'react'
-import { QRCodeCanvas } from 'qrcode.react'
+
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import { useQRShare } from '../../../hooks/useQRShare'
 import { useExportState } from '../../../hooks/useExportState'
@@ -9,16 +9,18 @@ import { exportPdf } from '../../../utils/export/pdfExporter'
 import { downloadBlob } from '../../../utils/download'
 import { generateFilename } from '../../../utils/export/exportCalculations'
 import { ExportModal } from '../../common/ExportModal'
-import type { QRConfig } from '../../../types/qr'
+import { generateQRPaths } from '../../../utils/qrShapeRenderer'
+import type { QRConfig, QRDesignConfig } from '../../../types/qr'
 import type { TranslationKey } from '../../../types/i18n'
 
 export interface QRPreviewProps extends QRConfig {
+  designConfig?: QRDesignConfig
   className?: string
   style?: React.CSSProperties
 }
 
 export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
-  ({ value, ecLevel, fgColor, bgColor, size = 256, className, style }, forwardedRef) => {
+  ({ value, ecLevel, fgColor, bgColor, size = 256, designConfig = { eyeShape: 'Square', pixelPattern: 'Square' }, className, style }, forwardedRef) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
     const { translate } = useLocaleContext()
     const { share, isSharing, shareRequest } = useQRShare()
@@ -49,6 +51,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
             fgColor,
             bgColor,
             margin: 0,
+            designConfig,
           })
           const filename = generateFilename('svg', 'qrcode')
           downloadBlob(blob, filename)
@@ -63,6 +66,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
             margin: 0,
             dpi: exportState.dpi,
             dimension: exportState.dimension,
+            designConfig, // Assuming pdfExporter takes this too
           })
           const filename = generateFilename('pdf', 'qrcode', exportState.dimension, exportState.dpi)
           downloadBlob(blob, filename)
@@ -201,17 +205,43 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
               <span className="text-sm">{placeholderCopy}</span>
             </div>
           ) : (
-            <QRCodeCanvas
+            <canvas
               ref={(node) => {
                 canvasRef.current = node
                 assignForwardedRef(node)
+                
+                // Mount-time SVG rendering algorithm
+                if (node && value) {
+                  const ctx = node.getContext('2d')
+                  if (ctx) {
+                    const { dataPath, eyesPath, size: matrixSize } = generateQRPaths(
+                      value,
+                      ecLevel,
+                      designConfig.eyeShape,
+                      designConfig.pixelPattern
+                    );
+                    const viewBoxSize = matrixSize * 10;
+                    const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewBoxSize} ${viewBoxSize}" shape-rendering="crispEdges" width="${size}" height="${size}">
+                      <rect width="100%" height="100%" fill="${bgColor}" />
+                      <path d="${dataPath}" fill="${fgColor}" />
+                      <path d="${eyesPath}" fill="${fgColor}" />
+                    </svg>`
+
+                    const img = new Image();
+                    img.onload = () => {
+                      ctx.clearRect(0, 0, size, size);
+                      ctx.drawImage(img, 0, 0, size, size);
+                    };
+                    img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgString);
+                  }
+                }
               }}
-              value={value}
-              size={size}
-              level={ecLevel}
-              fgColor={fgColor}
-              bgColor={bgColor}
-              marginSize={0}
+              data-testid="qr-code-canvas"
+              data-value={value}
+              data-fg={fgColor}
+              data-bg={bgColor}
+              width={size}
+              height={size}
               role="img"
               aria-label={formatValueLabel(ariaValueTemplate, { value })}
             />

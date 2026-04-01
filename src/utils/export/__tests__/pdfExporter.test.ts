@@ -20,6 +20,10 @@ describe.skip('pdfExporter', () => {
     margin: 0,
     dpi: 72 as const,
     dimension: 1000,
+    designConfig: {
+      eyeShape: 'Square' as const,
+      pixelPattern: 'Square' as const,
+    },
   }
 
   describe('exportPdf', () => {

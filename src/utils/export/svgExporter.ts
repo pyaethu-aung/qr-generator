@@ -6,11 +6,12 @@
  * by keeping UI-independent logic in utilities.
  */
 
-import QRCode from 'qrcode'
-import type { QRConfig } from '../../types/qr'
+import type { QRConfig, QRDesignConfig } from '../../types/qr'
+import { generateQRPaths } from '../qrShapeRenderer'
 
 export interface SvgExportConfig extends QRConfig {
   margin?: number
+  designConfig: QRDesignConfig
 }
 
 /**
@@ -30,21 +31,25 @@ export async function exportSvg(value: string, config: SvgExportConfig): Promise
   }
 
   try {
-    // Generate SVG string using qrcode package
-    const svgString = await QRCode.toString(value, {
-      type: 'svg',
-      errorCorrectionLevel: config.ecLevel,
-      margin: config.margin ?? 0,
-      color: {
-        dark: config.fgColor,
-        light: config.bgColor,
-      },
-      // Ensure crisp rendering
-      width: undefined, // SVG is resolution-independent
-    })
+    const { dataPath, eyesPath, size } = generateQRPaths(
+      value,
+      config.ecLevel,
+      config.designConfig.eyeShape,
+      config.designConfig.pixelPattern
+    );
+    const viewBoxSize = size * 10;
+    const marginSize = (config.margin ?? 0) * 10;
+    const totalSize = viewBoxSize + 2 * marginSize;
 
-    // Create blob from SVG string
-    const blob = new Blob([svgString], { type: 'image/svg+xml' })
+    const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${totalSize} ${totalSize}" shape-rendering="crispEdges">
+      <rect width="100%" height="100%" fill="${config.bgColor}" />
+      <g transform="translate(${marginSize}, ${marginSize})">
+        <path d="${dataPath}" fill="${config.fgColor}" />
+        <path d="${eyesPath}" fill="${config.fgColor}" />
+      </g>
+    </svg>`
+
+    const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })
     return blob
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'

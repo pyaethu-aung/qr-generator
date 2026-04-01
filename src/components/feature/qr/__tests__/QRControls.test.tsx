@@ -12,14 +12,20 @@ const setup = (overrides: Partial<QRControlsProps> = {}) => {
   const onFgColorChange = vi.fn<(color: string) => void>()
   const onBgColorChange = vi.fn<(color: string) => void>()
   const onGenerate = vi.fn<() => void>()
+  const onEyeShapeChange = vi.fn<QRControlsProps['onEyeShapeChange']>()
+  const onPixelPatternChange = vi.fn<QRControlsProps['onPixelPatternChange']>()
 
   const baseProps: QRControlsProps = {
     value: '',
     ecLevel: 'M',
+    eyeShape: 'Square',
+    pixelPattern: 'Square',
     fgColor: '#000000',
     bgColor: '#ffffff',
     onValueChange,
     onEcLevelChange,
+    onEyeShapeChange,
+    onPixelPatternChange,
     onFgColorChange,
     onBgColorChange,
     onGenerate,
@@ -38,6 +44,8 @@ const setup = (overrides: Partial<QRControlsProps> = {}) => {
     ...utils,
     onValueChange,
     onEcLevelChange,
+    onEyeShapeChange,
+    onPixelPatternChange,
     onFgColorChange,
     onBgColorChange,
     onGenerate,
@@ -58,11 +66,31 @@ describe('QRControls configuration updates', () => {
   it('calls onEcLevelChange when the correction level changes', () => {
     const { onEcLevelChange } = setup()
 
-    fireEvent.change(screen.getByRole('combobox'), {
+    fireEvent.change(screen.getByRole('combobox', { name: /Error Correction/i }), {
       target: { value: 'H' },
     })
 
     expect(onEcLevelChange).toHaveBeenCalledWith('H')
+  })
+
+  it('[US1] calls onEyeShapeChange when eye shape dropdown changes', () => {
+    const { onEyeShapeChange } = setup()
+
+    fireEvent.change(screen.getByRole('combobox', { name: /Eye Shape/i }), {
+      target: { value: 'Hexagon' },
+    })
+
+    expect(onEyeShapeChange).toHaveBeenCalledWith('Hexagon')
+  })
+
+  it('[US2] calls onPixelPatternChange when pixel pattern dropdown changes', () => {
+    const { onPixelPatternChange } = setup()
+
+    fireEvent.change(screen.getByRole('combobox', { name: /Pixel Pattern/i }), {
+      target: { value: 'Dots' },
+    })
+
+    expect(onPixelPatternChange).toHaveBeenCalledWith('Dots')
   })
 
   it('calls color change handlers when pickers are used', () => {

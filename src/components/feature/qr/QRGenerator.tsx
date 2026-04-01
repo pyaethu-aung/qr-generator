@@ -1,9 +1,11 @@
 import { QRControls } from './QRControls'
 import { QRPreview } from './QRPreview'
 import { useQRGenerator } from '../../../hooks/useQRGenerator'
+import { useQRDesign } from '../../../hooks/useQRDesign'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 
 export const QRGenerator = () => {
+  const { designConfig, setEyeShape, setPixelPattern } = useQRDesign();
   const {
     config,
     inputValue,
@@ -64,6 +66,10 @@ export const QRGenerator = () => {
                 onFgColorChange={setInputFgColor}
                 bgColor={inputBgColor}
                 onBgColorChange={setInputBgColor}
+                eyeShape={designConfig.eyeShape}
+                onEyeShapeChange={setEyeShape}
+                pixelPattern={designConfig.pixelPattern}
+                onPixelPatternChange={setPixelPattern}
                 onGenerate={generateQRCode}
                 isGenerating={isGenerating}
                 onDownloadPng={() => void downloadPng()}
@@ -84,7 +90,7 @@ export const QRGenerator = () => {
                 </h3>
               </div>
               <div className="flex flex-1 items-center justify-center rounded-2xl border border-border-subtle bg-surface-inset p-4 sm:p-6 shadow-inner">
-                <QRPreview {...config} className="w-full max-w-full" style={{ width: '100%', height: 'auto', maxWidth: '100%' }} />
+                <QRPreview {...config} designConfig={designConfig} className="w-full max-w-full" style={{ width: '100%', height: 'auto', maxWidth: '100%' }} />
               </div>
             </div>
           </div>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseQRCode } from './qrShapeRenderer'
+import { parseQRCode, getEyePath, getDataPath, generateQRPaths } from './qrShapeRenderer'
 import type { QRModule } from './qrShapeRenderer'
 
 describe('qrShapeRenderer Matrix Parser (Foundational)', () => {
@@ -47,5 +47,40 @@ describe('qrShapeRenderer Matrix Parser (Foundational)', () => {
 
     expect(darkModules.length).toBeGreaterThan(0)
     expect(lightModules.length).toBeGreaterThan(0)
+  })
+
+  it('[US1] should correctly compute eye shape standard variants including Diamond, Hexagon, Leaf and Rounded offsets', () => {
+    // Top left eye at 0,0 size 10 
+    const svgPathSquare = getEyePath('Square', 0, 0, 10);
+    // Should contain pure square commands standard inside M/h/v
+    expect(svgPathSquare).toContain('M0,0')
+    expect(svgPathSquare).toContain('h70') // 7 * 10
+    
+    const svgPathLeaf = getEyePath('Leaf', 0, 0, 10);
+    expect(svgPathLeaf).toContain('a15,15') // Using arc for the leaf side
+
+    const svgPathHexagon = getEyePath('Hexagon', 0, 0, 10);
+    // Center of hexagon X component is 35 (x + 3.5 * s)
+    expect(svgPathHexagon).toContain('M35,0')
+  })
+
+  it('[US2] should correctly compute data dot radius coordinate mapping', () => {
+    const squareData = getDataPath('Square', 10, 20, 10);
+    expect(squareData).toContain('M10,20')
+    expect(squareData).toContain('h10')
+    expect(squareData).toContain('v10')
+
+    const dotData = getDataPath('Dots', 10, 20, 10);
+    // Dots draw as circle using arc centered horizontally
+    expect(dotData).toContain('M15,20')
+    expect(dotData).toContain('a5,5 0 1,0 0,10 a5,5 0 1,0 0,-10')
+  })
+
+  it('generates fully compiled valid SVG path strings encompassing data and eyes', () => {
+     const paths = generateQRPaths('test render sequence', 'L', 'Hexagon', 'Dots', 10);
+     expect(paths.size).toBeGreaterThan(20)
+     expect(paths.eyesPath).toContain('M35,0') // Top left hexagon center-top check
+     // Ensure eye geometries and standard dot formats map appropriately
+     expect(paths.dataPath).toContain('a5,5 0 1,0 0,10') 
   })
 })

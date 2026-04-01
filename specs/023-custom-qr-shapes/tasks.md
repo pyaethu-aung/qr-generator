@@ -45,15 +45,15 @@
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T005 [P] [US1] Add unit test assertions for expected geometric corner offsets in `src/utils/qrShapeRenderer.test.ts`
-- [ ] T006 [P] [US1] Add unit tests for `useQRDesign` hook state updates regarding eye shapes in `src/hooks/useQRDesign.test.ts`
-- [ ] T007 [P] [US1] Add component tests for eye shape selection UI in `src/components/QRDesignOptions.test.tsx`
+- [x] T005 [P] [US1] Add unit test assertions for expected geometric corner offsets in `src/utils/qrShapeRenderer.test.ts`
+- [x] T006 [P] [US1] Add unit tests for `useQRDesign` hook state updates regarding eye shapes in `src/hooks/useQRDesign.test.ts`
+- [x] T007 [P] [US1] Add component tests for eye shape selection UI in `src/components/QRDesignOptions.test.tsx`
 
 ### Implementation for User Story 1
 
-- [ ] T008 [US1] Implement precise mathematical SVG coordinates for `Rounded`, `Diamond`, `Leaf`, and `Hexagon` inside `src/utils/qrShapeRenderer.ts`
-- [ ] T009 [US1] Refactor `src/components/QRCodePreview.tsx` to handle custom generated SVG paths when non-square eye shapes are active.
-- [ ] T010 [US1] Construct the shape selection dropdowns in `src/components/QRDesignOptions.tsx` using `role="group"` and proper ARIA labels.
+- [x] T008 [US1] Implement precise mathematical SVG coordinates for `Rounded`, `Diamond`, `Leaf`, and `Hexagon` inside `src/utils/qrShapeRenderer.ts`
+- [x] T009 [US1] Refactor `src/components/QRCodePreview.tsx` to handle custom generated SVG paths when non-square eye shapes are active.
+- [x] T010 [US1] Construct the shape selection dropdowns in `src/components/QRDesignOptions.tsx` using `role="group"` and proper ARIA labels.
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
