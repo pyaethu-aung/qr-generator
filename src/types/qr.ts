@@ -22,3 +22,11 @@ export interface ShareRequest {
   status: 'pending' | 'shared' | 'canceled' | 'failed'
   errorMessage?: string
 }
+
+export type QREyeShape = 'Square' | 'Rounded' | 'Diamond' | 'Leaf' | 'Hexagon'
+export type QRPixelPattern = 'Square' | 'Dots'
+
+export interface QRDesignConfig {
+  eyeShape: QREyeShape
+  pixelPattern: QRPixelPattern
+}

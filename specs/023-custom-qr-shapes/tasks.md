@@ -17,8 +17,8 @@
 
 **Purpose**: Project initialization and basic structure updates
 
-- [ ] T001 Update `src/types/qr.ts` with explicit enums for `QREyeShape` and `QRPixelPattern` types.
-- [ ] T002 Initialize default custom shape properties and ensure `localStorage` persistence inside `src/hooks/useQRDesign.ts`.
+- [x] T001 Update `src/types/qr.ts` with explicit enums for `QREyeShape` and `QRPixelPattern` types.
+- [x] T002 Initialize default custom shape properties and ensure `localStorage` persistence inside `src/hooks/useQRDesign.ts`.
 
 ---
 
