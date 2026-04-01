@@ -28,8 +28,8 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 Create unit test scaffold in `src/utils/qrShapeRenderer.test.ts`, asserting against the minimum 85% coverage benchmark.
-- [ ] T004 Implement generic parsing of `qrcode.create()` grid size and positional detection blocks in `src/utils/qrShapeRenderer.ts`.
+- [x] T003 Create unit test scaffold in `src/utils/qrShapeRenderer.test.ts`, asserting against the minimum 85% coverage benchmark.
+- [x] T004 Implement generic parsing of `qrcode.create()` grid size and positional detection blocks in `src/utils/qrShapeRenderer.ts`.
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
