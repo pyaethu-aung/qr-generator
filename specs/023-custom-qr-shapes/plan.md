@@ -58,3 +58,29 @@ src/
 ```
 
 **Structure Decision**: Standard React layout following the Constitution. Pure functions for building SVG shape paths will reside in `src/utils/` to ensure they are easily testable as mandated.
+
+## Post-Implementation Fixes
+
+### Fix: Eye Shape Rendering Quality (2026-04-02)
+
+Three aesthetic issues were identified after the initial implementation and corrected:
+
+**1. `shape-rendering="crispEdges"` scope was too broad**
+
+The attribute was set on the `<svg>` root element, which caused the browser to disable anti-aliasing globally — including for the eye paths. This made all curved and diagonal eye shapes (Rounded, Diamond, Leaf, Hexagon) look jagged or stairstepped.
+
+*Fix*: Moved `shape-rendering="crispEdges"` from the `<svg>` root to only the `<path>` element for data modules. Eye paths now render with the default (anti-aliased) behaviour. Applied in both `QRPreview.tsx` and `svgExporter.ts`.
+
+**2. Rounded eye inner dot was nearly square**
+
+The inner centre of the Rounded eye used `r=0.5s` on a 3×3-module box, producing barely-visible rounding that looked inconsistent against the fully-rounded outer frame (`r=1.5s`) and gap (`r=s`).
+
+*Fix*: Replaced the rounded-rect inner dot with a true circle (`r=1.5s`) drawn as two semicircle arcs centred at the eye's midpoint `(x+3.5s, y+3.5s)`.
+
+**3. Hexagon eye gap and inner subpaths had incorrect side-vertex y-coordinates**
+
+A regular pointy-top hexagon places its equatorial side-vertices at `H/4` and `3H/4` of its total height. The outer layer (H=7s) was correct (`y+1.75s`, `y+5.25s`), but the gap (H=5s) and inner (H=3s) subpaths reused the outer's absolute y-values instead of scaling proportionally, distorting the hexagon shape at the inner layers.
+
+*Fix*: Recalculated side-vertex y-coordinates for each layer using their own height:
+- Gap (H=5s, spans `y+s` to `y+6s`): side vertices at `y+2.25s` and `y+4.75s`
+- Inner (H=3s, spans `y+2s` to `y+5s`): side vertices at `y+2.75s` and `y+4.25s`

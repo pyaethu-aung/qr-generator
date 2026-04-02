@@ -55,9 +55,9 @@ export function exportSvg(
 
   // Embed the custom geometric path
   const svgString = `<?xml version="1.0" encoding="utf-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewboxSize} ${viewboxSize}" shape-rendering="crispEdges">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewboxSize} ${viewboxSize}">
 <rect width="100%" height="100%" fill="${bgColor}"/>
-<path fill="${fgColor}" transform="translate(${margin * cellSize}, ${margin * cellSize})" d="${dataPath}" />
+<path fill="${fgColor}" shape-rendering="crispEdges" transform="translate(${margin * cellSize}, ${margin * cellSize})" d="${dataPath}" />
 <path fill="${fgColor}" fill-rule="evenodd" transform="translate(${margin * cellSize}, ${margin * cellSize})" d="${eyesPath}" />
 </svg>`
 

@@ -17,5 +17,13 @@ Determine the best technical approach for rendering predefined geometric shapes 
 3. **Control**: Exposes exact matrix dimensions (`qr.modules.size`), allowing deterministic detection of "dense/risky" payloads to trigger the required UI warning defined in our Edge Cases specification.
 
 ## Alternatives Considered
-- **Adopting `qr-code-styling`**: A popular library supporting heavy customization. 
+- **Adopting `qr-code-styling`**: A popular library supporting heavy customization.
   - *Rejected*: Adds unnecessary bloat to the Vite bundle when we already use `qrcode.react`. Re-writing our existing PDF export pipelines to support this library would introduce too much regression risk.
+
+## Post-Implementation Finding: SVG `shape-rendering` Scope
+
+**Discovery**: Setting `shape-rendering="crispEdges"` on the `<svg>` root element disables anti-aliasing for the entire document, including the eye paths. This is desirable for axis-aligned square data modules (prevents sub-pixel blurring) but harmful for any curved or diagonal geometry.
+
+**Impact**: All non-square eye shapes (Rounded, Diamond, Leaf, Hexagon) rendered with visible jagged edges at preview size.
+
+**Resolution**: `shape-rendering="crispEdges"` must be scoped to the data-module `<path>` element only. Eye paths should inherit the default `auto` rendering, which enables anti-aliasing for smooth curves and diagonals.
