@@ -67,12 +67,11 @@ export function getEyePath(shape: import('../types/qr').QREyeShape, x: number, y
     `M${x+2*s},${y+2*s} h${3*s} v${3*s} h-${3*s} Z`;
 
   if (shape === 'Rounded') {
-    // Rounded: outer 7×7 (r=1.5s) → white 5×5 gap (r=s) → dark 3×3 center (r=0.5s)
-    // Gap must start at x+2s (= x+s + r) so the right arc stays within 5×5 bounds.
+    // Rounded: outer 7×7 (r=1.5s) → white 5×5 gap (r=s) → dark 3×3 center as circle (r=1.5s)
     return (
       `M${x+1.5*s},${y} h${4*s} a${1.5*s},${1.5*s} 0 0 1 ${1.5*s},${1.5*s} v${4*s} a${1.5*s},${1.5*s} 0 0 1 -${1.5*s},${1.5*s} h-${4*s} a${1.5*s},${1.5*s} 0 0 1 -${1.5*s},-${1.5*s} v-${4*s} a${1.5*s},${1.5*s} 0 0 1 ${1.5*s},-${1.5*s} Z ` +
       `M${x+2*s},${y+s} h${3*s} a${s},${s} 0 0 1 ${s},${s} v${3*s} a${s},${s} 0 0 1 -${s},${s} h-${3*s} a${s},${s} 0 0 1 -${s},-${s} v-${3*s} a${s},${s} 0 0 1 ${s},-${s} Z ` +
-      `M${x+2.5*s},${y+2*s} h${2*s} a${0.5*s},${0.5*s} 0 0 1 ${0.5*s},${0.5*s} v${2*s} a${0.5*s},${0.5*s} 0 0 1 -${0.5*s},${0.5*s} h-${2*s} a${0.5*s},${0.5*s} 0 0 1 -${0.5*s},-${0.5*s} v-${2*s} a${0.5*s},${0.5*s} 0 0 1 ${0.5*s},-${0.5*s} Z`
+      `M${x+2*s},${y+3.5*s} a${1.5*s},${1.5*s} 0 1 0 ${3*s},0 a${1.5*s},${1.5*s} 0 1 0 -${3*s},0 Z`
     );
   }
 
@@ -98,11 +97,13 @@ export function getEyePath(shape: import('../types/qr').QREyeShape, x: number, y
 
   if (shape === 'Hexagon') {
     const cx = x + 3.5*s;
-    // outer hexagon → white hexagon gap (1 module inset) → dark hexagon center (2 modules inset)
+    // Pointy-top hexagon: side vertices at H/4 and 3H/4 of each layer's height.
+    // outer 7s tall: sides at 1.75s, 5.25s. gap 5s tall (y+s..y+6s): sides at y+2.25s, y+4.75s.
+    // inner 3s tall (y+2s..y+5s): sides at y+2.75s, y+4.25s.
     return (
       `M${cx},${y} L${x+7*s},${y+1.75*s} L${x+7*s},${y+5.25*s} L${cx},${y+7*s} L${x},${y+5.25*s} L${x},${y+1.75*s} Z ` +
-      `M${cx},${y+s} L${x+6*s},${y+1.75*s} L${x+6*s},${y+5.25*s} L${cx},${y+6*s} L${x+s},${y+5.25*s} L${x+s},${y+1.75*s} Z ` +
-      `M${cx},${y+2*s} L${x+5*s},${y+3*s} L${x+5*s},${y+4*s} L${cx},${y+5*s} L${x+2*s},${y+4*s} L${x+2*s},${y+3*s} Z`
+      `M${cx},${y+s} L${x+6*s},${y+2.25*s} L${x+6*s},${y+4.75*s} L${cx},${y+6*s} L${x+s},${y+4.75*s} L${x+s},${y+2.25*s} Z ` +
+      `M${cx},${y+2*s} L${x+5*s},${y+2.75*s} L${x+5*s},${y+4.25*s} L${cx},${y+5*s} L${x+2*s},${y+4.25*s} L${x+2*s},${y+2.75*s} Z`
     );
   }
 
