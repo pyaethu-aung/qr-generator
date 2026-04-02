@@ -54,38 +54,56 @@ export function parseQRCode(value: string, ecLevel: 'L' | 'M' | 'Q' | 'H'): Pars
 
 export function getEyePath(shape: import('../types/qr').QREyeShape, x: number, y: number, cellSize: number): string {
   const s = cellSize;
-  // Standard Square SVG representation of 7x7 corner eye. Drawing outer rect clockwise, inner cutout counter-clockwise, center clockwise.
-  const squarePath = `M${x},${y} h${7*s} v${7*s} h-${7*s} Z M${x+1*s},${y+6*s} v-${5*s} h${5*s} v${5*s} Z M${x+2*s},${y+2*s} h${3*s} v${3*s} h-${3*s} Z`;
+  // All eye paths use even-odd fill rule (declared on the <path> element).
+  // Subpaths must be ordered: outer frame → separator gap → inner center.
+  // The even-odd rule automatically punches holes at every alternating subpath,
+  // creating the mandatory 3-layer eye structure without needing to think about
+  // individual winding directions.
+
+  // Square: outer 7×7 → white 5×5 gap → dark 3×3 center
+  const squarePath =
+    `M${x},${y} h${7*s} v${7*s} h-${7*s} Z ` +
+    `M${x+s},${y+s} h${5*s} v${5*s} h-${5*s} Z ` +
+    `M${x+2*s},${y+2*s} h${3*s} v${3*s} h-${3*s} Z`;
 
   if (shape === 'Rounded') {
-    // Basic approximation of rounded eyes (rx=1.5s)
-    return `M${x+1.5*s},${y} h${4*s} a${1.5*s},${1.5*s} 0 0 1 ${1.5*s},${1.5*s} v${4*s} a${1.5*s},${1.5*s} 0 0 1 -${1.5*s},${1.5*s} h-${4*s} a${1.5*s},${1.5*s} 0 0 1 -${1.5*s},-${1.5*s} v-${4*s} a${1.5*s},${1.5*s} 0 0 1 ${1.5*s},-${1.5*s} Z ` +
-           `M${x+2*s},${y+6*s} a${1*s},${1*s} 0 0 0 -${1*s},-${1*s} v-${3*s} a${1*s},${1*s} 0 0 0 ${1*s},-${1*s} h${3*s} a${1*s},${1*s} 0 0 0 ${1*s},${1*s} v${3*s} a${1*s},${1*s} 0 0 0 -${1*s},${1*s} h-${3*s} Z ` +
-           `M${x+2.5*s},${y+2*s} h${2*s} a${0.5*s},${0.5*s} 0 0 1 ${0.5*s},${0.5*s} v${2*s} a${0.5*s},${0.5*s} 0 0 1 -${0.5*s},${0.5*s} h-${2*s} a${0.5*s},${0.5*s} 0 0 1 -${0.5*s},-${0.5*s} v-${2*s} a${0.5*s},${0.5*s} 0 0 1 ${0.5*s},-${0.5*s} Z`;
+    // Rounded: outer 7×7 (r=1.5s) → white 5×5 gap (r=s) → dark 3×3 center (r=0.5s)
+    // Gap must start at x+2s (= x+s + r) so the right arc stays within 5×5 bounds.
+    return (
+      `M${x+1.5*s},${y} h${4*s} a${1.5*s},${1.5*s} 0 0 1 ${1.5*s},${1.5*s} v${4*s} a${1.5*s},${1.5*s} 0 0 1 -${1.5*s},${1.5*s} h-${4*s} a${1.5*s},${1.5*s} 0 0 1 -${1.5*s},-${1.5*s} v-${4*s} a${1.5*s},${1.5*s} 0 0 1 ${1.5*s},-${1.5*s} Z ` +
+      `M${x+2*s},${y+s} h${3*s} a${s},${s} 0 0 1 ${s},${s} v${3*s} a${s},${s} 0 0 1 -${s},${s} h-${3*s} a${s},${s} 0 0 1 -${s},-${s} v-${3*s} a${s},${s} 0 0 1 ${s},-${s} Z ` +
+      `M${x+2.5*s},${y+2*s} h${2*s} a${0.5*s},${0.5*s} 0 0 1 ${0.5*s},${0.5*s} v${2*s} a${0.5*s},${0.5*s} 0 0 1 -${0.5*s},${0.5*s} h-${2*s} a${0.5*s},${0.5*s} 0 0 1 -${0.5*s},-${0.5*s} v-${2*s} a${0.5*s},${0.5*s} 0 0 1 ${0.5*s},-${0.5*s} Z`
+    );
   }
-  
+
   if (shape === 'Diamond') {
-    // 45 degree rotated rectangle geometry equivalent
-    // Simplifying down to bounding diamond within the 7x7 block
     const cx = x + 3.5*s;
     const cy = y + 3.5*s;
-    return `M${cx},${y} L${x+7*s},${cy} L${cx},${y+7*s} L${x},${cy} Z ` +
-           `M${cx},${y+5*s} L${x+2*s},${cy} L${cx},${y+2*s} L${x+5*s},${cy} Z ` +
-           `M${cx},${y+2.5*s} L${x+4.5*s},${cy} L${cx},${y+4.5*s} L${x+2.5*s},${cy} Z`;
+    // outer diamond → white diamond gap (1 module inset) → dark 3×3-equiv center (2 modules inset)
+    return (
+      `M${cx},${y} L${x+7*s},${cy} L${cx},${y+7*s} L${x},${cy} Z ` +
+      `M${cx},${y+s} L${x+6*s},${cy} L${cx},${y+6*s} L${x+s},${cy} Z ` +
+      `M${cx},${y+2*s} L${x+5*s},${cy} L${cx},${y+5*s} L${x+2*s},${cy} Z`
+    );
   }
 
   if (shape === 'Leaf') {
-    // Two sharp corners, two rounded corners to simulate a leaf
-    return `M${x},${y} h${5.5*s} a${1.5*s},${1.5*s} 0 0 1 ${1.5*s},${1.5*s} v${5.5*s} h-${5.5*s} a${1.5*s},${1.5*s} 0 0 1 -${1.5*s},-${1.5*s} Z ` +
-           `M${x+1.5*s},${y+6*s} v-${4.5*s} a${0.5*s},${0.5*s} 0 0 1 ${0.5*s},-${0.5*s} h${4.5*s} v${4.5*s} a${0.5*s},${0.5*s} 0 0 1 -${0.5*s},${0.5*s} Z ` +
-           `M${x+2*s},${y+2*s} h${2.5*s} a${0.5*s},${0.5*s} 0 0 1 ${0.5*s},${0.5*s} v${2.5*s} h-${2.5*s} a${0.5*s},${0.5*s} 0 0 1 -${0.5*s},-${0.5*s} Z`;
+    // Top-left sharp, bottom-right rounded outer → white gap inner → dark center
+    return (
+      `M${x},${y} h${5.5*s} a${1.5*s},${1.5*s} 0 0 1 ${1.5*s},${1.5*s} v${5.5*s} h-${5.5*s} a${1.5*s},${1.5*s} 0 0 1 -${1.5*s},-${1.5*s} Z ` +
+      `M${x+s},${y+s} h${4*s} a${s},${s} 0 0 1 ${s},${s} v${4*s} h-${4*s} a${s},${s} 0 0 1 -${s},-${s} Z ` +
+      `M${x+2*s},${y+2*s} h${2.5*s} a${0.5*s},${0.5*s} 0 0 1 ${0.5*s},${0.5*s} v${2.5*s} h-${2.5*s} a${0.5*s},${0.5*s} 0 0 1 -${0.5*s},-${0.5*s} Z`
+    );
   }
 
   if (shape === 'Hexagon') {
     const cx = x + 3.5*s;
-    return `M${cx},${y} L${x+7*s},${y+1.75*s} L${x+7*s},${y+5.25*s} L${cx},${y+7*s} L${x},${y+5.25*s} L${x},${y+1.75*s} Z ` +
-           `M${cx},${y+6*s} L${x+1*s},${y+4.5*s} L${x+1*s},${y+2.5*s} L${cx},${y+1*s} L${x+6*s},${y+2.5*s} L${x+6*s},${y+4.5*s} Z ` +
-           `M${cx},${y+2*s} L${x+5*s},${y+3*s} L${x+5*s},${y+4*s} L${cx},${y+5*s} L${x+2*s},${y+4*s} L${x+2*s},${y+3*s} Z`;
+    // outer hexagon → white hexagon gap (1 module inset) → dark hexagon center (2 modules inset)
+    return (
+      `M${cx},${y} L${x+7*s},${y+1.75*s} L${x+7*s},${y+5.25*s} L${cx},${y+7*s} L${x},${y+5.25*s} L${x},${y+1.75*s} Z ` +
+      `M${cx},${y+s} L${x+6*s},${y+1.75*s} L${x+6*s},${y+5.25*s} L${cx},${y+6*s} L${x+s},${y+5.25*s} L${x+s},${y+1.75*s} Z ` +
+      `M${cx},${y+2*s} L${x+5*s},${y+3*s} L${x+5*s},${y+4*s} L${cx},${y+5*s} L${x+2*s},${y+4*s} L${x+2*s},${y+3*s} Z`
+    );
   }
 
   return squarePath;
