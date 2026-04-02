@@ -57,7 +57,8 @@ export function exportSvg(
   const svgString = `<?xml version="1.0" encoding="utf-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewboxSize} ${viewboxSize}" shape-rendering="crispEdges">
 <rect width="100%" height="100%" fill="${bgColor}"/>
-<path fill="${fgColor}" transform="translate(${margin * cellSize}, ${margin * cellSize})" d="${dataPath} ${eyesPath}" />
+<path fill="${fgColor}" transform="translate(${margin * cellSize}, ${margin * cellSize})" d="${dataPath}" />
+<path fill="${fgColor}" fill-rule="evenodd" transform="translate(${margin * cellSize}, ${margin * cellSize})" d="${eyesPath}" />
 </svg>`
 
   const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })
