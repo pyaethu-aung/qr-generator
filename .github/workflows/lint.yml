@@ -1,15 +1,6 @@
 name: Lint and Type Check
 
 on:
-  push:
-    branches: ["main"]
-    paths:
-      - 'src/**'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'eslint.config.js'
-      - 'tsconfig.*'
-      - '.github/workflows/lint.yml'
   pull_request:
     branches: ["main"]
     paths:
