@@ -108,7 +108,7 @@ jobs:
       # --- Vulnerability Scanning (FR-007) ---
       # Fail on fixable CRITICAL/HIGH CVEs only (--ignore-unfixed)
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           input: /tmp/image.tar
           format: 'table'
