@@ -97,7 +97,7 @@ jobs:
       # --- Build for Scanning (FR-007) ---
       # Build and load locally so Trivy can scan before push
       - name: Build and load Docker image for scan
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6.19.2
         with:
           context: .
           outputs: type=docker,dest=/tmp/image.tar
@@ -123,7 +123,7 @@ jobs:
       # Single platform: linux/amd64 only (per clarification)
       - name: Build and push Docker image
         id: build-and-push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6.19.2
         with:
           context: .
           platforms: linux/amd64,linux/arm64
