@@ -24,7 +24,7 @@ on:
       - 'vite.config.js'
       - 'eslint.config.js'
   schedule:
-    - cron: '35 6 * * *'
+    - cron: '35 6 * * 0'  # Weekly on Sundays at 06:35 UTC
 
 env:
   REGISTRY: ghcr.io
