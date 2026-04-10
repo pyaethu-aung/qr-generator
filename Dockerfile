@@ -44,8 +44,9 @@ RUN npm run build
 FROM nginx:alpine-slim AS runtime
 
 # Patch CVE-2026-22184: upgrade zlib to ≥1.3.2-r0 (CRITICAL, fixed upstream)
-# Targeted upgrade avoids unnecessary package bloat while eliminating the CVE
-RUN apk upgrade --no-cache zlib
+# Patch CVE-2026-28390: upgrade openssl to ≥3.5.6-r0 (HIGH, fixed upstream)
+# Targeted upgrades avoid unnecessary package bloat while eliminating the CVEs
+RUN apk upgrade --no-cache zlib libcrypto3 libssl3
 
 # Create non-root user for security hardening (FR-003)
 # UID 1000, no home directory, no login shell
