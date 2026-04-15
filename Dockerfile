@@ -47,7 +47,7 @@ FROM nginx:alpine-slim AS runtime
 # Patch CVE-2026-28390: upgrade openssl to ≥3.5.6-r0 (HIGH, fixed upstream)
 # Patch CVE-2026-40200: upgrade musl to ≥1.2.7-r0 (HIGH, stack corruption in qsort)
 # Targeted upgrades avoid unnecessary package bloat while eliminating the CVEs
-RUN apk upgrade --no-cache zlib libcrypto3 libssl3 musl
+RUN apk upgrade --no-cache zlib libcrypto3 libssl3 musl musl-utils
 
 # Create non-root user for security hardening (FR-003)
 # UID 1000, no home directory, no login shell
