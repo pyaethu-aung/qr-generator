@@ -1,7 +1,9 @@
 ---
 name: commit-message
 description: Use when creating or amending git commits. Enforces atomic commits, the 50/72 subject/body rule, and Conventional Commits format.
-allowed-tools: Bash(git log:*) Bash(git diff:*) Bash(git status:*) Bash(git add:*) Bash(git commit:*)
+metadata:
+  version: "1.0.0"
+allowed-tools: Bash(git log:*) Bash(git diff:*) Bash(git status:*) Bash(git add:*) Bash(git commit:*) Bash(echo:*) Bash(wc:*)
 ---
 
 # Commit Message Rules
@@ -21,8 +23,9 @@ git diff --staged
 If the staged diff above is empty, inspect the working tree status above:
 
 - If there are unstaged or untracked changes, infer which files belong to
-  the same logical change based on their names and paths, then stage them
-  with `git add <files>` and proceed.
+  the same logical change based on their names and paths, show the user
+  which files you intend to stage and ask them to confirm before running
+  `git add <files>`.
 - If there are no changes at all, stop and tell the user:
   "Nothing to commit — working tree is clean."
 - If the changes span multiple unrelated concerns, stage only the files
@@ -91,12 +94,12 @@ A noun in parentheses describing the section of the codebase:
 ```
 feat(auth): add OAuth2 login flow
 fix(ui): correct button alignment on mobile
-chore(deps): bump golang.org/x/sys from v0.38.0 to v0.43.0
+chore(deps): bump lodash from 4.17.20 to 4.17.21
 ```
 
 ### Subject line rules
 
-- Imperative mood: "add feature" not "added" or "adds"
+- Imperative mood: "add feature" not "added" (past tense) or "adds" (third-person)
 - No capital letter after the colon
 - No trailing period
 - 50 characters or fewer
@@ -125,12 +128,39 @@ BREAKING CHANGE: income values must now be integers.
 String-based input is no longer accepted.
 ```
 
-## 4. Confirmation Before Commit
+## 4. Subject Line Character Count (REQUIRED)
 
-After drafting the commit message, always pause and show the user a
-summary before running `git commit`:
+Before showing the confirmation prompt, you MUST measure the subject
+line length by running:
+
+```bash
+echo -n "<subject line>" | wc -c
+```
+
+Use the number returned by that command — never count manually. Display
+the result:
 
 ```
+Subject: "<subject line>" (N chars ✅ / ⚠️ / ❌)
+```
+
+Rules:
+- **≤ 50 chars** → ✅ proceed
+- **51–72 chars** → ⚠️ warn the user and ask if they want to shorten
+  before proceeding
+- **> 72 chars** → ❌ revise the subject line before showing the
+  confirmation prompt; never propose a message that exceeds 72 chars
+
+Do not skip this step. The count must appear in every confirmation.
+
+## 5. Confirmation Before Commit
+
+After the character count check, pause and show the user a summary
+before running `git commit`:
+
+```
+Subject: "<subject line>" (N chars ✅)
+
 Files to be committed:
   <list from git diff --staged --name-only>
 
@@ -140,7 +170,12 @@ Proposed message:
 Proceed? (yes / edit message / cancel)
 ```
 
-- **yes** — run `git commit -m "<message>"`
+- **yes** — run `git commit` using a heredoc to preserve line breaks:
+  ```bash
+  git commit -F - <<'EOF'
+  <full commit message>
+  EOF
+  ```
 - **edit message** — ask the user what to change, revise, and show the
   summary again
 - **cancel** — stop without committing; leave the index as-is
@@ -154,22 +189,21 @@ Simple fix (subject only):
 fix(auth): prevent session token from expiring prematurely
 ```
 
-Feature with body:
+Feature with body (note 72-char body wrap):
 ```
 feat(api): add pagination support to list endpoints
 
-Without pagination, list endpoints return all records in a single
-response. This causes memory spikes and slow response times as
-data grows. Adds cursor-based pagination with a default page size
-of 20.
+Without pagination, list endpoints return all records in a single       |
+response. This causes memory spikes and slow response times as data     |
+grows. Adds cursor-based pagination with a default page size of 20.     |
 ```
 
 Dependency bump:
 ```
-chore(deps): bump golang.org/x/sys from v0.38.0 to v0.43.0
+chore(deps): bump lodash from 4.17.20 to 4.17.21
 ```
 
 CI change:
 ```
-ci: add golangci-lint to pull request workflow
+ci: add linter to pull request workflow
 ```
