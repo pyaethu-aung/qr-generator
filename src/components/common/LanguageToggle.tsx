@@ -1,12 +1,12 @@
 import { useLocaleContext } from '../../hooks/LocaleProvider'
-import type { SupportedLocale, TranslationKey } from '../../types/i18n'
+import type { SupportedLocale } from '../../types/i18n'
 
 const toggleLocale = (current: SupportedLocale): SupportedLocale => (current === 'en' ? 'my' : 'en')
 
 export function LanguageToggle() {
   const { locale, setLocale, translate } = useLocaleContext()
   const nextLocale = toggleLocale(locale)
-  const ariaLabel = translate(`locale.switchTo.${nextLocale}` as TranslationKey)
+  const ariaLabel = translate(`locale.switchTo.${nextLocale}`)
 
   return (
     <button

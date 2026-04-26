@@ -16,8 +16,8 @@ type DownloadPayloadFn = (payload: SharePayload) => void
 type IsMobileDeviceFn = () => boolean
 
 vi.mock('../../../../utils/share', () => {
-  const createSharePayload = vi.fn() as MockedFunction<CreateSharePayloadFn>
-  const payloadToFile = vi.fn() as MockedFunction<PayloadToFileFn>
+  const createSharePayload = vi.fn()
+  const payloadToFile = vi.fn()
   const supportsNavigatorShare = vi.fn<SupportsNavigatorShareFn>(() => false)
   const canShareFiles = vi.fn<CanShareFilesFn>(() => false)
   const supportsClipboardImage = vi.fn<SupportsClipboardImageFn>(() => false)

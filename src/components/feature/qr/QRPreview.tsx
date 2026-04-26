@@ -11,7 +11,6 @@ import { generateFilename } from '../../../utils/export/exportCalculations'
 import { ExportModal } from '../../common/ExportModal'
 import { generateQRPaths } from '../../../utils/qrShapeRenderer'
 import type { QRConfig, QRDesignConfig } from '../../../types/qr'
-import type { TranslationKey } from '../../../types/i18n'
 
 export interface QRPreviewProps extends QRConfig {
   designConfig?: QRDesignConfig
@@ -136,14 +135,14 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
         type="button"
         data-testid="download-qr-button"
         disabled={isDownloadDisabled}
-        aria-label={translate('controls.downloadPng' as TranslationKey)}
+        aria-label={translate('controls.downloadPng')}
         onClick={openModal}
         className={`w-full rounded-full px-4 py-2 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${value
           ? 'border border-border-strong bg-transparent text-text-primary focus-visible:ring-focus-ring hover:bg-action hover:text-action-fg'
           : 'border border-border-subtle bg-surface-inset text-text-disabled cursor-not-allowed'
           } ${isDownloadDisabled ? 'cursor-not-allowed opacity-70' : ''}`}
       >
-        {translate('controls.downloadPng' as TranslationKey)}
+        {translate('controls.downloadPng')}
       </button>
     )
 
@@ -261,20 +260,20 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
           onDimensionChange={setDimension}
           onDpiChange={setDpi}
           onExport={() => void handleExport()}
-          title={translate('controls.downloadsTitle' as TranslationKey)}
-          exportButtonLabel={translate('controls.generate' as TranslationKey)}
-          cancelButtonLabel={translate('locale.toggleLabel' as TranslationKey)}
-          dimensionLabel={translate('controls.correctionLabel' as TranslationKey)}
-          dpiLabel={translate('controls.correctionLabel' as TranslationKey)}
+          title={translate('controls.downloadsTitle')}
+          exportButtonLabel={translate('controls.generate')}
+          cancelButtonLabel={translate('locale.toggleLabel')}
+          dimensionLabel={translate('controls.correctionLabel')}
+          dpiLabel={translate('controls.correctionLabel')}
           formatLabels={{
-            png: translate('controls.downloadPng' as TranslationKey),
-            svg: translate('controls.downloadSvg' as TranslationKey),
-            pdf: translate('controls.downloadPng' as TranslationKey),
+            png: translate('controls.downloadPng'),
+            svg: translate('controls.downloadSvg'),
+            pdf: translate('controls.downloadPng'),
           }}
           formatDescriptions={{
-            png: translate('controls.downloadPng' as TranslationKey),
-            svg: translate('controls.downloadSvg' as TranslationKey),
-            pdf: translate('controls.downloadPng' as TranslationKey),
+            png: translate('controls.downloadPng'),
+            svg: translate('controls.downloadSvg'),
+            pdf: translate('controls.downloadPng'),
           }}
         />
       </>

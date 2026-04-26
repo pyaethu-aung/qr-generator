@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import en from '../en.json'
 
-type Mutable<T> = { -readonly [K in keyof T]: Mutable<T[K]> }
 const localeKey = 'hero.title' as const
 
 async function loadModule() {
@@ -18,8 +17,7 @@ describe('i18n resolver', () => {
     const module = await loadModule()
     const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const originalHeading = module.locales.my.hero.title
-    const heroStrings = module.locales.my.hero as Mutable<typeof module.locales.my.hero>
-
+    const heroStrings = module.locales.my.hero
     try {
       heroStrings.title = ''
       const heading = module.getCopy('my', localeKey)
@@ -35,8 +33,7 @@ describe('i18n resolver', () => {
     const module = await loadModule()
     const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const originalHeading = module.locales.my.hero.title
-    const heroStrings = module.locales.my.hero as Mutable<typeof module.locales.my.hero>
-
+    const heroStrings = module.locales.my.hero
     try {
       heroStrings.title = ''
       module.getCopy('my', localeKey)
