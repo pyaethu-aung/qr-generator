@@ -14,7 +14,7 @@ export function useTheme() {
     if (!isBrowser) return 'light'
     try {
       const stored = localStorage.getItem(STORAGE_KEY)
-      if (stored === 'light' || stored === 'dark') return stored as Theme
+      if (stored === 'light' || stored === 'dark') return stored
     } catch (e) {
       console.warn('[theme] Could not read from localStorage', e)
     }

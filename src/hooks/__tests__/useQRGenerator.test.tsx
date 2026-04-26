@@ -102,7 +102,7 @@ describe('useQRGenerator', () => {
     // Setup fetch mock for blobs
     global.fetch = vi.fn().mockResolvedValue({
       blob: () => Promise.resolve(new Blob(['fake-png'], { type: 'image/png' })),
-    } as Response)
+    })
 
     // Setup qrcode mock
     toDataURLMock.mockResolvedValue('data:image/png;base64,fake')
