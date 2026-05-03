@@ -1,14 +1,15 @@
 <!--
 SYNC IMPACT REPORT
-Version: 1.7.4 -> 1.7.5
+Version: 1.7.5 -> 1.7.6
 Modified Principles:
-- Governance: Removed duplicate Commit Discipline rule (delegated to .agents/skills/git-commit-discipline)
+- IX. Skill-Driven Development & Agentic Workflow: rewritten to reference any skill present under `.agents/skills/` rather than two named skills (react-vite-essentials, web-design-guidelines) that did not exist in the repo. The dependent "TS Learning Mode" bullet was removed with them.
+- Governance: removed the "AGENTS.md Sync (MANDATORY)" mandate; CLAUDE.md is now the single source of AI-assistant instructions in this repo.
 Added Sections:
 - None
 Removed Sections:
-- Commit Discipline (from Governance)
+- AGENTS.md Sync (MANDATORY) (from Governance)
 Templates Updated:
-- AGENTS.md ✅ updated
+- AGENTS.md ❌ removed (consolidated into CLAUDE.md)
 Deferred Items:
 - None
 -->
@@ -43,12 +44,9 @@ All UI features MUST be planned and implemented with dark/light theme support fr
 **Rationale**: Retrofitting theme support is expensive and error-prone. Planning for themes from the beginning ensures maintainable, accessible UI with minimal technical debt. Respecting system preferences improves user experience, while persisting explicit user choices ensures preference continuity.
 
 ### IX. Skill-Driven Development & Agentic Workflow (NON-NEGOTIABLE)
-The Agent MUST treat the following skills as "Primary Source Truth" during all phases of the spec-kit workflow (`/specify`, `/plan`, `/implement`):
-- **React Standards**: Use `.agent/skills/react-vite-essentials/SKILL.md`. Every `/plan` must explicitly verify state management and hook usage against these rules.
-- **UI/UX & Design**: Use `.agent/skills/web-design-guidelines/SKILL.md`. Every `/specify` phase must define accessibility (ARIA) and responsive requirements based on these guidelines.
-- **TS Learning Mode**: When implementing code, the Agent should provide brief comments (1-sentence) explaining *why* a certain TypeScript pattern was used (e.g., Discriminated Unions vs. Interfaces) if it relates to a guideline in the skills.
+The Agent MUST treat any skills present under `.agents/skills/` (invocable via `/<skill-name>`) as "Primary Source Truth" during all phases of the spec-kit workflow (`/specify`, `/plan`, `/implement`). Where such a skill governs a domain touched by the current task — commit discipline, PR creation, README upkeep, or any future addition — the Agent MUST consult it before generating code or artifacts, and SHOULD cite the skill it followed when its guidance shaped a non-obvious decision.
 
-**Rationale**: This ensures the AI doesn't just "generate code," but acts as a senior mentor that follows industry-standard guidelines. By integrating skills into the planning phase, we prevent technical debt before it is even written.
+**Rationale**: Wiring this principle to the directory rather than to a hard-coded list of skill names means project guidance evolves with the toolkit, not with the constitution. Skills can be added or retired without amending governance, and the Agent is never asked to consult a skill that doesn't exist.
 
 ## Documentation & Standards
 
@@ -62,8 +60,6 @@ All code changes require a Pull Request review. Continuous Integration (CI) chec
 
 This Constitution supersedes previous ad-hoc practices. Amendments require a Pull Request with justification and team approval.
 
-**AGENTS.md Sync (MANDATORY)**: Whenever this Constitution is amended, `AGENTS.md` MUST be updated to reflect the changes. This ensures AI coding assistants (Antigravity, Gemini CLI, GitHub Copilot, etc.) always operate with current project guidelines.
-
 Versioning follows Semantic Versioning (MAJOR for principle changes, MINOR for additions, PATCH for clarifications). Compliance is verified during Code Review and CI.
 
-**Version**: 1.7.5 | **Ratified**: 2026-01-15 | **Last Amended**: 2026-04-01
+**Version**: 1.7.6 | **Ratified**: 2026-01-15 | **Last Amended**: 2026-05-04
