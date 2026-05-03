@@ -45,6 +45,13 @@ The app supports multiple languages (English and Burmese) via custom locale conf
 - Tests: `npm run test` (watch: `npm run test:watch`, coverage: `npm run test:coverage`)
 - Build: `npm run build`
 
+## Spec-Kit
+
+This project uses [spec-kit](https://github.com/github/spec-kit) v0.8.4 for
+AI-assisted development workflows — including structured planning, feature
+scaffolding, and commit/PR automation via skills in `.claude/skills/` and
+`.agents/skills/`.
+
 ## Docker Support
 
 [![Docker Build](https://github.com/pyaethu-aung/qr-generator/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/pyaethu-aung/qr-generator/actions/workflows/docker-publish.yml)
