@@ -42,10 +42,10 @@ CONTRIBUTING.md
 docs/
 
 # --- Specifications & Agent Config ---
-.agent/
+.agents/
+.claude/
 .specify/
 specs/
-AGENTS.md
 
 # --- CI/CD & GitHub ---
 .github/
