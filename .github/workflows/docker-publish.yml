@@ -100,22 +100,45 @@ jobs:
             type=sha
 
       # --- Build for Scanning (FR-007) ---
-      # Build and load locally so Trivy can scan before push
-      - name: Build and load Docker image for scan
+      # Build each platform separately so Trivy can scan both before push
+      - name: Build linux/amd64 image for scan
         uses: docker/build-push-action@v6.19.2
         with:
           context: .
-          outputs: type=docker,dest=/tmp/image.tar
+          platforms: linux/amd64
+          outputs: type=docker,dest=/tmp/image-amd64.tar
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # --- Vulnerability Scanning (FR-007) ---
+      # --- Vulnerability Scanning — amd64 (FR-007) ---
       # Fail on fixable CRITICAL/HIGH CVEs only (--ignore-unfixed)
-      - name: Run Trivy vulnerability scanner
+      - name: Run Trivy vulnerability scanner (amd64)
         uses: aquasecurity/trivy-action@v0.35.0
         with:
-          input: /tmp/image.tar
+          input: /tmp/image-amd64.tar
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          trivyignores: .trivyignore
+
+      - name: Build linux/arm64 image for scan
+        uses: docker/build-push-action@v6.19.2
+        with:
+          context: .
+          platforms: linux/arm64
+          outputs: type=docker,dest=/tmp/image-arm64.tar
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # --- Vulnerability Scanning — arm64 (FR-007) ---
+      - name: Run Trivy vulnerability scanner (arm64)
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          input: /tmp/image-arm64.tar
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
