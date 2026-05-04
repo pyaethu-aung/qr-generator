@@ -43,5 +43,7 @@ jobs:
         run: npm run lint -- --cache
       - name: Type Check
         run: npm exec tsc -- --noEmit
+      - name: Test
+        run: npm run test:coverage
       - name: Build Verification
         run: npm run build
