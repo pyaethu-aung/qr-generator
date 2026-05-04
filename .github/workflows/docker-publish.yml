@@ -2,10 +2,9 @@
 # Docker CI/CD Pipeline — QR Generator
 #
 # Triggers:
-#   - push to main:        Build + Scan (no push)
-#   - tag v*.*.*:          Build + Scan + Push to GHCR + Cosign Sign
+#   - tag v*.*.*:           Build + Scan + Push to GHCR + Cosign Sign
 #   - pull_request to main: Build + Scan (no push)
-#   - daily cron:          Build + Scan for new CVEs (no push)
+#   - weekly cron:          Build + Scan for new CVEs (no push)
 # =============================================================================
 
 name: Docker
@@ -126,7 +125,7 @@ jobs:
 
       # --- Build and Push (FR-005, FR-013) ---
       # Push to GHCR ONLY on semver tag pushes (v*.*.*)
-      # Single platform: linux/amd64 only (per clarification)
+      # Multi-platform: linux/amd64 + linux/arm64
       - name: Build and push Docker image
         id: build-and-push
         uses: docker/build-push-action@v6.19.2
