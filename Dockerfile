@@ -14,7 +14,7 @@
 # ---------------------------------------------------------------------------
 # Stage 1: Builder — compile TypeScript + bundle with Vite
 # ---------------------------------------------------------------------------
-FROM node:20-alpine AS builder
+FROM --platform=$BUILDPLATFORM node:20-alpine AS builder
 
 WORKDIR /app
 
