@@ -17,12 +17,18 @@ on:
     branches: [ "main" ]
     paths:
       - '.github/workflows/docker-publish.yml'
+      - 'Dockerfile'
+      - '.docker/nginx.conf'
       - 'src/**'
+      - 'public/**'
       - 'index.html'
       - 'package.json'
       - 'package-lock.json'
-      - 'vite.config.js'
-      - 'eslint.config.js'
+      - 'vite.config.ts'
+      - 'tsconfig.*'
+      - 'tailwind.config.js'
+      - 'postcss.config.cjs'
+      - '.nvmrc'
   schedule:
     - cron: '35 6 * * 0'  # Weekly on Sundays at 06:35 UTC
 
