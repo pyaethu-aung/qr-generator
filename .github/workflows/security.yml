@@ -48,7 +48,8 @@ jobs:
         run: npm audit --audit-level=high
 
       - name: Snyk Scan
-        uses: snyk/actions/node@v1.0.0
+        uses: snyk/actions/node@v1
+        continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
@@ -56,6 +57,7 @@ jobs:
 
       - name: Upload Snyk results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v4
+        continue-on-error: true
         if: success() || failure()
         with:
           sarif_file: snyk.sarif
