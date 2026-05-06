@@ -74,3 +74,14 @@ Two `PreToolUse` hooks in `.claude/settings.json` enforce that `git commit` and 
 - **Dependabot**: runs daily for npm; no auto-merge
 
 If the hosting URL changes from `pyaethu-aung.github.io`, update the `url` property in `src/components/common/SEOHead.tsx` to keep JSON-LD structured data valid.
+
+<!-- SPECKIT START -->
+## Active Feature
+
+**Branch**: `024-update-website-design`
+**Plan**: [specs/024-update-website-design/plan.md](specs/024-update-website-design/plan.md)
+**Spec**: [specs/024-update-website-design/spec.md](specs/024-update-website-design/spec.md)
+
+UI-only redesign to match `design.pen` for desktop and mobile (light + dark themes).
+Key changes: lucide-react icons, pill controls (EC level, pixel pattern), circular nav buttons, responsive navbar, tall preview area, theme transition 150ms.
+<!-- SPECKIT END -->
