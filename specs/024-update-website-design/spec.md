@@ -39,8 +39,8 @@ A user interacting with the Settings column sees properly styled inputs, pill se
 3. **Given** the color picker row, **When** rendered in light mode, **Then** Foreground defaults to #000000 and Background to #FFFFFF, each showing a color circle + monospace hex label.
 4. **Given** the Eye Shape field, **When** rendered, **Then** a dropdown box shows "Square" with a chevron-down icon aligned to the right.
 5. **Given** the Pixel Pattern row, **When** Square is active, **Then** the Square pill uses `$action` fill and the Dots pill uses `$surface-inset`.
-6. **Given** the Generate button, **When** rendered, **Then** it is full-width, 48 px tall, fully rounded, filled with `$action`, and (in dark mode) includes a `zap` icon before the label.
-7. **Given** the download row, **When** rendered, **Then** PNG and SVG buttons are equal-width, styled as secondary (raised surface + subtle border), and (in dark mode) include a `download` icon.
+6. **Given** the Generate button, **When** rendered in either theme, **Then** it is full-width, 48 px tall, fully rounded, filled with `$action`, and includes a `zap` icon before the label.
+7. **Given** the download row, **When** rendered in either theme, **Then** PNG and SVG buttons are equal-width, styled as secondary (raised surface + subtle border), and include a `download` icon before the label.
 
 ---
 
@@ -54,7 +54,8 @@ A user sees the Live Preview column with a large inset preview area displaying t
 
 **Acceptance Scenarios**:
 
-1. **Given** the Preview column, **When** rendered on desktop, **Then** the preview area is a large inset box (rounded corners, subtle border) centered both vertically and horizontally around a 220×220 px white QR card.
+1. **Given** the Preview column, **When** rendered on desktop, **Then** the preview area is a large inset box (536 px tall, rounded corners, subtle border) centered both vertically and horizontally around a 220×220 px white QR card.
+2. **Given** the Preview column, **When** rendered on mobile, **Then** the preview area has auto height (shrinks to fit the QR card + padding, ~260 px) with no fixed height applied.
 2. **Given** the Share button below the preview area, **When** rendered, **Then** it shows a `share-2` icon and the label "Share QR Code" centered, styled as a secondary surface button.
 
 ---
@@ -87,7 +88,7 @@ A user opening the app on a mobile browser sees a readable, single-column layout
 
 1. **Given** a mobile viewport (<768 px wide), **When** the page loads, **Then** the card columns stack vertically (Settings above Preview) with no horizontal overflow.
 2. **Given** a mobile viewport, **When** the page loads, **Then** the card wrapper removes the 170 px horizontal padding so the card uses full viewport width with appropriate smaller margins.
-3. **Given** a mobile viewport, **When** the page loads, **Then** the navbar collapses or wraps gracefully — logo/title remain readable and icon buttons remain tappable (≥36×36 px touch target).
+3. **Given** a mobile viewport, **When** the page loads, **Then** the navbar subtitle ("Generate & customize QR codes instantly") is hidden; the brand title row (✨ + "QR Code Generator") and icon buttons remain visible and tappable (≥36×36 px touch target).
 4. **Given** a mobile viewport, **When** the page loads, **Then** all form controls (inputs, pills, dropdowns, buttons) are full-width and have adequate tap targets (≥44 px tall).
 
 ---
@@ -111,8 +112,9 @@ A user opening the app on a mobile browser sees a readable, single-column layout
 - **FR-007**: The UI MUST apply dark-mode semantic tokens correctly when the `.dark` class is active on `<html>`, matching the dark frame in `design.pen`.
 - **FR-008**: The UI MUST be responsive — on mobile viewports the card columns MUST stack vertically and horizontal overflow MUST be eliminated.
 - **FR-009**: All spacing, corner radii, and typography MUST use semantic design tokens (CSS custom properties) — no hard-coded hex values in component classes.
-- **FR-010**: The theme-toggle button MUST display the `sun` icon in light mode and the `moon` icon in dark mode.
-- **FR-011**: The Generate button MUST include a `zap` icon in dark mode; download buttons MUST include `download` icons in dark mode.
+- **FR-010**: The theme-toggle button MUST display the `sun` icon in light mode and the `moon` icon in dark mode, and MUST have an `aria-label` (e.g., "Toggle theme").
+- **FR-013**: The language-toggle button MUST have an `aria-label` (e.g., "Change language") to support screen reader users.
+- **FR-011**: The Generate button MUST include a `zap` icon in both light and dark mode; download buttons MUST include a `download` icon in both light and dark mode.
 - **FR-012**: The color picker fields MUST display the hex value in a monospace font.
 
 ### Key Entities
@@ -127,9 +129,19 @@ A user opening the app on a mobile browser sees a readable, single-column layout
 
 - **SC-001**: A developer can open the app at any desktop viewport ≥1024 px wide and visually confirm all sections (navbar, hero, card, footer) match `design.pen` without referencing any other document.
 - **SC-002**: Every interactive control in the Settings column is reachable and visually correct on a 375 px wide mobile viewport without horizontal scrolling.
-- **SC-003**: Toggling between light and dark mode produces a complete theme switch — no element retains a hard-coded color that conflicts with the active theme.
+- **SC-003**: Toggling between light and dark mode produces a complete theme switch — no element retains a hard-coded color that conflicts with the active theme. The switch includes a ~150 ms CSS transition on background and surface colors.
 - **SC-004**: All existing Vitest tests continue to pass (≥85% coverage maintained) after the design changes are applied.
 - **SC-005**: `npm run lint` and `npm run build` both pass with zero errors after implementation.
+
+## Clarifications
+
+### Session 2026-05-07
+
+- Q: On mobile, what should happen to the navbar subtitle? → A: Hide subtitle on mobile (display: none below the mobile breakpoint); brand title row and icon buttons remain visible.
+- Q: When the user toggles the theme, should the UI transition animate or switch instantly? → A: Subtle fade transition (~150 ms) on background and surface colors.
+- Q: Do icon-only navbar buttons need accessible labels? → A: Yes — add `aria-label` to both (e.g., "Toggle theme", "Change language").
+- Q: What height should the preview area be on mobile? → A: Auto height — shrinks to fit the QR card + padding (~260 px); no fixed height on mobile.
+- Q: Should the Generate and download buttons show icons in light mode, or only in dark mode as per design.pen? → A: Icons in both themes for consistency; design.pen light theme updated to match.
 
 ## Assumptions
 
