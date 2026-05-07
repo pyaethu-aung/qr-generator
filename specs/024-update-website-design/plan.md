@@ -56,18 +56,23 @@ specs/024-update-website-design/
 ```text
 package.json                                         ← add lucide-react
 index.html                                           ← add Geist Mono font
-src/index.css                                        ← adjust transition to 150ms
+src/index.css                                        ← adjust transition to 150ms; replace entire
+                                                       color token palette with warm earthy system
+                                                       sourced from design.pen variables
 
+src/components/Layout/Layout.tsx                     ← remove radial sky-blue gradient overlay
 src/components/Navigation/Navbar.tsx                 ← hide subtitle on mobile; circular icon btns
 src/components/common/ThemeToggle.tsx                ← circular 36px, lucide sun/moon SVG
 src/components/common/LanguageToggle.tsx             ← circular 36px, lucide globe SVG
 
-src/components/feature/qr/QRGenerator.tsx            ← card radius/padding/gap; hero gap
+src/components/feature/qr/QRGenerator.tsx            ← card radius/padding/gap; hero gap;
+                                                       remove sky/fuchsia/indigo gradient blobs
 src/components/feature/qr/QRControls.tsx             ← EC pills; pixel pills; color boxes;
                                                        generate btn + icon; download btns + icon
 src/components/feature/qr/QRPreview.tsx              ← tall inset preview; share btn below
 
-src/App.tsx                                          ← footer: h-16, py-6
+src/App.tsx                                          ← footer: h-16, py-6; remove py-8/py-16/py-20
+                                                       from <main> so hero controls its own top spacing
 
 Tests updated:
 src/components/common/__tests__/ThemeToggle.test.tsx
@@ -118,7 +123,24 @@ src/components/feature/qr/__tests__/QRPreview.test.tsx
 | Element | Current | Target |
 |---|---|---|
 | Eyebrow gap | `mt-2` | `gap-3` in flex column (12px) |
-| Padding | `py-8 sm:py-16 lg:py-20` | `pt-16 pb-8 px-12` (64/48/32/48 px) |
+| Top spacing | `py-8 sm:py-16 lg:py-20` on `<main>` in `App.tsx` + `pt-16` on hero div = 96–144px total | Remove `py` from `<main>`; hero div's `pt-16` (64px) is the sole top spacing, matching design |
+
+#### Color Tokens
+
+| Element | Current | Target |
+|---|---|---|
+| `surface` (light) | `#ffffff` | `#F3EBE2` warm beige |
+| `action` | `#4f46e5` indigo | `#D4916E` terracotta |
+| `surface` (dark) | `#020617` cool near-black | `#1A1612` warm near-black |
+| `action` (dark) | `#38bdf8` sky blue | `#D4916E` terracotta (same as light) |
+| All surface/text/border tokens | Cool blue/slate palette | Warm earthy palette from `design.pen` variables |
+
+#### Decorative Gradients
+
+| Element | Current | Target |
+|---|---|---|
+| `Layout.tsx` | Radial sky-blue gradient overlay on entire page | Remove — design has flat surface background |
+| `QRGenerator.tsx` | Sky/fuchsia/indigo blurred blob decorations | Remove — absent from design |
 
 #### Main Card
 

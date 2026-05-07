@@ -63,14 +63,22 @@ describe('QRControls configuration updates', () => {
     expect(onValueChange).toHaveBeenCalledWith('https://example.com')
   })
 
-  it('calls onEcLevelChange when the correction level changes', () => {
+  it('calls onEcLevelChange when an EC Level pill button is clicked', () => {
     const { onEcLevelChange } = setup()
 
-    fireEvent.change(screen.getByRole('combobox', { name: /Error Correction/i }), {
-      target: { value: 'H' },
-    })
+    fireEvent.click(screen.getByRole('button', { name: 'H 30%' }))
 
     expect(onEcLevelChange).toHaveBeenCalledWith('H')
+  })
+
+  it('marks the active EC Level pill with aria-pressed=true', () => {
+    setup({ ecLevel: 'M' })
+
+    const activeButton = screen.getByRole('button', { name: 'M 15%' })
+    expect(activeButton).toHaveAttribute('aria-pressed', 'true')
+
+    const inactiveButton = screen.getByRole('button', { name: 'L 7%' })
+    expect(inactiveButton).toHaveAttribute('aria-pressed', 'false')
   })
 
   it('[US1] calls onEyeShapeChange when eye shape dropdown changes', () => {
@@ -83,14 +91,19 @@ describe('QRControls configuration updates', () => {
     expect(onEyeShapeChange).toHaveBeenCalledWith('Hexagon')
   })
 
-  it('[US2] calls onPixelPatternChange when pixel pattern dropdown changes', () => {
+  it('[US2] calls onPixelPatternChange when a pixel pattern pill is clicked', () => {
     const { onPixelPatternChange } = setup()
 
-    fireEvent.change(screen.getByRole('combobox', { name: /Pixel Pattern/i }), {
-      target: { value: 'Dots' },
-    })
+    fireEvent.click(screen.getByRole('button', { name: 'Dots' }))
 
     expect(onPixelPatternChange).toHaveBeenCalledWith('Dots')
+  })
+
+  it('marks the active pixel pattern pill with aria-pressed=true', () => {
+    setup({ pixelPattern: 'Square' })
+
+    const activeButton = screen.getByRole('button', { name: 'Square' })
+    expect(activeButton).toHaveAttribute('aria-pressed', 'true')
   })
 
   it('calls color change handlers when pickers are used', () => {
@@ -132,5 +145,31 @@ describe('QRControls configuration updates', () => {
     })
 
     expect(onGenerate).not.toHaveBeenCalled()
+  })
+
+  it('renders a zap icon in the Generate button', () => {
+    setup()
+    const generateButton = screen.getByRole('button', { name: /Generate QR Code/i })
+    expect(generateButton.querySelector('svg')).toBeInTheDocument()
+  })
+
+  it('renders download buttons with download icons when handlers provided', () => {
+    const onDownloadPng = vi.fn()
+    const onDownloadSvg = vi.fn()
+    setup({ onDownloadPng, onDownloadSvg, canDownload: true })
+
+    const pngButton = screen.getByRole('button', { name: /Download PNG/i })
+    const svgButton = screen.getByRole('button', { name: /Download SVG/i })
+
+    expect(pngButton.querySelector('svg')).toBeInTheDocument()
+    expect(svgButton.querySelector('svg')).toBeInTheDocument()
+  })
+
+  it('does not render a "Download Formats" section divider', () => {
+    const onDownloadPng = vi.fn()
+    const onDownloadSvg = vi.fn()
+    setup({ onDownloadPng, onDownloadSvg })
+
+    expect(screen.queryByText('Download Formats')).not.toBeInTheDocument()
   })
 })

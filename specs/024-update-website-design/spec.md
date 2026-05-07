@@ -2,7 +2,7 @@
 
 **Feature Branch**: `024-update-website-design`
 **Created**: 2026-05-06
-**Status**: Draft
+**Status**: Locked
 **Input**: User description: "I want to update the website design for both desktop and mobile view based on @design.pen. It contains both light and dark theme."
 
 ## User Scenarios & Testing *(mandatory)*

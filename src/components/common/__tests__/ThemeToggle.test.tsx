@@ -19,7 +19,7 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 })
 
-describe('ThemeToggle (Restored)', () => {
+describe('ThemeToggle', () => {
   beforeEach(() => {
     window.localStorage.clear()
     vi.clearAllMocks()
@@ -35,36 +35,40 @@ describe('ThemeToggle (Restored)', () => {
     )
   }
 
-  it('renders without disabled styles and has no toast', () => {
+  it('renders without disabled styles', () => {
     renderWithProviders(<ThemeToggle />)
     const button = screen.getByRole('button')
 
     expect(button).not.toHaveClass('opacity-50')
     expect(button).not.toHaveClass('cursor-not-allowed')
     expect(button).not.toHaveAttribute('aria-disabled')
-
-    // Toast should be gone
-    expect(screen.queryByText('Coming soon')).not.toBeInTheDocument()
   })
 
-  it('toggles theme on click', () => {
-    renderWithProviders(<ThemeToggle />)
+  it('renders an SVG icon (Sun or Moon)', () => {
+    const { container } = renderWithProviders(<ThemeToggle />)
+    expect(container.querySelector('svg')).toBeInTheDocument()
+  })
+
+  it('toggles theme on click and swaps SVG icon', () => {
+    const { container } = renderWithProviders(<ThemeToggle />)
     const button = screen.getByRole('button')
 
-    // Initial: light mode (system mocked as light, no storage)
-    expect(button.textContent).toContain('🌙')
+    // Initial light mode: Moon icon
+    expect(container.querySelector('svg')).toBeInTheDocument()
+    expect(button).toHaveAttribute('aria-label', 'Switch to dark theme')
 
     fireEvent.click(button)
 
-    // After click: dark mode
-    expect(button.textContent).toContain('☀️')
+    // After click: dark mode, Sun icon
     expect(window.document.documentElement.classList.contains('dark')).toBe(true)
+    expect(button).toHaveAttribute('aria-label', 'Switch to light theme')
+    expect(container.querySelector('svg')).toBeInTheDocument()
 
     fireEvent.click(button)
 
-    // After second click: light mode
-    expect(button.textContent).toContain('🌙')
+    // After second click: back to light mode
     expect(window.document.documentElement.classList.contains('dark')).toBe(false)
+    expect(button).toHaveAttribute('aria-label', 'Switch to dark theme')
   })
 
   it('reflects theme from localStorage', () => {
@@ -72,7 +76,7 @@ describe('ThemeToggle (Restored)', () => {
     renderWithProviders(<ThemeToggle />)
     const button = screen.getByRole('button')
 
-    expect(button.textContent).toContain('☀️')
     expect(window.document.documentElement.classList.contains('dark')).toBe(true)
+    expect(button).toHaveAttribute('aria-label', 'Switch to light theme')
   })
 })

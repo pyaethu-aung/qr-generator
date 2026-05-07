@@ -14,6 +14,11 @@ const renderToggle = () =>
   )
 
 describe('LanguageToggle', () => {
+  it('renders a Globe SVG icon', () => {
+    const { container } = renderToggle()
+    expect(container.querySelector('svg')).toBeInTheDocument()
+  })
+
   it('is focusable through keyboard navigation', async () => {
     const user = userEvent.setup()
     renderToggle()
@@ -22,6 +27,12 @@ describe('LanguageToggle', () => {
 
     const toggle = screen.getByRole('button', { name: /switch to burmese/i })
     expect(toggle).toHaveFocus()
+  })
+
+  it('has an accessible aria-label', () => {
+    renderToggle()
+    const toggle = screen.getByRole('button', { name: /switch to burmese/i })
+    expect(toggle).toHaveAttribute('aria-label')
   })
 
   it('updates its accessible label to describe the next language', async () => {
