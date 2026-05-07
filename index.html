@@ -3,7 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="./logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#F3EBE2" />
     <title>QR Code Generator</title>
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -21,6 +25,8 @@
           } else {
             document.documentElement.classList.remove('dark');
           }
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', isDark ? '#1A1612' : '#F3EBE2');
         } catch (e) {}
       })();
     </script>

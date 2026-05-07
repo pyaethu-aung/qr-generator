@@ -15,7 +15,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     } else {
       root.classList.remove('dark')
     }
+    const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')
+    if (meta) meta.content = theme === 'dark' ? '#1A1612' : '#F3EBE2'
   }, [theme])
+
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      document.documentElement.classList.add('transitions-ready')
+    })
+  }, [])
 
   return (
     <ThemeContext.Provider value={themeState}>
