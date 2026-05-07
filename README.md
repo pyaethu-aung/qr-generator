@@ -40,6 +40,7 @@ The app supports multiple languages (English and Burmese) via custom locale conf
 
 - Install: `npm install`
 - Dev server: `npm run dev`
+- Browser testing (MCP): `npx playwright install chromium` (one-time setup for Playwright MCP)
 - Lint: `npm run lint` (fix: `npm run lint:fix`)
 - Format check: `npm run format` (write: `npm run format:fix`)
 - Tests: `npm run test` (watch: `npm run test:watch`, coverage: `npm run test:coverage`)
