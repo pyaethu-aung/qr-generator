@@ -1,14 +1,8 @@
 import { useRef, useCallback, useId, forwardRef } from 'react'
+import { Share2 } from 'lucide-react'
 
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import { useQRShare } from '../../../hooks/useQRShare'
-import { useExportState } from '../../../hooks/useExportState'
-import { exportPng } from '../../../utils/export/pngExporter'
-import { exportSvg } from '../../../utils/export/svgExporter'
-import { exportPdf } from '../../../utils/export/pdfExporter'
-import { downloadBlob } from '../../../utils/download'
-import { generateFilename } from '../../../utils/export/exportCalculations'
-import { ExportModal } from '../../common/ExportModal'
 import { generateQRPaths } from '../../../utils/qrShapeRenderer'
 import type { QRConfig, QRDesignConfig } from '../../../types/qr'
 
@@ -19,72 +13,22 @@ export interface QRPreviewProps extends QRConfig {
 }
 
 export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
-  ({ value, ecLevel, fgColor, bgColor, size = 256, designConfig = { eyeShape: 'Square', pixelPattern: 'Square' }, className, style }, forwardedRef) => {
+  ({ value, ecLevel, fgColor, bgColor, size = 220, designConfig = { eyeShape: 'Square', pixelPattern: 'Square' }, className, style }, forwardedRef) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
     const { translate } = useLocaleContext()
     const { share, isSharing, shareRequest } = useQRShare()
-    const { state: exportState, openModal, closeModal, setFormat, setDimension, setDpi, startExport, exportSuccess, exportError } = useExportState()
 
     const ariaPlaceholder = translate('preview.ariaPlaceholder')
     const ariaValueTemplate = translate('preview.ariaValue')
     const shareButtonLabel = translate('preview.shareButtonLabel')
     const placeholderCopy = translate('preview.placeholder')
 
-    const handleExport = useCallback(async () => {
-      if (!value) return
-
-      try {
-        startExport()
-
-        if (exportState.format === 'png') {
-          if (!canvasRef.current) throw new Error('Canvas not ready')
-          const blob = await exportPng(canvasRef.current, exportState.dimension)
-          const filename = generateFilename('png', 'qrcode', exportState.dimension)
-          downloadBlob(blob, filename)
-          exportSuccess()
-          setTimeout(() => closeModal(), 500)
-        } else if (exportState.format === 'svg') {
-          const blob = await exportSvg(value, {
-            value,
-            ecLevel,
-            fgColor,
-            bgColor,
-            margin: 0,
-            designConfig,
-          })
-          const filename = generateFilename('svg', 'qrcode')
-          downloadBlob(blob, filename)
-          exportSuccess()
-          setTimeout(() => closeModal(), 500)
-        } else if (exportState.format === 'pdf') {
-          const blob = await exportPdf(value, {
-            value,
-            ecLevel,
-            fgColor,
-            bgColor,
-            margin: 0,
-            dpi: exportState.dpi,
-            dimension: exportState.dimension,
-            designConfig, // Assuming pdfExporter takes this too
-          })
-          const filename = generateFilename('pdf', 'qrcode', exportState.dimension, exportState.dpi)
-          downloadBlob(blob, filename)
-          exportSuccess()
-          setTimeout(() => closeModal(), 500)
-        }
-      } catch (error) {
-        exportError(
-          error instanceof Error ? error.message : translate('preview.shareStatusFailed'),
-        )
-      }
-    }, [exportState.format, exportState.dimension, exportState.dpi, value, ecLevel, fgColor, bgColor, designConfig, translate, startExport, exportSuccess, exportError, closeModal])
-
     const assignForwardedRef = useCallback(
       (node: HTMLCanvasElement | null) => {
         if (typeof forwardedRef === 'function') {
           forwardedRef(node)
         } else if (forwardedRef && typeof forwardedRef === 'object') {
-          ; (forwardedRef as { current: HTMLCanvasElement | null }).current = node
+          ;(forwardedRef as { current: HTMLCanvasElement | null }).current = node
         }
       },
       [forwardedRef],
@@ -101,25 +45,15 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
       })
 
     const isShareDisabled = !value || isSharing
-    const isDownloadDisabled = !value || exportState.isExporting
     const shareStatusId = useId()
     const shareStatusMessage = (() => {
-      if (!shareRequest) {
-        return undefined
-      }
-
+      if (!shareRequest) return undefined
       switch (shareRequest.status) {
         case 'pending':
           return translate('preview.shareStatusSharing')
         case 'shared':
-          if (shareRequest.method === 'clipboard') {
-            return translate('preview.shareStatusClipboard')
-          }
-
-          if (shareRequest.method === 'download') {
-            return translate('preview.shareStatusDownloaded')
-          }
-
+          if (shareRequest.method === 'clipboard') return translate('preview.shareStatusClipboard')
+          if (shareRequest.method === 'download') return translate('preview.shareStatusDownloaded')
           return translate('preview.shareStatusShared')
         case 'canceled':
           return translate('preview.shareStatusCanceled')
@@ -130,70 +64,10 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
       }
     })()
 
-    const downloadButton = (
-      <button
-        type="button"
-        data-testid="download-qr-button"
-        disabled={isDownloadDisabled}
-        aria-label={translate('controls.downloadPng')}
-        onClick={openModal}
-        className={`w-full rounded-full px-4 py-2 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${value
-          ? 'border border-border-strong bg-transparent text-text-primary focus-visible:ring-focus-ring hover:bg-action hover:text-action-fg'
-          : 'border border-border-subtle bg-surface-inset text-text-disabled cursor-not-allowed'
-          } ${isDownloadDisabled ? 'cursor-not-allowed opacity-70' : ''}`}
-      >
-        {translate('controls.downloadPng')}
-      </button>
-    )
-
-    const shareButton = (
-      <button
-        type="button"
-        data-testid="share-qr-button"
-        disabled={isShareDisabled}
-        aria-label={shareButtonLabel}
-        aria-busy={isSharing}
-        aria-disabled={isShareDisabled}
-        aria-describedby={shareStatusMessage ? shareStatusId : undefined}
-        onClick={handleShareClick}
-        className={`w-full rounded-full px-4 py-2 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${value
-          ? 'border border-action bg-action text-action-fg focus-visible:ring-focus-ring hover:bg-action/90'
-          : 'border border-border-subtle bg-surface-inset text-text-disabled cursor-not-allowed'
-          } ${isShareDisabled ? 'cursor-not-allowed opacity-70' : ''} ${isSharing ? 'cursor-wait' : ''
-          }`}
-      >
-        {shareButtonLabel}
-      </button>
-    )
-
-    const shareStatusElement = shareStatusMessage ? (
-      <p
-        data-testid="share-status"
-        role="status"
-        aria-live="polite"
-        id={shareStatusId}
-        className="text-sm text-text-secondary"
-      >
-        {shareStatusMessage}
-      </p>
-    ) : null
-
-    const shareControls = (
-      <div className="mt-4 w-full flex flex-col gap-2">
-        <div className="grid grid-cols-2 gap-2">
-          {downloadButton}
-          {shareButton}
-        </div>
-        {shareStatusElement}
-      </div>
-    )
-
     return (
-      <>
-        <div
-          style={style}
-          className={`flex flex-col items-center p-3 sm:p-4 bg-surface-raised rounded-lg shadow-sm border border-border-strong w-full ${className ?? ''}`}
-        >
+      <div className={`flex flex-col gap-4 ${className ?? ''}`} style={style}>
+        {/* Tall inset preview box */}
+        <div className="flex items-center justify-center md:h-[536px] rounded-lg border border-border-subtle bg-surface-inset">
           {!value ? (
             <div
               className="flex items-center justify-center bg-surface-inset text-text-disabled rounded-lg border-2 border-dashed border-border-subtle"
@@ -204,79 +78,82 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
               <span className="text-sm">{placeholderCopy}</span>
             </div>
           ) : (
-            <canvas
-              ref={(node) => {
-                canvasRef.current = node
-                assignForwardedRef(node)
-                
-                // Mount-time SVG rendering algorithm
-                if (node && value) {
-                  const ctx = node.getContext('2d')
-                  if (ctx) {
-                    const { dataPath, eyesPath, size: matrixSize } = generateQRPaths(
-                      value,
-                      ecLevel,
-                      designConfig.eyeShape,
-                      designConfig.pixelPattern
-                    );
-                    const viewBoxSize = matrixSize * 10;
-                    const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewBoxSize} ${viewBoxSize}" width="${size}" height="${size}">
-                      <rect width="100%" height="100%" fill="${bgColor}" />
-                      <path d="${dataPath}" fill="${fgColor}" shape-rendering="crispEdges" />
-                      <path d="${eyesPath}" fill="${fgColor}" fill-rule="evenodd" />
-                    </svg>`
+            <div className="rounded-lg bg-white p-4">
+              <canvas
+                ref={(node) => {
+                  canvasRef.current = node
+                  assignForwardedRef(node)
 
-                    const img = new Image();
-                    img.onload = () => {
-                      ctx.clearRect(0, 0, size, size);
-                      ctx.drawImage(img, 0, 0, size, size);
-                    };
-                    img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgString);
+                  if (node && value) {
+                    const ctx = node.getContext('2d')
+                    if (ctx) {
+                      const { dataPath, eyesPath, size: matrixSize } = generateQRPaths(
+                        value,
+                        ecLevel,
+                        designConfig.eyeShape,
+                        designConfig.pixelPattern,
+                      )
+                      const viewBoxSize = matrixSize * 10
+                      const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewBoxSize} ${viewBoxSize}" width="${size}" height="${size}">
+                        <rect width="100%" height="100%" fill="${bgColor}" />
+                        <path d="${dataPath}" fill="${fgColor}" shape-rendering="crispEdges" />
+                        <path d="${eyesPath}" fill="${fgColor}" fill-rule="evenodd" />
+                      </svg>`
+
+                      const img = new Image()
+                      img.onload = () => {
+                        ctx.clearRect(0, 0, size, size)
+                        ctx.drawImage(img, 0, 0, size, size)
+                      }
+                      img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgString)
+                    }
                   }
-                }
-              }}
-              data-testid="qr-code-canvas"
-              data-value={value}
-              data-fg={fgColor}
-              data-bg={bgColor}
-              width={size}
-              height={size}
-              role="img"
-              aria-label={formatValueLabel(ariaValueTemplate, { value })}
-            />
+                }}
+                data-testid="qr-code-canvas"
+                data-value={value}
+                data-fg={fgColor}
+                data-bg={bgColor}
+                width={size}
+                height={size}
+                role="img"
+                aria-label={formatValueLabel(ariaValueTemplate, { value })}
+              />
+            </div>
           )}
-          {shareControls}
         </div>
 
-        <ExportModal
-          isOpen={exportState.isOpen}
-          format={exportState.format}
-          dimension={exportState.dimension}
-          dpi={exportState.dpi}
-          isExporting={exportState.isExporting}
-          error={exportState.error}
-          onClose={closeModal}
-          onFormatChange={setFormat}
-          onDimensionChange={setDimension}
-          onDpiChange={setDpi}
-          onExport={() => void handleExport()}
-          title={translate('controls.downloadsTitle')}
-          exportButtonLabel={translate('controls.generate')}
-          cancelButtonLabel={translate('locale.toggleLabel')}
-          dimensionLabel={translate('controls.correctionLabel')}
-          dpiLabel={translate('controls.correctionLabel')}
-          formatLabels={{
-            png: translate('controls.downloadPng'),
-            svg: translate('controls.downloadSvg'),
-            pdf: translate('controls.downloadPng'),
-          }}
-          formatDescriptions={{
-            png: translate('controls.downloadPng'),
-            svg: translate('controls.downloadSvg'),
-            pdf: translate('controls.downloadPng'),
-          }}
-        />
-      </>
+        {/* Share button below the inset box */}
+        <button
+          type="button"
+          data-testid="share-qr-button"
+          disabled={isShareDisabled}
+          aria-label={shareButtonLabel}
+          aria-busy={isSharing}
+          aria-disabled={isShareDisabled}
+          aria-describedby={shareStatusMessage ? shareStatusId : undefined}
+          onClick={handleShareClick}
+          className={`flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+            value
+              ? 'border-border-subtle bg-surface-raised text-text-primary focus-visible:ring-focus-ring hover:bg-surface-inset'
+              : 'border-border-subtle bg-surface-inset text-text-disabled cursor-not-allowed'
+          } ${isShareDisabled ? 'cursor-not-allowed opacity-70' : ''} ${isSharing ? 'cursor-wait' : ''}`}
+        >
+          <Share2 size={18} aria-hidden />
+          {shareButtonLabel}
+        </button>
+
+        {shareStatusMessage && (
+          <p
+            data-testid="share-status"
+            role="status"
+            aria-live="polite"
+            id={shareStatusId}
+            className="text-sm text-text-secondary"
+          >
+            {shareStatusMessage}
+          </p>
+        )}
+      </div>
     )
   },
 )

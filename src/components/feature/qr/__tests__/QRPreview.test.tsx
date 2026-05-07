@@ -1,4 +1,3 @@
-
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { LocaleProvider } from '../../../../hooks/LocaleProvider'
@@ -27,7 +26,7 @@ describe('QRPreview', () => {
     expect(screen.getByRole('img', { name: 'QR Code Placeholder' })).toBeInTheDocument()
   })
 
-  it('renders a disabled share control while no QR is generated', () => {
+  it('renders a disabled share button while no QR is generated', () => {
     render(
       <LocaleProvider>
         <QRPreview {...defaultProps} value="" />
@@ -40,6 +39,40 @@ describe('QRPreview', () => {
     expect(shareButton).not.toHaveAttribute('aria-describedby')
   })
 
+  it('renders share button with a share-2 icon', () => {
+    render(
+      <LocaleProvider>
+        <QRPreview {...defaultProps} value="" />
+      </LocaleProvider>,
+    )
+
+    const shareButton = screen.getByRole('button', { name: 'Share QR code' })
+    expect(shareButton.querySelector('svg')).toBeInTheDocument()
+  })
+
+  it('renders the share button below the preview area (not inside it)', () => {
+    const { container } = render(
+      <LocaleProvider>
+        <QRPreview {...defaultProps} value="" />
+      </LocaleProvider>,
+    )
+
+    const previewBox = container.querySelector('.bg-surface-inset.rounded-lg.border')
+    const shareButton = screen.getByRole('button', { name: 'Share QR code' })
+    expect(previewBox).toBeInTheDocument()
+    expect(previewBox?.contains(shareButton)).toBe(false)
+  })
+
+  it('does not render a download button inside the preview', () => {
+    render(
+      <LocaleProvider>
+        <QRPreview {...defaultProps} value="" />
+      </LocaleProvider>,
+    )
+
+    expect(screen.queryByTestId('download-qr-button')).not.toBeInTheDocument()
+  })
+
   it('renders QR code canvas when value is provided', () => {
     render(
       <LocaleProvider>
@@ -47,7 +80,6 @@ describe('QRPreview', () => {
       </LocaleProvider>,
     )
 
-    // The placeholder should be gone
     expect(screen.queryByText('Enter text to generate')).not.toBeInTheDocument()
 
     const qrCode = screen.getByTestId('qr-code-canvas')
@@ -64,8 +96,8 @@ describe('QRPreview', () => {
     const customProps = {
       ...defaultProps,
       value: 'Test Color',
-      fgColor: '#FF0000', // Red
-      bgColor: '#0000FF', // Blue
+      fgColor: '#FF0000',
+      bgColor: '#0000FF',
     }
 
     render(

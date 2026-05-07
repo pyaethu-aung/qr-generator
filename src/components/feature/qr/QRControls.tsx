@@ -1,4 +1,4 @@
-import { Button } from '../../common/Button'
+import { Zap, Download, ChevronDown } from 'lucide-react'
 import { Input } from '../../common/Input'
 import type { QRErrorCorrectionLevel } from '../../../types/qr'
 
@@ -61,14 +61,13 @@ export function QRControls({
   foregroundLabel = 'Foreground',
   backgroundLabel = 'Background',
   generateLabel = 'Generate QR Code',
-  downloadsTitle = 'Download Formats',
   downloadPngLabel = 'Download PNG',
   downloadSvgLabel = 'Download SVG',
   correctionOptions = [
-    { value: 'L', label: 'Low (7%)' },
-    { value: 'M', label: 'Medium (15%)' },
-    { value: 'Q', label: 'Quartile (25%)' },
-    { value: 'H', label: 'High (30%)' },
+    { value: 'L', label: 'L 7%' },
+    { value: 'M', label: 'M 15%' },
+    { value: 'Q', label: 'Q 25%' },
+    { value: 'H', label: 'H 30%' },
   ],
   eyeShape,
   onEyeShapeChange,
@@ -91,7 +90,7 @@ export function QRControls({
   onDismissWarning,
 }: QRControlsProps) {
   return (
-    <div className="flex flex-col gap-6 w-full rounded-2xl border border-border-subtle bg-surface-raised/40 p-4 sm:p-6">
+    <div className="flex flex-col gap-6 w-full">
       <div className="flex flex-col gap-4">
         <Input
           label="Link / Text"
@@ -108,58 +107,77 @@ export function QRControls({
         />
 
         <div className="space-y-4">
+          {/* EC Level pill row */}
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-text-primary">{correctionLabel}</label>
-            <select
-              className="block w-full rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-text-primary shadow-sm focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring disabled:bg-action-disabled disabled:text-text-disabled"
-              value={ecLevel}
-              onChange={(e) => onEcLevelChange(e.target.value as QRErrorCorrectionLevel)}
-              disabled={isGenerating}
-              aria-label={correctionLabel}
-            >
-              {correctionOptions.map(({ value, label }) => (
-                <option key={value} value={value}>
+            <div className="flex gap-2" role="group" aria-label={correctionLabel}>
+              {correctionOptions.map(({ value: optValue, label }) => (
+                <button
+                  key={optValue}
+                  type="button"
+                  aria-pressed={ecLevel === optValue}
+                  onClick={() => onEcLevelChange(optValue)}
+                  disabled={isGenerating}
+                  className={`flex h-11 flex-1 items-center justify-center rounded-full px-3 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                    ecLevel === optValue
+                      ? 'bg-action text-action-fg font-semibold'
+                      : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
+                  }`}
+                >
                   {label}
-                </option>
+                </button>
               ))}
-            </select>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
+            {/* Eye Shape styled select */}
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium text-text-primary">{eyeShapeLabel}</label>
-              <select
-                className="block w-full rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-text-primary shadow-sm focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring disabled:bg-action-disabled disabled:text-text-disabled"
-                value={eyeShape}
-                onChange={(e) => onEyeShapeChange(e.target.value as import('../../../types/qr').QREyeShape)}
-                disabled={isGenerating}
-                role="combobox"
-                aria-label={eyeShapeLabel}
-              >
-                {eyeShapeOptions.map(({ value, label }) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  className="block h-11 w-full appearance-none rounded-lg border border-border-strong bg-surface px-3 pr-8 text-sm text-text-primary shadow-sm focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring disabled:bg-action-disabled disabled:text-text-disabled"
+                  value={eyeShape}
+                  onChange={(e) => onEyeShapeChange(e.target.value as import('../../../types/qr').QREyeShape)}
+                  disabled={isGenerating}
+                  role="combobox"
+                  aria-label={eyeShapeLabel}
+                >
+                  {eyeShapeOptions.map(({ value: optValue, label }) => (
+                    <option key={optValue} value={optValue}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  size={16}
+                  className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary"
+                  aria-hidden
+                />
+              </div>
             </div>
 
+            {/* Pixel Pattern pill toggle */}
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium text-text-primary">{pixelPatternLabel}</label>
-              <select
-                className="block w-full rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-text-primary shadow-sm focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring disabled:bg-action-disabled disabled:text-text-disabled"
-                value={pixelPattern}
-                onChange={(e) => onPixelPatternChange(e.target.value as import('../../../types/qr').QRPixelPattern)}
-                disabled={isGenerating}
-                role="combobox"
-                aria-label={pixelPatternLabel}
-              >
-                {pixelPatternOptions.map(({ value, label }) => (
-                  <option key={value} value={value}>
+              <div className="flex gap-2" role="group" aria-label={pixelPatternLabel}>
+                {pixelPatternOptions.map(({ value: optValue, label }) => (
+                  <button
+                    key={optValue}
+                    type="button"
+                    aria-pressed={pixelPattern === optValue}
+                    onClick={() => onPixelPatternChange(optValue)}
+                    disabled={isGenerating}
+                    className={`flex h-11 flex-1 items-center justify-center rounded-full px-3 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                      pixelPattern === optValue
+                        ? 'bg-action text-action-fg font-semibold'
+                        : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
+                    }`}
+                  >
                     {label}
-                  </option>
+                  </button>
                 ))}
-              </select>
+              </div>
             </div>
           </div>
 
@@ -188,20 +206,22 @@ export function QRControls({
             </div>
           )}
 
+          {/* Color pickers — 44px inset boxes */}
           <div className="flex flex-wrap gap-4">
             <div className="min-w-[120px] flex-1 flex flex-col gap-1">
               <label className="text-sm font-medium text-text-primary">{foregroundLabel}</label>
-              <div className="flex items-center gap-2">
-                <div className="relative w-10 h-8 sm:w-12 sm:h-9 overflow-hidden rounded-md border border-border-strong shadow-sm">
+              <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3">
+                <div className="relative h-5 w-5 shrink-0 overflow-hidden rounded-full border border-border-strong">
                   <input
                     type="color"
                     value={fgColor}
                     onChange={(e) => onFgColorChange(e.target.value)}
                     disabled={isGenerating}
-                    className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] p-0 cursor-pointer border-0"
+                    className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] cursor-pointer border-0 p-0"
+                    aria-label={foregroundLabel}
                   />
                 </div>
-                <span className="text-xs text-text-secondary font-mono uppercase truncate max-w-[3rem] sm:max-w-[4rem]">
+                <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
                   {fgColor}
                 </span>
               </div>
@@ -209,17 +229,18 @@ export function QRControls({
 
             <div className="min-w-[120px] flex-1 flex flex-col gap-1">
               <label className="text-sm font-medium text-text-primary">{backgroundLabel}</label>
-              <div className="flex items-center gap-2">
-                <div className="relative w-10 h-8 sm:w-12 sm:h-9 overflow-hidden rounded-md border border-border-strong shadow-sm">
+              <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3">
+                <div className="relative h-5 w-5 shrink-0 overflow-hidden rounded-full border border-border-strong">
                   <input
                     type="color"
                     value={bgColor}
                     onChange={(e) => onBgColorChange(e.target.value)}
                     disabled={isGenerating}
-                    className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] p-0 cursor-pointer border-0"
+                    className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] cursor-pointer border-0 p-0"
+                    aria-label={backgroundLabel}
                   />
                 </div>
-                <span className="text-xs text-text-secondary font-mono uppercase truncate max-w-[3rem] sm:max-w-[4rem]">
+                <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
                   {bgColor}
                 </span>
               </div>
@@ -227,46 +248,49 @@ export function QRControls({
           </div>
         </div>
 
-        <Button
-          variant="primary"
+        {/* Generate button — full-width, 48px, rounded-full, zap icon */}
+        <button
+          type="button"
           onClick={onGenerate}
           disabled={!canGenerate || isGenerating}
-          loading={isGenerating}
-          fullWidth
+          className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-action px-6 text-sm font-semibold text-action-fg transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
+          {isGenerating ? (
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-action-fg border-t-transparent" />
+          ) : (
+            <Zap size={18} aria-hidden />
+          )}
           {generateLabel}
-        </Button>
-      </div>
+        </button>
 
-      {(onDownloadPng || onDownloadSvg) && (
-        <div className="pt-6 border-t border-border-subtle flex flex-col gap-3">
-          <h3 className="text-sm font-medium text-text-secondary">{downloadsTitle}</h3>
+        {/* Download buttons — inline below Generate, no divider */}
+        {(onDownloadPng || onDownloadSvg) && (
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
             {onDownloadPng && (
-              <Button
-                variant="secondary"
-                size="sm"
+              <button
+                type="button"
                 onClick={onDownloadPng}
                 disabled={!canDownload || isGenerating}
-                fullWidth
+                className="flex h-11 w-full items-center justify-center gap-2 rounded-full border border-border-subtle bg-surface-raised px-4 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
+                <Download size={16} aria-hidden />
                 {downloadPngLabel}
-              </Button>
+              </button>
             )}
             {onDownloadSvg && (
-              <Button
-                variant="secondary"
-                size="sm"
+              <button
+                type="button"
                 onClick={onDownloadSvg}
                 disabled={!canDownload || isGenerating}
-                fullWidth
+                className="flex h-11 w-full items-center justify-center gap-2 rounded-full border border-border-subtle bg-surface-raised px-4 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
+                <Download size={16} aria-hidden />
                 {downloadSvgLabel}
-              </Button>
+              </button>
             )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }
