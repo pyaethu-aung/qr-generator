@@ -2,7 +2,7 @@
 # Docker CI/CD Pipeline — QR Generator
 #
 # Triggers:
-#   - tag v*.*.*:           Build + Scan + Push to GHCR + Cosign Sign
+#   - release published:    Build + Scan + Push to GHCR + Cosign Sign
 #   - pull_request to main: Build + Scan (no push)
 #   - weekly cron:          Build + Scan for new CVEs (no push)
 # =============================================================================
@@ -10,8 +10,8 @@
 name: Docker
 
 on:
-  push:
-    tags: [ 'v*.*.*' ]
+  release:
+    types: [published]
   pull_request:
     branches: [ "main" ]
     paths:
