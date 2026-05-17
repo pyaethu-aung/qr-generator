@@ -132,7 +132,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
           aria-disabled={isShareDisabled}
           aria-describedby={shareStatusMessage ? shareStatusId : undefined}
           onClick={handleShareClick}
-          className={`flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+          className={`flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
             value
               ? 'border-border-subtle bg-surface-raised text-text-primary focus-visible:ring-focus-ring hover:bg-surface-inset'
               : 'border-border-subtle bg-surface-inset text-text-disabled cursor-not-allowed'
