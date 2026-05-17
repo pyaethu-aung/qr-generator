@@ -34,3 +34,4 @@ coverage
 
 # test-design skill output
 .test-design/
+.playwright-mcp/
