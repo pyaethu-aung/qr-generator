@@ -121,7 +121,7 @@ export function QRControls({
                   className={`flex h-11 flex-1 items-center justify-center rounded-full px-3 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                     ecLevel === optValue
                       ? 'bg-action text-action-fg font-semibold'
-                      : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
+                      : 'bg-surface-inset text-text-primary hover:bg-surface-raised'
                   }`}
                 >
                   {label}
@@ -170,7 +170,7 @@ export function QRControls({
                     className={`flex h-11 flex-1 items-center justify-center rounded-full px-3 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                       pixelPattern === optValue
                         ? 'bg-action text-action-fg font-semibold'
-                        : 'bg-surface-inset text-text-secondary hover:bg-surface-raised'
+                        : 'bg-surface-inset text-text-primary hover:bg-surface-raised'
                     }`}
                   >
                     {label}
