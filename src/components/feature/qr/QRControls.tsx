@@ -140,7 +140,6 @@ export function QRControls({
                   value={eyeShape}
                   onChange={(e) => onEyeShapeChange(e.target.value as import('../../../types/qr').QREyeShape)}
                   disabled={isGenerating}
-                  role="combobox"
                   aria-label={eyeShapeLabel}
                 >
                   {eyeShapeOptions.map(({ value: optValue, label }) => (
