@@ -72,8 +72,8 @@ npm run docker:run
 
 ### CI/CD Pipeline
 
-- **Triggers**: Push to `main`, PRs, and daily schedule (Build + Scan only).
-- **Publish**: Images are pushed to GHCR **only** on version tags (e.g., `git tag v1.0.0`).
+- **Triggers**: GitHub release (published), PRs, and daily schedule (Build + Scan only).
+- **Publish**: Images are pushed to GHCR on GitHub release publish (fires together with GitHub Pages).
 - **Security**: Integrated Trivy scanning (blocking high/critical CVEs), Hadolint linting, and Cosign image signing.
 
 ## Quality & Constitution Highlights
@@ -104,7 +104,7 @@ This project uses GitHub Actions for automated testing, security scanning, and d
 To enable automated deployments:
 1. Go to your repository **Settings > Pages**.
 2. Under **Build and deployment > Source**, select **GitHub Actions**.
-3. Push to `main` to trigger the `deploy.yml` workflow.
+3. Publish a GitHub release to trigger the `deploy.yml` workflow.
 
 ### Auto Vulnerability Updates (009)
 This project uses **GitHub Dependabot** for automated vulnerability patching.
