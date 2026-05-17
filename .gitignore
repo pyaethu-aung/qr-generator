@@ -31,3 +31,6 @@ coverage
 .tmp
 .cache
 .eslintcache
+
+# test-design skill output
+.test-design/
