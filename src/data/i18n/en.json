@@ -25,7 +25,7 @@
   "layout": {
     "headerTitle": "QR Code Generator",
     "headerSubtitle": "Generate, style, and download high-quality QR codes without touching a backend.",
-    "footerNote": "Client-side only. Zero knowledge. Export at 1024px PNG/SVG."
+    "footerNote": "Made with ♡ — QR Code Generator"
   },
   "hero": {
     "badge": "QUICK & EASY",
