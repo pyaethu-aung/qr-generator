@@ -54,6 +54,13 @@ AI-assisted development workflows — including structured planning, feature
 scaffolding, and commit/PR automation via skills in `.claude/skills/` and
 `.agents/skills/`.
 
+| Skill | When to use |
+|---|---|
+| `/commit-message` | Creating or amending any git commit |
+| `/create-pr` | Opening a GitHub pull request |
+| `/update-readme` | After any user-facing change worth documenting |
+| `/test-design` | Validate the live UI against `design.pen` spec using Playwright MCP |
+
 ## Docker Support
 
 [![Docker Build](https://github.com/pyaethu-aung/qr-generator/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/pyaethu-aung/qr-generator/actions/workflows/docker-publish.yml)
