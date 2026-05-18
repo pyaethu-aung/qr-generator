@@ -1,41 +1,60 @@
 import { renderHook, act } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import type { MockedFunction } from 'vitest'
 import { INPUT_LENGTH_LIMIT, useQRGenerator } from '../useQRGenerator'
 import * as downloadUtils from '../../utils/download'
+import * as qrShapeRenderer from '../../utils/qrShapeRenderer'
+import * as svgExporter from '../../utils/export/svgExporter'
+import type { QRDesignConfig } from '../../types/qr'
 
-type ToDataURLArgs = [string, { width: number; margin: number }]
-type ToStringArgs = [string, { type: 'svg'; width: number; margin: number }]
-type ToDataURL = (...args: ToDataURLArgs) => Promise<string>
-type ToString = (...args: ToStringArgs) => Promise<string>
-type QRCodeMockModule = {
-  default: {
-    toDataURL: MockedFunction<ToDataURL>
-    toString: MockedFunction<ToString>
-  }
-}
-
-let toDataURLMock: MockedFunction<ToDataURL>
-let toStringMock: MockedFunction<ToString>
-
-// Mock dependencies
-vi.mock('qrcode', () => ({
-  default: {
-    toDataURL: vi.fn<ToDataURL>(),
-    toString: vi.fn<ToString>(),
-  },
-}))
+const DEFAULT_DESIGN_CONFIG: QRDesignConfig = { eyeShape: 'Square', pixelPattern: 'Square' }
 
 vi.spyOn(downloadUtils, 'downloadBlob').mockImplementation(() => {})
+
+vi.spyOn(qrShapeRenderer, 'generateQRPaths').mockReturnValue({
+  dataPath: 'M0,0',
+  eyesPath: 'M0,0',
+  eyeBgPath: 'M0,0',
+  size: 21,
+})
+
+vi.spyOn(svgExporter, 'exportSvg').mockResolvedValue(
+  new Blob(['<svg/>'], { type: 'image/svg+xml' }),
+)
+
+// Stub canvas and Image so the PNG render path completes in jsdom
+const fakeBlob = new Blob(['fake-png'], { type: 'image/png' })
+HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue({
+  clearRect: vi.fn(),
+  drawImage: vi.fn(),
+})
+HTMLCanvasElement.prototype.toBlob = vi.fn().mockImplementation((cb: BlobCallback) => cb(fakeBlob))
+
+class FakeImage {
+  onload: (() => void) | null = null
+  onerror: ((e: unknown) => void) | null = null
+  set src(_: string) {
+    setTimeout(() => this.onload?.(), 0)
+  }
+}
+vi.stubGlobal('Image', FakeImage)
 
 describe('useQRGenerator', () => {
   const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-  beforeEach(async () => {
+  beforeEach(() => {
     vi.clearAllMocks()
-    const qrcodeModule = (await import('qrcode')) as unknown as QRCodeMockModule
-    toDataURLMock = qrcodeModule.default.toDataURL
-    toStringMock = qrcodeModule.default.toString
+    // Re-apply stubs cleared by clearAllMocks
+    vi.spyOn(downloadUtils, 'downloadBlob').mockImplementation(() => {})
+    vi.spyOn(qrShapeRenderer, 'generateQRPaths').mockReturnValue({
+      dataPath: 'M0,0',
+      eyesPath: 'M0,0',
+      eyeBgPath: 'M0,0',
+      size: 21,
+    })
+    vi.spyOn(svgExporter, 'exportSvg').mockResolvedValue(
+      new Blob(['<svg/>'], { type: 'image/svg+xml' }),
+    )
+    HTMLCanvasElement.prototype.toBlob = vi.fn().mockImplementation((cb: BlobCallback) => cb(fakeBlob))
   })
 
   afterEach(() => {
@@ -96,71 +115,46 @@ describe('useQRGenerator', () => {
     expect(result.current.inputError).toBe(`Input too long (max ${INPUT_LENGTH_LIMIT} characters)`)
   })
 
-  it('should generate PNG download', async () => {
+  it('should generate PNG download with custom design config', async () => {
     const { result } = renderHook(() => useQRGenerator())
 
-    // Setup fetch mock for blobs
-    global.fetch = vi.fn().mockResolvedValue({
-      blob: () => Promise.resolve(new Blob(['fake-png'], { type: 'image/png' })),
-    })
-
-    // Setup qrcode mock
-    toDataURLMock.mockResolvedValue('data:image/png;base64,fake')
-
-    // 1. Set Value
     act(() => {
       result.current.setInputValue('test-qr')
     })
-
-    // 2. Generate (must be separate act to ensure state update propagates)
     act(() => {
       result.current.generateQRCode()
     })
 
-    // 3. Trigger Download
     await act(async () => {
-      await result.current.downloadPng()
+      await result.current.downloadPng(DEFAULT_DESIGN_CONFIG)
     })
 
-    expect(toDataURLMock).toHaveBeenCalledWith(
+    expect(qrShapeRenderer.generateQRPaths).toHaveBeenCalledWith(
       'test-qr',
-      expect.objectContaining({
-        width: 1024,
-        margin: 1,
-      }),
+      expect.any(String),
+      DEFAULT_DESIGN_CONFIG.eyeShape,
+      DEFAULT_DESIGN_CONFIG.pixelPattern,
     )
-    expect(global.fetch).toHaveBeenCalledWith('data:image/png;base64,fake')
     expect(downloadUtils.downloadBlob).toHaveBeenCalled()
   })
 
-  it('should generate SVG download', async () => {
+  it('should generate SVG download with custom design config', async () => {
     const { result } = renderHook(() => useQRGenerator())
 
-    // Setup qrcode mock
-    toStringMock.mockResolvedValue('<svg>fake</svg>')
-
-    // 1. Set Value
     act(() => {
       result.current.setInputValue('test-qr')
     })
-
-    // 2. Generate
     act(() => {
       result.current.generateQRCode()
     })
 
-    // 3. Trigger Download
     await act(async () => {
-      await result.current.downloadSvg()
+      await result.current.downloadSvg(DEFAULT_DESIGN_CONFIG)
     })
 
-    expect(toStringMock).toHaveBeenCalledWith(
+    expect(svgExporter.exportSvg).toHaveBeenCalledWith(
       'test-qr',
-      expect.objectContaining({
-        type: 'svg',
-        width: 1024,
-        margin: 1,
-      }),
+      expect.objectContaining({ designConfig: DEFAULT_DESIGN_CONFIG }),
     )
     expect(downloadUtils.downloadBlob).toHaveBeenCalled()
   })
@@ -169,29 +163,30 @@ describe('useQRGenerator', () => {
     const { result } = renderHook(() => useQRGenerator())
 
     await act(async () => {
-      await result.current.downloadPng()
-      await result.current.downloadSvg()
+      await result.current.downloadPng(DEFAULT_DESIGN_CONFIG)
+      await result.current.downloadSvg(DEFAULT_DESIGN_CONFIG)
     })
 
-    expect(toDataURLMock).not.toHaveBeenCalled()
-    expect(toStringMock).not.toHaveBeenCalled()
+    expect(qrShapeRenderer.generateQRPaths).not.toHaveBeenCalled()
+    expect(svgExporter.exportSvg).not.toHaveBeenCalled()
   })
 
   it('should handle PNG download errors gracefully', async () => {
     const { result } = renderHook(() => useQRGenerator())
 
-    toDataURLMock.mockRejectedValue(new Error('Generation failed'))
+    vi.spyOn(qrShapeRenderer, 'generateQRPaths').mockImplementation(() => {
+      throw new Error('Generation failed')
+    })
 
     act(() => {
       result.current.setInputValue('fail')
     })
-
     act(() => {
       result.current.generateQRCode()
     })
 
     await act(async () => {
-      await result.current.downloadPng()
+      await result.current.downloadPng(DEFAULT_DESIGN_CONFIG)
     })
 
     expect(consoleErrorSpy).toHaveBeenCalled()
