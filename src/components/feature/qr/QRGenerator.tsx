@@ -23,7 +23,12 @@ export const QRGenerator = () => {
     canGenerate,
   } = useQRGenerator()
 
-  const { designConfig, setEyeShape, setPixelPattern, isRiskyPattern, dismissWarning } = useQRDesign(inputValue, inputEcLevel);
+  const { designConfig, inputEyeShape, inputPixelPattern, setEyeShape, setPixelPattern, isRiskyPattern, dismissWarning, commitDesignConfig } = useQRDesign(inputValue, inputEcLevel);
+
+  const handleGenerate = () => {
+    commitDesignConfig()
+    generateQRCode()
+  }
 
   const { translate } = useLocaleContext()
 
@@ -60,13 +65,13 @@ export const QRGenerator = () => {
                 onFgColorChange={setInputFgColor}
                 bgColor={inputBgColor}
                 onBgColorChange={setInputBgColor}
-                eyeShape={designConfig.eyeShape}
+                eyeShape={inputEyeShape}
                 onEyeShapeChange={setEyeShape}
-                pixelPattern={designConfig.pixelPattern}
+                pixelPattern={inputPixelPattern}
                 onPixelPatternChange={setPixelPattern}
                 isRiskyPattern={isRiskyPattern}
                 onDismissWarning={dismissWarning}
-                onGenerate={generateQRCode}
+                onGenerate={handleGenerate}
                 isGenerating={isGenerating}
                 onDownloadPng={() => void downloadPng(designConfig)}
                 onDownloadSvg={() => void downloadSvg(designConfig)}
