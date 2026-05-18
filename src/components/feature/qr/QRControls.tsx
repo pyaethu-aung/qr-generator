@@ -210,38 +210,36 @@ export function QRControls({
             <div className="min-w-[120px] flex-1 flex flex-col gap-1">
               <label className="text-sm font-medium text-text-primary">{foregroundLabel}</label>
               <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3">
-                <div className="relative h-5 w-5 shrink-0 overflow-hidden rounded-full border border-border-strong">
-                  <input
-                    type="color"
-                    value={fgColor}
-                    onChange={(e) => onFgColorChange(e.target.value)}
-                    disabled={isGenerating}
-                    className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] cursor-pointer border-0 p-0"
-                    aria-label={foregroundLabel}
-                  />
-                </div>
+                <div className="h-5 w-5 shrink-0 rounded-full border border-border-strong" style={{ backgroundColor: fgColor }} />
                 <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
                   {fgColor}
                 </span>
+                <input
+                  type="color"
+                  value={fgColor}
+                  onChange={(e) => onFgColorChange(e.target.value)}
+                  disabled={isGenerating}
+                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                  aria-label={foregroundLabel}
+                />
               </div>
             </div>
 
             <div className="min-w-[120px] flex-1 flex flex-col gap-1">
               <label className="text-sm font-medium text-text-primary">{backgroundLabel}</label>
               <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3">
-                <div className="relative h-5 w-5 shrink-0 overflow-hidden rounded-full border border-border-strong">
-                  <input
-                    type="color"
-                    value={bgColor}
-                    onChange={(e) => onBgColorChange(e.target.value)}
-                    disabled={isGenerating}
-                    className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] cursor-pointer border-0 p-0"
-                    aria-label={backgroundLabel}
-                  />
-                </div>
+                <div className="h-5 w-5 shrink-0 rounded-full border border-border-strong" style={{ backgroundColor: bgColor }} />
                 <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
                   {bgColor}
                 </span>
+                <input
+                  type="color"
+                  value={bgColor}
+                  onChange={(e) => onBgColorChange(e.target.value)}
+                  disabled={isGenerating}
+                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                  aria-label={backgroundLabel}
+                />
               </div>
             </div>
           </div>
