@@ -130,10 +130,21 @@ export function generateQRPaths(value: string, ecLevel: 'L'|'M'|'Q'|'H', eyeShap
   });
 
   // Calculate standard 3 eyes locations strictly at top-left, top-right, bottom-left
-  const eyesPath = 
+  const eyesPath =
     getEyePath(eyeShape, 0, 0, cellSize) + ' ' +
-    getEyePath(eyeShape, (size - 7) * cellSize, 0, cellSize) + ' ' + 
+    getEyePath(eyeShape, (size - 7) * cellSize, 0, cellSize) + ' ' +
     getEyePath(eyeShape, 0, (size - 7) * cellSize, cellSize);
 
-  return { dataPath, eyesPath, size };
+  // 8×8 background rects (eye zone + 1-module separator) per eye position.
+  // Separator modules are always white per QR spec, so covering them is safe.
+  // Rendered between data and eye paths to ensure clean visual separation for
+  // non-rectangular eye shapes whose transparent corners would otherwise expose
+  // adjacent dark timing/format-info modules.
+  const c = cellSize;
+  const eyeBgPath =
+    `M0,0 h${8*c} v${8*c} h-${8*c} Z ` +
+    `M${(size-8)*c},0 h${8*c} v${8*c} h-${8*c} Z ` +
+    `M0,${(size-8)*c} h${8*c} v${8*c} h-${8*c} Z`;
+
+  return { dataPath, eyesPath, eyeBgPath, size };
 }

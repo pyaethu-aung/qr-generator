@@ -43,7 +43,7 @@ export function exportSvg(
 
   // SVG parameters
   const cellSize = 10
-  const { dataPath, eyesPath, size } = generateQRPaths(
+  const { dataPath, eyesPath, eyeBgPath, size } = generateQRPaths(
     value,
     ecLevel,
     designConfig.eyeShape,
@@ -58,6 +58,7 @@ export function exportSvg(
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewboxSize} ${viewboxSize}">
 <rect width="100%" height="100%" fill="${bgColor}"/>
 <path fill="${fgColor}" shape-rendering="crispEdges" transform="translate(${margin * cellSize}, ${margin * cellSize})" d="${dataPath}" />
+<path fill="${bgColor}" transform="translate(${margin * cellSize}, ${margin * cellSize})" d="${eyeBgPath}" />
 <path fill="${fgColor}" fill-rule="evenodd" transform="translate(${margin * cellSize}, ${margin * cellSize})" d="${eyesPath}" />
 </svg>`
 
