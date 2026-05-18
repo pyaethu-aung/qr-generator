@@ -1,8 +1,9 @@
 import { useCallback, useMemo, useState } from 'react'
-import QRCode from 'qrcode'
-import type { QRConfig, QRErrorCorrectionLevel } from '../types/qr'
+import type { QRConfig, QRDesignConfig, QRErrorCorrectionLevel } from '../types/qr'
 import { DEFAULT_QR_CONFIG, QR_SIZE_DOWNLOAD } from '../data/defaults'
 import { downloadBlob } from '../utils/download'
+import { generateQRPaths } from '../utils/qrShapeRenderer'
+import { exportSvg } from '../utils/export/svgExporter'
 
 export const INPUT_LENGTH_LIMIT = 2000
 
@@ -18,8 +19,8 @@ export interface UseQRGeneratorReturn {
   setInputBgColor: (color: string) => void
   generateQRCode: () => void
   isGenerating: boolean
-  downloadPng: () => Promise<void>
-  downloadSvg: () => Promise<void>
+  downloadPng: (designConfig: QRDesignConfig) => Promise<void>
+  downloadSvg: (designConfig: QRDesignConfig) => Promise<void>
   inputError?: string
   canGenerate: boolean
 }
@@ -88,32 +89,43 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
     setIsGenerating(false)
   }, [getValidationError, inputBgColor, inputEcLevel, inputFgColor, inputValue])
 
-  const downloadPng = useCallback(async () => {
+  const downloadPng = useCallback(async (designConfig: QRDesignConfig) => {
     if (!config.value) return
 
-    const downloadConfig = {
-      value: config.value,
-      ecLevel: inputEcLevel,
-      fgColor: inputFgColor,
-      bgColor: inputBgColor,
-    }
-
     try {
-      // Generate the Data URL using the 'qrcode' library (headless)
-      // This doesn't rely on the rendered DOM component
-      const dataUrl = await QRCode.toDataURL(downloadConfig.value, {
-        errorCorrectionLevel: downloadConfig.ecLevel,
-        color: {
-          dark: downloadConfig.fgColor,
-          light: downloadConfig.bgColor,
-        },
-        width: QR_SIZE_DOWNLOAD,
-        margin: 1,
+      const { dataPath, eyesPath, eyeBgPath, size: matrixSize } = generateQRPaths(
+        config.value,
+        inputEcLevel,
+        designConfig.eyeShape,
+        designConfig.pixelPattern,
+      )
+      const viewBoxSize = matrixSize * 10
+      const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewBoxSize} ${viewBoxSize}" width="${QR_SIZE_DOWNLOAD}" height="${QR_SIZE_DOWNLOAD}">
+        <rect width="100%" height="100%" fill="${inputBgColor}" />
+        <path d="${dataPath}" fill="${inputFgColor}" shape-rendering="crispEdges" />
+        <path d="${eyeBgPath}" fill="${inputBgColor}" />
+        <path d="${eyesPath}" fill="${inputFgColor}" fill-rule="evenodd" />
+      </svg>`
+
+      const canvas = document.createElement('canvas')
+      canvas.width = QR_SIZE_DOWNLOAD
+      canvas.height = QR_SIZE_DOWNLOAD
+      const ctx = canvas.getContext('2d')
+      if (!ctx) throw new Error('Could not get canvas context')
+
+      await new Promise<void>((resolve, reject) => {
+        const img = new Image()
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, QR_SIZE_DOWNLOAD, QR_SIZE_DOWNLOAD)
+          resolve()
+        }
+        img.onerror = reject
+        img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgString)
       })
 
-      // Convert Data URL to Blob
-      const res = await fetch(dataUrl)
-      const blob = await res.blob()
+      const blob = await new Promise<Blob>((resolve, reject) =>
+        canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('toBlob failed'))), 'image/png'),
+      )
 
       downloadBlob(blob, `qr-code-${Date.now()}.png`)
     } catch (err) {
@@ -121,30 +133,17 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
     }
   }, [config.value, inputEcLevel, inputFgColor, inputBgColor])
 
-  const downloadSvg = useCallback(async () => {
+  const downloadSvg = useCallback(async (designConfig: QRDesignConfig) => {
     if (!config.value) return
 
-    const downloadConfig = {
-      value: config.value,
-      ecLevel: inputEcLevel,
-      fgColor: inputFgColor,
-      bgColor: inputBgColor,
-    }
-
     try {
-      // Generate SVG string using 'qrcode' library
-      const svgString = await QRCode.toString(downloadConfig.value, {
-        type: 'svg',
-        errorCorrectionLevel: downloadConfig.ecLevel,
-        color: {
-          dark: downloadConfig.fgColor,
-          light: downloadConfig.bgColor,
-        },
-        width: QR_SIZE_DOWNLOAD,
-        margin: 1,
+      const blob = await exportSvg(config.value, {
+        value: config.value,
+        ecLevel: inputEcLevel,
+        fgColor: inputFgColor,
+        bgColor: inputBgColor,
+        designConfig,
       })
-
-      const blob = new Blob([svgString], { type: 'image/svg+xml' })
       downloadBlob(blob, `qr-code-${Date.now()}.svg`)
     } catch (err) {
       console.error('Failed to generate SVG', err)

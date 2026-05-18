@@ -68,8 +68,8 @@ export const QRGenerator = () => {
                 onDismissWarning={dismissWarning}
                 onGenerate={generateQRCode}
                 isGenerating={isGenerating}
-                onDownloadPng={() => void downloadPng()}
-                onDownloadSvg={() => void downloadSvg()}
+                onDownloadPng={() => void downloadPng(designConfig)}
+                onDownloadSvg={() => void downloadSvg(designConfig)}
                 canDownload={!!config.value}
                 inputError={inputError ?? undefined}
                 canGenerate={canGenerate}
