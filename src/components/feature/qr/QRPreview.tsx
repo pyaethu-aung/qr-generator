@@ -78,7 +78,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
               <span className="text-sm">{placeholderCopy}</span>
             </div>
           ) : (
-            <div className="rounded-lg bg-white p-4">
+            <div className="rounded-lg p-4" style={{ backgroundColor: bgColor ?? '#ffffff' }}>
               <canvas
                 ref={(node) => {
                   canvasRef.current = node
