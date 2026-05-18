@@ -50,13 +50,13 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
       if (!shareRequest) return undefined
       switch (shareRequest.status) {
         case 'pending':
-          return translate('preview.shareStatusSharing')
+          return undefined
         case 'shared':
           if (shareRequest.method === 'clipboard') return translate('preview.shareStatusClipboard')
           if (shareRequest.method === 'download') return translate('preview.shareStatusDownloaded')
           return translate('preview.shareStatusShared')
         case 'canceled':
-          return translate('preview.shareStatusCanceled')
+          return undefined
         case 'failed':
           return shareRequest.errorMessage ?? translate('preview.shareStatusFailed')
         default:
