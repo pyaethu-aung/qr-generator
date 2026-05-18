@@ -87,7 +87,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
                   if (node && value) {
                     const ctx = node.getContext('2d')
                     if (ctx) {
-                      const { dataPath, eyesPath, size: matrixSize } = generateQRPaths(
+                      const { dataPath, eyesPath, eyeBgPath, size: matrixSize } = generateQRPaths(
                         value,
                         ecLevel,
                         designConfig.eyeShape,
@@ -97,6 +97,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
                       const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewBoxSize} ${viewBoxSize}" width="${size}" height="${size}">
                         <rect width="100%" height="100%" fill="${bgColor}" />
                         <path d="${dataPath}" fill="${fgColor}" shape-rendering="crispEdges" />
+                        <path d="${eyeBgPath}" fill="${bgColor}" />
                         <path d="${eyesPath}" fill="${fgColor}" fill-rule="evenodd" />
                       </svg>`
 

@@ -81,6 +81,13 @@ describe('qrShapeRenderer Matrix Parser (Foundational)', () => {
      expect(paths.size).toBeGreaterThan(20)
      expect(paths.eyesPath).toContain('M35,0') // Top left hexagon center-top check
      // Ensure eye geometries and standard dot formats map appropriately
-     expect(paths.dataPath).toContain('a5,5 0 1,0 0,10') 
+     expect(paths.dataPath).toContain('a5,5 0 1,0 0,10')
+  })
+
+  it('generateQRPaths includes eyeBgPath with three 8×8 background rects', () => {
+    const { eyeBgPath, size } = generateQRPaths('test', 'M', 'Diamond', 'Square', 10);
+    expect(eyeBgPath).toContain('M0,0 h80 v80 h-80 Z');
+    expect(eyeBgPath).toContain(`M${(size-8)*10},0`);
+    expect(eyeBgPath).toContain(`M0,${(size-8)*10}`);
   })
 })
