@@ -53,11 +53,13 @@ export function exportSvg(
 
   const viewboxSize = size * cellSize + margin * 2 * cellSize
 
+  const dataShapeRendering = designConfig.pixelPattern === 'Dots' ? 'geometricPrecision' : 'crispEdges'
+
   // Embed the custom geometric path
   const svgString = `<?xml version="1.0" encoding="utf-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewboxSize} ${viewboxSize}">
 <rect width="100%" height="100%" fill="${bgColor}"/>
-<path fill="${fgColor}" shape-rendering="crispEdges" transform="translate(${margin * cellSize}, ${margin * cellSize})" d="${dataPath}" />
+<path fill="${fgColor}" shape-rendering="${dataShapeRendering}" transform="translate(${margin * cellSize}, ${margin * cellSize})" d="${dataPath}" />
 <path fill="${bgColor}" transform="translate(${margin * cellSize}, ${margin * cellSize})" d="${eyeBgPath}" />
 <path fill="${fgColor}" fill-rule="evenodd" transform="translate(${margin * cellSize}, ${margin * cellSize})" d="${eyesPath}" />
 </svg>`

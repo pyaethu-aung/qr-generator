@@ -71,9 +71,9 @@ describe('qrShapeRenderer Matrix Parser (Foundational)', () => {
     expect(squareData).toContain('v10')
 
     const dotData = getDataPath('Dots', 10, 20, 10);
-    // Dots draw as circle using arc centered horizontally
-    expect(dotData).toContain('M15,20')
-    expect(dotData).toContain('a5,5 0 1,0 0,10 a5,5 0 1,0 0,-10')
+    // Dots draw as circle using arc centered horizontally, radius 0.45*cellSize
+    expect(dotData).toContain('M15,20.5')
+    expect(dotData).toContain('a4.5,4.5 0 1,0 0,9 a4.5,4.5 0 1,0 0,-9')
   })
 
   it('generates fully compiled valid SVG path strings encompassing data and eyes', () => {
@@ -81,7 +81,7 @@ describe('qrShapeRenderer Matrix Parser (Foundational)', () => {
      expect(paths.size).toBeGreaterThan(20)
      expect(paths.eyesPath).toContain('M35,0') // Top left hexagon center-top check
      // Ensure eye geometries and standard dot formats map appropriately
-     expect(paths.dataPath).toContain('a5,5 0 1,0 0,10')
+     expect(paths.dataPath).toContain('a4.5,4.5 0 1,0 0,9')
   })
 
   it('generateQRPaths includes eyeBgPath with three 8×8 background rects', () => {
