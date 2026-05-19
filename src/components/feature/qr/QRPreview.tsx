@@ -85,6 +85,13 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
                   assignForwardedRef(node)
 
                   if (node && value) {
+                    const dpr = window.devicePixelRatio || 1
+                    const physicalSize = Math.round(size * dpr)
+                    node.width = physicalSize
+                    node.height = physicalSize
+                    node.style.width = `${size}px`
+                    node.style.height = `${size}px`
+
                     const ctx = node.getContext('2d')
                     if (ctx) {
                       const { dataPath, eyesPath, eyeBgPath, size: matrixSize } = generateQRPaths(
@@ -94,17 +101,18 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
                         designConfig.pixelPattern,
                       )
                       const viewBoxSize = matrixSize * 10
-                      const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewBoxSize} ${viewBoxSize}" width="${size}" height="${size}">
+                      const dataShapeRendering = designConfig.pixelPattern === 'Dots' ? 'geometricPrecision' : 'crispEdges'
+                      const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewBoxSize} ${viewBoxSize}" width="${physicalSize}" height="${physicalSize}">
                         <rect width="100%" height="100%" fill="${bgColor}" />
-                        <path d="${dataPath}" fill="${fgColor}" shape-rendering="crispEdges" />
+                        <path d="${dataPath}" fill="${fgColor}" shape-rendering="${dataShapeRendering}" />
                         <path d="${eyeBgPath}" fill="${bgColor}" />
                         <path d="${eyesPath}" fill="${fgColor}" fill-rule="evenodd" />
                       </svg>`
 
                       const img = new Image()
                       img.onload = () => {
-                        ctx.clearRect(0, 0, size, size)
-                        ctx.drawImage(img, 0, 0, size, size)
+                        ctx.clearRect(0, 0, physicalSize, physicalSize)
+                        ctx.drawImage(img, 0, 0, physicalSize, physicalSize)
                       }
                       img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgString)
                     }
@@ -114,8 +122,6 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
                 data-value={value}
                 data-fg={fgColor}
                 data-bg={bgColor}
-                width={size}
-                height={size}
                 role="img"
                 aria-label={formatValueLabel(ariaValueTemplate, { value })}
               />
