@@ -55,7 +55,7 @@
   "preview": {
     "sectionLabel": "ကြိုတင်ကြည့်ရှုခြင်း",
     "sectionTitle": "အစဉ်အမြဲ ကြည့်ရှုနိုင်သည်",
-    "placeholder": "ဖန်တီးရန် စာသားထည့်ပါ",
+    "placeholder": "QR ကြိုကြည့်ရှုမှု",
     "ariaValue": "ဒီတန်ဖိုးအတွက် QR ကုဒ်: {value}",
     "ariaPlaceholder": "QR ကုဒ် နမူနာ",
     "shareButtonLabel": "QR ကုဒ် မျှဝေပါ",

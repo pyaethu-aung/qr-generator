@@ -22,7 +22,7 @@ describe('QRPreview', () => {
       </LocaleProvider>,
     )
 
-    expect(screen.getByText('Enter text to generate')).toBeInTheDocument()
+    expect(screen.getByText('QR preview')).toBeInTheDocument()
     expect(screen.getByRole('img', { name: 'QR Code Placeholder' })).toBeInTheDocument()
   })
 

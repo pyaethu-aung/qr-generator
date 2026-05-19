@@ -55,7 +55,7 @@
   "preview": {
     "sectionLabel": "Preview",
     "sectionTitle": "See every pixel",
-    "placeholder": "Enter text to generate",
+    "placeholder": "QR preview",
     "ariaValue": "QR Code for value: {value}",
     "ariaPlaceholder": "QR Code Placeholder",
     "shareButtonLabel": "Share QR code",
