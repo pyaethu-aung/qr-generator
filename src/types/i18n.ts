@@ -53,6 +53,7 @@ export interface ControlStrings {
   correctionMedium: string
   correctionQuartile: string
   correctionHigh: string
+  correctionTooltip: string
 }
 
 export interface PreviewStrings {
@@ -121,6 +122,7 @@ export type TranslationKey =
   | 'controls.correctionMedium'
   | 'controls.correctionQuartile'
   | 'controls.correctionHigh'
+  | 'controls.correctionTooltip'
   | 'preview.sectionLabel'
   | 'preview.shareStatusSharing'
   | 'preview.shareStatusShared'
