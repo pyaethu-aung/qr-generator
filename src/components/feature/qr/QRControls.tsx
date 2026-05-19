@@ -1,5 +1,6 @@
 import { Zap, Download, ChevronDown } from 'lucide-react'
 import { Input } from '../../common/Input'
+import { Tooltip } from '../../common/Tooltip'
 import type { QRErrorCorrectionLevel } from '../../../types/qr'
 
 export interface QRControlsProps {
@@ -38,6 +39,7 @@ export interface QRControlsProps {
   pixelPatternOptions?: { value: import('../../../types/qr').QRPixelPattern; label: string }[]
   isRiskyPattern?: boolean
   onDismissWarning?: () => void
+  correctionTooltip?: string
 }
 
 export function QRControls({
@@ -88,6 +90,7 @@ export function QRControls({
   ],
   isRiskyPattern,
   onDismissWarning,
+  correctionTooltip = 'How much of the QR code can be covered or damaged and still scan. Low gives a compact code; High lets you overlay a logo at the cost of a denser pattern.',
 }: QRControlsProps) {
   return (
     <div className="flex flex-col gap-6 w-full">
@@ -109,7 +112,10 @@ export function QRControls({
         <div className="space-y-4">
           {/* EC Level pill row */}
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-text-primary">{correctionLabel}</label>
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm font-medium text-text-primary">{correctionLabel}</span>
+              <Tooltip content={correctionTooltip} />
+            </div>
             <div className="flex gap-2" role="group" aria-label={correctionLabel}>
               {correctionOptions.map(({ value: optValue, label }) => (
                 <button

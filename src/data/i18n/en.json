@@ -45,6 +45,7 @@
     "correctionMedium": "Medium (15%)",
     "correctionQuartile": "Quartile (25%)",
     "correctionHigh": "High (30%)",
+    "correctionTooltip": "How much of the QR code can be covered or damaged and still scan. Low gives a compact code; High lets you overlay a logo at the cost of a denser pattern.",
     "foregroundLabel": "Foreground",
     "backgroundLabel": "Background",
     "generate": "Generate QR Code",
