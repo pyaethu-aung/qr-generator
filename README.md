@@ -29,12 +29,12 @@ The app supports multiple languages (English and Burmese) via custom locale conf
 - Localized strings are stored in `en.json` and `my.json`.
 - Components consume translations via `useLocaleContext` and `translate(key)`.
 - User language preference is persisted in `localStorage`.
+- The language toggle UI is currently hidden from the navbar; the locale infrastructure and translations remain intact for future re-enabling.
 
 ## SEO & Accessibility
 
 - Metadata (title, description, Open Graph, Twitter) is automatically updated on language change.
 - HTML `lang` attribute is kept in sync with the active locale.
-- Language toggle is accessible and keyboard-friendly.
 
 ## Development
 
