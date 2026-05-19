@@ -100,9 +100,10 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
         designConfig.pixelPattern,
       )
       const viewBoxSize = matrixSize * 10
+      const dataShapeRendering = designConfig.pixelPattern === 'Dots' ? 'geometricPrecision' : 'crispEdges'
       const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewBoxSize} ${viewBoxSize}" width="${QR_SIZE_DOWNLOAD}" height="${QR_SIZE_DOWNLOAD}">
         <rect width="100%" height="100%" fill="${inputBgColor}" />
-        <path d="${dataPath}" fill="${inputFgColor}" shape-rendering="crispEdges" />
+        <path d="${dataPath}" fill="${inputFgColor}" shape-rendering="${dataShapeRendering}" />
         <path d="${eyeBgPath}" fill="${inputBgColor}" />
         <path d="${eyesPath}" fill="${inputFgColor}" fill-rule="evenodd" />
       </svg>`

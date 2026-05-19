@@ -113,7 +113,8 @@ export function getEyePath(shape: import('../types/qr').QREyeShape, x: number, y
 export function getDataPath(pattern: import('../types/qr').QRPixelPattern, x: number, y: number, cellSize: number): string {
   const s = cellSize;
   if (pattern === 'Dots') {
-    return `M${x + 0.5 * s},${y} a${0.5 * s},${0.5 * s} 0 1,0 0,${s} a${0.5 * s},${0.5 * s} 0 1,0 0,-${s} `;
+    const r = 0.45 * s
+    return `M${x + 0.5 * s},${y + (0.5 * s - r)} a${r},${r} 0 1,0 0,${2 * r} a${r},${r} 0 1,0 0,${-2 * r} `
   }
   return `M${x},${y} h${s} v${s} h-${s} Z `;
 }
