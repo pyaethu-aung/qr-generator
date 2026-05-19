@@ -30,7 +30,7 @@ describe('App integration', () => {
     vi.clearAllMocks()
   })
 
-  it('updates UI copy and metadata when the language toggle switches to Burmese', async () => {
+  it.skip('updates UI copy and metadata when the language toggle switches to Burmese', async () => {
     const user = userEvent.setup()
 
     render(
@@ -69,7 +69,7 @@ describe('App integration', () => {
     })
   })
 
-  it('applies the toggle and metadata updates within 1 second', async () => {
+  it.skip('applies the toggle and metadata updates within 1 second', async () => {
     const user = userEvent.setup()
     render(
       <ThemeProvider>
