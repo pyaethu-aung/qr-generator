@@ -454,7 +454,7 @@ export function QRControls({
                     <button
                       type="button"
                       onClick={() => setShowUrlInput(true)}
-                      className="self-start text-xs text-action hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-action rounded"
+                      className="self-start py-2 px-1 text-xs text-action hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action rounded"
                     >
                       {logoPasteUrl}
                     </button>
