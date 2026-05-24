@@ -26,6 +26,8 @@
     "headerTitle": "QR Code Generator",
     "headerSubtitle": "Generate, style, and download high-quality QR codes without touching a backend.",
     "navLabel": "Site controls",
+    "themeToggleToLight": "Switch to light theme",
+    "themeToggleToDark": "Switch to dark theme",
     "footerNote": "Made with ♡ — QR Code Generator"
   },
   "hero": {
