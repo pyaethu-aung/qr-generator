@@ -96,7 +96,7 @@ describe('logoCompositor', () => {
     })
 
     it('rejects if canvas context is unavailable', async () => {
-      HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue(null) as unknown as typeof HTMLCanvasElement.prototype.getContext
+      vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null)
       await expect(rasterizeLogoForSvg('data:image/png;base64,logo', 100)).rejects.toThrow(
         'Canvas 2D context unavailable',
       )
