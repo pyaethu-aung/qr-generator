@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useId } from 'react'
 import { Zap, Download, ChevronDown, Upload, X } from 'lucide-react'
 import { Input } from '../../common/Input'
 import { Tooltip } from '../../common/Tooltip'
@@ -69,6 +69,7 @@ export interface QRControlsProps {
   isRiskyPattern?: boolean
   onDismissWarning?: () => void
   correctionTooltip?: string
+  correctionTooltipAriaLabel?: string
   correctionHint?: string
   designChangePending?: boolean
   applyDesignHint?: string
@@ -76,6 +77,7 @@ export interface QRControlsProps {
   logoSizeLabel?: string
   logoUploadHint?: string
   logoUploadAriaLabel?: string
+  logoUrlAriaLabel?: string
   logoPasteUrl?: string
   logoRemoveLabel?: string
   logoErrorFormat?: string
@@ -138,6 +140,7 @@ export function QRControls({
   isRiskyPattern,
   onDismissWarning,
   correctionTooltip = 'How much of the QR code can be covered or damaged and still scan. Low gives a compact code; High lets you overlay a logo at the cost of a denser pattern.',
+  correctionTooltipAriaLabel = 'About error correction',
   correctionHint = 'Higher levels survive more damage and support larger logos.',
   designChangePending = false,
   applyDesignHint = 'Click Generate to preview with this design.',
@@ -145,6 +148,7 @@ export function QRControls({
   logoSizeLabel = 'Logo Size',
   logoUploadHint = 'Click or drop image',
   logoUploadAriaLabel = 'Upload logo image — press Enter or Space to browse files, or drag and drop',
+  logoUrlAriaLabel = 'Logo image URL',
   logoPasteUrl = 'or paste a URL',
   logoRemoveLabel = 'Remove logo',
   logoErrorFormat = 'Please select an image file',
@@ -158,6 +162,12 @@ export function QRControls({
   const [logoFilename, setLogoFilename] = useState<string | undefined>()
   const [isDragOver, setIsDragOver] = useState(false)
   const [isLoadingLogo, setIsLoadingLogo] = useState(false)
+
+  const eyeShapeId = useId()
+  const pixelPatternLabelId = useId()
+  const fgColorId = useId()
+  const bgColorId = useId()
+  const logoSizeId = useId()
 
   const processFile = (file: File) => {
     if (!file.type.startsWith('image/')) {
@@ -237,7 +247,7 @@ export function QRControls({
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-1.5">
               <span className="text-sm font-medium text-text-primary">{correctionLabel}</span>
-              <Tooltip content={correctionTooltip} />
+              <Tooltip content={correctionTooltip} ariaLabel={correctionTooltipAriaLabel} />
             </div>
             <div className="flex gap-2" role="group" aria-label={correctionLabel}>
               {correctionOptions.map(({ value: optValue, label }) => (
@@ -263,14 +273,14 @@ export function QRControls({
           <div className="grid grid-cols-2 gap-4">
             {/* Eye Shape styled select */}
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-text-primary">{eyeShapeLabel}</label>
+              <label htmlFor={eyeShapeId} className="text-sm font-medium text-text-primary">{eyeShapeLabel}</label>
               <div className="relative">
                 <select
+                  id={eyeShapeId}
                   className="block h-11 w-full appearance-none rounded-lg border border-border-strong bg-surface px-3 pr-8 text-sm text-text-primary shadow-sm focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring disabled:bg-action-disabled disabled:text-text-disabled"
                   value={eyeShape}
                   onChange={(e) => onEyeShapeChange(e.target.value as import('../../../types/qr').QREyeShape)}
                   disabled={isGenerating}
-                  aria-label={eyeShapeLabel}
                 >
                   {eyeShapeOptions.map(({ value: optValue, label }) => (
                     <option key={optValue} value={optValue}>
@@ -288,8 +298,8 @@ export function QRControls({
 
             {/* Pixel Pattern pill toggle */}
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-text-primary">{pixelPatternLabel}</label>
-              <div className="flex gap-2" role="group" aria-label={pixelPatternLabel}>
+              <label id={pixelPatternLabelId} className="text-sm font-medium text-text-primary">{pixelPatternLabel}</label>
+              <div className="flex gap-2" role="group" aria-labelledby={pixelPatternLabelId}>
                 {pixelPatternOptions.map(({ value: optValue, label }) => (
                   <button
                     key={optValue}
@@ -344,37 +354,37 @@ export function QRControls({
           {/* Color pickers — 44px inset boxes */}
           <div className="flex flex-wrap gap-4">
             <div className="min-w-[120px] flex-1 flex flex-col gap-1">
-              <label className="text-sm font-medium text-text-primary">{foregroundLabel}</label>
+              <label htmlFor={fgColorId} className="text-sm font-medium text-text-primary">{foregroundLabel}</label>
               <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3">
                 <div className="h-5 w-5 shrink-0 rounded-full border border-border-strong" style={{ backgroundColor: fgColor }} />
                 <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
                   {fgColor}
                 </span>
                 <input
+                  id={fgColorId}
                   type="color"
                   value={fgColor}
                   onChange={(e) => onFgColorChange(e.target.value)}
                   disabled={isGenerating}
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                  aria-label={foregroundLabel}
                 />
               </div>
             </div>
 
             <div className="min-w-[120px] flex-1 flex flex-col gap-1">
-              <label className="text-sm font-medium text-text-primary">{backgroundLabel}</label>
+              <label htmlFor={bgColorId} className="text-sm font-medium text-text-primary">{backgroundLabel}</label>
               <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3">
                 <div className="h-5 w-5 shrink-0 rounded-full border border-border-strong" style={{ backgroundColor: bgColor }} />
                 <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
                   {bgColor}
                 </span>
                 <input
+                  id={bgColorId}
                   type="color"
                   value={bgColor}
                   onChange={(e) => onBgColorChange(e.target.value)}
                   disabled={isGenerating}
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                  aria-label={backgroundLabel}
                 />
               </div>
             </div>
@@ -449,6 +459,7 @@ export function QRControls({
                     <input
                       type="url"
                       placeholder="https://…"
+                      aria-label={logoUrlAriaLabel}
                       className="h-9 w-full rounded-lg border border-border-strong bg-surface px-3 text-sm text-text-primary placeholder:text-text-disabled focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') void handleUrlSubmit(e.currentTarget.value)
@@ -468,17 +479,17 @@ export function QRControls({
               {logoDataUrl && logoSize !== undefined && maxLogoSize !== undefined && onLogoSizeChange && (
                 <div className="flex flex-col gap-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-text-primary">{logoSizeLabel}</label>
+                    <label htmlFor={logoSizeId} className="text-sm font-medium text-text-primary">{logoSizeLabel}</label>
                     <span className="text-sm tabular-nums text-text-secondary">{logoSize}%</span>
                   </div>
                   <input
+                    id={logoSizeId}
                     type="range"
                     min={5}
                     max={maxLogoSize}
                     value={logoSize}
                     onChange={(e) => onLogoSizeChange(Number(e.target.value))}
                     className="h-1.5 w-full cursor-pointer accent-action"
-                    aria-label={logoSizeLabel}
                   />
                   {logoSize >= maxLogoSize && maxLogoSize < 30 ? (
                     <p className="text-xs text-text-secondary" role="status">
