@@ -355,7 +355,7 @@ export function QRControls({
           <div className="flex flex-wrap gap-4">
             <div className="min-w-[120px] flex-1 flex flex-col gap-1">
               <label htmlFor={fgColorId} className="text-sm font-medium text-text-primary">{foregroundLabel}</label>
-              <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3">
+              <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3 focus-within:ring-2 focus-within:ring-focus-ring focus-within:outline-none">
                 <div className="h-5 w-5 shrink-0 rounded-full border border-border-strong" style={{ backgroundColor: fgColor }} />
                 <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
                   {fgColor}
@@ -366,14 +366,14 @@ export function QRControls({
                   value={fgColor}
                   onChange={(e) => onFgColorChange(e.target.value)}
                   disabled={isGenerating}
-                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0 focus:outline-none"
                 />
               </div>
             </div>
 
             <div className="min-w-[120px] flex-1 flex flex-col gap-1">
               <label htmlFor={bgColorId} className="text-sm font-medium text-text-primary">{backgroundLabel}</label>
-              <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3">
+              <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3 focus-within:ring-2 focus-within:ring-focus-ring focus-within:outline-none">
                 <div className="h-5 w-5 shrink-0 rounded-full border border-border-strong" style={{ backgroundColor: bgColor }} />
                 <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
                   {bgColor}
@@ -384,7 +384,7 @@ export function QRControls({
                   value={bgColor}
                   onChange={(e) => onBgColorChange(e.target.value)}
                   disabled={isGenerating}
-                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0 focus:outline-none"
                 />
               </div>
             </div>
