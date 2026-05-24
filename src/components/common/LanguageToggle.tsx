@@ -12,7 +12,7 @@ export function LanguageToggle() {
   return (
     <button
       type="button"
-      className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border-subtle bg-surface-raised text-text-secondary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
+      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border-subtle bg-surface-raised text-text-secondary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
       aria-label={ariaLabel}
       onClick={() => setLocale(nextLocale)}
     >
