@@ -228,13 +228,13 @@ Text: "Made with ♡ — QR Code Generator" — `$font-family`, 14 px, `$text-se
 | `$surface-inset` | `#E8DDD2` | `rgba(255, 255, 255, 0.05)` |
 | `$text-primary` | `#1A1A1A` | `#F3EBE2` |
 | `$text-secondary` | `#6B6B6B` | `#A89E93` |
-| `$text-disabled` | `#9B9080` | `#5C544C` |
+| `$text-disabled` | `#706860` | `#5C544C` |
 | `$border-subtle` | `#C5BEB6` | `rgba(255, 255, 255, 0.10)` |
 | `$border-strong` | `#A89E93` | `rgba(255, 255, 255, 0.18)` |
-| `$action` | `#D4916E` | `#D4916E` |
+| `$action` | `#A04D28` | `#D4916E` |
 | `$action-fg` | `#FFFFFF` | `#1A1612` |
 | `$action-disabled` | `#E8C5B3` | `#6B4B38` |
-| `$focus-ring` | `#D4916E` | `#D4916E` |
+| `$focus-ring` | `#A04D28` | `#D4916E` |
 | `$error` | `#C53030` | `#F87171` |
 | `$error-surface` | `#FEF2F2` | `rgba(155, 27, 27, 0.20)` |
 | `$error-border` | `#FECACA` | `rgba(155, 27, 27, 0.50)` |

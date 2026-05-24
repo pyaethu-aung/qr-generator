@@ -10,18 +10,18 @@
     /* Text */
     --color-text-primary: #1A1A1A;
     --color-text-secondary: #6B6B6B;
-    --color-text-disabled: #9B9080;
+    --color-text-disabled: #706860;
     /* Border */
     --color-border-subtle: #C5BEB6;
     --color-border-strong: #A89E93;
     /* Action */
-    --color-action: #D4916E;
+    --color-action: #A04D28;
     --color-action-fg: #FFFFFF;
     --color-action-disabled: #E8C5B3;
     /* Accessibility */
-    --color-focus-ring: #D4916E;
+    --color-focus-ring: #A04D28;
     /* Status */
-    --color-link: #D4916E;
+    --color-link: #A04D28;
     --color-error: #C53030;
     --color-error-surface: #FEF2F2;
     --color-error-border: #FECACA;
