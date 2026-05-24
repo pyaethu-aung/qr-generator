@@ -8,16 +8,15 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 }
 
 /**
- * Composites a logo centered on an existing canvas context with a white
- * backing disc for legibility over dark QR modules.
+ * Composites a pre-loaded logo image centered on an existing canvas context.
+ * Synchronous — caller must supply an already-loaded HTMLImageElement.
  */
-export async function compositeLogoOnCanvas(
+export function compositeLoadedLogoOnCanvas(
   ctx: CanvasRenderingContext2D,
-  logoDataUrl: string,
+  logoImg: HTMLImageElement,
   logoSizePct: number,
   canvasSize: number,
-): Promise<void> {
-  const logoImg = await loadImage(logoDataUrl)
+): void {
   const logoPx = Math.round(canvasSize * (logoSizePct / 100))
   const cx = canvasSize / 2
   const cy = canvasSize / 2
@@ -37,6 +36,20 @@ export async function compositeLogoOnCanvas(
   ctx.drawImage(logoImg, cx - logoRadius, cy - logoRadius, logoPx, logoPx)
 
   ctx.restore()
+}
+
+/**
+ * Composites a logo centered on an existing canvas context with a white
+ * backing disc for legibility over dark QR modules.
+ */
+export async function compositeLogoOnCanvas(
+  ctx: CanvasRenderingContext2D,
+  logoDataUrl: string,
+  logoSizePct: number,
+  canvasSize: number,
+): Promise<void> {
+  const logoImg = await loadImage(logoDataUrl)
+  compositeLoadedLogoOnCanvas(ctx, logoImg, logoSizePct, canvasSize)
 }
 
 /**

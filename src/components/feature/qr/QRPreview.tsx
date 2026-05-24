@@ -1,10 +1,10 @@
-import { useRef, useCallback, useId, forwardRef } from 'react'
+import { useRef, useCallback, useId, forwardRef, useEffect, useLayoutEffect } from 'react'
 import { Share2 } from 'lucide-react'
 
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import { useQRShare } from '../../../hooks/useQRShare'
 import { generateQRPaths } from '../../../utils/qrShapeRenderer'
-import { compositeLogoOnCanvas } from '../../../utils/logoCompositor'
+import { compositeLoadedLogoOnCanvas } from '../../../utils/logoCompositor'
 import type { QRConfig, QRDesignConfig } from '../../../types/qr'
 
 export interface QRPreviewProps extends QRConfig {
@@ -18,6 +18,18 @@ export interface QRPreviewProps extends QRConfig {
 export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
   ({ value, ecLevel, fgColor, bgColor, size = 220, designConfig = { eyeShape: 'Square', pixelPattern: 'Square' }, className, style, logoDataUrl, logoSize }, forwardedRef) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
+    // Cached layers — updated by their respective effects
+    const baseImageRef = useRef<HTMLImageElement | null>(null)
+    const logoImageRef = useRef<HTMLImageElement | null>(null)
+    // Separate stale-render guards so QR base and logo loads don't cancel each other
+    const baseGenRef = useRef(0)
+    const logoGenRef = useRef(0)
+    // Ref-shadowed props so drawFrame stays stable (no deps)
+    const sizeRef = useRef(size)
+    sizeRef.current = size
+    const logoSizeRef = useRef(logoSize)
+    logoSizeRef.current = logoSize
+
     const { translate } = useLocaleContext()
     const { share, isSharing, shareRequest } = useQRShare()
 
@@ -36,6 +48,95 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
       },
       [forwardedRef],
     )
+
+    // Synchronous composite from cached images. Stable — reads all state from refs.
+    const drawFrame = useCallback(() => {
+      const canvas = canvasRef.current
+      const base = baseImageRef.current
+      if (!canvas || !base) return
+      const dpr = window.devicePixelRatio || 1
+      const physicalSize = Math.round(sizeRef.current * dpr)
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
+      ctx.clearRect(0, 0, physicalSize, physicalSize)
+      ctx.drawImage(base, 0, 0, physicalSize, physicalSize)
+      const logoImg = logoImageRef.current
+      const ls = logoSizeRef.current
+      if (logoImg && ls) {
+        compositeLoadedLogoOnCanvas(ctx, logoImg, ls, physicalSize)
+      }
+    }, [])
+
+    // Set canvas pixel dimensions before paint to avoid a blank first frame
+    useLayoutEffect(() => {
+      const canvas = canvasRef.current
+      if (!canvas || !value) return
+      const dpr = window.devicePixelRatio || 1
+      const physicalSize = Math.round(size * dpr)
+      canvas.width = physicalSize
+      canvas.height = physicalSize
+      canvas.style.width = `${size}px`
+      canvas.style.height = `${size}px`
+    }, [size, value])
+
+    // Effect 1 (heavy): Regenerate QR base when QR content or appearance changes
+    useEffect(() => {
+      if (!value) {
+        baseImageRef.current = null
+        return
+      }
+      const gen = ++baseGenRef.current
+      const dpr = window.devicePixelRatio || 1
+      const physicalSize = Math.round(size * dpr)
+      const { dataPath, eyesPath, eyeBgPath, size: matrixSize } = generateQRPaths(
+        value,
+        ecLevel,
+        designConfig.eyeShape,
+        designConfig.pixelPattern,
+      )
+      const viewBoxSize = matrixSize * 10
+      const dataShapeRendering = designConfig.pixelPattern === 'Dots' ? 'geometricPrecision' : 'crispEdges'
+      const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewBoxSize} ${viewBoxSize}" width="${physicalSize}" height="${physicalSize}">
+        <rect width="100%" height="100%" fill="${bgColor}" />
+        <path d="${dataPath}" fill="${fgColor}" shape-rendering="${dataShapeRendering}" />
+        <path d="${eyeBgPath}" fill="${bgColor}" />
+        <path d="${eyesPath}" fill="${fgColor}" fill-rule="evenodd" />
+      </svg>`
+      const img = new Image()
+      img.onload = () => {
+        if (gen !== baseGenRef.current) return
+        baseImageRef.current = img
+        drawFrame()
+      }
+      img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgString)
+    }, [value, ecLevel, fgColor, bgColor, designConfig, size, drawFrame])
+
+    // Effect 2 (medium): Load/cache logo image when the data URL changes
+    useEffect(() => {
+      if (!logoDataUrl) {
+        logoImageRef.current = null
+        drawFrame()
+        return
+      }
+      const gen = ++logoGenRef.current
+      const img = new Image()
+      img.onload = () => {
+        if (gen !== logoGenRef.current) return
+        logoImageRef.current = img
+        drawFrame()
+      }
+      img.onerror = () => {
+        if (gen !== logoGenRef.current) return
+        logoImageRef.current = null
+        drawFrame()
+      }
+      img.src = logoDataUrl
+    }, [logoDataUrl, drawFrame])
+
+    // Effect 3 (fast): Synchronous redraw when only logoSize changes — hot path during slider drag
+    useEffect(() => {
+      drawFrame()
+    }, [logoSize, drawFrame])
 
     const handleShareClick = useCallback(() => {
       void share(canvasRef.current)
@@ -86,43 +187,6 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
                 ref={(node) => {
                   canvasRef.current = node
                   assignForwardedRef(node)
-
-                  if (node && value) {
-                    const dpr = window.devicePixelRatio || 1
-                    const physicalSize = Math.round(size * dpr)
-                    node.width = physicalSize
-                    node.height = physicalSize
-                    node.style.width = `${size}px`
-                    node.style.height = `${size}px`
-
-                    const ctx = node.getContext('2d')
-                    if (ctx) {
-                      const { dataPath, eyesPath, eyeBgPath, size: matrixSize } = generateQRPaths(
-                        value,
-                        ecLevel,
-                        designConfig.eyeShape,
-                        designConfig.pixelPattern,
-                      )
-                      const viewBoxSize = matrixSize * 10
-                      const dataShapeRendering = designConfig.pixelPattern === 'Dots' ? 'geometricPrecision' : 'crispEdges'
-                      const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewBoxSize} ${viewBoxSize}" width="${physicalSize}" height="${physicalSize}">
-                        <rect width="100%" height="100%" fill="${bgColor}" />
-                        <path d="${dataPath}" fill="${fgColor}" shape-rendering="${dataShapeRendering}" />
-                        <path d="${eyeBgPath}" fill="${bgColor}" />
-                        <path d="${eyesPath}" fill="${fgColor}" fill-rule="evenodd" />
-                      </svg>`
-
-                      const img = new Image()
-                      img.onload = () => {
-                        ctx.clearRect(0, 0, physicalSize, physicalSize)
-                        ctx.drawImage(img, 0, 0, physicalSize, physicalSize)
-                        if (logoDataUrl && logoSize) {
-                          void compositeLogoOnCanvas(ctx, logoDataUrl, logoSize, physicalSize)
-                        }
-                      }
-                      img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgString)
-                    }
-                  }
                 }}
                 data-testid="qr-code-canvas"
                 data-value={value}
