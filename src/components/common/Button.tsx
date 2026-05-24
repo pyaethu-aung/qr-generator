@@ -54,7 +54,7 @@ export function Button({
 
   return (
     <button type={type} className={composed} disabled={disabled || loading} {...props}>
-      {loading ? <span className="animate-pulse">Loading...</span> : children}
+      {loading ? <span className="motion-safe:animate-pulse">Loading...</span> : children}
     </button>
   )
 }

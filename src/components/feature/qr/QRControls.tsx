@@ -431,7 +431,7 @@ export function QRControls({
                     }`}
                   >
                     {isLoadingLogo ? (
-                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden />
+                      <span className="h-4 w-4 motion-safe:animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden />
                     ) : (
                       <Upload size={15} aria-hidden />
                     )}
@@ -512,7 +512,7 @@ export function QRControls({
           className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-action px-6 text-sm font-semibold text-action-fg transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isGenerating ? (
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-action-fg border-t-transparent" />
+            <span className="h-4 w-4 motion-safe:animate-spin rounded-full border-2 border-action-fg border-t-transparent" />
           ) : (
             <Zap size={18} aria-hidden />
           )}

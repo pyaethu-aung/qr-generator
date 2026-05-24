@@ -20,9 +20,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, [theme])
 
   useEffect(() => {
-    requestAnimationFrame(() => {
-      document.documentElement.classList.add('transitions-ready')
-    })
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      requestAnimationFrame(() => {
+        document.documentElement.classList.add('transitions-ready')
+      })
+    }
   }, [])
 
   return (
