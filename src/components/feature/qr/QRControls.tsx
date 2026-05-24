@@ -170,6 +170,7 @@ export function QRControls({
   const fgColorId = useId()
   const bgColorId = useId()
   const logoSizeId = useId()
+  const logoFileId = useId()
 
   const processFile = (file: File) => {
     if (!file.type.startsWith('image/')) {
@@ -395,7 +396,7 @@ export function QRControls({
           {/* Logo upload */}
           {onLogoChange && (
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-text-primary">{logoLabel}</label>
+              <p className="text-sm font-medium text-text-primary">{logoLabel}</p>
 
               {logoDataUrl ? (
                 <div className="flex items-center gap-3 rounded-lg bg-surface-inset px-3 h-11">
@@ -419,7 +420,7 @@ export function QRControls({
               ) : (
                 <div className="flex flex-col gap-1.5">
                   <label
-                    htmlFor="logo-file-upload"
+                    htmlFor={logoFileId}
                     aria-label={logoUploadAriaLabel}
                     onDragOver={(e) => { e.preventDefault(); setIsDragOver(true) }}
                     onDragLeave={() => setIsDragOver(false)}
@@ -440,7 +441,7 @@ export function QRControls({
                     {isLoadingLogo ? 'Loading…' : logoUploadHint}
                   </label>
                   <input
-                    id="logo-file-upload"
+                    id={logoFileId}
                     ref={fileInputRef}
                     type="file"
                     accept="image/*"

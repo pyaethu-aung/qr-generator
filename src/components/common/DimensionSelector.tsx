@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import type { DimensionPreset, DpiPreset, ExportFormat } from '../../types/export'
 import { DIMENSION_PRESETS, DPI_PRESETS } from '../../types/export'
 
@@ -22,20 +23,23 @@ export function DimensionSelector({
   dimensionLabel,
   dpiLabel,
 }: DimensionSelectorProps) {
+  const dimensionLabelId = useId()
+  const dpiLabelId = useId()
+
   return (
     <div className="space-y-4">
       {/* Dimension presets - hide for SVG (resolution-independent) */}
       {format !== 'svg' && (
         <div>
           <label
-            id="dimension-label"
+            id={dimensionLabelId}
             className="block text-sm font-semibold text-text-primary mb-3"
           >
             {dimensionLabel}
           </label>
           <div
             role="group"
-            aria-labelledby="dimension-label"
+            aria-labelledby={dimensionLabelId}
             className="grid grid-cols-3 gap-2"
           >
             {DIMENSION_PRESETS.map((preset) => {
@@ -71,14 +75,14 @@ export function DimensionSelector({
       {format === 'pdf' && (
         <div>
           <label
-            id="dpi-label"
+            id={dpiLabelId}
             className="block text-sm font-semibold text-text-primary mb-3"
           >
             {dpiLabel}
           </label>
           <div
             role="group"
-            aria-labelledby="dpi-label"
+            aria-labelledby={dpiLabelId}
             className="grid grid-cols-3 gap-2"
           >
             {DPI_PRESETS.map((preset) => {
