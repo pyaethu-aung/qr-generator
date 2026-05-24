@@ -6,7 +6,7 @@ export function Navbar() {
   const { translate } = useLocaleContext()
 
   return (
-    <header className="relative z-50 border-b border-border-subtle bg-surface-overlay backdrop-blur-md">
+    <header className="relative z-50 border-b border-border-subtle bg-surface-overlay backdrop-blur-sm">
       <div className="max-w-6xl mx-auto py-4 px-6 sm:px-12 flex items-center justify-between">
         <div>
           <h1 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl font-semibold text-text-primary">
