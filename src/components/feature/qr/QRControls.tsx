@@ -260,7 +260,7 @@ export function QRControls({
                   aria-pressed={ecLevel === optValue}
                   onClick={() => onEcLevelChange(optValue)}
                   disabled={isGenerating}
-                  className={`flex h-11 flex-1 items-center justify-center rounded-full px-3 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                  className={`flex h-11 flex-1 items-center justify-center rounded-full px-3 text-sm whitespace-nowrap transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                     ecLevel === optValue
                       ? 'bg-action text-action-fg font-semibold'
                       : 'bg-surface-inset text-text-primary hover:bg-surface-raised'
