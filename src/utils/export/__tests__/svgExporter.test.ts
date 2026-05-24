@@ -1,6 +1,10 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { exportSvg } from '../svgExporter'
 import type { SvgExportConfig } from '../svgExporter'
+
+vi.mock('../../logoCompositor', () => ({
+  rasterizeLogoForSvg: vi.fn().mockResolvedValue('data:image/png;base64,rasterized'),
+}))
 
 // Helper to read blob text in test environment
 async function blobToText(blob: Blob): Promise<string> {
@@ -152,6 +156,30 @@ describe('svgExporter', () => {
       expect(text).toContain('</svg>')
       expect(text.split('<svg').length - 1).toBe(1) // Only one svg root
       expect(text.split('</svg>').length - 1).toBe(1)
+    })
+
+    it('embeds logo elements when logoDataUrl is provided', async () => {
+      const configWithLogo: SvgExportConfig = {
+        ...mockConfig,
+        logoDataUrl: 'data:image/png;base64,logo',
+        logoSize: 20,
+      }
+
+      const blob = await exportSvg('Test', configWithLogo)
+      const text = await blobToText(blob)
+
+      expect(text).toContain('logo-clip')
+      expect(text).toContain('<circle')
+      expect(text).toContain('<image')
+      expect(text).toContain('data:image/png;base64,rasterized')
+    })
+
+    it('omits logo elements when logoDataUrl is absent', async () => {
+      const blob = await exportSvg('Test', mockConfig)
+      const text = await blobToText(blob)
+
+      expect(text).not.toContain('logo-clip')
+      expect(text).not.toContain('<image')
     })
   })
 })

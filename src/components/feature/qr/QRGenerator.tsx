@@ -23,7 +23,21 @@ export const QRGenerator = () => {
     canGenerate,
   } = useQRGenerator()
 
-  const { designConfig, inputEyeShape, inputPixelPattern, setEyeShape, setPixelPattern, isRiskyPattern, dismissWarning, commitDesignConfig } = useQRDesign(inputValue, inputEcLevel);
+  const {
+    designConfig,
+    inputEyeShape,
+    inputPixelPattern,
+    setEyeShape,
+    setPixelPattern,
+    isRiskyPattern,
+    dismissWarning,
+    commitDesignConfig,
+    logoDataUrl,
+    setLogoDataUrl,
+    logoSize,
+    setLogoSize,
+    maxLogoSize,
+  } = useQRDesign(inputValue, inputEcLevel)
 
   const handleGenerate = () => {
     commitDesignConfig()
@@ -71,10 +85,15 @@ export const QRGenerator = () => {
                 onPixelPatternChange={setPixelPattern}
                 isRiskyPattern={isRiskyPattern}
                 onDismissWarning={dismissWarning}
+                logoDataUrl={logoDataUrl}
+                onLogoChange={setLogoDataUrl}
+                logoSize={logoSize}
+                onLogoSizeChange={setLogoSize}
+                maxLogoSize={maxLogoSize}
                 onGenerate={handleGenerate}
                 isGenerating={isGenerating}
-                onDownloadPng={() => void downloadPng(designConfig)}
-                onDownloadSvg={() => void downloadSvg(designConfig)}
+                onDownloadPng={() => void downloadPng(designConfig, logoDataUrl, logoSize)}
+                onDownloadSvg={() => void downloadSvg(designConfig, logoDataUrl, logoSize)}
                 canDownload={!!config.value}
                 inputError={inputError ?? undefined}
                 canGenerate={canGenerate}
@@ -90,7 +109,12 @@ export const QRGenerator = () => {
                   {translate('preview.sectionTitle')}
                 </h3>
               </div>
-              <QRPreview {...config} designConfig={designConfig} />
+              <QRPreview
+                {...config}
+                designConfig={designConfig}
+                logoDataUrl={logoDataUrl}
+                logoSize={logoSize}
+              />
             </div>
           </div>
         </div>

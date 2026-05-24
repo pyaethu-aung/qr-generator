@@ -51,7 +51,15 @@
     "generate": "Generate QR Code",
     "downloadsTitle": "Downloads",
     "downloadPng": "Download PNG",
-    "downloadSvg": "Download SVG"
+    "downloadSvg": "Download SVG",
+    "logoLabel": "Logo",
+    "logoSizeLabel": "Logo Size",
+    "logoUploadHint": "Click or drop image",
+    "logoPasteUrl": "or paste a URL",
+    "logoRemoveLabel": "Remove logo",
+    "logoErrorFormat": "Please select an image file",
+    "logoErrorUrl": "Could not load image from URL",
+    "logoTransparencyHint": "PNG or SVG works best for transparent logos"
   },
   "preview": {
     "sectionLabel": "Preview",

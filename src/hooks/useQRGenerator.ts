@@ -4,6 +4,7 @@ import { DEFAULT_QR_CONFIG, QR_SIZE_DOWNLOAD } from '../data/defaults'
 import { downloadBlob } from '../utils/download'
 import { generateQRPaths } from '../utils/qrShapeRenderer'
 import { exportSvg } from '../utils/export/svgExporter'
+import { compositeLogoOnCanvas } from '../utils/logoCompositor'
 
 export const INPUT_LENGTH_LIMIT = 2000
 
@@ -19,21 +20,18 @@ export interface UseQRGeneratorReturn {
   setInputBgColor: (color: string) => void
   generateQRCode: () => void
   isGenerating: boolean
-  downloadPng: (designConfig: QRDesignConfig) => Promise<void>
-  downloadSvg: (designConfig: QRDesignConfig) => Promise<void>
+  downloadPng: (designConfig: QRDesignConfig, logoDataUrl?: string | null, logoSize?: number) => Promise<void>
+  downloadSvg: (designConfig: QRDesignConfig, logoDataUrl?: string | null, logoSize?: number) => Promise<void>
   inputError?: string
   canGenerate: boolean
 }
 
 export const useQRGenerator = (): UseQRGeneratorReturn => {
-  // config holds the current configuration for the displayed QR code
   const [config, setConfig] = useState<QRConfig>(DEFAULT_QR_CONFIG)
 
-  // inputValue holds the text in the input field
   const [inputValue, setInputValueState] = useState<string>('')
   const [inputError, setInputError] = useState<string | undefined>()
 
-  // Input states for customization (not applied until Generate is clicked)
   const [inputEcLevel, setInputEcLevel] = useState<QRErrorCorrectionLevel>(
     DEFAULT_QR_CONFIG.ecLevel,
   )
@@ -46,7 +44,6 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
     if (value.length > INPUT_LENGTH_LIMIT) {
       return `Input too long (max ${INPUT_LENGTH_LIMIT} characters)`
     }
-
     return undefined
   }, [])
 
@@ -89,7 +86,11 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
     setIsGenerating(false)
   }, [getValidationError, inputBgColor, inputEcLevel, inputFgColor, inputValue])
 
-  const downloadPng = useCallback(async (designConfig: QRDesignConfig) => {
+  const downloadPng = useCallback(async (
+    designConfig: QRDesignConfig,
+    logoDataUrl?: string | null,
+    logoSize = 20,
+  ) => {
     if (!config.value) return
 
     try {
@@ -124,6 +125,10 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
         img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgString)
       })
 
+      if (logoDataUrl) {
+        await compositeLogoOnCanvas(ctx, logoDataUrl, logoSize, QR_SIZE_DOWNLOAD)
+      }
+
       const blob = await new Promise<Blob>((resolve, reject) =>
         canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('toBlob failed'))), 'image/png'),
       )
@@ -134,7 +139,11 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
     }
   }, [config.value, inputEcLevel, inputFgColor, inputBgColor])
 
-  const downloadSvg = useCallback(async (designConfig: QRDesignConfig) => {
+  const downloadSvg = useCallback(async (
+    designConfig: QRDesignConfig,
+    logoDataUrl?: string | null,
+    logoSize = 20,
+  ) => {
     if (!config.value) return
 
     try {
@@ -144,6 +153,8 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
         fgColor: inputFgColor,
         bgColor: inputBgColor,
         designConfig,
+        logoDataUrl,
+        logoSize,
       })
       downloadBlob(blob, `qr-code-${Date.now()}.svg`)
     } catch (err) {
