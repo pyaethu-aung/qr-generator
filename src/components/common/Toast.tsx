@@ -23,8 +23,9 @@ export function Toast({ message, isVisible, className }: ToastProps) {
         ),
         className
       )}
-      role="tooltip"
-      aria-hidden={!isVisible}
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
     >
       {message}
       {/* Arrow */}
