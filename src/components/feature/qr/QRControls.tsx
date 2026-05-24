@@ -277,7 +277,7 @@ export function QRControls({
               <div className="relative">
                 <select
                   id={eyeShapeId}
-                  className="block h-11 w-full appearance-none rounded-lg border border-border-strong bg-surface px-3 pr-8 text-sm text-text-primary shadow-sm focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring disabled:bg-action-disabled disabled:text-text-disabled"
+                  className="block h-11 w-full appearance-none rounded-lg border border-border-subtle bg-surface-inset px-3 pr-8 text-sm text-text-primary shadow-sm focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring disabled:bg-action-disabled disabled:text-text-disabled"
                   value={eyeShape}
                   onChange={(e) => onEyeShapeChange(e.target.value as import('../../../types/qr').QREyeShape)}
                   disabled={isGenerating}
@@ -327,9 +327,9 @@ export function QRControls({
           )}
 
           {isRiskyPattern && (
-            <div className="flex items-start justify-between rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 shadow-sm dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-200" role="alert">
+            <div className="flex items-start justify-between rounded-lg border border-warning-border bg-warning-surface p-3 text-sm text-warning shadow-sm" role="alert">
               <div className="flex items-start gap-2">
-                <svg className="h-5 w-5 shrink-0 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="h-5 w-5 shrink-0 text-warning" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
                 <div className="flex flex-col">
@@ -340,7 +340,7 @@ export function QRControls({
               {onDismissWarning && (
                 <button
                   onClick={onDismissWarning}
-                  className="ml-4 shrink-0 rounded-md p-1 text-amber-500 hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:hover:bg-amber-900/50 dark:focus:ring-offset-surface"
+                  className="ml-4 shrink-0 rounded-md p-1 text-warning hover:bg-warning-border/20 focus:outline-none focus:ring-2 focus:ring-warning focus:ring-offset-2"
                   aria-label="Dismiss warning"
                 >
                   <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">

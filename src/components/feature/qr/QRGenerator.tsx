@@ -59,7 +59,7 @@ export const QRGenerator = () => {
           <p className="mt-2 text-sm text-text-secondary sm:text-base">{translate('hero.subtitle')}</p>
         </div>
 
-        <div className="rounded-xl border border-border-strong bg-surface-overlay p-8 shadow-2xl backdrop-blur-xl w-full max-w-full overflow-hidden">
+        <div className="rounded-xl border border-border-strong bg-surface-overlay p-8 shadow-2xl w-full max-w-full overflow-hidden">
           <div className="grid gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
             <div className="space-y-5">
               <div>
