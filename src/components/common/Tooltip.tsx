@@ -2,9 +2,10 @@ import { useState, useId } from 'react'
 
 interface TooltipProps {
   content: string
+  ariaLabel?: string
 }
 
-export function Tooltip({ content }: TooltipProps) {
+export function Tooltip({ content, ariaLabel = 'More information' }: TooltipProps) {
   const [visible, setVisible] = useState(false)
   const id = useId()
 
@@ -18,7 +19,7 @@ export function Tooltip({ content }: TooltipProps) {
         onFocus={() => setVisible(true)}
         onBlur={() => setVisible(false)}
         className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-surface-inset text-[10px] font-semibold text-text-secondary hover:bg-surface-raised focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-1"
-        aria-label="About error correction"
+        aria-label={ariaLabel}
       >
         ?
       </button>
