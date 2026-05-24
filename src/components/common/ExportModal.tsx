@@ -101,7 +101,7 @@ export function ExportModal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity duration-300"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm motion-safe:transition-opacity motion-safe:duration-300"
       role="dialog"
       aria-modal="true"
       aria-labelledby="export-modal-title"
