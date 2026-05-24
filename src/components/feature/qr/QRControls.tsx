@@ -389,14 +389,14 @@ export function QRControls({
                 </div>
               ) : (
                 <div className="flex flex-col gap-1.5">
-                  <button
-                    type="button"
+                  <label
+                    htmlFor="logo-file-upload"
                     onDragOver={(e) => { e.preventDefault(); setIsDragOver(true) }}
                     onDragLeave={() => setIsDragOver(false)}
                     onDrop={handleDrop}
-                    onClick={() => fileInputRef.current?.click()}
-                    aria-label={logoUploadHint}
-                    className={`flex h-11 w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed text-sm transition-colors ${
+                    onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); fileInputRef.current?.click() } }}
+                    tabIndex={0}
+                    className={`flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed text-sm transition-colors ${
                       isDragOver
                         ? 'border-action bg-action/5 text-action'
                         : 'border-border-subtle bg-surface-inset text-text-secondary hover:border-action hover:text-text-primary'
@@ -408,12 +408,13 @@ export function QRControls({
                       <Upload size={15} aria-hidden />
                     )}
                     {isLoadingLogo ? 'Loading…' : logoUploadHint}
-                  </button>
+                  </label>
                   <input
+                    id="logo-file-upload"
                     ref={fileInputRef}
                     type="file"
                     accept="image/*"
-                    className="hidden"
+                    className="absolute opacity-0 w-px h-px"
                     onChange={handleFileChange}
                     aria-hidden
                     tabIndex={-1}
