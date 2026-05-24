@@ -171,7 +171,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
     return (
       <div className={`flex flex-col gap-4 ${className ?? ''}`} style={style}>
         {/* Tall inset preview box */}
-        <div className="flex items-center justify-center md:h-[536px] rounded-lg border border-border-subtle bg-surface-inset">
+        <div className="flex items-center justify-center min-h-[220px] md:h-[536px] rounded-lg border border-border-subtle bg-surface-inset">
           {!value ? (
             <div
               className="flex items-center justify-center bg-surface-inset text-text-disabled rounded-lg border-2 border-dashed border-border-subtle"
