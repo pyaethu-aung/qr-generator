@@ -1,0 +1,307 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-24T00:00:00.000Z",
+  "title": "Design System: QR Generator",
+  "extensions": {
+    "colorMeta": {
+      "action": {
+        "role": "primary",
+        "displayName": "Terracotta",
+        "canonical": "oklch(65% 0.11 48)",
+        "tonalRamp": [
+          "oklch(15% 0.07 48)",
+          "oklch(25% 0.09 48)",
+          "oklch(35% 0.10 48)",
+          "oklch(45% 0.10 48)",
+          "oklch(55% 0.11 48)",
+          "oklch(65% 0.11 48)",
+          "oklch(78% 0.08 48)",
+          "oklch(93% 0.04 48)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Warm Sand",
+        "canonical": "oklch(94% 0.008 68)",
+        "tonalRamp": [
+          "oklch(11% 0.007 68)",
+          "oklch(20% 0.007 68)",
+          "oklch(35% 0.008 68)",
+          "oklch(50% 0.008 68)",
+          "oklch(65% 0.008 68)",
+          "oklch(80% 0.008 68)",
+          "oklch(90% 0.007 68)",
+          "oklch(96% 0.006 68)"
+        ]
+      },
+      "surface-raised": {
+        "role": "neutral",
+        "displayName": "Pale Linen",
+        "canonical": "oklch(97% 0.006 68)",
+        "tonalRamp": [
+          "oklch(11% 0.007 68)",
+          "oklch(22% 0.007 68)",
+          "oklch(37% 0.008 68)",
+          "oklch(52% 0.008 68)",
+          "oklch(67% 0.008 68)",
+          "oklch(82% 0.007 68)",
+          "oklch(92% 0.006 68)",
+          "oklch(98% 0.004 68)"
+        ]
+      },
+      "surface-inset": {
+        "role": "neutral",
+        "displayName": "Oatmeal",
+        "canonical": "oklch(89% 0.010 68)",
+        "tonalRamp": [
+          "oklch(11% 0.008 68)",
+          "oklch(22% 0.009 68)",
+          "oklch(38% 0.010 68)",
+          "oklch(53% 0.010 68)",
+          "oklch(66% 0.010 68)",
+          "oklch(77% 0.010 68)",
+          "oklch(86% 0.010 68)",
+          "oklch(94% 0.008 68)"
+        ]
+      },
+      "text-primary": {
+        "role": "neutral",
+        "displayName": "Inkwell",
+        "canonical": "oklch(14% 0.002 0)",
+        "tonalRamp": [
+          "oklch(10% 0.001 0)",
+          "oklch(18% 0.002 0)",
+          "oklch(30% 0.002 0)",
+          "oklch(45% 0.002 0)",
+          "oklch(60% 0.002 0)",
+          "oklch(74% 0.002 0)",
+          "oklch(86% 0.002 0)",
+          "oklch(95% 0.001 0)"
+        ]
+      },
+      "text-secondary": {
+        "role": "neutral",
+        "displayName": "Driftwood",
+        "canonical": "oklch(47% 0.002 0)",
+        "tonalRamp": [
+          "oklch(12% 0.001 0)",
+          "oklch(22% 0.002 0)",
+          "oklch(33% 0.002 0)",
+          "oklch(43% 0.002 0)",
+          "oklch(55% 0.002 0)",
+          "oklch(66% 0.002 0)",
+          "oklch(78% 0.002 0)",
+          "oklch(90% 0.001 0)"
+        ]
+      },
+      "border-subtle": {
+        "role": "neutral",
+        "displayName": "Pale Stone",
+        "canonical": "oklch(77% 0.007 55)",
+        "tonalRamp": [
+          "oklch(15% 0.005 55)",
+          "oklch(28% 0.006 55)",
+          "oklch(42% 0.007 55)",
+          "oklch(55% 0.007 55)",
+          "oklch(67% 0.007 55)",
+          "oklch(77% 0.007 55)",
+          "oklch(87% 0.006 55)",
+          "oklch(95% 0.004 55)"
+        ]
+      },
+      "border-strong": {
+        "role": "neutral",
+        "displayName": "Warm Slate",
+        "canonical": "oklch(66% 0.009 55)",
+        "tonalRamp": [
+          "oklch(13% 0.007 55)",
+          "oklch(24% 0.008 55)",
+          "oklch(38% 0.009 55)",
+          "oklch(51% 0.009 55)",
+          "oklch(62% 0.009 55)",
+          "oklch(71% 0.008 55)",
+          "oklch(82% 0.007 55)",
+          "oklch(93% 0.005 55)"
+        ]
+      },
+      "error": {
+        "role": "tertiary",
+        "displayName": "Clay Red",
+        "canonical": "oklch(41% 0.18 26)",
+        "tonalRamp": [
+          "oklch(15% 0.14 26)",
+          "oklch(24% 0.16 26)",
+          "oklch(33% 0.17 26)",
+          "oklch(41% 0.18 26)",
+          "oklch(53% 0.18 26)",
+          "oklch(65% 0.16 26)",
+          "oklch(79% 0.12 26)",
+          "oklch(93% 0.06 26)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Heading Display",
+        "purpose": "Section titles (Settings, Preview) and hero headline. Playfair Display at 24-36px. Never below 18px."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "All body copy, form labels, button text, input values. Inter at 13-16px."
+      },
+      "label": {
+        "displayName": "Caption / Eyebrow",
+        "purpose": "Section eyebrows (CONFIGURATION, LIVE PREVIEW). Geist at 10-11px, uppercase, letter-spacing 1.5-3."
+      },
+      "mono": {
+        "displayName": "Monospace",
+        "purpose": "Hex color values in the color picker inputs. Geist Mono at 13px."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card-ambient",
+        "value": "0 2px 4px rgba(0,0,0,0.031), 0 12px 32px rgba(0,0,0,0.059)",
+        "purpose": "Main two-column card. Two-layer ambient shadow for grounded depth. This is the heaviest shadow in the system."
+      },
+      {
+        "name": "button-lift",
+        "value": "0 1px 3px rgba(0,0,0,0.10)",
+        "purpose": "Primary and secondary buttons at rest. Subtle ground contact only."
+      },
+      {
+        "name": "preview-inset-dark",
+        "value": "0 2px 8px rgba(0,0,0,0.125)",
+        "purpose": "Preview area outer shadow in dark mode. Reinforces the inset well against the dark card surface."
+      }
+    ],
+    "motion": [
+      {
+        "name": "theme-transition",
+        "value": "background-color 150ms ease, color 150ms ease, border-color 150ms ease",
+        "purpose": "Theme switch (light/dark). Applied to :root and body via the .transitions-ready class to prevent flash on initial load."
+      },
+      {
+        "name": "state-transition",
+        "value": "background-color 150ms ease",
+        "purpose": "Button, pill, and input hover/active state changes. Consistent 150ms across all interactive elements."
+      }
+    ],
+    "breakpoints": [
+      { "name": "mobile", "value": "375px", "purpose": "Base mobile target. Single-column stacked layout." },
+      { "name": "tablet", "value": "768px", "purpose": "Threshold for switching two-column card to single-column stack." },
+      { "name": "desktop", "value": "1440px", "purpose": "Design frame width. Card wrapper uses 170px horizontal padding at this breakpoint." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Full-width action button for Generate QR Code. Terracotta fill, pill shape (24px radius), zap icon.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polygon points=\"13 2 3 14 12 14 11 22 21 10 12 10 13 2\"/></svg>Generate QR Code</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 48px; padding: 0 16px; background-color: var(--color-action); color: var(--color-action-fg); border: none; border-radius: 24px; font-family: 'Inter', system-ui, sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: background-color 150ms ease; } .ds-btn-primary:hover { background-color: color-mix(in srgb, var(--color-action) 90%, transparent); } .ds-btn-primary:active { background-color: color-mix(in srgb, var(--color-action) 80%, transparent); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-focus-ring); }"
+    },
+    {
+      "name": "Download Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Export button for PNG and SVG downloads. Surface-raised background, 12px radius, download icon.",
+      "html": "<button class=\"ds-btn-download\" type=\"button\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg>Download PNG</button>",
+      "css": ".ds-btn-download { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 16px; background-color: var(--color-surface-raised); color: var(--color-text-primary); border: 1px solid var(--color-border-subtle); border-radius: 12px; font-family: 'Inter', system-ui, sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color 150ms ease; } .ds-btn-download svg { color: var(--color-text-secondary); } .ds-btn-download:hover { background-color: var(--color-surface-inset); } .ds-btn-download:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-focus-ring); }"
+    },
+    {
+      "name": "Share Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Full-width secondary action for Share QR Code. Surface-raised background, 12px radius, share-2 icon.",
+      "html": "<button class=\"ds-btn-share\" type=\"button\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"18\" cy=\"5\" r=\"3\"/><circle cx=\"6\" cy=\"12\" r=\"3\"/><circle cx=\"18\" cy=\"19\" r=\"3\"/><line x1=\"8.59\" y1=\"13.51\" x2=\"15.42\" y2=\"17.49\"/><line x1=\"15.41\" y1=\"6.51\" x2=\"8.59\" y2=\"10.49\"/></svg>Share QR Code</button>",
+      "css": ".ds-btn-share { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 42px; padding: 0 16px; background-color: var(--color-surface-raised); color: var(--color-text-primary); border: 1px solid var(--color-border-subtle); border-radius: 12px; font-family: 'Inter', system-ui, sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: background-color 150ms ease; } .ds-btn-share svg { color: var(--color-text-secondary); } .ds-btn-share:hover { background-color: var(--color-surface-inset); } .ds-btn-share:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-focus-ring); }"
+    },
+    {
+      "name": "Content Input",
+      "kind": "input",
+      "refersTo": "input-text",
+      "description": "Primary text input for URL or text content. 44px tall, 12px radius, oatmeal inset background.",
+      "html": "<div class=\"ds-input-field\"><label class=\"ds-input-label\" for=\"ds-demo\">Content</label><input class=\"ds-input\" id=\"ds-demo\" type=\"text\" placeholder=\"Enter URL or text...\" /></div>",
+      "css": ".ds-input-field { display: flex; flex-direction: column; gap: 4px; width: 100%; } .ds-input-label { font-family: 'Inter', system-ui, sans-serif; font-size: 13px; font-weight: 600; color: var(--color-text-primary); } .ds-input { height: 44px; width: 100%; border-radius: 12px; border: 1px solid var(--color-border-subtle); background-color: var(--color-surface-inset); padding: 0 12px; font-family: 'Inter', system-ui, sans-serif; font-size: 14px; color: var(--color-text-primary); outline: none; box-sizing: border-box; transition: border-color 150ms ease, box-shadow 150ms ease; } .ds-input::placeholder { color: var(--color-text-disabled); } .ds-input:focus { border-color: var(--color-focus-ring); box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-focus-ring) 25%, transparent); }"
+    },
+    {
+      "name": "Option Pill",
+      "kind": "chip",
+      "refersTo": "pill-active",
+      "description": "Segmented pill control for Error Correction Level and Pixel Pattern. Terracotta when active, 18px radius.",
+      "html": "<div class=\"ds-pill-group\"><button class=\"ds-pill ds-pill--active\" type=\"button\">M 15%</button><button class=\"ds-pill\" type=\"button\">L 7%</button><button class=\"ds-pill\" type=\"button\">Q 25%</button><button class=\"ds-pill\" type=\"button\">H 30%</button></div>",
+      "css": ".ds-pill-group { display: flex; gap: 8px; } .ds-pill { flex: 1; height: 36px; padding: 0 8px; border: none; border-radius: 18px; background-color: var(--color-surface-inset); color: var(--color-text-secondary); font-family: 'Inter', system-ui, sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: background-color 150ms ease, color 150ms ease; } .ds-pill--active { background-color: var(--color-action); color: var(--color-action-fg); font-weight: 600; } .ds-pill:hover:not(.ds-pill--active) { background-color: var(--color-border-subtle); } .ds-pill:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-focus-ring); }"
+    },
+    {
+      "name": "Nav Icon Button",
+      "kind": "nav",
+      "refersTo": "nav-icon-button",
+      "description": "Circular icon button for theme and language toggles in the navbar. 36x36px, full pill radius.",
+      "html": "<button class=\"ds-nav-icon\" type=\"button\" aria-label=\"Toggle theme\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"5\"/><line x1=\"12\" y1=\"1\" x2=\"12\" y2=\"3\"/><line x1=\"12\" y1=\"21\" x2=\"12\" y2=\"23\"/><line x1=\"4.22\" y1=\"4.22\" x2=\"5.64\" y2=\"5.64\"/><line x1=\"18.36\" y1=\"18.36\" x2=\"19.78\" y2=\"19.78\"/><line x1=\"1\" y1=\"12\" x2=\"3\" y2=\"12\"/><line x1=\"21\" y1=\"12\" x2=\"23\" y2=\"12\"/><line x1=\"4.22\" y1=\"19.78\" x2=\"5.64\" y2=\"18.36\"/><line x1=\"18.36\" y1=\"5.64\" x2=\"19.78\" y2=\"4.22\"/></svg></button>",
+      "css": ".ds-nav-icon { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 9999px; border: 1px solid var(--color-border-subtle); background-color: var(--color-surface-raised); color: var(--color-text-secondary); cursor: pointer; transition: background-color 150ms ease; } .ds-nav-icon:hover { background-color: var(--color-surface-inset); } .ds-nav-icon:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-focus-ring); }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Main two-column layout container. Warm overlay surface, strong border, layered ambient shadow. 12px radius, 32px padding.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-col\">Configuration</div><div class=\"ds-card-col\">Preview</div></div>",
+      "css": ".ds-card { display: flex; gap: 40px; padding: 32px; border-radius: 12px; border: 1px solid var(--color-border-strong); background-color: var(--color-surface-overlay); box-shadow: 0 2px 4px rgba(0,0,0,0.031), 0 12px 32px rgba(0,0,0,0.059); } .ds-card-col { flex: 1; display: flex; flex-direction: column; gap: 20px; font-family: 'Inter', system-ui, sans-serif; font-size: 14px; color: var(--color-text-secondary); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Potter's Atelier",
+    "overview": "A QR code generator that treats the output as a craft object, not a utility dump. Every surface carries the warmth of fired clay and linen — earthy without being rustic, refined without being cold. The palette is committed to a single terracotta accent that earns the right to appear, surrounded by strata of warm neutrals that breathe.\n\nThis system rejects the interchangeable. There is no blue primary, no card grid, no SaaS-cream background. The Playfair Display headings give the configuration panel the quiet authority of a well-labeled workshop drawer. Inter handles the functional work without noise. The sand surface (#F3EBE2) is never purely neutral — it is always slightly warm, always hinting at the material world.\n\nInteraction is brief and purposeful. The user arrives with a URL, leaves with a QR code they are not embarrassed by. The tool does not perform. It does.",
+    "keyCharacteristics": [
+      "Warm earthy palette: sand, linen, oatmeal neutrals anchored by a single terracotta accent",
+      "Editorial typography: Playfair Display for authority, Inter for function, Geist for precision",
+      "Dual theme: light mode is warm afternoon light; dark mode is a dim workshop at dusk",
+      "Pill-shaped controls: EC level and pixel pattern selectors feel tactile, not merely digital",
+      "Flat by default: depth conveyed through tonal layering, not shadow drama",
+      "150ms transitions: state changes feel immediate, not harsh"
+    ],
+    "rules": [
+      {
+        "name": "The Terracotta Economy",
+        "body": "The action color (#D4916E) appears on at most three elements per view: the active pill, the generate button, and the hero eyebrow. Its rarity is the point. A fourth terracotta element devalues all of them.",
+        "section": "colors"
+      },
+      {
+        "name": "The Warm Neutral Rule",
+        "body": "No surface is a pure gray or pure white. Every neutral is tinted toward the warm hue family (hue 48-68 in OKLCH). #F3EBE2 is not white. #1A1612 is not black. Tinting is non-negotiable.",
+        "section": "colors"
+      },
+      {
+        "name": "The Display/Body Divide",
+        "body": "Playfair Display is reserved for headings only (Settings, Preview, section titles, hero headline). Inter carries everything else. Never use Playfair Display for labels, buttons, or captions — its decorative weight overwhelms at small sizes.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Surfaces are flat at rest. The card shadow (0 2px 4 + 0 12px 32) is the deepest shadow in the system. New components must not introduce shadow layers heavier than the card.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use var(--color-action) for the primary CTA, active pills, and section eyebrow text only.",
+      "Do pair Playfair Display headings with Inter body text. Never use Playfair below 18px.",
+      "Do use surface-inset (#E8DDD2) for all input backgrounds and inactive pill backgrounds.",
+      "Do respect 150ms ease for all state transitions — faster feels abrupt, slower feels sluggish.",
+      "Do use circular pill radius (9999px) for nav icon buttons and the generate button; 12px for inputs, cards, and download buttons.",
+      "Do maintain WCAG AA contrast on all text and interactive states."
+    ],
+    "donts": [
+      "Don't use any blue, purple, or cool-gray. Every neutral must be warm (hue 48-68 in OKLCH).",
+      "Don't use border-left or border-right greater than 1px as a colored accent stripe. Rewrite with full borders or background tints.",
+      "Don't use gradient text (background-clip: text with a gradient). Use solid color; emphasis comes from weight and size.",
+      "Don't build a generic SaaS kit: no blue primary, no card grid, no rounded-xl everything from a template.",
+      "Don't use neon accents or dark backgrounds with glowing effects — signals developer tool, excludes the primary audience.",
+      "Don't build dense gray data-heavy UI — this is for everyday users, not IT admins.",
+      "Don't use glassmorphism, blurred backgrounds, or decorative gradients.",
+      "Don't use Playfair Display below 18px or in labels, buttons, or pill text.",
+      "Don't introduce a shadow heavier than the card shadow (0 2px 4 + 0 12px 32)."
+    ]
+  }
+}
