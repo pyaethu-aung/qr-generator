@@ -83,6 +83,7 @@ export const QRGenerator = () => {
                 onEyeShapeChange={setEyeShape}
                 pixelPattern={inputPixelPattern}
                 onPixelPatternChange={setPixelPattern}
+                designChangePending={inputEyeShape !== designConfig.eyeShape || inputPixelPattern !== designConfig.pixelPattern}
                 isRiskyPattern={isRiskyPattern}
                 onDismissWarning={dismissWarning}
                 logoDataUrl={logoDataUrl}

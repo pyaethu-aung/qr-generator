@@ -69,6 +69,9 @@ export interface QRControlsProps {
   isRiskyPattern?: boolean
   onDismissWarning?: () => void
   correctionTooltip?: string
+  correctionHint?: string
+  designChangePending?: boolean
+  applyDesignHint?: string
   logoLabel?: string
   logoSizeLabel?: string
   logoUploadHint?: string
@@ -135,6 +138,9 @@ export function QRControls({
   isRiskyPattern,
   onDismissWarning,
   correctionTooltip = 'How much of the QR code can be covered or damaged and still scan. Low gives a compact code; High lets you overlay a logo at the cost of a denser pattern.',
+  correctionHint = 'Higher levels survive more damage and support larger logos.',
+  designChangePending = false,
+  applyDesignHint = 'Click Generate to preview with this design.',
   logoLabel = 'Logo',
   logoSizeLabel = 'Logo Size',
   logoUploadHint = 'Click or drop image',
@@ -251,6 +257,7 @@ export function QRControls({
                 </button>
               ))}
             </div>
+            <p className="text-xs text-text-secondary">{correctionHint}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -302,6 +309,12 @@ export function QRControls({
               </div>
             </div>
           </div>
+
+          {designChangePending && (
+            <p className="text-xs text-text-secondary" role="status">
+              {applyDesignHint}
+            </p>
+          )}
 
           {isRiskyPattern && (
             <div className="flex items-start justify-between rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 shadow-sm dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-200" role="alert">
