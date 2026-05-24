@@ -1,8 +1,10 @@
 import { Sun, Moon } from 'lucide-react'
 import { useThemeContext } from '../../hooks/ThemeProvider'
+import { useLocaleContext } from '../../hooks/LocaleProvider'
 
 export function ThemeToggle() {
   const { theme, toggleTheme } = useThemeContext()
+  const { translate } = useLocaleContext()
   const isDark = theme === 'dark'
 
   return (
@@ -10,7 +12,7 @@ export function ThemeToggle() {
       type="button"
       onClick={toggleTheme}
       className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border-subtle bg-surface-raised text-text-secondary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
-      aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
+      aria-label={isDark ? translate('layout.themeToggleToLight') : translate('layout.themeToggleToDark')}
     >
       {isDark ? <Sun size={18} aria-hidden /> : <Moon size={18} aria-hidden />}
     </button>

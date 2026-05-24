@@ -25,6 +25,8 @@ export interface LayoutStrings {
   headerTitle: string
   headerSubtitle: string
   navLabel: string
+  themeToggleToLight: string
+  themeToggleToDark: string
   footerNote: string
 }
 
@@ -105,6 +107,8 @@ export type TranslationKey =
   | 'layout.headerTitle'
   | 'layout.headerSubtitle'
   | 'layout.navLabel'
+  | 'layout.themeToggleToLight'
+  | 'layout.themeToggleToDark'
   | 'layout.footerNote'
   | 'hero.badge'
   | 'hero.title'
