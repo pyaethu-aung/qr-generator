@@ -492,6 +492,7 @@ export function QRControls({
                     min={5}
                     max={maxLogoSize}
                     value={logoSize}
+                    aria-valuetext={`${logoSize}%`}
                     onChange={(e) => onLogoSizeChange(Number(e.target.value))}
                     className="h-1.5 w-full cursor-pointer accent-action"
                   />
