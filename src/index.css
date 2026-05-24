@@ -114,8 +114,4 @@
   .app-shell {
     @apply min-h-screen bg-surface;
   }
-
-  .card-surface {
-    @apply rounded-xl bg-surface-raised shadow-md ring-1 ring-border-subtle;
-  }
 }
