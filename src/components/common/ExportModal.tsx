@@ -23,6 +23,9 @@ export interface ExportModalProps {
   dpiLabel: string
   formatLabels: Record<ExportFormat, string>
   formatDescriptions: Record<ExportFormat, string>
+  closeModalLabel?: string
+  exportingStatusLabel?: string
+  exportFailedStatusTemplate?: string
 }
 
 export function ExportModal({
@@ -44,6 +47,9 @@ export function ExportModal({
   dpiLabel,
   formatLabels,
   formatDescriptions,
+  closeModalLabel = 'Close modal',
+  exportingStatusLabel = 'Exporting QR code, please wait...',
+  exportFailedStatusTemplate = 'Export failed: {error}',
 }: ExportModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
   const previousFocusRef = useRef<HTMLElement | null>(null)
@@ -118,7 +124,7 @@ export function ExportModal({
             type="button"
             onClick={onClose}
             disabled={isExporting}
-            aria-label="Close modal"
+            aria-label={closeModalLabel}
             className="p-2 text-text-secondary hover:text-text-primary rounded-lg hover:bg-surface-inset disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -138,8 +144,8 @@ export function ExportModal({
           aria-atomic="true"
           className="sr-only"
         >
-          {isExporting && 'Exporting QR code, please wait...'}
-          {!isExporting && error && `Export failed: ${error}`}
+          {isExporting && exportingStatusLabel}
+          {!isExporting && error && exportFailedStatusTemplate.replace('{error}', error)}
         </div>
 
         {error && (

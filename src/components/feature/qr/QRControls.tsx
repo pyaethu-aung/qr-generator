@@ -70,6 +70,7 @@ export interface QRControlsProps {
   onDismissWarning?: () => void
   correctionTooltip?: string
   correctionTooltipAriaLabel?: string
+  dismissWarningAriaLabel?: string
   correctionHint?: string
   designChangePending?: boolean
   applyDesignHint?: string
@@ -141,6 +142,7 @@ export function QRControls({
   onDismissWarning,
   correctionTooltip = 'How much of the QR code can be covered or damaged and still scan. Low gives a compact code; High lets you overlay a logo at the cost of a denser pattern.',
   correctionTooltipAriaLabel = 'About error correction',
+  dismissWarningAriaLabel = 'Dismiss warning',
   correctionHint = 'Higher levels survive more damage and support larger logos.',
   designChangePending = false,
   applyDesignHint = 'Click Generate to preview with this design.',
@@ -341,7 +343,7 @@ export function QRControls({
                 <button
                   onClick={onDismissWarning}
                   className="ml-4 shrink-0 rounded-md p-1 text-warning hover:bg-warning-border/20 focus:outline-none focus:ring-2 focus:ring-warning focus:ring-offset-2"
-                  aria-label="Dismiss warning"
+                  aria-label={dismissWarningAriaLabel}
                 >
                   <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />

@@ -86,6 +86,7 @@ export const QRGenerator = () => {
                 designChangePending={inputEyeShape !== designConfig.eyeShape || inputPixelPattern !== designConfig.pixelPattern}
                 isRiskyPattern={isRiskyPattern}
                 onDismissWarning={dismissWarning}
+                dismissWarningAriaLabel={translate('controls.dismissWarningAriaLabel')}
                 logoDataUrl={logoDataUrl}
                 onLogoChange={setLogoDataUrl}
                 logoSize={logoSize}

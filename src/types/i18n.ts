@@ -24,6 +24,7 @@ export interface SeoMetadata {
 export interface LayoutStrings {
   headerTitle: string
   headerSubtitle: string
+  navLabel: string
   footerNote: string
 }
 
@@ -54,6 +55,7 @@ export interface ControlStrings {
   correctionQuartile: string
   correctionHigh: string
   correctionTooltip: string
+  dismissWarningAriaLabel: string
 }
 
 export interface PreviewStrings {
@@ -102,6 +104,7 @@ export type TranslationKey =
   | 'seo.twitterDescription'
   | 'layout.headerTitle'
   | 'layout.headerSubtitle'
+  | 'layout.navLabel'
   | 'layout.footerNote'
   | 'hero.badge'
   | 'hero.title'
@@ -123,6 +126,7 @@ export type TranslationKey =
   | 'controls.correctionQuartile'
   | 'controls.correctionHigh'
   | 'controls.correctionTooltip'
+  | 'controls.dismissWarningAriaLabel'
   | 'preview.sectionLabel'
   | 'preview.shareStatusSharing'
   | 'preview.shareStatusShared'
