@@ -60,7 +60,8 @@
     "logoRemoveLabel": "လိုဂို ဖယ်ရှားပါ",
     "logoErrorFormat": "ပုံဖိုင်ကို ရွေးချယ်ပါ",
     "logoErrorUrl": "URL မှ ပုံ ဖွင့်မရပါ",
-    "logoTransparencyHint": "PNG သို့ SVG ဖိုင်များသည် transparent လိုဂိုများအတွက် အကောင်းဆုံးဖြစ်သည်"
+    "logoTransparencyHint": "PNG သို့ SVG ဖိုင်များသည် transparent လိုဂိုများအတွက် အကောင်းဆုံးဖြစ်သည်",
+    "dismissWarningAriaLabel": "သတိပေးချက် ပယ်ဖျက်ပါ"
   },
   "preview": {
     "sectionLabel": "ကြိုတင်ကြည့်ရှုခြင်း",
@@ -93,6 +94,9 @@
       "svg": "အရွယ်အစား ပြောင်းလဲနိုင်သော vector graphics၊ အပြည့်အဝ ကြည်လင်ပြတ်သားမှု",
       "pdf": "ပရင့်လုပ်ရန် အသင့် စာရွက်စာတမ်း ဖော်မတ်"
     },
+    "closeModalLabel": "ဝင်းဒိုး ပိတ်ပါ",
+    "exportingStatus": "QR ကုဒ် တင်ပို့နေသည်၊ ခေတ္တစောင့်ပါ...",
+    "exportFailedStatus": "တင်ပို့မှု မအောင်မြင်ပါ: {error}",
     "errors": {
       "emptyContent": "QR ကုဒ်ဖန်တီးရန် အကြောင်းအရာ ထည့်ပါ",
       "exportFailed": "တင်ပို့မှု မအောင်မြင်ပါ။ ထပ်စမ်းကြည့်ပါ။",

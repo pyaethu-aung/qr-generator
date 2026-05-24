@@ -16,10 +16,10 @@ export function Toast({ message, isVisible, className }: ToastProps) {
           'absolute bottom-full mb-2 left-1/2 -translate-x-1/2 z-50',
           'min-w-max rounded-lg bg-surface-raised px-3 py-1.5 border border-border-strong',
           'text-xs font-medium text-text-primary shadow-lg',
-          'transition-all duration-200 ease-out origin-bottom',
+          'motion-safe:transition-all motion-safe:duration-200 motion-safe:ease-out motion-safe:origin-bottom',
           isVisible
-            ? 'translate-y-0 opacity-100 scale-100'
-            : 'translate-y-2 opacity-0 scale-95 pointer-events-none'
+            ? 'opacity-100 motion-safe:translate-y-0 motion-safe:scale-100'
+            : 'opacity-0 pointer-events-none motion-safe:translate-y-2 motion-safe:scale-95'
         ),
         className
       )}
