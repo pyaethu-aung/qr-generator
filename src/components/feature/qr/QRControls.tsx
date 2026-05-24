@@ -463,7 +463,7 @@ export function QRControls({
                       type="url"
                       placeholder="https://…"
                       aria-label={logoUrlAriaLabel}
-                      className="h-9 w-full rounded-lg border border-border-strong bg-surface px-3 text-sm text-text-primary placeholder:text-text-disabled focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring"
+                      className="h-9 w-full rounded-lg border border-border-strong bg-surface-inset px-3 text-sm text-text-primary placeholder:text-text-disabled focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') void handleUrlSubmit(e.currentTarget.value)
                         if (e.key === 'Escape') setShowUrlInput(false)
