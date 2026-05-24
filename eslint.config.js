@@ -23,6 +23,7 @@ export default defineConfig([
     '*.tmp',
     '.env*',
     '.eslintcache',
+    '.agents',
   ]),
   {
     files: ['**/*.{ts,tsx}'],

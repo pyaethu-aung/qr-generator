@@ -38,7 +38,7 @@ describe('useQRDesign - logo state', () => {
     type Props = { ecLevel: 'L' | 'M' | 'Q' | 'H' }
     const { result, rerender } = renderHook(
       ({ ecLevel }: Props) => useQRDesign('', ecLevel),
-      { initialProps: { ecLevel: 'H' } as Props },
+      { initialProps: { ecLevel: 'H' } },
     )
 
     act(() => {
