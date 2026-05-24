@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import type { ExportFormat } from '../../types/export'
 import { FORMAT_CONFIGS } from '../../types/export'
 
@@ -18,17 +19,19 @@ export function FormatSelector({
   formatLabels,
   formatDescriptions,
 }: FormatSelectorProps) {
+  const labelId = useId()
+
   return (
     <div>
       <label
-        id="format-selector-label"
+        id={labelId}
         className="block text-sm font-semibold text-text-primary mb-3"
       >
         {formatLabels[selected]} Format
       </label>
       <div
         role="radiogroup"
-        aria-labelledby="format-selector-label"
+        aria-labelledby={labelId}
         className="space-y-2"
       >
         {FORMAT_OPTIONS.map((format) => {
