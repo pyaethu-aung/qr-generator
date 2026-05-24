@@ -125,7 +125,7 @@ export function ExportModal({
             onClick={onClose}
             disabled={isExporting}
             aria-label={closeModalLabel}
-            className="p-2 text-text-secondary hover:text-text-primary rounded-lg hover:bg-surface-inset disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 text-text-secondary hover:text-text-primary rounded-lg hover:bg-surface-inset disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
@@ -185,7 +185,7 @@ export function ExportModal({
             type="button"
             onClick={onClose}
             disabled={isExporting}
-            className="flex-1 px-4 py-2.5 text-sm font-semibold text-text-primary bg-surface-inset rounded-lg hover:bg-surface-inset/80 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2.5 text-sm font-semibold text-text-primary bg-surface-inset rounded-lg hover:bg-surface-inset/80 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
           >
             {cancelButtonLabel}
           </button>
@@ -193,7 +193,7 @@ export function ExportModal({
             type="button"
             onClick={onExport}
             disabled={isExporting}
-            className="flex-1 px-4 py-2.5 text-sm font-semibold text-action-fg bg-action rounded-lg hover:bg-action/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="flex-1 px-4 py-2.5 text-sm font-semibold text-action-fg bg-action rounded-lg hover:bg-action/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
           >
             {isExporting ? (
               <>
