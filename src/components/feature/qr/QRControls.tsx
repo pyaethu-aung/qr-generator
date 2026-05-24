@@ -72,11 +72,13 @@ export interface QRControlsProps {
   logoLabel?: string
   logoSizeLabel?: string
   logoUploadHint?: string
+  logoUploadAriaLabel?: string
   logoPasteUrl?: string
   logoRemoveLabel?: string
   logoErrorFormat?: string
   logoErrorUrl?: string
   logoTransparencyHint?: string
+  logoSizeCapHint?: string
 }
 
 export function QRControls({
@@ -136,11 +138,13 @@ export function QRControls({
   logoLabel = 'Logo',
   logoSizeLabel = 'Logo Size',
   logoUploadHint = 'Click or drop image',
+  logoUploadAriaLabel = 'Upload logo image — press Enter or Space to browse files, or drag and drop',
   logoPasteUrl = 'or paste a URL',
   logoRemoveLabel = 'Remove logo',
   logoErrorFormat = 'Please select an image file',
   logoErrorUrl = 'Could not load image from URL',
   logoTransparencyHint = 'PNG or SVG works best for transparent logos',
+  logoSizeCapHint = 'Size capped at {max}% for this error correction level — switch to H for up to 30%',
 }: QRControlsProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [showUrlInput, setShowUrlInput] = useState(false)
@@ -391,6 +395,7 @@ export function QRControls({
                 <div className="flex flex-col gap-1.5">
                   <label
                     htmlFor="logo-file-upload"
+                    aria-label={logoUploadAriaLabel}
                     onDragOver={(e) => { e.preventDefault(); setIsDragOver(true) }}
                     onDragLeave={() => setIsDragOver(false)}
                     onDrop={handleDrop}
@@ -416,7 +421,6 @@ export function QRControls({
                     accept="image/*"
                     className="absolute opacity-0 w-px h-px"
                     onChange={handleFileChange}
-                    aria-hidden
                     tabIndex={-1}
                   />
 
@@ -463,7 +467,13 @@ export function QRControls({
                     className="h-1.5 w-full cursor-pointer accent-action"
                     aria-label={logoSizeLabel}
                   />
-                  <p className="text-xs text-text-secondary">{logoTransparencyHint}</p>
+                  {logoSize >= maxLogoSize && maxLogoSize < 30 ? (
+                    <p className="text-xs text-text-secondary" role="status">
+                      {logoSizeCapHint.replace('{max}', String(maxLogoSize))}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-text-secondary">{logoTransparencyHint}</p>
+                  )}
                 </div>
               )}
             </div>
