@@ -27,7 +27,7 @@ export function Tooltip({ content, ariaLabel = 'More information' }: TooltipProp
         <div
           id={id}
           role="tooltip"
-          className="absolute top-1/2 left-full -translate-y-1/2 ml-2 w-64 rounded-lg border border-border-subtle bg-surface-raised p-3 text-xs leading-relaxed text-text-secondary shadow-md z-50"
+          className="absolute top-full right-0 mt-2 sm:top-1/2 sm:right-auto sm:left-full sm:-translate-y-1/2 sm:mt-0 sm:ml-2 w-64 max-w-[calc(100vw-1.5rem)] rounded-lg border border-border-subtle bg-surface-raised p-3 text-xs leading-relaxed text-text-secondary shadow-md z-50"
         >
           {content}
         </div>
