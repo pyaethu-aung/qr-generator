@@ -25,6 +25,7 @@
   "layout": {
     "headerTitle": "QR Code Generator",
     "headerSubtitle": "Generate, style, and download high-quality QR codes without touching a backend.",
+    "navLabel": "Site controls",
     "footerNote": "Made with ♡ — QR Code Generator"
   },
   "hero": {

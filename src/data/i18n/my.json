@@ -25,6 +25,7 @@
   "layout": {
     "headerTitle": "QR Code Generator",
     "headerSubtitle": "ဘက်အင်ဘက် အသုံးမပြုဘဲ အရည်အသွေးမြင့် QR ကုဒ်များကို ဖန်တီး၊ အလှဆင်၊ ဒေါင်းလုဒ်လုပ်ပါ။",
+    "navLabel": "ဆိုဒ် ထိန်းချုပ်ခလုတ်များ",
     "footerNote": "♡ ဖြင့် ဖန်တီးသည် — QR Code Generator"
   },
   "hero": {

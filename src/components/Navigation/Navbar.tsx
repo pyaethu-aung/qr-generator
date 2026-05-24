@@ -16,10 +16,12 @@ export function Navbar() {
           <p className="mt-1 hidden sm:block text-xs sm:text-sm text-text-secondary">{translate('layout.headerSubtitle')}</p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
-          {/* <LanguageToggle /> */}
-        </div>
+        <nav aria-label={translate('layout.navLabel')}>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            {/* <LanguageToggle /> */}
+          </div>
+        </nav>
       </div>
     </header>
   )
