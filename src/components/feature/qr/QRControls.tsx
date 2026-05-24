@@ -421,6 +421,7 @@ export function QRControls({
                 <div className="flex flex-col gap-1.5">
                   <label
                     htmlFor={logoFileId}
+                    role="button"
                     aria-label={logoUploadAriaLabel}
                     onDragOver={(e) => { e.preventDefault(); setIsDragOver(true) }}
                     onDragLeave={() => setIsDragOver(false)}
