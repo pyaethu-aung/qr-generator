@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { ExternalLink } from 'lucide-react'
 
 import { QRGenerator } from './components/feature/qr/QRGenerator'
 import './App.css'
@@ -32,8 +33,20 @@ function App() {
         </div>
       </main>
 
-      <footer className="relative z-10 h-16 border-t border-border-subtle py-6 text-center text-sm text-text-secondary">
-        <p>{translate('layout.footerNote')}</p>
+      <footer className="relative z-10 border-t border-border-subtle py-6 text-center text-sm text-text-secondary">
+        <p className="flex items-center justify-center gap-3 flex-wrap">
+          <span>{translate('layout.footerNote')}</span>
+          <span className="text-border-strong select-none" aria-hidden>·</span>
+          <a
+            href="https://github.com/pyaethu-aung/qr-generator"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-text-secondary hover:text-text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
+          >
+            <ExternalLink size={13} aria-hidden />
+            GitHub
+          </a>
+        </p>
       </footer>
     </Layout>
   )
