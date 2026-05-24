@@ -25,6 +25,9 @@
     --color-error: #C53030;
     --color-error-surface: #FEF2F2;
     --color-error-border: #FECACA;
+    --color-warning: #7C4A18;
+    --color-warning-surface: #FAF3E6;
+    --color-warning-border: #D4A850;
 
     background-color: var(--color-surface);
     color: var(--color-text-primary);
@@ -55,6 +58,9 @@
     --color-error: #F87171;
     --color-error-surface: rgba(155, 27, 27, 0.2);
     --color-error-border: rgba(155, 27, 27, 0.5);
+    --color-warning: #D4A850;
+    --color-warning-surface: rgba(180, 120, 30, 0.15);
+    --color-warning-border: rgba(180, 120, 30, 0.35);
   }
 
   body {
@@ -94,6 +100,9 @@
   --color-error: var(--color-error);
   --color-error-surface: var(--color-error-surface);
   --color-error-border: var(--color-error-border);
+  --color-warning: var(--color-warning);
+  --color-warning-surface: var(--color-warning-surface);
+  --color-warning-border: var(--color-warning-border);
 }
 
 @layer components {
