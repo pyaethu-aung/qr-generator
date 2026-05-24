@@ -51,7 +51,15 @@
     "generate": "QR ကုဒ် ဖန်တီးရန်",
     "downloadsTitle": "ဒေါင်းလုဒ်များ",
     "downloadPng": "PNG ဒေါင်းလုဒ်",
-    "downloadSvg": "SVG ဒေါင်းလုဒ်"
+    "downloadSvg": "SVG ဒေါင်းလုဒ်",
+    "logoLabel": "လိုဂို",
+    "logoSizeLabel": "လိုဂိုအရွယ်အစား",
+    "logoUploadHint": "ကလစ်နှိပ် သို့ ပုံဖိုင် ချပါ",
+    "logoPasteUrl": "သို့မဟုတ် URL ကူးထည့်ပါ",
+    "logoRemoveLabel": "လိုဂို ဖယ်ရှားပါ",
+    "logoErrorFormat": "ပုံဖိုင်ကို ရွေးချယ်ပါ",
+    "logoErrorUrl": "URL မှ ပုံ ဖွင့်မရပါ",
+    "logoTransparencyHint": "PNG သို့ SVG ဖိုင်များသည် transparent လိုဂိုများအတွက် အကောင်းဆုံးဖြစ်သည်"
   },
   "preview": {
     "sectionLabel": "ကြိုတင်ကြည့်ရှုခြင်း",

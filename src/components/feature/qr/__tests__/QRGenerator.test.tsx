@@ -69,7 +69,7 @@ describe('QRGenerator Integration', () => {
 
     const generateBtn = screen.getByRole('button', { name: /generate qr code/i })
     let found = false
-    for (let i = 0; i < 12; i += 1) {
+    for (let i = 0; i < 16; i += 1) {
       await user.tab()
       if (document.activeElement === generateBtn) {
         found = true

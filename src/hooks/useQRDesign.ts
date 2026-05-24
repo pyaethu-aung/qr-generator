@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
-import type { QRDesignConfig, QREyeShape, QRPixelPattern } from '../types/qr'
+import type { QRDesignConfig, QRErrorCorrectionLevel, QREyeShape, QRPixelPattern } from '../types/qr'
+
+const EC_LOGO_MAX: Record<QRErrorCorrectionLevel, number> = { L: 7, M: 15, Q: 25, H: 30 }
 
 const DESIGN_STORAGE_KEY = 'qr-generator-design-config'
 
@@ -11,6 +13,16 @@ const DEFAULT_DESIGN_CONFIG: QRDesignConfig = {
 import { getMatrixSize } from '../utils/qrShapeRenderer'
 
 export function useQRDesign(value: string = '', ecLevel: 'L' | 'M' | 'Q' | 'H' = 'M') {
+  const [logoDataUrl, setLogoDataUrl] = useState<string | null>(null)
+  const [logoSizeState, setLogoSizeState] = useState(20)
+
+  const maxLogoSize = EC_LOGO_MAX[ecLevel]
+  const logoSize = Math.min(logoSizeState, maxLogoSize)
+
+  const setLogoSize = useCallback((size: number) => {
+    setLogoSizeState(Math.min(size, EC_LOGO_MAX[ecLevel]))
+  }, [ecLevel])
+
   const [designConfig, setDesignConfig] = useState<QRDesignConfig>(() => {
     try {
       const stored = localStorage.getItem(DESIGN_STORAGE_KEY)
@@ -68,6 +80,11 @@ export function useQRDesign(value: string = '', ecLevel: 'L' | 'M' | 'Q' | 'H' =
     setPixelPattern,
     commitDesignConfig,
     isRiskyPattern,
-    dismissWarning
+    dismissWarning,
+    logoDataUrl,
+    setLogoDataUrl,
+    logoSize,
+    setLogoSize,
+    maxLogoSize,
   }
 }

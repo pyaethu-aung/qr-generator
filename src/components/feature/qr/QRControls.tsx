@@ -1,7 +1,30 @@
-import { Zap, Download, ChevronDown } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { Zap, Download, ChevronDown, Upload, X } from 'lucide-react'
 import { Input } from '../../common/Input'
 import { Tooltip } from '../../common/Tooltip'
 import type { QRErrorCorrectionLevel } from '../../../types/qr'
+
+function loadImageFromUrl(url: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = img.naturalWidth
+      canvas.height = img.naturalHeight
+      const ctx = canvas.getContext('2d')
+      if (!ctx) { reject(new Error('canvas unavailable')); return }
+      try {
+        ctx.drawImage(img, 0, 0)
+        resolve(canvas.toDataURL('image/png'))
+      } catch {
+        reject(new Error('CORS not permitted'))
+      }
+    }
+    img.onerror = () => reject(new Error('load failed'))
+    img.src = url
+  })
+}
 
 export interface QRControlsProps {
   value: string
@@ -19,6 +42,12 @@ export interface QRControlsProps {
   canDownload: boolean
   inputError?: string
   canGenerate: boolean
+  // Logo
+  logoDataUrl?: string | null
+  onLogoChange?: (dataUrl: string | null) => void
+  logoSize?: number
+  onLogoSizeChange?: (size: number) => void
+  maxLogoSize?: number
   // Locale-aware labels
   placeholder?: string
   correctionLabel?: string
@@ -40,6 +69,14 @@ export interface QRControlsProps {
   isRiskyPattern?: boolean
   onDismissWarning?: () => void
   correctionTooltip?: string
+  logoLabel?: string
+  logoSizeLabel?: string
+  logoUploadHint?: string
+  logoPasteUrl?: string
+  logoRemoveLabel?: string
+  logoErrorFormat?: string
+  logoErrorUrl?: string
+  logoTransparencyHint?: string
 }
 
 export function QRControls({
@@ -58,6 +95,11 @@ export function QRControls({
   canDownload,
   inputError,
   canGenerate,
+  logoDataUrl,
+  onLogoChange,
+  logoSize,
+  onLogoSizeChange,
+  maxLogoSize,
   placeholder = 'Enter URL or text',
   correctionLabel = 'Error Correction',
   foregroundLabel = 'Foreground',
@@ -91,7 +133,78 @@ export function QRControls({
   isRiskyPattern,
   onDismissWarning,
   correctionTooltip = 'How much of the QR code can be covered or damaged and still scan. Low gives a compact code; High lets you overlay a logo at the cost of a denser pattern.',
+  logoLabel = 'Logo',
+  logoSizeLabel = 'Logo Size',
+  logoUploadHint = 'Click or drop image',
+  logoPasteUrl = 'or paste a URL',
+  logoRemoveLabel = 'Remove logo',
+  logoErrorFormat = 'Please select an image file',
+  logoErrorUrl = 'Could not load image from URL',
+  logoTransparencyHint = 'PNG or SVG works best for transparent logos',
 }: QRControlsProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [showUrlInput, setShowUrlInput] = useState(false)
+  const [logoError, setLogoError] = useState<string | undefined>()
+  const [logoFilename, setLogoFilename] = useState<string | undefined>()
+  const [isDragOver, setIsDragOver] = useState(false)
+  const [isLoadingLogo, setIsLoadingLogo] = useState(false)
+
+  const processFile = (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      setLogoError(logoErrorFormat)
+      return
+    }
+    setLogoError(undefined)
+    setLogoFilename(file.name)
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      const result = ev.target?.result
+      if (typeof result === 'string') {
+        onLogoChange?.(result)
+      }
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    processFile(file)
+    e.target.value = ''
+  }
+
+  const handleUrlSubmit = async (url: string) => {
+    const trimmed = url.trim()
+    if (!trimmed) return
+    setIsLoadingLogo(true)
+    setLogoError(undefined)
+    try {
+      const dataUrl = await loadImageFromUrl(trimmed)
+      const filename = trimmed.split('/').pop()?.split('?')[0] || 'logo'
+      setLogoFilename(filename)
+      setShowUrlInput(false)
+      onLogoChange?.(dataUrl)
+    } catch {
+      setLogoError(logoErrorUrl)
+    } finally {
+      setIsLoadingLogo(false)
+    }
+  }
+
+  const handleRemove = () => {
+    setLogoFilename(undefined)
+    setLogoError(undefined)
+    setShowUrlInput(false)
+    onLogoChange?.(null)
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragOver(false)
+    const file = e.dataTransfer.files[0]
+    if (file) processFile(file)
+  }
+
   return (
     <div className="flex flex-col gap-6 w-full">
       <div className="flex flex-col gap-4">
@@ -249,6 +362,111 @@ export function QRControls({
               </div>
             </div>
           </div>
+
+          {/* Logo upload */}
+          {onLogoChange && (
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-text-primary">{logoLabel}</label>
+
+              {logoDataUrl ? (
+                <div className="flex items-center gap-3 rounded-lg bg-surface-inset px-3 h-11">
+                  <img
+                    src={logoDataUrl}
+                    alt=""
+                    className="h-7 w-7 shrink-0 rounded-full object-cover border border-border-subtle"
+                  />
+                  <span className="flex-1 truncate text-sm font-medium text-text-primary">
+                    {logoFilename || 'Logo'}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleRemove}
+                    aria-label={logoRemoveLabel}
+                    className="shrink-0 rounded p-1 text-text-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                  >
+                    <X size={14} aria-hidden />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-1.5">
+                  <button
+                    type="button"
+                    onDragOver={(e) => { e.preventDefault(); setIsDragOver(true) }}
+                    onDragLeave={() => setIsDragOver(false)}
+                    onDrop={handleDrop}
+                    onClick={() => fileInputRef.current?.click()}
+                    aria-label={logoUploadHint}
+                    className={`flex h-11 w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed text-sm transition-colors ${
+                      isDragOver
+                        ? 'border-action bg-action/5 text-action'
+                        : 'border-border-subtle bg-surface-inset text-text-secondary hover:border-action hover:text-text-primary'
+                    }`}
+                  >
+                    {isLoadingLogo ? (
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden />
+                    ) : (
+                      <Upload size={15} aria-hidden />
+                    )}
+                    {isLoadingLogo ? 'Loading…' : logoUploadHint}
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileChange}
+                    aria-hidden
+                    tabIndex={-1}
+                  />
+
+                  {!showUrlInput ? (
+                    <button
+                      type="button"
+                      onClick={() => setShowUrlInput(true)}
+                      className="self-start text-xs text-action hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-action rounded"
+                    >
+                      {logoPasteUrl}
+                    </button>
+                  ) : (
+                    <input
+                      type="url"
+                      placeholder="https://…"
+                      className="h-9 w-full rounded-lg border border-border-strong bg-surface px-3 text-sm text-text-primary placeholder:text-text-disabled focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') void handleUrlSubmit(e.currentTarget.value)
+                        if (e.key === 'Escape') setShowUrlInput(false)
+                      }}
+                      onBlur={(e) => { if (e.target.value) void handleUrlSubmit(e.target.value) }}
+                      autoFocus
+                    />
+                  )}
+                </div>
+              )}
+
+              {logoError && (
+                <p className="text-xs text-error" role="alert">{logoError}</p>
+              )}
+
+              {logoDataUrl && logoSize !== undefined && maxLogoSize !== undefined && onLogoSizeChange && (
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium text-text-primary">{logoSizeLabel}</label>
+                    <span className="text-sm tabular-nums text-text-secondary">{logoSize}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={5}
+                    max={maxLogoSize}
+                    value={logoSize}
+                    onChange={(e) => onLogoSizeChange(Number(e.target.value))}
+                    className="h-1.5 w-full cursor-pointer accent-action"
+                    aria-label={logoSizeLabel}
+                  />
+                  <p className="text-xs text-text-secondary">{logoTransparencyHint}</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Generate button — full-width, 48px, rounded-full, zap icon */}

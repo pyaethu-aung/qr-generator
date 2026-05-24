@@ -4,16 +4,19 @@ import { Share2 } from 'lucide-react'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import { useQRShare } from '../../../hooks/useQRShare'
 import { generateQRPaths } from '../../../utils/qrShapeRenderer'
+import { compositeLogoOnCanvas } from '../../../utils/logoCompositor'
 import type { QRConfig, QRDesignConfig } from '../../../types/qr'
 
 export interface QRPreviewProps extends QRConfig {
   designConfig?: QRDesignConfig
   className?: string
   style?: React.CSSProperties
+  logoDataUrl?: string | null
+  logoSize?: number
 }
 
 export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
-  ({ value, ecLevel, fgColor, bgColor, size = 220, designConfig = { eyeShape: 'Square', pixelPattern: 'Square' }, className, style }, forwardedRef) => {
+  ({ value, ecLevel, fgColor, bgColor, size = 220, designConfig = { eyeShape: 'Square', pixelPattern: 'Square' }, className, style, logoDataUrl, logoSize }, forwardedRef) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
     const { translate } = useLocaleContext()
     const { share, isSharing, shareRequest } = useQRShare()
@@ -113,6 +116,9 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
                       img.onload = () => {
                         ctx.clearRect(0, 0, physicalSize, physicalSize)
                         ctx.drawImage(img, 0, 0, physicalSize, physicalSize)
+                        if (logoDataUrl && logoSize) {
+                          void compositeLogoOnCanvas(ctx, logoDataUrl, logoSize, physicalSize)
+                        }
                       }
                       img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgString)
                     }
