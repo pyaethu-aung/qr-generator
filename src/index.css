@@ -18,6 +18,8 @@
     --color-action: #A04D28;
     --color-action-fg: #FFFFFF;
     --color-action-disabled: #E8C5B3;
+    /* Backdrop */
+    --color-backdrop: rgba(26, 22, 18, 0.55);
     /* Accessibility */
     --color-focus-ring: #A04D28;
     /* Status */
@@ -51,6 +53,8 @@
     --color-action: #D4916E;
     --color-action-fg: #1A1612;
     --color-action-disabled: #6B4B38;
+    /* Backdrop */
+    --color-backdrop: rgba(26, 22, 18, 0.75);
     /* Accessibility */
     --color-focus-ring: #D4916E;
     /* Status */
@@ -95,6 +99,7 @@
   --color-action: var(--color-action);
   --color-action-fg: var(--color-action-fg);
   --color-action-disabled: var(--color-action-disabled);
+  --color-backdrop: var(--color-backdrop);
   --color-focus-ring: var(--color-focus-ring);
   --color-link: var(--color-link);
   --color-error: var(--color-error);
