@@ -14,6 +14,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, helperText, error, fullWidth = true, className, id, disabled, ...props }, ref) => {
     const generatedId = useId()
     const inputId = id || props.name || generatedId
+    const errorId = useId()
 
     const inputClass = twMerge(
       clsx(
@@ -33,9 +34,17 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {label}
           </label>
         )}
-        <input id={inputId} ref={ref} className={inputClass} disabled={disabled} {...props} />
+        <input
+          id={inputId}
+          ref={ref}
+          className={inputClass}
+          disabled={disabled}
+          aria-describedby={error ? errorId : undefined}
+          aria-invalid={error ? true : undefined}
+          {...props}
+        />
         {error ? (
-          <span className="text-sm text-error">{error}</span>
+          <span id={errorId} role="alert" className="text-sm text-error">{error}</span>
         ) : (
           helperText && <span className="text-sm text-text-secondary">{helperText}</span>
         )}
