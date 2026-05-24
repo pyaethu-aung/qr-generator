@@ -10,7 +10,7 @@ export function Navbar() {
       <div className="max-w-6xl mx-auto py-4 px-6 sm:px-12 flex items-center justify-between">
         <div>
           <h1 className="flex items-center gap-2 sm:gap-3 text-lg sm:text-xl font-semibold text-text-primary">
-            <span className="text-xl sm:text-2xl">✨</span>
+            <span className="text-xl sm:text-2xl">🔳</span>
             {translate('layout.headerTitle')}
           </h1>
           <p className="mt-1 hidden sm:block text-xs sm:text-sm text-text-secondary">{translate('layout.headerSubtitle')}</p>
