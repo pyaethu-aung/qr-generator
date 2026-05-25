@@ -69,6 +69,13 @@ export const QRGenerator = () => {
                 onFgColorChange={setInputFgColor}
                 bgColor={inputBgColor}
                 onBgColorChange={setInputBgColor}
+                correctionLabel={translate('controls.correctionLabel')}
+                correctionOptions={[
+                  { value: 'L', label: translate('controls.correctionLow') },
+                  { value: 'M', label: translate('controls.correctionMedium') },
+                  { value: 'Q', label: translate('controls.correctionQuartile') },
+                  { value: 'H', label: translate('controls.correctionHigh') },
+                ]}
                 eyeShape={designConfig.eyeShape}
                 onEyeShapeChange={setEyeShape}
                 pixelPattern={designConfig.pixelPattern}
