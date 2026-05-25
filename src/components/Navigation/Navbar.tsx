@@ -1,5 +1,5 @@
 import { useLocaleContext } from '../../hooks/LocaleProvider'
-// import { LanguageToggle } from '../common/LanguageToggle'
+import { LanguageToggle } from '../common/LanguageToggle'
 import { ThemeToggle } from '../common/ThemeToggle'
 
 export function Navbar() {
@@ -19,7 +19,7 @@ export function Navbar() {
         <nav aria-label={translate('layout.navLabel')}>
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            {/* <LanguageToggle /> */}
+            <LanguageToggle />
           </div>
         </nav>
       </div>
