@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { QRDesignConfig, QRErrorCorrectionLevel, QREyeShape, QRPixelPattern } from '../types/qr'
+import { getMatrixSize } from '../utils/qrShapeRenderer'
 
 const EC_LOGO_MAX: Record<QRErrorCorrectionLevel, number> = { L: 7, M: 15, Q: 25, H: 30 }
 
@@ -9,8 +10,6 @@ const DEFAULT_DESIGN_CONFIG: QRDesignConfig = {
   eyeShape: 'Square',
   pixelPattern: 'Square',
 }
-
-import { getMatrixSize } from '../utils/qrShapeRenderer'
 
 export function useQRDesign(value: string = '', ecLevel: 'L' | 'M' | 'Q' | 'H' = 'M') {
   const [logoDataUrl, setLogoDataUrl] = useState<string | null>(null)
@@ -35,11 +34,6 @@ export function useQRDesign(value: string = '', ecLevel: 'L' | 'M' | 'Q' | 'H' =
     return DEFAULT_DESIGN_CONFIG
   })
 
-  // Pending states — not applied to preview until commitDesignConfig() is called
-  const [inputEyeShape, setInputEyeShape] = useState<QREyeShape>(designConfig.eyeShape)
-  const [inputPixelPattern, setInputPixelPattern] = useState<QRPixelPattern>(designConfig.pixelPattern)
-
-  // Persist committed config to local storage
   useEffect(() => {
     try {
       localStorage.setItem(DESIGN_STORAGE_KEY, JSON.stringify(designConfig))
@@ -48,37 +42,32 @@ export function useQRDesign(value: string = '', ecLevel: 'L' | 'M' | 'Q' | 'H' =
     }
   }, [designConfig])
 
-  const setEyeShape = (eyeShape: QREyeShape) => setInputEyeShape(eyeShape)
-  const setPixelPattern = (pixelPattern: QRPixelPattern) => setInputPixelPattern(pixelPattern)
+  const setEyeShape = useCallback((eyeShape: QREyeShape) => {
+    setDesignConfig(prev => ({ ...prev, eyeShape }))
+  }, [])
 
-  const commitDesignConfig = useCallback(() => {
-    setDesignConfig({ eyeShape: inputEyeShape, pixelPattern: inputPixelPattern })
-  }, [inputEyeShape, inputPixelPattern])
+  const setPixelPattern = useCallback((pixelPattern: QRPixelPattern) => {
+    setDesignConfig(prev => ({ ...prev, pixelPattern }))
+  }, [])
 
-  // Risky pattern flagging for high density dots — uses pending pattern so warning shows immediately
   const matrixSize = getMatrixSize(value, ecLevel)
   const [isWarningDismissed, setIsWarningDismissed] = useState(false)
-
-  // High density is defined as version 6+ (>40 modules) according to spec
-  const isRiskyPattern = !isWarningDismissed && inputPixelPattern === 'Dots' && matrixSize >= 41
+  const isRiskyPattern = !isWarningDismissed && designConfig.pixelPattern === 'Dots' && matrixSize >= 41
 
   const dismissWarning = () => setIsWarningDismissed(true)
 
-  // Reset dismissal when pending pattern changes
-  const [prevPattern, setPrevPattern] = useState(inputPixelPattern)
-  if (prevPattern !== inputPixelPattern) {
+  // Reset dismissal when pixel pattern changes
+  const [prevPattern, setPrevPattern] = useState(designConfig.pixelPattern)
+  if (prevPattern !== designConfig.pixelPattern) {
     setIsWarningDismissed(false)
-    setPrevPattern(inputPixelPattern)
+    setPrevPattern(designConfig.pixelPattern)
   }
 
   return {
     designConfig,
     setDesignConfig,
-    inputEyeShape,
-    inputPixelPattern,
     setEyeShape,
     setPixelPattern,
-    commitDesignConfig,
     isRiskyPattern,
     dismissWarning,
     logoDataUrl,

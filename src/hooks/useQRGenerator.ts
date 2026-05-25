@@ -1,5 +1,5 @@
-import { useCallback, useMemo, useState } from 'react'
-import type { QRConfig, QRDesignConfig, QRErrorCorrectionLevel } from '../types/qr'
+import { useCallback, useMemo, useState, useEffect } from 'react'
+import type { QRDesignConfig, QRErrorCorrectionLevel } from '../types/qr'
 import { DEFAULT_QR_CONFIG, QR_SIZE_DOWNLOAD } from '../data/defaults'
 import { downloadBlob } from '../utils/download'
 import { generateQRPaths } from '../utils/qrShapeRenderer'
@@ -9,7 +9,7 @@ import { compositeLogoOnCanvas } from '../utils/logoCompositor'
 export const INPUT_LENGTH_LIMIT = 2000
 
 export interface UseQRGeneratorReturn {
-  config: QRConfig
+  liveValue: string
   inputValue: string
   setInputValue: (value: string) => void
   inputEcLevel: QRErrorCorrectionLevel
@@ -18,27 +18,22 @@ export interface UseQRGeneratorReturn {
   setInputFgColor: (color: string) => void
   inputBgColor: string
   setInputBgColor: (color: string) => void
-  generateQRCode: () => void
-  isGenerating: boolean
   downloadPng: (designConfig: QRDesignConfig, logoDataUrl?: string | null, logoSize?: number) => Promise<void>
   downloadSvg: (designConfig: QRDesignConfig, logoDataUrl?: string | null, logoSize?: number) => Promise<void>
   inputError?: string
-  canGenerate: boolean
+  canDownload: boolean
 }
 
 export const useQRGenerator = (): UseQRGeneratorReturn => {
-  const [config, setConfig] = useState<QRConfig>(DEFAULT_QR_CONFIG)
-
   const [inputValue, setInputValueState] = useState<string>('')
   const [inputError, setInputError] = useState<string | undefined>()
+  const [liveValue, setLiveValue] = useState<string>('')
 
   const [inputEcLevel, setInputEcLevel] = useState<QRErrorCorrectionLevel>(
     DEFAULT_QR_CONFIG.ecLevel,
   )
   const [inputFgColor, setInputFgColor] = useState<string>(DEFAULT_QR_CONFIG.fgColor)
   const [inputBgColor, setInputBgColor] = useState<string>(DEFAULT_QR_CONFIG.bgColor)
-
-  const [isGenerating, setIsGenerating] = useState<boolean>(false)
 
   const getValidationError = useCallback((value: string) => {
     if (value.length > INPUT_LENGTH_LIMIT) {
@@ -55,47 +50,29 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
     [getValidationError],
   )
 
-  const canGenerate = useMemo(
+  // Debounce the text field — 300 ms for valid input, 0 ms to clear on invalid/empty
+  useEffect(() => {
+    const effective = inputValue.trim() && !inputError ? inputValue : ''
+    const delay = effective ? 300 : 0
+    const timer = setTimeout(() => setLiveValue(effective), delay)
+    return () => clearTimeout(timer)
+  }, [inputValue, inputError])
+
+  const canDownload = useMemo(
     () => Boolean(inputValue.trim()) && !inputError,
     [inputError, inputValue],
   )
-
-  const generateQRCode = useCallback(() => {
-    if (!inputValue.trim()) {
-      setInputError(undefined)
-      return
-    }
-
-    const validationError = getValidationError(inputValue)
-    if (validationError) {
-      setInputError(validationError)
-      return
-    }
-
-    setInputError(undefined)
-    setIsGenerating(true)
-
-    setConfig((prev) => ({
-      ...prev,
-      value: inputValue,
-      ecLevel: inputEcLevel,
-      fgColor: inputFgColor,
-      bgColor: inputBgColor,
-    }))
-
-    setIsGenerating(false)
-  }, [getValidationError, inputBgColor, inputEcLevel, inputFgColor, inputValue])
 
   const downloadPng = useCallback(async (
     designConfig: QRDesignConfig,
     logoDataUrl?: string | null,
     logoSize = 20,
   ) => {
-    if (!config.value) return
+    if (!inputValue.trim()) return
 
     try {
       const { dataPath, eyesPath, eyeBgPath, size: matrixSize } = generateQRPaths(
-        config.value,
+        inputValue,
         inputEcLevel,
         designConfig.eyeShape,
         designConfig.pixelPattern,
@@ -137,18 +114,18 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
     } catch (err) {
       console.error('Failed to generate PNG', err)
     }
-  }, [config.value, inputEcLevel, inputFgColor, inputBgColor])
+  }, [inputValue, inputEcLevel, inputFgColor, inputBgColor])
 
   const downloadSvg = useCallback(async (
     designConfig: QRDesignConfig,
     logoDataUrl?: string | null,
     logoSize = 20,
   ) => {
-    if (!config.value) return
+    if (!inputValue.trim()) return
 
     try {
-      const blob = await exportSvg(config.value, {
-        value: config.value,
+      const blob = await exportSvg(inputValue, {
+        value: inputValue,
         ecLevel: inputEcLevel,
         fgColor: inputFgColor,
         bgColor: inputBgColor,
@@ -160,10 +137,10 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
     } catch (err) {
       console.error('Failed to generate SVG', err)
     }
-  }, [config.value, inputEcLevel, inputFgColor, inputBgColor])
+  }, [inputValue, inputEcLevel, inputFgColor, inputBgColor])
 
   return {
-    config,
+    liveValue,
     inputValue,
     setInputValue,
     inputEcLevel,
@@ -172,11 +149,9 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
     setInputFgColor,
     inputBgColor,
     setInputBgColor,
-    generateQRCode,
-    isGenerating,
     downloadPng,
     downloadSvg,
     inputError,
-    canGenerate,
+    canDownload,
   }
 }

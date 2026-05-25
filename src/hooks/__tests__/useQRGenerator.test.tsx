@@ -43,7 +43,7 @@ describe('useQRGenerator', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    // Re-apply stubs cleared by clearAllMocks
+    vi.useFakeTimers()
     vi.spyOn(downloadUtils, 'downloadBlob').mockImplementation(() => {})
     vi.spyOn(qrShapeRenderer, 'generateQRPaths').mockReturnValue({
       dataPath: 'M0,0',
@@ -58,18 +58,18 @@ describe('useQRGenerator', () => {
   })
 
   afterEach(() => {
+    vi.useRealTimers()
     consoleErrorSpy.mockClear()
   })
 
-  it('should initialize with default states', () => {
+  it('should initialize with empty input and empty live value', () => {
     const { result } = renderHook(() => useQRGenerator())
 
     expect(result.current.inputValue).toBe('')
-    expect(result.current.config.value).toBe('')
-    expect(result.current.isGenerating).toBe(false)
+    expect(result.current.liveValue).toBe('')
   })
 
-  it('should update inputValue and generate config', () => {
+  it('should update liveValue after the 300ms debounce delay', () => {
     const { result } = renderHook(() => useQRGenerator())
 
     act(() => {
@@ -77,14 +77,27 @@ describe('useQRGenerator', () => {
     })
 
     expect(result.current.inputValue).toBe('test-value')
-    // Config should not update yet
-    expect(result.current.config.value).toBe('')
+    expect(result.current.liveValue).toBe('')
 
     act(() => {
-      result.current.generateQRCode()
+      vi.advanceTimersByTime(300)
     })
 
-    expect(result.current.config.value).toBe('test-value')
+    expect(result.current.liveValue).toBe('test-value')
+  })
+
+  it('should not update liveValue before the debounce delay', () => {
+    const { result } = renderHook(() => useQRGenerator())
+
+    act(() => {
+      result.current.setInputValue('test-value')
+    })
+
+    act(() => {
+      vi.advanceTimersByTime(299)
+    })
+
+    expect(result.current.liveValue).toBe('')
   })
 
   it('should surface validation errors for inputs that exceed the limit', () => {
@@ -96,10 +109,10 @@ describe('useQRGenerator', () => {
     })
 
     expect(result.current.inputError).toBe(`Input too long (max ${INPUT_LENGTH_LIMIT} characters)`)
-    expect(result.current.canGenerate).toBe(false)
+    expect(result.current.canDownload).toBe(false)
   })
 
-  it('should not generate QR code when validation fails', () => {
+  it('should not update liveValue when validation fails', () => {
     const { result } = renderHook(() => useQRGenerator())
     const longValue = 'a'.repeat(INPUT_LENGTH_LIMIT + 1)
 
@@ -108,11 +121,10 @@ describe('useQRGenerator', () => {
     })
 
     act(() => {
-      result.current.generateQRCode()
+      vi.advanceTimersByTime(300)
     })
 
-    expect(result.current.config.value).toBe('')
-    expect(result.current.inputError).toBe(`Input too long (max ${INPUT_LENGTH_LIMIT} characters)`)
+    expect(result.current.liveValue).toBe('')
   })
 
   it('should generate PNG download with custom design config', async () => {
@@ -121,12 +133,12 @@ describe('useQRGenerator', () => {
     act(() => {
       result.current.setInputValue('test-qr')
     })
-    act(() => {
-      result.current.generateQRCode()
-    })
 
+    // FakeImage fires img.onload via setTimeout(0) — advance timers while awaiting
     await act(async () => {
-      await result.current.downloadPng(DEFAULT_DESIGN_CONFIG)
+      const p = result.current.downloadPng(DEFAULT_DESIGN_CONFIG)
+      vi.runAllTimers()
+      await p
     })
 
     expect(qrShapeRenderer.generateQRPaths).toHaveBeenCalledWith(
@@ -144,9 +156,6 @@ describe('useQRGenerator', () => {
     act(() => {
       result.current.setInputValue('test-qr')
     })
-    act(() => {
-      result.current.generateQRCode()
-    })
 
     await act(async () => {
       await result.current.downloadSvg(DEFAULT_DESIGN_CONFIG)
@@ -163,8 +172,10 @@ describe('useQRGenerator', () => {
     const { result } = renderHook(() => useQRGenerator())
 
     await act(async () => {
-      await result.current.downloadPng(DEFAULT_DESIGN_CONFIG)
-      await result.current.downloadSvg(DEFAULT_DESIGN_CONFIG)
+      const p1 = result.current.downloadPng(DEFAULT_DESIGN_CONFIG)
+      const p2 = result.current.downloadSvg(DEFAULT_DESIGN_CONFIG)
+      vi.runAllTimers()
+      await Promise.all([p1, p2])
     })
 
     expect(qrShapeRenderer.generateQRPaths).not.toHaveBeenCalled()
@@ -180,9 +191,6 @@ describe('useQRGenerator', () => {
 
     act(() => {
       result.current.setInputValue('fail')
-    })
-    act(() => {
-      result.current.generateQRCode()
     })
 
     await act(async () => {

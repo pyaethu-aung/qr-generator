@@ -1,5 +1,5 @@
 import { useRef, useState, useId } from 'react'
-import { Zap, Download, ChevronDown, Upload, X } from 'lucide-react'
+import { Download, ChevronDown, Upload, X } from 'lucide-react'
 import { Input } from '../../common/Input'
 import { Tooltip } from '../../common/Tooltip'
 import type { QRErrorCorrectionLevel } from '../../../types/qr'
@@ -35,13 +35,10 @@ export interface QRControlsProps {
   onFgColorChange: (color: string) => void
   bgColor: string
   onBgColorChange: (color: string) => void
-  onGenerate: () => void
-  isGenerating: boolean
   onDownloadPng?: () => void
   onDownloadSvg?: () => void
   canDownload: boolean
   inputError?: string
-  canGenerate: boolean
   // Logo
   logoDataUrl?: string | null
   onLogoChange?: (dataUrl: string | null) => void
@@ -53,8 +50,6 @@ export interface QRControlsProps {
   correctionLabel?: string
   foregroundLabel?: string
   backgroundLabel?: string
-  generateLabel?: string
-  downloadsTitle?: string
   downloadPngLabel?: string
   downloadSvgLabel?: string
   correctionOptions?: { value: QRErrorCorrectionLevel; label: string }[]
@@ -72,8 +67,6 @@ export interface QRControlsProps {
   correctionTooltipAriaLabel?: string
   dismissWarningAriaLabel?: string
   correctionHint?: string
-  designChangePending?: boolean
-  applyDesignHint?: string
   logoLabel?: string
   logoSizeLabel?: string
   logoUploadHint?: string
@@ -96,13 +89,10 @@ export function QRControls({
   onFgColorChange,
   bgColor,
   onBgColorChange,
-  onGenerate,
-  isGenerating,
   onDownloadPng,
   onDownloadSvg,
   canDownload,
   inputError,
-  canGenerate,
   logoDataUrl,
   onLogoChange,
   logoSize,
@@ -112,14 +102,13 @@ export function QRControls({
   correctionLabel = 'Error Correction',
   foregroundLabel = 'Foreground',
   backgroundLabel = 'Background',
-  generateLabel = 'Generate QR Code',
   downloadPngLabel = 'Download PNG',
   downloadSvgLabel = 'Download SVG',
   correctionOptions = [
-    { value: 'L', label: 'L 7%' },
-    { value: 'M', label: 'M 15%' },
-    { value: 'Q', label: 'Q 25%' },
-    { value: 'H', label: 'H 30%' },
+    { value: 'L', label: 'Low (7%)' },
+    { value: 'M', label: 'Medium (15%)' },
+    { value: 'Q', label: 'High (25%)' },
+    { value: 'H', label: 'Max (30%)' },
   ],
   eyeShape,
   onEyeShapeChange,
@@ -140,12 +129,10 @@ export function QRControls({
   ],
   isRiskyPattern,
   onDismissWarning,
-  correctionTooltip = 'How much of the QR code can be covered or damaged and still scan. Low gives a compact code; High lets you overlay a logo at the cost of a denser pattern.',
+  correctionTooltip = 'How much of the QR code can be covered or damaged and still scan. Low gives a compact code; Max lets you overlay a logo at the cost of a denser pattern.',
   correctionTooltipAriaLabel = 'About error correction',
   dismissWarningAriaLabel = 'Dismiss warning',
   correctionHint = 'Higher levels survive more damage and support larger logos.',
-  designChangePending = false,
-  applyDesignHint = 'Click Generate to preview with this design.',
   logoLabel = 'Logo',
   logoSizeLabel = 'Logo Size',
   logoUploadHint = 'Click or drop image',
@@ -156,7 +143,7 @@ export function QRControls({
   logoErrorFormat = 'Please select an image file',
   logoErrorUrl = 'Could not load image from URL',
   logoTransparencyHint = 'PNG or SVG works best for transparent logos',
-  logoSizeCapHint = 'Size capped at {max}% for this error correction level — switch to H for up to 30%',
+  logoSizeCapHint = 'Size capped at {max}% for this error correction level — switch to Max for up to 30%',
 }: QRControlsProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [showUrlInput, setShowUrlInput] = useState(false)
@@ -236,13 +223,7 @@ export function QRControls({
           placeholder={placeholder}
           value={value}
           onChange={(e) => onValueChange(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && canGenerate && !isGenerating) {
-              onGenerate()
-            }
-          }}
           error={inputError}
-          disabled={isGenerating}
         />
 
         <div className="space-y-4">
@@ -259,8 +240,7 @@ export function QRControls({
                   type="button"
                   aria-pressed={ecLevel === optValue}
                   onClick={() => onEcLevelChange(optValue)}
-                  disabled={isGenerating}
-                  className={`flex h-11 flex-1 items-center justify-center rounded-full px-3 text-sm whitespace-nowrap transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                  className={`flex h-11 flex-1 items-center justify-center rounded-full px-3 text-sm whitespace-nowrap transition-colors ${
                     ecLevel === optValue
                       ? 'bg-action text-action-fg font-semibold'
                       : 'bg-surface-inset text-text-primary hover:bg-surface-raised'
@@ -280,10 +260,9 @@ export function QRControls({
               <div className="relative">
                 <select
                   id={eyeShapeId}
-                  className="block h-11 w-full appearance-none rounded-lg border border-border-subtle bg-surface-inset px-3 pr-8 text-sm text-text-primary shadow-sm focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring disabled:bg-action-disabled disabled:text-text-disabled"
+                  className="block h-11 w-full appearance-none rounded-lg border border-border-subtle bg-surface-inset px-3 pr-8 text-sm text-text-primary shadow-sm focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring"
                   value={eyeShape}
                   onChange={(e) => onEyeShapeChange(e.target.value as import('../../../types/qr').QREyeShape)}
-                  disabled={isGenerating}
                 >
                   {eyeShapeOptions.map(({ value: optValue, label }) => (
                     <option key={optValue} value={optValue}>
@@ -309,8 +288,7 @@ export function QRControls({
                     type="button"
                     aria-pressed={pixelPattern === optValue}
                     onClick={() => onPixelPatternChange(optValue)}
-                    disabled={isGenerating}
-                    className={`flex h-11 flex-1 items-center justify-center rounded-full px-3 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                    className={`flex h-11 flex-1 items-center justify-center rounded-full px-3 text-sm transition-colors ${
                       pixelPattern === optValue
                         ? 'bg-action text-action-fg font-semibold'
                         : 'bg-surface-inset text-text-primary hover:bg-surface-raised'
@@ -322,12 +300,6 @@ export function QRControls({
               </div>
             </div>
           </div>
-
-          {designChangePending && (
-            <p className="text-xs text-text-secondary" role="status">
-              {applyDesignHint}
-            </p>
-          )}
 
           {isRiskyPattern && (
             <div className="flex items-start justify-between rounded-lg border border-warning-border bg-warning-surface p-3 text-sm text-warning shadow-sm" role="alert">
@@ -368,7 +340,6 @@ export function QRControls({
                   type="color"
                   value={fgColor}
                   onChange={(e) => onFgColorChange(e.target.value)}
-                  disabled={isGenerating}
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0 focus:outline-none"
                 />
               </div>
@@ -386,7 +357,6 @@ export function QRControls({
                   type="color"
                   value={bgColor}
                   onChange={(e) => onBgColorChange(e.target.value)}
-                  disabled={isGenerating}
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0 focus:outline-none"
                 />
               </div>
@@ -509,29 +479,14 @@ export function QRControls({
           )}
         </div>
 
-        {/* Generate button — full-width, 48px, rounded-full, zap icon */}
-        <button
-          type="button"
-          onClick={onGenerate}
-          disabled={!canGenerate || isGenerating}
-          className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-action px-6 text-sm font-semibold text-action-fg transition-colors hover:bg-action/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {isGenerating ? (
-            <span className="h-4 w-4 motion-safe:animate-spin rounded-full border-2 border-action-fg border-t-transparent" />
-          ) : (
-            <Zap size={18} aria-hidden />
-          )}
-          {generateLabel}
-        </button>
-
-        {/* Download buttons — inline below Generate, no divider */}
+        {/* Download buttons */}
         {(onDownloadPng || onDownloadSvg) && (
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
             {onDownloadPng && (
               <button
                 type="button"
                 onClick={onDownloadPng}
-                disabled={!canDownload || isGenerating}
+                disabled={!canDownload}
                 className="flex h-11 w-full items-center justify-center gap-2 rounded-full border border-border-subtle bg-surface-raised px-4 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Download size={16} aria-hidden />
@@ -542,7 +497,7 @@ export function QRControls({
               <button
                 type="button"
                 onClick={onDownloadSvg}
-                disabled={!canDownload || isGenerating}
+                disabled={!canDownload}
                 className="flex h-11 w-full items-center justify-center gap-2 rounded-full border border-border-subtle bg-surface-raised px-4 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Download size={16} aria-hidden />

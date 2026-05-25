@@ -6,7 +6,7 @@ import { useLocaleContext } from '../../../hooks/LocaleProvider'
 
 export const QRGenerator = () => {
   const {
-    config,
+    liveValue,
     inputValue,
     setInputValue,
     inputEcLevel,
@@ -15,23 +15,18 @@ export const QRGenerator = () => {
     setInputFgColor,
     inputBgColor,
     setInputBgColor,
-    generateQRCode,
-    isGenerating,
     downloadPng,
     downloadSvg,
     inputError,
-    canGenerate,
+    canDownload,
   } = useQRGenerator()
 
   const {
     designConfig,
-    inputEyeShape,
-    inputPixelPattern,
     setEyeShape,
     setPixelPattern,
     isRiskyPattern,
     dismissWarning,
-    commitDesignConfig,
     logoDataUrl,
     setLogoDataUrl,
     logoSize,
@@ -39,16 +34,11 @@ export const QRGenerator = () => {
     maxLogoSize,
   } = useQRDesign(inputValue, inputEcLevel)
 
-  const handleGenerate = () => {
-    commitDesignConfig()
-    generateQRCode()
-  }
-
   const { translate } = useLocaleContext()
 
   return (
-    <section className="relative isolate overflow-hidden px-2 pb-12 sm:px-6 lg:px-8">
-<div className="relative mx-auto max-w-6xl space-y-3">
+    <section className="relative isolate overflow-x-hidden px-2 pb-12 sm:px-6 lg:px-8">
+      <div className="relative mx-auto max-w-6xl space-y-3">
         <div className="text-center pt-16 pb-8 px-6 sm:px-12">
           <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-action">
             {translate('hero.badge')}
@@ -79,11 +69,10 @@ export const QRGenerator = () => {
                 onFgColorChange={setInputFgColor}
                 bgColor={inputBgColor}
                 onBgColorChange={setInputBgColor}
-                eyeShape={inputEyeShape}
+                eyeShape={designConfig.eyeShape}
                 onEyeShapeChange={setEyeShape}
-                pixelPattern={inputPixelPattern}
+                pixelPattern={designConfig.pixelPattern}
                 onPixelPatternChange={setPixelPattern}
-                designChangePending={inputEyeShape !== designConfig.eyeShape || inputPixelPattern !== designConfig.pixelPattern}
                 isRiskyPattern={isRiskyPattern}
                 onDismissWarning={dismissWarning}
                 dismissWarningAriaLabel={translate('controls.dismissWarningAriaLabel')}
@@ -92,13 +81,10 @@ export const QRGenerator = () => {
                 logoSize={logoSize}
                 onLogoSizeChange={setLogoSize}
                 maxLogoSize={maxLogoSize}
-                onGenerate={handleGenerate}
-                isGenerating={isGenerating}
                 onDownloadPng={() => void downloadPng(designConfig, logoDataUrl, logoSize)}
                 onDownloadSvg={() => void downloadSvg(designConfig, logoDataUrl, logoSize)}
-                canDownload={!!config.value}
+                canDownload={canDownload}
                 inputError={inputError ?? undefined}
-                canGenerate={canGenerate}
               />
             </div>
 
@@ -112,7 +98,10 @@ export const QRGenerator = () => {
                 </h3>
               </div>
               <QRPreview
-                {...config}
+                value={liveValue}
+                ecLevel={inputEcLevel}
+                fgColor={inputFgColor}
+                bgColor={inputBgColor}
                 designConfig={designConfig}
                 logoDataUrl={logoDataUrl}
                 logoSize={logoSize}

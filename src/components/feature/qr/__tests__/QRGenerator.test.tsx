@@ -1,12 +1,19 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { describe, it, expect } from 'vitest'
+import { render, screen, fireEvent, act } from '@testing-library/react'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import type { ReactElement } from 'react'
 import { LocaleProvider } from '../../../../hooks/LocaleProvider'
 import { QRGenerator } from '../QRGenerator'
 
 describe('QRGenerator Integration', () => {
   const renderWithProviders = (ui: ReactElement) => render(<LocaleProvider>{ui}</LocaleProvider>)
+
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
 
   it('should render the generator layout', () => {
     renderWithProviders(<QRGenerator />)
@@ -20,68 +27,63 @@ describe('QRGenerator Integration', () => {
     expect(screen.queryByTestId('qr-code-canvas')).not.toBeInTheDocument()
   })
 
-  it('should generate QR code when user inputs text and clicks generate', async () => {
+  it('should not render a Generate button', () => {
+    renderWithProviders(<QRGenerator />)
+    expect(screen.queryByRole('button', { name: /generate qr code/i })).not.toBeInTheDocument()
+  })
+
+  it('should show QR code after typing input and debounce delay', () => {
     renderWithProviders(<QRGenerator />)
 
-    // User types into input
     const input = screen.getByLabelText(/Link \/ Text/i)
     fireEvent.change(input, { target: { value: 'https://example.com' } })
-    expect(input).toHaveValue('https://example.com')
 
-    // Click generate button
-    const generateBtn = screen.getByRole('button', { name: /generate qr code/i })
-    expect(generateBtn).not.toBeDisabled()
-    fireEvent.click(generateBtn)
+    // Canvas should not appear before the debounce fires
+    expect(screen.queryByTestId('qr-code-canvas')).not.toBeInTheDocument()
 
-    // Verify QR code appears
-    await waitFor(() => {
-      const qrCode = screen.getByTestId('qr-code-canvas')
-      expect(qrCode).toBeInTheDocument()
-      expect(qrCode).toHaveAttribute('data-value', 'https://example.com')
+    // Advance past the 300ms debounce
+    act(() => {
+      vi.advanceTimersByTime(300)
     })
 
-    // Verify placeholder is gone
+    const qrCode = screen.getByTestId('qr-code-canvas')
+    expect(qrCode).toBeInTheDocument()
+    expect(qrCode).toHaveAttribute('data-value', 'https://example.com')
+
+    // Placeholder gone
     expect(screen.queryByRole('img', { name: /qr code placeholder/i })).not.toBeInTheDocument()
   })
 
-  it('renders accessible preview aria labels after generation', async () => {
+  it('renders accessible preview aria labels after input debounce', () => {
     renderWithProviders(<QRGenerator />)
 
     const input = screen.getByLabelText(/Link \/ Text/i)
     fireEvent.change(input, { target: { value: 'keyboard.com' } })
-    const generateBtn = screen.getByRole('button', { name: /generate qr code/i })
-    fireEvent.click(generateBtn)
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole('img', { name: /qr code for value: keyboard.com/i }),
-      ).toBeInTheDocument()
+    act(() => {
+      vi.advanceTimersByTime(300)
     })
+
+    expect(
+      screen.getByRole('img', { name: /qr code for value: keyboard.com/i }),
+    ).toBeInTheDocument()
   })
 
-  it('allows keyboard navigation to generate button and triggers via Enter', async () => {
+  it('updates the live preview when settings change without re-typing', () => {
     renderWithProviders(<QRGenerator />)
-    const user = userEvent.setup()
 
     const input = screen.getByLabelText(/Link \/ Text/i)
-    await user.click(input)
-    await user.keyboard('https://kb.com')
+    fireEvent.change(input, { target: { value: 'https://example.com' } })
 
-    const generateBtn = screen.getByRole('button', { name: /generate qr code/i })
-    let found = false
-    for (let i = 0; i < 16; i += 1) {
-      await user.tab()
-      if (document.activeElement === generateBtn) {
-        found = true
-        break
-      }
-    }
-
-    expect(found).toBe(true)
-    await user.keyboard('{Enter}')
-
-    await waitFor(() => {
-      expect(screen.getByTestId('qr-code-canvas')).toBeInTheDocument()
+    act(() => {
+      vi.advanceTimersByTime(300)
     })
+
+    expect(screen.getByTestId('qr-code-canvas')).toHaveAttribute('data-value', 'https://example.com')
+
+    // Changing EC level should not remove the preview — no Generate click needed
+    fireEvent.click(screen.getByRole('button', { name: 'Max (30%)' }))
+
+    expect(screen.getByTestId('qr-code-canvas')).toBeInTheDocument()
   })
 })

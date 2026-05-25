@@ -11,7 +11,6 @@ const setup = (overrides: Partial<QRControlsProps> = {}) => {
   const onEcLevelChange = vi.fn<(level: QRControlsProps['ecLevel']) => void>()
   const onFgColorChange = vi.fn<(color: string) => void>()
   const onBgColorChange = vi.fn<(color: string) => void>()
-  const onGenerate = vi.fn<() => void>()
   const onEyeShapeChange = vi.fn<QRControlsProps['onEyeShapeChange']>()
   const onPixelPatternChange = vi.fn<QRControlsProps['onPixelPatternChange']>()
 
@@ -28,10 +27,7 @@ const setup = (overrides: Partial<QRControlsProps> = {}) => {
     onPixelPatternChange,
     onFgColorChange,
     onBgColorChange,
-    onGenerate,
-    isGenerating: false,
     canDownload: false,
-    canGenerate: true,
   }
 
   const utils = render(
@@ -48,7 +44,6 @@ const setup = (overrides: Partial<QRControlsProps> = {}) => {
     onPixelPatternChange,
     onFgColorChange,
     onBgColorChange,
-    onGenerate,
   }
 }
 
@@ -66,7 +61,7 @@ describe('QRControls configuration updates', () => {
   it('calls onEcLevelChange when an EC Level pill button is clicked', () => {
     const { onEcLevelChange } = setup()
 
-    fireEvent.click(screen.getByRole('button', { name: 'H 30%' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Max (30%)' }))
 
     expect(onEcLevelChange).toHaveBeenCalledWith('H')
   })
@@ -74,10 +69,10 @@ describe('QRControls configuration updates', () => {
   it('marks the active EC Level pill with aria-pressed=true', () => {
     setup({ ecLevel: 'M' })
 
-    const activeButton = screen.getByRole('button', { name: 'M 15%' })
+    const activeButton = screen.getByRole('button', { name: 'Medium (15%)' })
     expect(activeButton).toHaveAttribute('aria-pressed', 'true')
 
-    const inactiveButton = screen.getByRole('button', { name: 'L 7%' })
+    const inactiveButton = screen.getByRole('button', { name: 'Low (7%)' })
     expect(inactiveButton).toHaveAttribute('aria-pressed', 'false')
   })
 
@@ -125,34 +120,6 @@ describe('QRControls configuration updates', () => {
     expect(screen.getByText('Input too long')).toBeInTheDocument()
   })
 
-  it('triggers onGenerate when Enter key is pressed in the content input', () => {
-    const { onGenerate } = setup({ canGenerate: true, isGenerating: false })
-
-    fireEvent.keyDown(screen.getByLabelText(/Link \/ Text/i), {
-      key: 'Enter',
-      code: 'Enter',
-      charCode: 13,
-    })
-
-    expect(onGenerate).toHaveBeenCalledTimes(1)
-  })
-
-  it('does not trigger onGenerate when Enter is pressed but generation is disabled', () => {
-    const { onGenerate } = setup({ canGenerate: false })
-
-    fireEvent.keyDown(screen.getByLabelText(/Link \/ Text/i), {
-      key: 'Enter',
-    })
-
-    expect(onGenerate).not.toHaveBeenCalled()
-  })
-
-  it('renders a zap icon in the Generate button', () => {
-    setup()
-    const generateButton = screen.getByRole('button', { name: /Generate QR Code/i })
-    expect(generateButton.querySelector('svg')).toBeInTheDocument()
-  })
-
   it('renders download buttons with download icons when handlers provided', () => {
     const onDownloadPng = vi.fn()
     const onDownloadSvg = vi.fn()
@@ -171,5 +138,11 @@ describe('QRControls configuration updates', () => {
     setup({ onDownloadPng, onDownloadSvg })
 
     expect(screen.queryByText('Download Formats')).not.toBeInTheDocument()
+  })
+
+  it('does not render a Generate button', () => {
+    setup()
+
+    expect(screen.queryByRole('button', { name: /Generate QR Code/i })).not.toBeInTheDocument()
   })
 })
