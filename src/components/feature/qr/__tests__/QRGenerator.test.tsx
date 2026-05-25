@@ -17,8 +17,8 @@ describe('QRGenerator Integration', () => {
 
   it('should render the generator layout', () => {
     renderWithProviders(<QRGenerator />)
-    expect(screen.getByText('Configuration')).toBeInTheDocument()
-    expect(screen.getByText('Preview')).toBeInTheDocument()
+    expect(screen.getByText(/preview what you.ll download/i)).toBeInTheDocument()
+    expect(screen.getByText('See every pixel')).toBeInTheDocument()
   })
 
   it('should show placeholder initially', () => {

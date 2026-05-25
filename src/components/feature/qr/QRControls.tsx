@@ -151,6 +151,7 @@ export function QRControls({
   const [logoFilename, setLogoFilename] = useState<string | undefined>()
   const [isDragOver, setIsDragOver] = useState(false)
   const [isLoadingLogo, setIsLoadingLogo] = useState(false)
+  const [isLogoOpen, setIsLogoOpen] = useState(false)
 
   const eyeShapeId = useId()
   const pixelPatternLabelId = useId()
@@ -366,9 +367,17 @@ export function QRControls({
           {/* Logo upload */}
           {onLogoChange && (
             <div className="flex flex-col gap-2">
-              <p className="text-sm font-medium text-text-primary">{logoLabel}</p>
+              <button
+                type="button"
+                onClick={() => setIsLogoOpen(prev => !prev)}
+                className="flex items-center justify-between w-full text-sm font-medium text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
+                aria-expanded={isLogoOpen || !!logoDataUrl}
+              >
+                <span>{logoLabel}</span>
+                <span className="text-xs text-text-secondary">{isLogoOpen || logoDataUrl ? '▲' : '▼'}</span>
+              </button>
 
-              {logoDataUrl ? (
+              {(isLogoOpen || logoDataUrl) && <>{logoDataUrl ? (
                 <div className="flex items-center gap-3 rounded-lg bg-surface-inset px-3 h-11">
                   <img
                     src={logoDataUrl}
@@ -475,6 +484,7 @@ export function QRControls({
                   )}
                 </div>
               )}
+              </>}
             </div>
           )}
         </div>
