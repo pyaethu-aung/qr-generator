@@ -19,6 +19,7 @@ export const QRGenerator = () => {
     downloadSvg,
     inputError,
     canDownload,
+    recentDownload,
   } = useQRGenerator()
 
   const {
@@ -89,6 +90,8 @@ export const QRGenerator = () => {
                 onDownloadSvg={() => void downloadSvg(designConfig, logoDataUrl, logoSize)}
                 canDownload={canDownload}
                 inputError={inputError ?? undefined}
+                downloadStatus={recentDownload}
+                downloadStatusMessage={translate('controls.downloadSuccess')}
               />
             </div>
 

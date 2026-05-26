@@ -1,5 +1,5 @@
 import { useRef, useState, useId } from 'react'
-import { Download, ChevronDown, Upload, X } from 'lucide-react'
+import { Download, Check, ChevronDown, Upload, X } from 'lucide-react'
 import { Input } from '../../common/Input'
 import { Tooltip } from '../../common/Tooltip'
 import type { QRErrorCorrectionLevel } from '../../../types/qr'
@@ -67,6 +67,8 @@ export interface QRControlsProps {
   correctionTooltipAriaLabel?: string
   dismissWarningAriaLabel?: string
   correctionHint?: string
+  downloadStatus?: 'png' | 'svg' | null
+  downloadStatusMessage?: string
   logoLabel?: string
   logoSizeLabel?: string
   logoUploadHint?: string
@@ -133,6 +135,8 @@ export function QRControls({
   correctionTooltipAriaLabel = 'About error correction',
   dismissWarningAriaLabel = 'Dismiss warning',
   correctionHint = 'Higher levels survive more damage and support larger logos.',
+  downloadStatus,
+  downloadStatusMessage = 'Downloaded',
   logoLabel = 'Logo',
   logoSizeLabel = 'Logo Size',
   logoUploadHint = 'Click or drop image',
@@ -491,28 +495,43 @@ export function QRControls({
 
         {/* Download buttons */}
         {(onDownloadPng || onDownloadSvg) && (
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
-            {onDownloadPng && (
-              <button
-                type="button"
-                onClick={onDownloadPng}
-                disabled={!canDownload}
-                className="flex h-11 w-full items-center justify-center gap-2 rounded-full border border-border-subtle bg-surface-raised px-4 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <Download size={16} aria-hidden />
-                {downloadPngLabel}
-              </button>
-            )}
-            {onDownloadSvg && (
-              <button
-                type="button"
-                onClick={onDownloadSvg}
-                disabled={!canDownload}
-                className="flex h-11 w-full items-center justify-center gap-2 rounded-full border border-border-subtle bg-surface-raised px-4 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <Download size={16} aria-hidden />
-                {downloadSvgLabel}
-              </button>
+          <div className="flex flex-col gap-2">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3">
+              {onDownloadPng && (
+                <button
+                  type="button"
+                  onClick={onDownloadPng}
+                  disabled={!canDownload}
+                  className="flex h-11 w-full items-center justify-center gap-2 rounded-full border border-border-subtle bg-surface-raised px-4 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {downloadStatus === 'png' ? (
+                    <Check size={16} aria-hidden className="text-action" />
+                  ) : (
+                    <Download size={16} aria-hidden />
+                  )}
+                  {downloadPngLabel}
+                </button>
+              )}
+              {onDownloadSvg && (
+                <button
+                  type="button"
+                  onClick={onDownloadSvg}
+                  disabled={!canDownload}
+                  className="flex h-11 w-full items-center justify-center gap-2 rounded-full border border-border-subtle bg-surface-raised px-4 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {downloadStatus === 'svg' ? (
+                    <Check size={16} aria-hidden className="text-action" />
+                  ) : (
+                    <Download size={16} aria-hidden />
+                  )}
+                  {downloadSvgLabel}
+                </button>
+              )}
+            </div>
+            {downloadStatus && (
+              <p role="status" aria-live="polite" className="text-sm text-text-secondary text-center">
+                {downloadStatusMessage}
+              </p>
             )}
           </div>
         )}

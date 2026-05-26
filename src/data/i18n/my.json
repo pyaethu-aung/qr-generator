@@ -63,7 +63,8 @@
     "logoErrorFormat": "ပုံဖိုင်ကို ရွေးချယ်ပါ",
     "logoErrorUrl": "URL မှ ပုံ ဖွင့်မရပါ",
     "logoTransparencyHint": "PNG သို့ SVG ဖိုင်များသည် transparent လိုဂိုများအတွက် အကောင်းဆုံးဖြစ်သည်",
-    "dismissWarningAriaLabel": "သတိပေးချက် ပယ်ဖျက်ပါ"
+    "dismissWarningAriaLabel": "သတိပေးချက် ပယ်ဖျက်ပါ",
+    "downloadSuccess": "ဒေါင်းလုဒ်ပြုလုပ်ပြီး"
   },
   "preview": {
     "sectionLabel": "ကြိုတင်ကြည့်ရှုခြင်း",

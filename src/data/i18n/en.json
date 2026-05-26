@@ -63,7 +63,8 @@
     "logoErrorFormat": "Please select an image file",
     "logoErrorUrl": "Could not load image from URL",
     "logoTransparencyHint": "PNG or SVG works best for transparent logos",
-    "dismissWarningAriaLabel": "Dismiss warning"
+    "dismissWarningAriaLabel": "Dismiss warning",
+    "downloadSuccess": "Downloaded"
   },
   "preview": {
     "sectionLabel": "Preview",

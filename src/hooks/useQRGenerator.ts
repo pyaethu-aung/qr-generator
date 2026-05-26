@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, useEffect } from 'react'
+import { useCallback, useMemo, useState, useEffect, useRef } from 'react'
 import type { QRDesignConfig, QRErrorCorrectionLevel } from '../types/qr'
 import { DEFAULT_QR_CONFIG, QR_SIZE_DOWNLOAD } from '../data/defaults'
 import { downloadBlob } from '../utils/download'
@@ -22,6 +22,7 @@ export interface UseQRGeneratorReturn {
   downloadSvg: (designConfig: QRDesignConfig, logoDataUrl?: string | null, logoSize?: number) => Promise<void>
   inputError?: string
   canDownload: boolean
+  recentDownload: 'png' | 'svg' | null
 }
 
 export const useQRGenerator = (): UseQRGeneratorReturn => {
@@ -34,6 +35,14 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
   )
   const [inputFgColor, setInputFgColor] = useState<string>(DEFAULT_QR_CONFIG.fgColor)
   const [inputBgColor, setInputBgColor] = useState<string>(DEFAULT_QR_CONFIG.bgColor)
+  const [recentDownload, setRecentDownload] = useState<'png' | 'svg' | null>(null)
+  const downloadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (downloadTimerRef.current) clearTimeout(downloadTimerRef.current)
+    }
+  }, [])
 
   const getValidationError = useCallback((value: string) => {
     if (value.length > INPUT_LENGTH_LIMIT) {
@@ -111,6 +120,9 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
       )
 
       downloadBlob(blob, `qr-code-${Date.now()}.png`)
+      if (downloadTimerRef.current) clearTimeout(downloadTimerRef.current)
+      setRecentDownload('png')
+      downloadTimerRef.current = setTimeout(() => setRecentDownload(null), 1500)
     } catch (err) {
       console.error('Failed to generate PNG', err)
     }
@@ -134,6 +146,9 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
         logoSize,
       })
       downloadBlob(blob, `qr-code-${Date.now()}.svg`)
+      if (downloadTimerRef.current) clearTimeout(downloadTimerRef.current)
+      setRecentDownload('svg')
+      downloadTimerRef.current = setTimeout(() => setRecentDownload(null), 1500)
     } catch (err) {
       console.error('Failed to generate SVG', err)
     }
@@ -153,5 +168,6 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
     downloadSvg,
     inputError,
     canDownload,
+    recentDownload,
   }
 }
