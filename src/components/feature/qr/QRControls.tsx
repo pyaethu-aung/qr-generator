@@ -1,5 +1,5 @@
 import { useRef, useState, useId } from 'react'
-import { Download, Check, ChevronDown, Upload, X } from 'lucide-react'
+import { Download, Check, ChevronDown, ChevronUp, Upload, X } from 'lucide-react'
 import { Input } from '../../common/Input'
 import { Tooltip } from '../../common/Tooltip'
 import type { QRErrorCorrectionLevel } from '../../../types/qr'
@@ -378,7 +378,11 @@ export function QRControls({
                 aria-expanded={isLogoOpen || !!logoDataUrl}
               >
                 <span>{logoLabel}</span>
-                <span className="text-xs text-text-secondary">{isLogoOpen || logoDataUrl ? '▲' : '▼'}</span>
+                {isLogoOpen || logoDataUrl ? (
+                  <ChevronUp size={12} aria-hidden className="text-text-secondary" />
+                ) : (
+                  <ChevronDown size={12} aria-hidden className="text-text-secondary" />
+                )}
               </button>
 
               {(isLogoOpen || logoDataUrl) && <>{logoDataUrl ? (
@@ -502,7 +506,7 @@ export function QRControls({
                   type="button"
                   onClick={onDownloadPng}
                   disabled={!canDownload}
-                  className="flex h-11 w-full items-center justify-center gap-2 rounded-full border border-border-subtle bg-surface-raised px-4 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-border-subtle bg-surface-raised px-4 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {downloadStatus === 'png' ? (
                     <Check size={16} aria-hidden className="text-action" />
@@ -517,7 +521,7 @@ export function QRControls({
                   type="button"
                   onClick={onDownloadSvg}
                   disabled={!canDownload}
-                  className="flex h-11 w-full items-center justify-center gap-2 rounded-full border border-border-subtle bg-surface-raised px-4 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-border-subtle bg-surface-raised px-4 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {downloadStatus === 'svg' ? (
                     <Check size={16} aria-hidden className="text-action" />

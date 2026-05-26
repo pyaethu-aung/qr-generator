@@ -18,10 +18,10 @@ export function Tooltip({ content, ariaLabel = 'More information' }: TooltipProp
         onMouseLeave={() => setVisible(false)}
         onFocus={() => setVisible(true)}
         onBlur={() => setVisible(false)}
-        className="group inline-flex h-11 w-11 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-1"
+        className="group inline-flex h-7 w-7 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-1"
         aria-label={ariaLabel}
       >
-        <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-surface-inset text-[10px] font-semibold text-text-secondary group-hover:bg-surface-raised">
+        <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-surface-inset text-[9px] font-semibold text-text-secondary group-hover:bg-surface-raised">
           ?
         </span>
       </button>
