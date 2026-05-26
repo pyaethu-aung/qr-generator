@@ -26,43 +26,6 @@ describe('QRPreview', () => {
     expect(screen.getByRole('img', { name: 'QR Code Placeholder' })).toBeInTheDocument()
   })
 
-  it('renders a disabled share button while no QR is generated', () => {
-    render(
-      <LocaleProvider>
-        <QRPreview {...defaultProps} value="" />
-      </LocaleProvider>,
-    )
-
-    const shareButton = screen.getByRole('button', { name: 'Share QR code' })
-    expect(shareButton).toBeDisabled()
-    expect(shareButton).toHaveAttribute('aria-disabled', 'true')
-    expect(shareButton).not.toHaveAttribute('aria-describedby')
-  })
-
-  it('renders share button with a share-2 icon', () => {
-    render(
-      <LocaleProvider>
-        <QRPreview {...defaultProps} value="" />
-      </LocaleProvider>,
-    )
-
-    const shareButton = screen.getByRole('button', { name: 'Share QR code' })
-    expect(shareButton.querySelector('svg')).toBeInTheDocument()
-  })
-
-  it('renders the share button below the preview area (not inside it)', () => {
-    const { container } = render(
-      <LocaleProvider>
-        <QRPreview {...defaultProps} value="" />
-      </LocaleProvider>,
-    )
-
-    const previewBox = container.querySelector('.bg-surface-inset.rounded-lg.border')
-    const shareButton = screen.getByRole('button', { name: 'Share QR code' })
-    expect(previewBox).toBeInTheDocument()
-    expect(previewBox?.contains(shareButton)).toBe(false)
-  })
-
   it('does not render a download button inside the preview', () => {
     render(
       <LocaleProvider>
@@ -85,11 +48,6 @@ describe('QRPreview', () => {
     const qrCode = screen.getByTestId('qr-code-canvas')
     expect(qrCode).toBeInTheDocument()
     expect(qrCode).toHaveAttribute('aria-label', 'QR Code for value: https://example.com')
-
-    const shareButton = screen.getByRole('button', { name: 'Share QR code' })
-    expect(shareButton).toBeEnabled()
-    expect(shareButton).toHaveAttribute('aria-disabled', 'false')
-    expect(shareButton).not.toHaveAttribute('aria-describedby')
   })
 
   it('applies foreground and background colors correctly', () => {

@@ -1,7 +1,11 @@
+import { useRef, useCallback, useId } from 'react'
+import { Share2, Download, Check } from 'lucide-react'
+
 import { QRControls } from './QRControls'
 import { QRPreview } from './QRPreview'
 import { useQRGenerator } from '../../../hooks/useQRGenerator'
 import { useQRDesign } from '../../../hooks/useQRDesign'
+import { useQRShare } from '../../../hooks/useQRShare'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 
 export const QRGenerator = () => {
@@ -36,6 +40,32 @@ export const QRGenerator = () => {
   } = useQRDesign(inputValue, inputEcLevel)
 
   const { translate } = useLocaleContext()
+
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const { share, isSharing, shareRequest } = useQRShare()
+  const shareStatusId = useId()
+
+  const handleShareClick = useCallback(() => {
+    void share(canvasRef.current)
+  }, [share])
+
+  const isShareDisabled = !liveValue || isSharing
+
+  const shareStatusMessage = (() => {
+    if (!shareRequest) return undefined
+    switch (shareRequest.status) {
+      case 'shared':
+        if (shareRequest.method === 'clipboard') return translate('preview.shareStatusClipboard')
+        if (shareRequest.method === 'download') return translate('preview.shareStatusDownloaded')
+        return translate('preview.shareStatusShared')
+      case 'failed':
+        return shareRequest.errorMessage ?? translate('preview.shareStatusFailed')
+      default:
+        return undefined
+    }
+  })()
+
+  const actionStatusMessage = shareStatusMessage ?? (recentDownload ? translate('controls.downloadSuccess') : undefined)
 
   return (
     <section className="relative isolate overflow-x-hidden px-2 pb-12 sm:px-6 lg:px-8">
@@ -90,12 +120,7 @@ export const QRGenerator = () => {
                 logoSize={logoSize}
                 onLogoSizeChange={setLogoSize}
                 maxLogoSize={maxLogoSize}
-                onDownloadPng={() => void downloadPng(designConfig, logoDataUrl, logoSize)}
-                onDownloadSvg={() => void downloadSvg(designConfig, logoDataUrl, logoSize)}
-                canDownload={canDownload}
                 inputError={inputError ?? undefined}
-                downloadStatus={recentDownload}
-                downloadStatusMessage={translate('controls.downloadSuccess')}
               />
             </div>
 
@@ -109,6 +134,7 @@ export const QRGenerator = () => {
                 </h3>
               </div>
               <QRPreview
+                ref={canvasRef}
                 value={liveValue}
                 ecLevel={inputEcLevel}
                 fgColor={inputFgColor}
@@ -116,8 +142,61 @@ export const QRGenerator = () => {
                 designConfig={designConfig}
                 logoDataUrl={logoDataUrl}
                 logoSize={logoSize}
+                size={300}
               />
             </div>
+          </div>
+
+          {/* Unified action row */}
+          <div className="mt-8 border-t border-border-subtle pt-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <button
+                type="button"
+                onClick={() => void downloadPng(designConfig, logoDataUrl, logoSize)}
+                disabled={!canDownload}
+                className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-border-subtle bg-surface-raised px-4 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {recentDownload === 'png' ? <Check size={16} aria-hidden className="text-action" /> : <Download size={16} aria-hidden />}
+                {translate('controls.downloadPng')}
+              </button>
+              <button
+                type="button"
+                onClick={() => void downloadSvg(designConfig, logoDataUrl, logoSize)}
+                disabled={!canDownload}
+                className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-border-subtle bg-surface-raised px-4 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {recentDownload === 'svg' ? <Check size={16} aria-hidden className="text-action" /> : <Download size={16} aria-hidden />}
+                {translate('controls.downloadSvg')}
+              </button>
+              <button
+                type="button"
+                data-testid="share-qr-button"
+                disabled={isShareDisabled}
+                aria-label={translate('preview.shareButtonLabel')}
+                aria-busy={isSharing}
+                aria-disabled={isShareDisabled}
+                aria-describedby={actionStatusMessage ? shareStatusId : undefined}
+                onClick={handleShareClick}
+                className={`flex h-11 w-full items-center justify-center gap-2 rounded-xl border px-4 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                  liveValue
+                    ? 'border-border-subtle bg-surface-raised text-text-primary focus-visible:ring-focus-ring hover:bg-surface-inset'
+                    : 'border-border-subtle bg-surface-inset text-text-disabled'
+                } ${isShareDisabled ? 'cursor-not-allowed opacity-70' : ''} ${isSharing ? 'cursor-wait' : ''}`}
+              >
+                <Share2 size={16} aria-hidden />
+                {translate('preview.shareButtonLabel')}
+              </button>
+            </div>
+            {actionStatusMessage && (
+              <p
+                role="status"
+                aria-live="polite"
+                id={shareStatusId}
+                className="mt-3 text-sm text-text-secondary text-center"
+              >
+                {actionStatusMessage}
+              </p>
+            )}
           </div>
         </div>
       </div>

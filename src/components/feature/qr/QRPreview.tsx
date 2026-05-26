@@ -1,8 +1,6 @@
-import { useRef, useCallback, useId, forwardRef, useEffect, useLayoutEffect } from 'react'
-import { Share2 } from 'lucide-react'
+import { useRef, useCallback, forwardRef, useEffect, useLayoutEffect } from 'react'
 
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
-import { useQRShare } from '../../../hooks/useQRShare'
 import { generateQRPaths } from '../../../utils/qrShapeRenderer'
 import { compositeLoadedLogoOnCanvas } from '../../../utils/logoCompositor'
 import type { QRConfig, QRDesignConfig } from '../../../types/qr'
@@ -31,11 +29,9 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
     logoSizeRef.current = logoSize
 
     const { translate } = useLocaleContext()
-    const { share, isSharing, shareRequest } = useQRShare()
 
     const ariaPlaceholder = translate('preview.ariaPlaceholder')
     const ariaValueTemplate = translate('preview.ariaValue')
-    const shareButtonLabel = translate('preview.shareButtonLabel')
     const placeholderCopy = translate('preview.placeholder')
 
     const assignForwardedRef = useCallback(
@@ -138,35 +134,11 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
       drawFrame()
     }, [logoSize, drawFrame])
 
-    const handleShareClick = useCallback(() => {
-      void share(canvasRef.current)
-    }, [share])
-
     const formatValueLabel = (label: string, data: Record<string, string>) =>
       label.replace(/\{(\w+)\}/g, (_, key) => {
         const token = key as keyof Record<string, string>
         return data[token] ?? ''
       })
-
-    const isShareDisabled = !value || isSharing
-    const shareStatusId = useId()
-    const shareStatusMessage = (() => {
-      if (!shareRequest) return undefined
-      switch (shareRequest.status) {
-        case 'pending':
-          return undefined
-        case 'shared':
-          if (shareRequest.method === 'clipboard') return translate('preview.shareStatusClipboard')
-          if (shareRequest.method === 'download') return translate('preview.shareStatusDownloaded')
-          return translate('preview.shareStatusShared')
-        case 'canceled':
-          return undefined
-        case 'failed':
-          return shareRequest.errorMessage ?? translate('preview.shareStatusFailed')
-        default:
-          return undefined
-      }
-    })()
 
     return (
       <div className={`flex flex-col gap-4 ${className ?? ''}`} style={style}>
@@ -199,37 +171,6 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
           )}
         </div>
 
-        {/* Share button below the inset box */}
-        <button
-          type="button"
-          data-testid="share-qr-button"
-          disabled={isShareDisabled}
-          aria-label={shareButtonLabel}
-          aria-busy={isSharing}
-          aria-disabled={isShareDisabled}
-          aria-describedby={shareStatusMessage ? shareStatusId : undefined}
-          onClick={handleShareClick}
-          className={`flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
-            value
-              ? 'border-border-subtle bg-surface-raised text-text-primary focus-visible:ring-focus-ring hover:bg-surface-inset'
-              : 'border-border-subtle bg-surface-inset text-text-disabled cursor-not-allowed'
-          } ${isShareDisabled ? 'cursor-not-allowed opacity-70' : ''} ${isSharing ? 'cursor-wait' : ''}`}
-        >
-          <Share2 size={18} aria-hidden />
-          {shareButtonLabel}
-        </button>
-
-        {shareStatusMessage && (
-          <p
-            data-testid="share-status"
-            role="status"
-            aria-live="polite"
-            id={shareStatusId}
-            className="text-sm text-text-secondary"
-          >
-            {shareStatusMessage}
-          </p>
-        )}
       </div>
     )
   },

@@ -1,9 +1,7 @@
-import { forwardRef } from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { describe, expect, it, beforeEach, afterEach, vi, type MockedFunction } from 'vitest'
 import { LocaleProvider } from '../../../../hooks/LocaleProvider'
-import { QRPreview } from '../QRPreview'
+import { QRGenerator } from '../QRGenerator'
 import type { SharePayload } from '../../../../types/qr'
 
 type CreateSharePayloadFn = (canvas: HTMLCanvasElement | null) => Promise<SharePayload>
@@ -37,35 +35,6 @@ vi.mock('../../../../utils/share', () => {
   }
 })
 
-vi.mock('qrcode.react', () => {
-  interface QRCodeMockProps {
-    value: string
-    fgColor?: string
-    bgColor?: string
-    size?: number
-  }
-
-  const QRCodeMock = forwardRef<HTMLCanvasElement, QRCodeMockProps>(
-    ({ value, fgColor, bgColor, size }, ref) => (
-      <canvas
-        ref={ref}
-        data-testid="qr-code-canvas"
-        data-value={value}
-        data-fg={fgColor ?? ''}
-        data-bg={bgColor ?? ''}
-        width={size ?? 0}
-        height={size ?? 0}
-        role="img"
-        aria-label={`QR Code for value: ${value}`}
-      />
-    ),
-  )
-
-  return {
-    QRCodeCanvas: QRCodeMock,
-  }
-})
-
 let createSharePayloadMock: MockedFunction<CreateSharePayloadFn>
 let payloadToFileMock: MockedFunction<PayloadToFileFn>
 let supportsNavigatorShareMock: MockedFunction<SupportsNavigatorShareFn>
@@ -85,8 +54,9 @@ describe('QRShareFallback', () => {
   }
   const mockFile = new File([mockBlob], mockFilename, { type: mockBlob.type })
 
-  beforeEach(() =>
-    vi.importMock('../../../../utils/share').then((shareModule) => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+    return vi.importMock('../../../../utils/share').then((shareModule) => {
       const resolvedModule = shareModule as typeof import('../../../../utils/share')
       createSharePayloadMock = vi.mocked(resolvedModule.createSharePayload)
       payloadToFileMock = vi.mocked(resolvedModule.payloadToFile)
@@ -104,30 +74,35 @@ describe('QRShareFallback', () => {
       isMobileDeviceMock.mockReturnValue(false)
       copyPayloadToClipboardMock.mockResolvedValue(undefined)
       downloadPayloadMock.mockReturnValue(undefined)
-    }),
-  )
+    })
+  })
 
   afterEach(() => {
+    vi.useRealTimers()
     vi.resetAllMocks()
   })
+
+  const renderWithQR = (url = 'https://example.com') => {
+    render(
+      <LocaleProvider>
+        <QRGenerator />
+      </LocaleProvider>,
+    )
+    const input = screen.getByLabelText(/Link \/ Text/i)
+    fireEvent.change(input, { target: { value: url } })
+    act(() => {
+      vi.advanceTimersByTime(300)
+    })
+    vi.useRealTimers()
+  }
 
   it('copies QR payload to clipboard when native share is unavailable', async () => {
     supportsClipboardImageMock.mockReturnValue(true)
 
-    render(
-      <LocaleProvider>
-        <QRPreview
-          value="https://example.com"
-          ecLevel="M"
-          fgColor="#000000"
-          bgColor="#ffffff"
-          size={200}
-        />
-      </LocaleProvider>,
-    )
+    renderWithQR()
 
     const shareButton = screen.getByRole('button', { name: 'Share QR code' })
-    await userEvent.click(shareButton)
+    fireEvent.click(shareButton)
 
     await waitFor(() => expect(copyPayloadToClipboardMock).toHaveBeenCalledWith(mockPayload))
     expect(downloadPayloadMock).not.toHaveBeenCalled()
@@ -136,20 +111,10 @@ describe('QRShareFallback', () => {
   it('downloads QR payload when clipboard fallback is not supported', async () => {
     supportsClipboardImageMock.mockReturnValue(false)
 
-    render(
-      <LocaleProvider>
-        <QRPreview
-          value="https://example.com"
-          ecLevel="M"
-          fgColor="#000000"
-          bgColor="#ffffff"
-          size={200}
-        />
-      </LocaleProvider>,
-    )
+    renderWithQR()
 
     const shareButton = screen.getByRole('button', { name: 'Share QR code' })
-    await userEvent.click(shareButton)
+    fireEvent.click(shareButton)
 
     await waitFor(() => expect(downloadPayloadMock).toHaveBeenCalledWith(mockPayload))
     expect(copyPayloadToClipboardMock).not.toHaveBeenCalled()
@@ -195,20 +160,10 @@ describe('QRShareFallback', () => {
         supportsClipboardImageMock.mockReturnValue(scenario.clipboardAvailable)
         isMobileDeviceMock.mockReturnValue(false)
 
-        render(
-          <LocaleProvider>
-            <QRPreview
-              value="https://example.com"
-              ecLevel="M"
-              fgColor="#000000"
-              bgColor="#ffffff"
-              size={200}
-            />
-          </LocaleProvider>,
-        )
+        renderWithQR()
 
         const shareButton = screen.getByRole('button', { name: 'Share QR code' })
-        await userEvent.click(shareButton)
+        fireEvent.click(shareButton)
 
         if (scenario.expectClipboard) {
           await waitFor(() => expect(copyPayloadToClipboardMock).toHaveBeenCalledWith(mockPayload))
@@ -239,24 +194,13 @@ describe('QRShareFallback', () => {
         share: shareSpy,
       })
 
-      render(
-        <LocaleProvider>
-          <QRPreview
-            value="https://example.com"
-            ecLevel="M"
-            fgColor="#000000"
-            bgColor="#ffffff"
-            size={200}
-          />
-        </LocaleProvider>,
-      )
+      renderWithQR()
 
       const shareButton = screen.getByRole('button', { name: 'Share QR code' })
-      await userEvent.click(shareButton)
+      fireEvent.click(shareButton)
 
-      // Verify that it eventually reaches the 'shared' state via fallback
       await waitFor(() => {
-        expect(screen.getByTestId('share-status')).toHaveTextContent(/QR code downloaded/i)
+        expect(screen.getByRole('status')).toHaveTextContent(/QR code downloaded/i)
       })
 
       expect(downloadPayloadMock).toHaveBeenCalledWith(mockPayload)
@@ -265,7 +209,7 @@ describe('QRShareFallback', () => {
       shareSpy.mockClear()
       downloadPayloadMock.mockClear()
 
-      await userEvent.click(shareButton)
+      fireEvent.click(shareButton)
 
       await waitFor(() => {
         expect(downloadPayloadMock).toHaveBeenCalledWith(mockPayload)
@@ -286,16 +230,12 @@ describe('QRShareFallback', () => {
         share: shareSpy,
       })
 
-      render(
-        <LocaleProvider>
-          <QRPreview value="test" ecLevel="M" fgColor="#000" bgColor="#fff" />
-        </LocaleProvider>,
-      )
+      renderWithQR('test')
 
       const shareButton = screen.getByRole('button', { name: 'Share QR code' })
 
       // First attempt: Navigator share is called, fails with NotAllowedError, triggers clipboard fallback
-      await userEvent.click(shareButton)
+      fireEvent.click(shareButton)
       await waitFor(() => expect(shareSpy).toHaveBeenCalled())
       await waitFor(() => expect(copyPayloadToClipboardMock).toHaveBeenCalled())
 
@@ -304,7 +244,7 @@ describe('QRShareFallback', () => {
       copyPayloadToClipboardMock.mockClear()
 
       // Second attempt: Navigator share should be skipped (persistent block)
-      await userEvent.click(shareButton)
+      fireEvent.click(shareButton)
       await waitFor(() => expect(copyPayloadToClipboardMock).toHaveBeenCalled())
       expect(shareSpy).not.toHaveBeenCalled()
     })

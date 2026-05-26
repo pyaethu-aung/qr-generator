@@ -37,7 +37,7 @@ export interface QRControlsProps {
   onBgColorChange: (color: string) => void
   onDownloadPng?: () => void
   onDownloadSvg?: () => void
-  canDownload: boolean
+  canDownload?: boolean
   inputError?: string
   // Logo
   logoDataUrl?: string | null
@@ -93,7 +93,7 @@ export function QRControls({
   onBgColorChange,
   onDownloadPng,
   onDownloadSvg,
-  canDownload,
+  canDownload = false,
   inputError,
   logoDataUrl,
   onLogoChange,

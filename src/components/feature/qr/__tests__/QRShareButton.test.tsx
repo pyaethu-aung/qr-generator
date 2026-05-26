@@ -1,6 +1,4 @@
-import { forwardRef } from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import {
   describe,
   expect,
@@ -12,7 +10,7 @@ import {
   type MockedFunction,
 } from 'vitest'
 import { LocaleProvider } from '../../../../hooks/LocaleProvider'
-import { QRPreview } from '../QRPreview'
+import { QRGenerator } from '../QRGenerator'
 import type { SharePayload } from '../../../../types/qr'
 
 type CreateSharePayloadFn = (canvas: HTMLCanvasElement | null) => Promise<SharePayload>
@@ -55,35 +53,6 @@ let copyPayloadToClipboardMock: MockedFunction<CopyPayloadToClipboardFn>
 let downloadPayloadMock: MockedFunction<DownloadPayloadFn>
 let isMobileDeviceMock: MockedFunction<IsMobileDeviceFn>
 
-vi.mock('qrcode.react', () => {
-  interface QRCodeMockProps {
-    value: string
-    fgColor?: string
-    bgColor?: string
-    size?: number
-  }
-
-  const QRCodeMock = forwardRef<HTMLCanvasElement, QRCodeMockProps>(
-    ({ value, fgColor, bgColor, size }, ref) => (
-      <canvas
-        ref={ref}
-        data-testid="qr-code-canvas"
-        data-value={value}
-        data-fg={fgColor ?? ''}
-        data-bg={bgColor ?? ''}
-        width={size ?? 0}
-        height={size ?? 0}
-        role="img"
-        aria-label={`QR Code for value: ${value}`}
-      />
-    ),
-  )
-
-  return {
-    QRCodeCanvas: QRCodeMock,
-  }
-})
-
 describe('QRShareButton', () => {
   const mockBlob = new Blob(['PNG'], { type: 'image/png' })
   const mockFilename = 'qr-code.png'
@@ -100,8 +69,9 @@ describe('QRShareButton', () => {
   const shareMock = vi.fn<NativeShareFn>(() => Promise.resolve())
   const originalNavigatorShareDescriptor = Object.getOwnPropertyDescriptor(navigator, 'share')
 
-  beforeEach(() =>
-    vi.importMock('../../../../utils/share').then((shareModule) => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+    return vi.importMock('../../../../utils/share').then((shareModule) => {
       const resolvedModule = shareModule as typeof import('../../../../utils/share')
       createSharePayloadMock = vi.mocked(resolvedModule.createSharePayload)
       payloadToFileMock = vi.mocked(resolvedModule.payloadToFile)
@@ -122,10 +92,11 @@ describe('QRShareButton', () => {
         value: shareMock,
         configurable: true,
       })
-    }),
-  )
+    })
+  })
 
   afterEach(() => {
+    vi.useRealTimers()
     vi.resetAllMocks()
   })
 
@@ -138,26 +109,28 @@ describe('QRShareButton', () => {
   it('shares the WYSIWYG QR canvas via navigator.share', async () => {
     render(
       <LocaleProvider>
-        <QRPreview
-          value="https://example.com"
-          ecLevel="M"
-          fgColor="#000000"
-          bgColor="#ffffff"
-          size={200}
-        />
+        <QRGenerator />
       </LocaleProvider>,
     )
 
+    const input = screen.getByLabelText(/Link \/ Text/i)
+    fireEvent.change(input, { target: { value: 'https://example.com' } })
+    act(() => {
+      vi.advanceTimersByTime(300)
+    })
+
+    vi.useRealTimers()
+
     const shareButton = screen.getByRole('button', { name: 'Share QR code' })
-    await userEvent.click(shareButton)
+    fireEvent.click(shareButton)
 
     await waitFor(() => expect(shareMock).toHaveBeenCalledTimes(1))
     expect(createSharePayloadMock).toHaveBeenCalledTimes(1)
 
     const canvasArg = createSharePayloadMock.mock.calls[0][0]
     expect(canvasArg).toBeInstanceOf(HTMLCanvasElement)
-    expect(canvasArg?.width).toBe(200)
-    expect(canvasArg?.height).toBe(200)
+    expect(canvasArg?.width).toBe(300)
+    expect(canvasArg?.height).toBe(300)
 
     expect(payloadToFileMock).toHaveBeenCalledWith(mockPayload)
 
