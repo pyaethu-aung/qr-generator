@@ -46,12 +46,14 @@ export interface ControlStrings {
   contentLabel: string
   contentPlaceholder: string
   correctionLabel: string
+  correctionHint: string
   foregroundLabel: string
   backgroundLabel: string
   generate: string
   downloadsTitle: string
   downloadPng: string
   downloadSvg: string
+  downloadSuccess: string
   correctionLow: string
   correctionMedium: string
   correctionQuartile: string
@@ -119,12 +121,14 @@ export type TranslationKey =
   | 'controls.contentLabel'
   | 'controls.contentPlaceholder'
   | 'controls.correctionLabel'
+  | 'controls.correctionHint'
   | 'controls.foregroundLabel'
   | 'controls.backgroundLabel'
   | 'controls.generate'
   | 'controls.downloadsTitle'
   | 'controls.downloadPng'
   | 'controls.downloadSvg'
+  | 'controls.downloadSuccess'
   | 'controls.correctionLow'
   | 'controls.correctionMedium'
   | 'controls.correctionQuartile'
