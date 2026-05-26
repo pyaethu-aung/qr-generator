@@ -37,7 +37,7 @@
   },
   "config": {
     "sectionLabel": "တည်းဖြတ်မှု",
-    "sectionTitle": "ဒေါင်းလုဒ်မလုပ်ခင် ကြည့်ရှုပါ",
+    "sectionTitle": "ကိန်းဂဏန်းများ",
     "helper": "QR ကုဒ်ထဲ ထည့်ချင်တဲ့ အကြောင်းအရာကို ရေးထည့်ပါ။"
   },
   "controls": {
@@ -67,8 +67,8 @@
     "downloadSuccess": "ဒေါင်းလုဒ်ပြုလုပ်ပြီး"
   },
   "preview": {
-    "sectionLabel": "ကြိုတင်ကြည့်ရှုခြင်း",
-    "sectionTitle": "အစဉ်အမြဲ ကြည့်ရှုနိုင်သည်",
+    "sectionLabel": "တိုက်ရိုက် ကြည့်ရှုမှု",
+    "sectionTitle": "ကြည့်ရှုမှု",
     "placeholder": "QR ကြိုကြည့်ရှုမှု",
     "ariaValue": "ဒီတန်ဖိုးအတွက် QR ကုဒ်: {value}",
     "ariaPlaceholder": "QR ကုဒ် နမူနာ",

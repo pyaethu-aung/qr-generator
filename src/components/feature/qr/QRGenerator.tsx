@@ -54,7 +54,10 @@ export const QRGenerator = () => {
           <div className="grid gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
             <div className="order-2 md:order-1 space-y-5">
               <div>
-                <h3 className="text-2xl font-semibold text-text-primary">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-text-secondary">
+                  {translate('config.sectionLabel')}
+                </p>
+                <h3 className="mt-0.5 text-2xl font-bold text-text-primary">
                   {translate('config.sectionTitle')}
                 </h3>
               </div>
@@ -97,7 +100,10 @@ export const QRGenerator = () => {
 
             <div className="order-1 md:order-2 space-y-5">
               <div>
-                <h3 className="text-2xl font-semibold text-text-primary">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-text-secondary">
+                  {translate('preview.sectionLabel')}
+                </p>
+                <h3 className="mt-0.5 text-2xl font-bold text-text-primary">
                   {translate('preview.sectionTitle')}
                 </h3>
               </div>

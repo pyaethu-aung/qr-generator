@@ -37,7 +37,7 @@
   },
   "config": {
     "sectionLabel": "Configuration",
-    "sectionTitle": "Preview what you’ll download",
+    "sectionTitle": "Settings",
     "helper": "Enter the content you want to encode in the QR code."
   },
   "controls": {
@@ -67,8 +67,8 @@
     "downloadSuccess": "Downloaded"
   },
   "preview": {
-    "sectionLabel": "Preview",
-    "sectionTitle": "See every pixel",
+    "sectionLabel": "Live Preview",
+    "sectionTitle": "Preview",
     "placeholder": "QR preview",
     "ariaValue": "QR Code for value: {value}",
     "ariaPlaceholder": "QR Code Placeholder",
