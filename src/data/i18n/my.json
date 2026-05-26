@@ -43,11 +43,12 @@
   "controls": {
     "contentLabel": "အကြောင်းအရာ",
     "contentPlaceholder": "စာသား သို့မဟုတ် URL ထည့်ပါ",
-    "correctionLabel": "ပြင်ဆင်မှု အဆင့်",
+    "correctionLabel": "စကင်ဖတ်မှု ယုံကြည်ရနိုင်မှု",
     "correctionLow": "နိမ့် (၇%)",
     "correctionMedium": "အလယ် (၁၅%)",
     "correctionQuartile": "မြင့် (၂၅%)",
     "correctionHigh": "အမြင့်ဆုံး (၃၀%)",
+    "correctionHint": "မြင့်လေ = ပျက်စီးမှုကို ခံနိုင်ပြီး လိုဂိုထပ်ထည့်ရ ပိုကောင်းလေ",
     "correctionTooltip": "QR ကုဒ်၏ မည်မျှကို ဖုံးကွယ် သို့မဟုတ် ပျက်စီးနိုင်ပြီး ဆက်ဖတ်ရနိုင်သည်ကို ထိန်းချုပ်သည်။ နိမ့်သောအဆင့်က ကုဒ်ကို သေးငယ်စေပြီး မြင့်သောအဆင့်က လိုဂိုထပ်ထည့်ရန် ခွင့်ပြုသည်။",
     "foregroundLabel": "အနောက်ခံအရောင်",
     "backgroundLabel": "နောက်ခံအရောင်",

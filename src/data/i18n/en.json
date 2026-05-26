@@ -43,11 +43,12 @@
   "controls": {
     "contentLabel": "Content",
     "contentPlaceholder": "Enter text or URL",
-    "correctionLabel": "Correction Level",
+    "correctionLabel": "Scan Reliability",
     "correctionLow": "Low (7%)",
     "correctionMedium": "Medium (15%)",
     "correctionQuartile": "High (25%)",
     "correctionHigh": "Max (30%)",
+    "correctionHint": "Higher = survives damage and supports logos.",
     "correctionTooltip": "How much of the QR code can be covered or damaged and still scan. Low gives a compact code; High lets you overlay a logo at the cost of a denser pattern.",
     "foregroundLabel": "Foreground",
     "backgroundLabel": "Background",
