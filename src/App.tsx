@@ -28,7 +28,7 @@ function App() {
       <Navbar />
 
       <main id="main-content" className="relative z-10">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8">
           <QRGenerator />
         </div>
       </main>
