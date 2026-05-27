@@ -1,6 +1,6 @@
 export type QRErrorCorrectionLevel = 'L' | 'M' | 'Q' | 'H'
 
-export type QRContentMode = 'text' | 'wifi'
+export type QRContentMode = 'text' | 'wifi' | 'vcard'
 
 export type WiFiSecurity = 'WPA' | 'WEP' | 'nopass'
 
@@ -9,6 +9,16 @@ export interface WiFiConfig {
   password: string
   security: WiFiSecurity
   hidden: boolean
+}
+
+export interface VCardConfig {
+  firstName: string
+  lastName: string
+  phone: string
+  email: string
+  company: string
+  jobTitle: string
+  website: string
 }
 
 export interface QRConfig {

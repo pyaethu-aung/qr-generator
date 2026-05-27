@@ -74,6 +74,23 @@ export interface ControlStrings {
   wifiCorrectionHint: string
   wifiShowPassword: string
   wifiHidePassword: string
+  contentModeVCard: string
+  vcardFirstNameLabel: string
+  vcardFirstNamePlaceholder: string
+  vcardLastNameLabel: string
+  vcardLastNamePlaceholder: string
+  vcardPhoneLabel: string
+  vcardPhonePlaceholder: string
+  vcardEmailLabel: string
+  vcardEmailPlaceholder: string
+  vcardProfessionalLabel: string
+  vcardCompanyLabel: string
+  vcardCompanyPlaceholder: string
+  vcardJobTitleLabel: string
+  vcardJobTitlePlaceholder: string
+  vcardWebsiteLabel: string
+  vcardWebsitePlaceholder: string
+  vcardCorrectionHint: string
 }
 
 export interface PreviewStrings {
@@ -163,6 +180,23 @@ export type TranslationKey =
   | 'controls.wifiCorrectionHint'
   | 'controls.wifiShowPassword'
   | 'controls.wifiHidePassword'
+  | 'controls.contentModeVCard'
+  | 'controls.vcardFirstNameLabel'
+  | 'controls.vcardFirstNamePlaceholder'
+  | 'controls.vcardLastNameLabel'
+  | 'controls.vcardLastNamePlaceholder'
+  | 'controls.vcardPhoneLabel'
+  | 'controls.vcardPhonePlaceholder'
+  | 'controls.vcardEmailLabel'
+  | 'controls.vcardEmailPlaceholder'
+  | 'controls.vcardProfessionalLabel'
+  | 'controls.vcardCompanyLabel'
+  | 'controls.vcardCompanyPlaceholder'
+  | 'controls.vcardJobTitleLabel'
+  | 'controls.vcardJobTitlePlaceholder'
+  | 'controls.vcardWebsiteLabel'
+  | 'controls.vcardWebsitePlaceholder'
+  | 'controls.vcardCorrectionHint'
   | 'preview.sectionLabel'
   | 'preview.shareStatusSharing'
   | 'preview.shareStatusShared'
