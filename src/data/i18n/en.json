@@ -96,7 +96,15 @@
     "vcardJobTitlePlaceholder": "Designer",
     "vcardWebsiteLabel": "Website",
     "vcardWebsitePlaceholder": "https://example.com",
-    "vcardCorrectionHint": "Contact QR codes are data-dense — Max reliability is recommended."
+    "vcardCorrectionHint": "Contact QR codes are data-dense — Max reliability is recommended.",
+    "contentModeEmail": "Email",
+    "emailToLabel": "To",
+    "emailToPlaceholder": "recipient@example.com",
+    "emailSubjectLabel": "Subject",
+    "emailSubjectPlaceholder": "Subject line (optional)",
+    "emailBodyLabel": "Message",
+    "emailBodyPlaceholder": "Message body (optional)",
+    "emailCorrectionHint": "Max reliability recommended for email codes."
   },
   "preview": {
     "sectionLabel": "Live Preview",

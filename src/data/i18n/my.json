@@ -96,7 +96,15 @@
     "vcardJobTitlePlaceholder": "ဒီဇိုင်နာ",
     "vcardWebsiteLabel": "ဝဘ်ဆိုဒ်",
     "vcardWebsitePlaceholder": "https://example.com",
-    "vcardCorrectionHint": "အဆက်အသွယ် QR ကုဒ်များသည် ဒေတာများသည် — အမြင့်ဆုံး ယုံကြည်ရနိုင်မှု အကြံပြုသည်"
+    "vcardCorrectionHint": "အဆက်အသွယ် QR ကုဒ်များသည် ဒေတာများသည် — အမြင့်ဆုံး ယုံကြည်ရနိုင်မှု အကြံပြုသည်",
+    "contentModeEmail": "အီးမေးလ်",
+    "emailToLabel": "သို့",
+    "emailToPlaceholder": "recipient@example.com",
+    "emailSubjectLabel": "ခေါင်းစဉ်",
+    "emailSubjectPlaceholder": "ခေါင်းစဉ် (ရွေးချယ်နိုင်)",
+    "emailBodyLabel": "မက်ဆေ့ချ်",
+    "emailBodyPlaceholder": "မက်ဆေ့ချ် အကြောင်းအရာ (ရွေးချယ်နိုင်)",
+    "emailCorrectionHint": "အီးမေးလ် QR ကုဒ်များအတွက် အမြင့်ဆုံး ယုံကြည်ရနိုင်မှု အကြံပြုသည်"
   },
   "preview": {
     "sectionLabel": "တိုက်ရိုက် ကြည့်ရှုမှု",

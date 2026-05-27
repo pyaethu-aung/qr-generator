@@ -91,6 +91,14 @@ export interface ControlStrings {
   vcardWebsiteLabel: string
   vcardWebsitePlaceholder: string
   vcardCorrectionHint: string
+  contentModeEmail: string
+  emailToLabel: string
+  emailToPlaceholder: string
+  emailSubjectLabel: string
+  emailSubjectPlaceholder: string
+  emailBodyLabel: string
+  emailBodyPlaceholder: string
+  emailCorrectionHint: string
 }
 
 export interface PreviewStrings {
@@ -197,6 +205,14 @@ export type TranslationKey =
   | 'controls.vcardWebsiteLabel'
   | 'controls.vcardWebsitePlaceholder'
   | 'controls.vcardCorrectionHint'
+  | 'controls.contentModeEmail'
+  | 'controls.emailToLabel'
+  | 'controls.emailToPlaceholder'
+  | 'controls.emailSubjectLabel'
+  | 'controls.emailSubjectPlaceholder'
+  | 'controls.emailBodyLabel'
+  | 'controls.emailBodyPlaceholder'
+  | 'controls.emailCorrectionHint'
   | 'preview.sectionLabel'
   | 'preview.shareStatusSharing'
   | 'preview.shareStatusShared'
