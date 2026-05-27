@@ -25,7 +25,7 @@ export interface UseQRGeneratorReturn {
   recentDownload: 'png' | 'svg' | null
 }
 
-export const useQRGenerator = (): UseQRGeneratorReturn => {
+export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => {
   const [inputValue, setInputValueState] = useState<string>('')
   const [inputError, setInputError] = useState<string | undefined>()
   const [liveValue, setLiveValue] = useState<string>('')
@@ -37,6 +37,10 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
   const [inputBgColor, setInputBgColor] = useState<string>(DEFAULT_QR_CONFIG.bgColor)
   const [recentDownload, setRecentDownload] = useState<'png' | 'svg' | null>(null)
   const downloadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // When externalValue is set (wifi mode), it overrides the text input value
+  const effectiveInput = externalValue !== undefined ? externalValue : inputValue
+  const effectiveError = externalValue !== undefined ? undefined : inputError
 
   useEffect(() => {
     return () => {
@@ -61,15 +65,15 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
 
   // Debounce the text field — 300 ms for valid input, 0 ms to clear on invalid/empty
   useEffect(() => {
-    const effective = inputValue.trim() && !inputError ? inputValue : ''
+    const effective = effectiveInput.trim() && !effectiveError ? effectiveInput : ''
     const delay = effective ? 300 : 0
     const timer = setTimeout(() => setLiveValue(effective), delay)
     return () => clearTimeout(timer)
-  }, [inputValue, inputError])
+  }, [effectiveInput, effectiveError])
 
   const canDownload = useMemo(
-    () => Boolean(inputValue.trim()) && !inputError,
-    [inputError, inputValue],
+    () => Boolean(effectiveInput.trim()) && !effectiveError,
+    [effectiveError, effectiveInput],
   )
 
   const downloadPng = useCallback(async (
@@ -77,11 +81,11 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
     logoDataUrl?: string | null,
     logoSize = 20,
   ) => {
-    if (!inputValue.trim()) return
+    if (!effectiveInput.trim()) return
 
     try {
       const { dataPath, eyesPath, eyeBgPath, size: matrixSize } = generateQRPaths(
-        inputValue,
+        effectiveInput,
         inputEcLevel,
         designConfig.eyeShape,
         designConfig.pixelPattern,
@@ -126,18 +130,18 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
     } catch (err) {
       console.error('Failed to generate PNG', err)
     }
-  }, [inputValue, inputEcLevel, inputFgColor, inputBgColor])
+  }, [effectiveInput, inputEcLevel, inputFgColor, inputBgColor])
 
   const downloadSvg = useCallback(async (
     designConfig: QRDesignConfig,
     logoDataUrl?: string | null,
     logoSize = 20,
   ) => {
-    if (!inputValue.trim()) return
+    if (!effectiveInput.trim()) return
 
     try {
-      const blob = await exportSvg(inputValue, {
-        value: inputValue,
+      const blob = await exportSvg(effectiveInput, {
+        value: effectiveInput,
         ecLevel: inputEcLevel,
         fgColor: inputFgColor,
         bgColor: inputBgColor,
@@ -152,7 +156,7 @@ export const useQRGenerator = (): UseQRGeneratorReturn => {
     } catch (err) {
       console.error('Failed to generate SVG', err)
     }
-  }, [inputValue, inputEcLevel, inputFgColor, inputBgColor])
+  }, [effectiveInput, inputEcLevel, inputFgColor, inputBgColor])
 
   return {
     liveValue,
