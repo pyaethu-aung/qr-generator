@@ -1,10 +1,11 @@
 import { useRef, useState, useId } from 'react'
-import { Download, Check, ChevronDown, ChevronUp, Upload, X, Wifi, Link, User } from 'lucide-react'
+import { Download, Check, ChevronDown, ChevronUp, Upload, X, Wifi, Link, User, Mail } from 'lucide-react'
 import { Input } from '../../common/Input'
 import { Tooltip } from '../../common/Tooltip'
 import { WiFiForm } from './WiFiForm'
 import { VCardForm } from './VCardForm'
-import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig } from '../../../types/qr'
+import { EmailForm } from './EmailForm'
+import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig } from '../../../types/qr'
 
 function loadImageFromUrl(url: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -93,6 +94,13 @@ export interface QRControlsProps {
   onVCardJobTitleChange?: (v: string) => void
   onVCardWebsiteChange?: (v: string) => void
   vcardCorrectionHint?: string
+  // Email mode props
+  contentModeEmailLabel?: string
+  emailConfig?: EmailConfig
+  onEmailToChange?: (v: string) => void
+  onEmailSubjectChange?: (v: string) => void
+  onEmailBodyChange?: (v: string) => void
+  emailCorrectionHint?: string
   logoLabel?: string
   logoSizeLabel?: string
   logoUploadHint?: string
@@ -181,6 +189,12 @@ export function QRControls({
   onVCardJobTitleChange,
   onVCardWebsiteChange,
   vcardCorrectionHint = 'Max reliability recommended for contact cards.',
+  contentModeEmailLabel = 'Email',
+  emailConfig,
+  onEmailToChange,
+  onEmailSubjectChange,
+  onEmailBodyChange,
+  emailCorrectionHint = 'Max reliability recommended for email codes.',
   logoLabel = 'Logo',
   logoSizeLabel = 'Logo Size',
   logoUploadHint = 'Click or drop image',
@@ -309,6 +323,19 @@ export function QRControls({
               <User size={13} aria-hidden />
               {contentModeVCardLabel}
             </button>
+            <button
+              type="button"
+              aria-pressed={contentMode === 'email'}
+              onClick={() => onContentModeChange('email')}
+              className={`flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full px-3 text-sm transition-colors ${
+                contentMode === 'email'
+                  ? 'bg-action text-action-fg font-semibold'
+                  : 'bg-surface-inset text-text-primary hover:bg-surface-raised'
+              }`}
+            >
+              <Mail size={13} aria-hidden />
+              {contentModeEmailLabel}
+            </button>
           </div>
         )}
 
@@ -330,6 +357,13 @@ export function QRControls({
             onCompanyChange={onVCardCompanyChange}
             onJobTitleChange={onVCardJobTitleChange}
             onWebsiteChange={onVCardWebsiteChange}
+          />
+        ) : contentMode === 'email' && emailConfig && onEmailToChange && onEmailSubjectChange && onEmailBodyChange ? (
+          <EmailForm
+            config={emailConfig}
+            onToChange={onEmailToChange}
+            onSubjectChange={onEmailSubjectChange}
+            onBodyChange={onEmailBodyChange}
           />
         ) : (
           <Input
@@ -366,7 +400,7 @@ export function QRControls({
               ))}
             </div>
             <p className="text-xs text-text-secondary">
-              {contentMode === 'wifi' ? wifiCorrectionHint : contentMode === 'vcard' ? vcardCorrectionHint : correctionHint}
+              {contentMode === 'wifi' ? wifiCorrectionHint : contentMode === 'vcard' ? vcardCorrectionHint : contentMode === 'email' ? emailCorrectionHint : correctionHint}
             </p>
           </div>
 
