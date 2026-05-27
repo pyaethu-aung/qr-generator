@@ -65,7 +65,21 @@
     "logoErrorUrl": "Could not load image from URL",
     "logoTransparencyHint": "PNG or SVG works best for transparent logos",
     "dismissWarningAriaLabel": "Dismiss warning",
-    "downloadSuccess": "Downloaded"
+    "downloadSuccess": "Downloaded",
+    "contentModeText": "Link / Text",
+    "contentModeWifi": "Wi-Fi",
+    "wifiSsidLabel": "Network Name",
+    "wifiSsidPlaceholder": "Your Wi-Fi name",
+    "wifiPasswordLabel": "Password",
+    "wifiPasswordPlaceholder": "Network password",
+    "wifiSecurityLabel": "Security",
+    "wifiHiddenLabel": "Hidden network",
+    "wifiSecurityWpa": "WPA/WPA2",
+    "wifiSecurityWep": "WEP",
+    "wifiSecurityNone": "None",
+    "wifiCorrectionHint": "Printed codes scan best at Max reliability.",
+    "wifiShowPassword": "Show password",
+    "wifiHidePassword": "Hide password"
   },
   "preview": {
     "sectionLabel": "Live Preview",

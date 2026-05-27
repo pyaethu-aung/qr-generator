@@ -60,6 +60,20 @@ export interface ControlStrings {
   correctionHigh: string
   correctionTooltip: string
   dismissWarningAriaLabel: string
+  contentModeText: string
+  contentModeWifi: string
+  wifiSsidLabel: string
+  wifiSsidPlaceholder: string
+  wifiPasswordLabel: string
+  wifiPasswordPlaceholder: string
+  wifiSecurityLabel: string
+  wifiHiddenLabel: string
+  wifiSecurityWpa: string
+  wifiSecurityWep: string
+  wifiSecurityNone: string
+  wifiCorrectionHint: string
+  wifiShowPassword: string
+  wifiHidePassword: string
 }
 
 export interface PreviewStrings {
@@ -135,6 +149,20 @@ export type TranslationKey =
   | 'controls.correctionHigh'
   | 'controls.correctionTooltip'
   | 'controls.dismissWarningAriaLabel'
+  | 'controls.contentModeText'
+  | 'controls.contentModeWifi'
+  | 'controls.wifiSsidLabel'
+  | 'controls.wifiSsidPlaceholder'
+  | 'controls.wifiPasswordLabel'
+  | 'controls.wifiPasswordPlaceholder'
+  | 'controls.wifiSecurityLabel'
+  | 'controls.wifiHiddenLabel'
+  | 'controls.wifiSecurityWpa'
+  | 'controls.wifiSecurityWep'
+  | 'controls.wifiSecurityNone'
+  | 'controls.wifiCorrectionHint'
+  | 'controls.wifiShowPassword'
+  | 'controls.wifiHidePassword'
   | 'preview.sectionLabel'
   | 'preview.shareStatusSharing'
   | 'preview.shareStatusShared'

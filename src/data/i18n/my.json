@@ -65,7 +65,21 @@
     "logoErrorUrl": "URL မှ ပုံ ဖွင့်မရပါ",
     "logoTransparencyHint": "PNG သို့ SVG ဖိုင်များသည် transparent လိုဂိုများအတွက် အကောင်းဆုံးဖြစ်သည်",
     "dismissWarningAriaLabel": "သတိပေးချက် ပယ်ဖျက်ပါ",
-    "downloadSuccess": "ဒေါင်းလုဒ်ပြုလုပ်ပြီး"
+    "downloadSuccess": "ဒေါင်းလုဒ်ပြုလုပ်ပြီး",
+    "contentModeText": "လင့် / စာသား",
+    "contentModeWifi": "Wi-Fi",
+    "wifiSsidLabel": "ကွန်ရက်အမည်",
+    "wifiSsidPlaceholder": "Wi-Fi အမည်",
+    "wifiPasswordLabel": "စကားဝှက်",
+    "wifiPasswordPlaceholder": "ကွန်ရက် စကားဝှက်",
+    "wifiSecurityLabel": "လုံခြုံရေး",
+    "wifiHiddenLabel": "ဝှက်ထားသော ကွန်ရက်",
+    "wifiSecurityWpa": "WPA/WPA2",
+    "wifiSecurityWep": "WEP",
+    "wifiSecurityNone": "မရှိ",
+    "wifiCorrectionHint": "ပရင့်ထုတ်ထားသော ကုဒ်များအတွက် အမြင့်ဆုံး ယုံကြည်ရနိုင်မှု အကောင်းဆုံး",
+    "wifiShowPassword": "စကားဝှက် ပြသပါ",
+    "wifiHidePassword": "စကားဝှက် ဖျောက်ပါ"
   },
   "preview": {
     "sectionLabel": "တိုက်ရိုက် ကြည့်ရှုမှု",

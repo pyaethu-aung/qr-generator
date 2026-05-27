@@ -1,5 +1,16 @@
 export type QRErrorCorrectionLevel = 'L' | 'M' | 'Q' | 'H'
 
+export type QRContentMode = 'text' | 'wifi'
+
+export type WiFiSecurity = 'WPA' | 'WEP' | 'nopass'
+
+export interface WiFiConfig {
+  ssid: string
+  password: string
+  security: WiFiSecurity
+  hidden: boolean
+}
+
 export interface QRConfig {
   value: string
   ecLevel: QRErrorCorrectionLevel
