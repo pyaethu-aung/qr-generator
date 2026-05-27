@@ -1,8 +1,9 @@
 import { useRef, useState, useId } from 'react'
-import { Download, Check, ChevronDown, ChevronUp, Upload, X } from 'lucide-react'
+import { Download, Check, ChevronDown, ChevronUp, Upload, X, Wifi, Link } from 'lucide-react'
 import { Input } from '../../common/Input'
 import { Tooltip } from '../../common/Tooltip'
-import type { QRErrorCorrectionLevel } from '../../../types/qr'
+import { WiFiForm } from './WiFiForm'
+import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity } from '../../../types/qr'
 
 function loadImageFromUrl(url: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -69,6 +70,17 @@ export interface QRControlsProps {
   correctionHint?: string
   downloadStatus?: 'png' | 'svg' | null
   downloadStatusMessage?: string
+  // Content mode (text vs wifi)
+  contentMode?: QRContentMode
+  onContentModeChange?: (mode: QRContentMode) => void
+  contentModeTextLabel?: string
+  contentModeWifiLabel?: string
+  wifiConfig?: WiFiConfig
+  onWifiSsidChange?: (ssid: string) => void
+  onWifiPasswordChange?: (password: string) => void
+  onWifiSecurityChange?: (security: WiFiSecurity) => void
+  onWifiHiddenChange?: (hidden: boolean) => void
+  wifiCorrectionHint?: string
   logoLabel?: string
   logoSizeLabel?: string
   logoUploadHint?: string
@@ -137,6 +149,16 @@ export function QRControls({
   correctionHint = 'Higher = survives damage and supports logos.',
   downloadStatus,
   downloadStatusMessage = 'Downloaded',
+  contentMode = 'text',
+  onContentModeChange,
+  contentModeTextLabel = 'Link / Text',
+  contentModeWifiLabel = 'Wi-Fi',
+  wifiConfig,
+  onWifiSsidChange,
+  onWifiPasswordChange,
+  onWifiSecurityChange,
+  onWifiHiddenChange,
+  wifiCorrectionHint = 'Printed codes scan best at Max reliability.',
   logoLabel = 'Logo',
   logoSizeLabel = 'Logo Size',
   logoUploadHint = 'Click or drop image',
@@ -223,13 +245,55 @@ export function QRControls({
   return (
     <div className="flex flex-col gap-6 w-full">
       <div className="flex flex-col gap-4">
-        <Input
-          label="Link / Text"
-          placeholder={placeholder}
-          value={value}
-          onChange={(e) => onValueChange(e.target.value)}
-          error={inputError}
-        />
+        {/* Content mode switcher */}
+        {onContentModeChange && (
+          <div className="flex gap-2" role="group" aria-label="Content type">
+            <button
+              type="button"
+              aria-pressed={contentMode === 'text'}
+              onClick={() => onContentModeChange('text')}
+              className={`flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full px-3 text-sm transition-colors ${
+                contentMode === 'text'
+                  ? 'bg-action text-action-fg font-semibold'
+                  : 'bg-surface-inset text-text-primary hover:bg-surface-raised'
+              }`}
+            >
+              <Link size={13} aria-hidden />
+              {contentModeTextLabel}
+            </button>
+            <button
+              type="button"
+              aria-pressed={contentMode === 'wifi'}
+              onClick={() => onContentModeChange('wifi')}
+              className={`flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full px-3 text-sm transition-colors ${
+                contentMode === 'wifi'
+                  ? 'bg-action text-action-fg font-semibold'
+                  : 'bg-surface-inset text-text-primary hover:bg-surface-raised'
+              }`}
+            >
+              <Wifi size={13} aria-hidden />
+              {contentModeWifiLabel}
+            </button>
+          </div>
+        )}
+
+        {contentMode === 'wifi' && wifiConfig && onWifiSsidChange && onWifiPasswordChange && onWifiSecurityChange && onWifiHiddenChange ? (
+          <WiFiForm
+            config={wifiConfig}
+            onSsidChange={onWifiSsidChange}
+            onPasswordChange={onWifiPasswordChange}
+            onSecurityChange={onWifiSecurityChange}
+            onHiddenChange={onWifiHiddenChange}
+          />
+        ) : (
+          <Input
+            label="Link / Text"
+            placeholder={placeholder}
+            value={value}
+            onChange={(e) => onValueChange(e.target.value)}
+            error={inputError}
+          />
+        )}
 
         <div className="space-y-4">
           {/* EC Level pill row */}
@@ -255,7 +319,9 @@ export function QRControls({
                 </button>
               ))}
             </div>
-            <p className="text-xs text-text-secondary">{correctionHint}</p>
+            <p className="text-xs text-text-secondary">
+              {contentMode === 'wifi' ? wifiCorrectionHint : correctionHint}
+            </p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

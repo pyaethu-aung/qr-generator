@@ -1,4 +1,4 @@
-import { useRef, useCallback, useId } from 'react'
+import { useRef, useCallback, useId, useState } from 'react'
 import { Share2, Download, Check } from 'lucide-react'
 
 import { QRControls } from './QRControls'
@@ -6,9 +6,14 @@ import { QRPreview } from './QRPreview'
 import { useQRGenerator } from '../../../hooks/useQRGenerator'
 import { useQRDesign } from '../../../hooks/useQRDesign'
 import { useQRShare } from '../../../hooks/useQRShare'
+import { useWiFiConfig } from '../../../hooks/useWiFiConfig'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
+import type { QRContentMode } from '../../../types/qr'
 
 export const QRGenerator = () => {
+  const [contentMode, setContentMode] = useState<QRContentMode>('text')
+  const { wifiConfig, wifiString, setSsid, setPassword, setSecurity, setHidden } = useWiFiConfig()
+
   const {
     liveValue,
     inputValue,
@@ -24,7 +29,7 @@ export const QRGenerator = () => {
     inputError,
     canDownload,
     recentDownload,
-  } = useQRGenerator()
+  } = useQRGenerator(contentMode === 'wifi' ? wifiString : undefined)
 
   const {
     designConfig,
@@ -121,6 +126,16 @@ export const QRGenerator = () => {
                 onLogoSizeChange={setLogoSize}
                 maxLogoSize={maxLogoSize}
                 inputError={inputError ?? undefined}
+                contentMode={contentMode}
+                onContentModeChange={setContentMode}
+                contentModeTextLabel={translate('controls.contentModeText')}
+                contentModeWifiLabel={translate('controls.contentModeWifi')}
+                wifiConfig={wifiConfig}
+                onWifiSsidChange={setSsid}
+                onWifiPasswordChange={setPassword}
+                onWifiSecurityChange={setSecurity}
+                onWifiHiddenChange={setHidden}
+                wifiCorrectionHint={translate('controls.wifiCorrectionHint')}
               />
             </div>
 
