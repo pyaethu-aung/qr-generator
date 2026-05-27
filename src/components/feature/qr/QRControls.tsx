@@ -372,6 +372,7 @@ export function QRControls({
             value={value}
             onChange={(e) => onValueChange(e.target.value)}
             error={inputError}
+            inputMode="url"
           />
         )}
 
