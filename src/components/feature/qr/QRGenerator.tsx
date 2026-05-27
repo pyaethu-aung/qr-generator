@@ -7,12 +7,14 @@ import { useQRGenerator } from '../../../hooks/useQRGenerator'
 import { useQRDesign } from '../../../hooks/useQRDesign'
 import { useQRShare } from '../../../hooks/useQRShare'
 import { useWiFiConfig } from '../../../hooks/useWiFiConfig'
+import { useVCardConfig } from '../../../hooks/useVCardConfig'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import type { QRContentMode } from '../../../types/qr'
 
 export const QRGenerator = () => {
   const [contentMode, setContentMode] = useState<QRContentMode>('text')
   const { wifiConfig, wifiString, setSsid, setPassword, setSecurity, setHidden } = useWiFiConfig()
+  const { vcardConfig, vcardString, setFirstName, setLastName, setPhone, setEmail, setCompany, setJobTitle, setWebsite } = useVCardConfig()
 
   const {
     liveValue,
@@ -29,7 +31,7 @@ export const QRGenerator = () => {
     inputError,
     canDownload,
     recentDownload,
-  } = useQRGenerator(contentMode === 'wifi' ? wifiString : undefined)
+  } = useQRGenerator(contentMode === 'wifi' ? wifiString : contentMode === 'vcard' ? vcardString : undefined)
 
   const {
     designConfig,
@@ -136,6 +138,16 @@ export const QRGenerator = () => {
                 onWifiSecurityChange={setSecurity}
                 onWifiHiddenChange={setHidden}
                 wifiCorrectionHint={translate('controls.wifiCorrectionHint')}
+                contentModeVCardLabel={translate('controls.contentModeVCard')}
+                vcardConfig={vcardConfig}
+                onVCardFirstNameChange={setFirstName}
+                onVCardLastNameChange={setLastName}
+                onVCardPhoneChange={setPhone}
+                onVCardEmailChange={setEmail}
+                onVCardCompanyChange={setCompany}
+                onVCardJobTitleChange={setJobTitle}
+                onVCardWebsiteChange={setWebsite}
+                vcardCorrectionHint={translate('controls.vcardCorrectionHint')}
               />
             </div>
 

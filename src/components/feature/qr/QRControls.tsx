@@ -1,9 +1,10 @@
 import { useRef, useState, useId } from 'react'
-import { Download, Check, ChevronDown, ChevronUp, Upload, X, Wifi, Link } from 'lucide-react'
+import { Download, Check, ChevronDown, ChevronUp, Upload, X, Wifi, Link, User } from 'lucide-react'
 import { Input } from '../../common/Input'
 import { Tooltip } from '../../common/Tooltip'
 import { WiFiForm } from './WiFiForm'
-import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity } from '../../../types/qr'
+import { VCardForm } from './VCardForm'
+import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig } from '../../../types/qr'
 
 function loadImageFromUrl(url: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -81,6 +82,17 @@ export interface QRControlsProps {
   onWifiSecurityChange?: (security: WiFiSecurity) => void
   onWifiHiddenChange?: (hidden: boolean) => void
   wifiCorrectionHint?: string
+  // vCard mode props
+  contentModeVCardLabel?: string
+  vcardConfig?: VCardConfig
+  onVCardFirstNameChange?: (v: string) => void
+  onVCardLastNameChange?: (v: string) => void
+  onVCardPhoneChange?: (v: string) => void
+  onVCardEmailChange?: (v: string) => void
+  onVCardCompanyChange?: (v: string) => void
+  onVCardJobTitleChange?: (v: string) => void
+  onVCardWebsiteChange?: (v: string) => void
+  vcardCorrectionHint?: string
   logoLabel?: string
   logoSizeLabel?: string
   logoUploadHint?: string
@@ -159,6 +171,16 @@ export function QRControls({
   onWifiSecurityChange,
   onWifiHiddenChange,
   wifiCorrectionHint = 'Printed codes scan best at Max reliability.',
+  contentModeVCardLabel = 'Contact',
+  vcardConfig,
+  onVCardFirstNameChange,
+  onVCardLastNameChange,
+  onVCardPhoneChange,
+  onVCardEmailChange,
+  onVCardCompanyChange,
+  onVCardJobTitleChange,
+  onVCardWebsiteChange,
+  vcardCorrectionHint = 'Max reliability recommended for contact cards.',
   logoLabel = 'Logo',
   logoSizeLabel = 'Logo Size',
   logoUploadHint = 'Click or drop image',
@@ -274,6 +296,19 @@ export function QRControls({
               <Wifi size={13} aria-hidden />
               {contentModeWifiLabel}
             </button>
+            <button
+              type="button"
+              aria-pressed={contentMode === 'vcard'}
+              onClick={() => onContentModeChange('vcard')}
+              className={`flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full px-3 text-sm transition-colors ${
+                contentMode === 'vcard'
+                  ? 'bg-action text-action-fg font-semibold'
+                  : 'bg-surface-inset text-text-primary hover:bg-surface-raised'
+              }`}
+            >
+              <User size={13} aria-hidden />
+              {contentModeVCardLabel}
+            </button>
           </div>
         )}
 
@@ -284,6 +319,17 @@ export function QRControls({
             onPasswordChange={onWifiPasswordChange}
             onSecurityChange={onWifiSecurityChange}
             onHiddenChange={onWifiHiddenChange}
+          />
+        ) : contentMode === 'vcard' && vcardConfig && onVCardFirstNameChange && onVCardLastNameChange && onVCardPhoneChange && onVCardEmailChange && onVCardCompanyChange && onVCardJobTitleChange && onVCardWebsiteChange ? (
+          <VCardForm
+            config={vcardConfig}
+            onFirstNameChange={onVCardFirstNameChange}
+            onLastNameChange={onVCardLastNameChange}
+            onPhoneChange={onVCardPhoneChange}
+            onEmailChange={onVCardEmailChange}
+            onCompanyChange={onVCardCompanyChange}
+            onJobTitleChange={onVCardJobTitleChange}
+            onWebsiteChange={onVCardWebsiteChange}
           />
         ) : (
           <Input
@@ -320,7 +366,7 @@ export function QRControls({
               ))}
             </div>
             <p className="text-xs text-text-secondary">
-              {contentMode === 'wifi' ? wifiCorrectionHint : correctionHint}
+              {contentMode === 'wifi' ? wifiCorrectionHint : contentMode === 'vcard' ? vcardCorrectionHint : correctionHint}
             </p>
           </div>
 
