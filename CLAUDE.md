@@ -21,6 +21,8 @@ Run a single test file: `npx vitest run src/utils/share.test.ts`
 
 Before opening any PR, all three must pass locally: `npm run test && npm run lint && npm run build`
 
+Never push directly to `main`. All changes must go through a pull request.
+
 ## Architecture
 
 ### State flow
