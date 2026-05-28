@@ -1,0 +1,9 @@
+#!/bin/sh
+# Prevent direct pushes to main.
+while read local_ref local_sha remote_ref remote_sha; do
+  if echo "$remote_ref" | grep -qE '^refs/heads/main$'; then
+    echo "error: direct push to main is not allowed — open a pull request instead"
+    exit 1
+  fi
+done
+exit 0
