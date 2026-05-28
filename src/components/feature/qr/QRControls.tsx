@@ -288,7 +288,7 @@ export function QRControls({
               type="button"
               aria-pressed={contentMode === 'text'}
               onClick={() => onContentModeChange('text')}
-              className={`flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full px-3 text-sm transition-colors ${
+              className={`flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full px-3 text-sm whitespace-nowrap transition-colors ${
                 contentMode === 'text'
                   ? 'bg-action text-action-fg font-semibold'
                   : 'bg-surface-inset text-text-primary hover:bg-surface-raised'
@@ -301,7 +301,7 @@ export function QRControls({
               type="button"
               aria-pressed={contentMode === 'wifi'}
               onClick={() => onContentModeChange('wifi')}
-              className={`flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full px-3 text-sm transition-colors ${
+              className={`flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full px-3 text-sm whitespace-nowrap transition-colors ${
                 contentMode === 'wifi'
                   ? 'bg-action text-action-fg font-semibold'
                   : 'bg-surface-inset text-text-primary hover:bg-surface-raised'
@@ -314,7 +314,7 @@ export function QRControls({
               type="button"
               aria-pressed={contentMode === 'vcard'}
               onClick={() => onContentModeChange('vcard')}
-              className={`flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full px-3 text-sm transition-colors ${
+              className={`flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full px-3 text-sm whitespace-nowrap transition-colors ${
                 contentMode === 'vcard'
                   ? 'bg-action text-action-fg font-semibold'
                   : 'bg-surface-inset text-text-primary hover:bg-surface-raised'
@@ -327,7 +327,7 @@ export function QRControls({
               type="button"
               aria-pressed={contentMode === 'email'}
               onClick={() => onContentModeChange('email')}
-              className={`flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full px-3 text-sm transition-colors ${
+              className={`flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full px-3 text-sm whitespace-nowrap transition-colors ${
                 contentMode === 'email'
                   ? 'bg-action text-action-fg font-semibold'
                   : 'bg-surface-inset text-text-primary hover:bg-surface-raised'
