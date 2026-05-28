@@ -38,7 +38,7 @@ The app supports multiple languages (English and Burmese) via custom locale conf
 
 ## Development
 
-- Install: `npm install`
+- Install: `npm install` (also activates git hooks in `.githooks/` via the `prepare` script — the `pre-push` hook blocks direct pushes to `main`)
 - Dev server: `npm run dev`
 - Browser testing (MCP): `npx playwright install chromium` (one-time setup for Playwright MCP)
 - Design source: `design.pen` (open with [Pencil](https://www.pencil.design/)) — see `DESIGN.md` for a human-readable summary of tokens, component specs, and layout measurements
@@ -89,7 +89,7 @@ npm run docker:run
 - Run `npm run test`, `npm run lint`, and `npm run build` after every change before opening a PR.
 - UI must be fully functional and consistent across desktop/mobile and major browsers via responsive design.
 - Remove unused code/assets; keep files in the agreed structure above.
-- CI gates: lint, test, build must pass; PR review required.
+- CI gates: lint, test, build must pass; PR review required. A `pre-push` git hook prevents direct pushes to `main` — all changes must go through a pull request.
 
 ## Share experience
 
