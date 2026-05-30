@@ -82,7 +82,7 @@ describe('QRGenerator Integration', () => {
     expect(screen.getByTestId('qr-code-canvas')).toHaveAttribute('data-value', 'https://example.com')
 
     // Changing EC level should not remove the preview — no Generate click needed
-    fireEvent.click(screen.getByRole('button', { name: 'Max (30%)' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Highest (30%)' }))
 
     expect(screen.getByTestId('qr-code-canvas')).toBeInTheDocument()
   })
