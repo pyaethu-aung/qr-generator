@@ -352,6 +352,7 @@ export function QRControls({
         )}
 
         <div className={`space-y-4 transition-opacity duration-150 ${(contentMode === 'text' ? !value.trim() : !hasContent) ? 'opacity-40' : ''}`}>
+          {contentMode !== 'text' && <hr className="border-border-subtle" />}
           {/* EC Level pill row */}
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-1.5">
