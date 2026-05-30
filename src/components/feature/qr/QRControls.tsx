@@ -231,7 +231,7 @@ export function QRControls({
   const [logoFilename, setLogoFilename] = useState<string | undefined>()
   const [isDragOver, setIsDragOver] = useState(false)
   const [isLoadingLogo, setIsLoadingLogo] = useState(false)
-  const [isLogoOpen, setIsLogoOpen] = useState(true)
+  const [isLogoOpen, setIsLogoOpen] = useState(false)
 
   const pixelPatternLabelId = useId()
   const fgColorId = useId()
