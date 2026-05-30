@@ -51,9 +51,9 @@ export const QRGenerator = () => {
 
   const { translate } = useLocaleContext()
 
-  // Wi-Fi QR codes are printed — Highest reliability gives better damage tolerance
+  // Printed/dense modes need maximum damage tolerance
   useEffect(() => {
-    if (contentMode === 'wifi') setInputEcLevel('H')
+    if (contentMode === 'wifi' || contentMode === 'vcard' || contentMode === 'email') setInputEcLevel('H')
   }, [contentMode, setInputEcLevel])
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
