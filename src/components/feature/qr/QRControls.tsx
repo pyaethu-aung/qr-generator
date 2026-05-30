@@ -160,7 +160,7 @@ export function QRControls({
     { value: 'L', label: 'Low (7%)' },
     { value: 'M', label: 'Medium (15%)' },
     { value: 'Q', label: 'High (25%)' },
-    { value: 'H', label: 'Max (30%)' },
+    { value: 'H', label: 'Highest (30%)' },
   ],
   eyeShape,
   onEyeShapeChange,
@@ -223,7 +223,7 @@ export function QRControls({
   logoErrorFormat = 'Please select an image file',
   logoErrorUrl = 'Could not load image from URL',
   logoTransparencyHint = 'PNG or SVG works best for transparent logos',
-  logoSizeCapHint = 'Size capped at {max}% for this error correction level — switch to Max for up to 30%',
+  logoSizeCapHint = 'Size capped at {max}% for this error correction level — switch to Highest for up to 30%',
 }: QRControlsProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [showUrlInput, setShowUrlInput] = useState(false)

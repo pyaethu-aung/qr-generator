@@ -61,7 +61,7 @@ describe('QRControls configuration updates', () => {
   it('calls onEcLevelChange when an EC Level pill button is clicked', () => {
     const { onEcLevelChange } = setup()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Max (30%)' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Highest (30%)' }))
 
     expect(onEcLevelChange).toHaveBeenCalledWith('H')
   })
