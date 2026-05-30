@@ -16,6 +16,8 @@ export interface QRPreviewProps extends QRConfig {
 export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
   ({ value, ecLevel, fgColor, bgColor, size = 220, designConfig = { eyeShape: 'Square', pixelPattern: 'Square' }, className, style, logoDataUrl, logoSize }, forwardedRef) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
+    const wrapperRef = useRef<HTMLDivElement | null>(null)
+    const canFlashRef = useRef(false)
     // Cached layers — updated by their respective effects
     const baseImageRef = useRef<HTMLImageElement | null>(null)
     const logoImageRef = useRef<HTMLImageElement | null>(null)
@@ -63,6 +65,11 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
       }
     }, [])
 
+    // Reset flash gate when QR disappears so re-entry replays the enter animation
+    useEffect(() => {
+      if (!value) canFlashRef.current = false
+    }, [value])
+
     // Set canvas pixel dimensions before paint to avoid a blank first frame
     useLayoutEffect(() => {
       const canvas = canvasRef.current
@@ -80,6 +87,15 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
       if (!value) {
         baseImageRef.current = null
         return
+      }
+      // Trigger update animation before generating — canvas draw happens mid-animation
+      if (canFlashRef.current) {
+        const canvas = canvasRef.current
+        if (canvas) {
+          canvas.classList.remove('qr-update')
+          void canvas.offsetWidth
+          canvas.classList.add('qr-update')
+        }
       }
       const gen = ++baseGenRef.current
       const dpr = window.devicePixelRatio || 1
@@ -154,7 +170,14 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
               <span className="text-sm">{placeholderCopy}</span>
             </div>
           ) : (
-            <div className="rounded-lg p-4" style={{ backgroundColor: bgColor ?? '#ffffff' }}>
+            <div
+              ref={wrapperRef}
+              className="qr-enter rounded-lg p-4"
+              style={{ backgroundColor: bgColor ?? '#ffffff' }}
+              onAnimationEnd={(e) => {
+                if (e.animationName === 'qr-enter') canFlashRef.current = true
+              }}
+            >
               <canvas
                 ref={(node) => {
                   canvasRef.current = node
