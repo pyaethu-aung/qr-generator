@@ -31,11 +31,12 @@ const setup = (config: EmailConfig = defaultConfig, overrides: Partial<{
 }
 
 describe('EmailForm', () => {
-  it('renders To, Subject, and Message fields', () => {
+  it('renders To, Subject, and Message toggle', () => {
     setup()
     expect(screen.getByLabelText(/^To$/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/Subject/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/Message/i)).toBeInTheDocument()
+    // Message is collapsible — the toggle button is always visible
+    expect(screen.getByRole('button', { name: /Message/i })).toBeInTheDocument()
   })
 
   it('calls onToChange when To is typed', () => {
@@ -52,6 +53,7 @@ describe('EmailForm', () => {
 
   it('calls onBodyChange when Message is typed', () => {
     const { onBodyChange } = setup()
+    fireEvent.click(screen.getByRole('button', { name: /Message/i }))
     fireEvent.change(screen.getByLabelText(/Message/i), { target: { value: 'Hi there' } })
     expect(onBodyChange).toHaveBeenCalledWith('Hi there')
   })
@@ -60,6 +62,7 @@ describe('EmailForm', () => {
     setup({ to: 'jane@example.com', subject: 'Hello', body: 'Hi' })
     expect(screen.getByLabelText(/^To$/i)).toHaveValue('jane@example.com')
     expect(screen.getByLabelText(/Subject/i)).toHaveValue('Hello')
+    // body='Hi' → hasBody=true → textarea auto-expands
     expect(screen.getByLabelText(/Message/i)).toHaveValue('Hi')
   })
 
@@ -70,6 +73,24 @@ describe('EmailForm', () => {
 
   it('Message field is a textarea', () => {
     setup()
+    fireEvent.click(screen.getByRole('button', { name: /Message/i }))
     expect(screen.getByLabelText(/Message/i).tagName).toBe('TEXTAREA')
+  })
+
+  it('shows email validation error on blur with invalid address', () => {
+    // Render with an already-invalid value so blur reads the correct DOM value
+    setup({ to: 'notanemail', subject: '', body: '' })
+    fireEvent.blur(screen.getByLabelText(/^To$/i))
+    expect(screen.getByRole('alert')).toBeInTheDocument()
+  })
+
+  it('clears email error on onChange after blur error', () => {
+    setup({ to: 'notanemail', subject: '', body: '' })
+    const toInput = screen.getByLabelText(/^To$/i)
+    fireEvent.blur(toInput)
+    expect(screen.getByRole('alert')).toBeInTheDocument()
+    // onChange clears the error state
+    fireEvent.change(toInput, { target: { value: 'valid@example.com' } })
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 })
