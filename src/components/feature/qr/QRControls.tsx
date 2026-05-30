@@ -57,6 +57,7 @@ export interface QRControlsProps {
   onDownloadPng?: () => void
   onDownloadSvg?: () => void
   canDownload?: boolean
+  hasContent?: boolean
   inputError?: string
   // Logo
   logoDataUrl?: string | null
@@ -142,6 +143,7 @@ export function QRControls({
   onDownloadPng,
   onDownloadSvg,
   canDownload = false,
+  hasContent = false,
   inputError,
   logoDataUrl,
   onLogoChange,
@@ -349,7 +351,7 @@ export function QRControls({
           />
         )}
 
-        <div className={`space-y-4 transition-opacity duration-150 ${contentMode === 'text' && !value.trim() ? 'opacity-40' : ''}`}>
+        <div className={`space-y-4 transition-opacity duration-150 ${(contentMode === 'text' ? !value.trim() : !hasContent) ? 'opacity-40' : ''}`}>
           {/* EC Level pill row */}
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-1.5">
