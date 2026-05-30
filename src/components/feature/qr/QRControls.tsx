@@ -214,7 +214,7 @@ export function QRControls({
   const [logoFilename, setLogoFilename] = useState<string | undefined>()
   const [isDragOver, setIsDragOver] = useState(false)
   const [isLoadingLogo, setIsLoadingLogo] = useState(false)
-  const [isLogoOpen, setIsLogoOpen] = useState(false)
+  const [isLogoOpen, setIsLogoOpen] = useState(true)
 
   const eyeShapeId = useId()
   const pixelPatternLabelId = useId()
@@ -455,6 +455,7 @@ export function QRControls({
           {/* Logo upload */}
           {onLogoChange && (
             <div className="flex flex-col gap-2">
+
               <button
                 type="button"
                 onClick={() => setIsLogoOpen(prev => !prev)}
@@ -468,6 +469,7 @@ export function QRControls({
                   <ChevronDown size={12} aria-hidden className="text-text-secondary" />
                 )}
               </button>
+
 
               {(isLogoOpen || logoDataUrl) && <>{logoDataUrl ? (
                 <div className="flex items-center gap-3 rounded-lg bg-surface-inset px-3 h-11">
