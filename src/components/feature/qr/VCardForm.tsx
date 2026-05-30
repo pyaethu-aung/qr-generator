@@ -28,6 +28,7 @@ export function VCardForm({
   const { translate } = useLocaleContext()
   const [proOpen, setProOpen] = useState(false)
   const proToggleId = useId()
+  const proRegionId = useId()
 
   const hasProfessionalData = config.company || config.jobTitle || config.website
 
@@ -77,17 +78,18 @@ export function VCardForm({
           onClick={() => setProOpen(prev => !prev)}
           className="flex items-center justify-between w-full text-sm font-medium text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
           aria-expanded={proOpen || !!hasProfessionalData}
+          aria-controls={proRegionId}
         >
           <span>{translate('controls.vcardProfessionalLabel')}</span>
           {proOpen || hasProfessionalData ? (
-            <ChevronUp size={12} aria-hidden className="text-text-secondary" />
+            <ChevronUp size={15} aria-hidden className="text-action" />
           ) : (
-            <ChevronDown size={12} aria-hidden className="text-text-secondary" />
+            <ChevronDown size={15} aria-hidden className="text-action" />
           )}
         </button>
 
         {(proOpen || hasProfessionalData) && (
-          <div className="flex flex-col gap-3">
+          <div id={proRegionId} className="flex flex-col gap-3">
             <div className="grid grid-cols-2 gap-3">
               <Input
                 label={translate('controls.vcardCompanyLabel')}
