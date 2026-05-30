@@ -1,4 +1,4 @@
-import { useRef, useCallback, useId, useState } from 'react'
+import { useRef, useCallback, useId, useState, useEffect } from 'react'
 import { Share2, Download, Check } from 'lucide-react'
 
 import { QRControls } from './QRControls'
@@ -50,6 +50,11 @@ export const QRGenerator = () => {
   } = useQRDesign(inputValue, inputEcLevel)
 
   const { translate } = useLocaleContext()
+
+  // Wi-Fi QR codes are printed — Highest reliability gives better damage tolerance
+  useEffect(() => {
+    if (contentMode === 'wifi') setInputEcLevel('H')
+  }, [contentMode, setInputEcLevel])
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const { share, isSharing, shareRequest } = useQRShare()
