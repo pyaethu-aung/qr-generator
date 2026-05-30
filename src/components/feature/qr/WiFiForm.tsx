@@ -1,6 +1,7 @@
 import { useState, useId } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
 import { Input } from '../../common/Input'
+import { PillGroup } from '../../common/PillGroup'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import type { WiFiConfig, WiFiSecurity } from '../../../types/qr'
 
@@ -40,23 +41,12 @@ export function WiFiForm({ config, onSsidChange, onPasswordChange, onSecurityCha
         <label id={securityLabelId} className="text-sm font-medium text-text-primary">
           {translate('controls.wifiSecurityLabel')}
         </label>
-        <div className="flex gap-2" role="group" aria-labelledby={securityLabelId}>
-          {securityOptions.map(({ value, label }) => (
-            <button
-              key={value}
-              type="button"
-              aria-pressed={config.security === value}
-              onClick={() => onSecurityChange(value)}
-              className={`flex h-11 flex-1 items-center justify-center rounded-full px-3 text-sm whitespace-nowrap transition-colors ${
-                config.security === value
-                  ? 'bg-action text-action-fg font-semibold'
-                  : 'bg-surface-inset text-text-primary hover:bg-surface-raised'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        <PillGroup
+          options={securityOptions}
+          value={config.security}
+          onChange={onSecurityChange}
+          aria-labelledby={securityLabelId}
+        />
       </div>
 
       {config.security !== 'nopass' && (

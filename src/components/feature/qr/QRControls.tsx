@@ -1,6 +1,7 @@
 import { useRef, useState, useId } from 'react'
 import { Download, Check, ChevronDown, ChevronUp, Upload, X, Wifi, Link, User, Mail } from 'lucide-react'
 import { Input } from '../../common/Input'
+import { PillGroup } from '../../common/PillGroup'
 import { Tooltip } from '../../common/Tooltip'
 import { WiFiForm } from './WiFiForm'
 import { VCardForm } from './VCardForm'
@@ -283,60 +284,18 @@ export function QRControls({
       <div className="flex flex-col gap-4">
         {/* Content mode switcher */}
         {onContentModeChange && (
-          <div className="flex gap-2" role="group" aria-label="Content type">
-            <button
-              type="button"
-              aria-pressed={contentMode === 'text'}
-              onClick={() => onContentModeChange('text')}
-              className={`flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full px-3 text-sm whitespace-nowrap transition-colors ${
-                contentMode === 'text'
-                  ? 'bg-action text-action-fg font-semibold'
-                  : 'bg-surface-inset text-text-primary hover:bg-surface-raised'
-              }`}
-            >
-              <Link size={13} aria-hidden />
-              {contentModeTextLabel}
-            </button>
-            <button
-              type="button"
-              aria-pressed={contentMode === 'wifi'}
-              onClick={() => onContentModeChange('wifi')}
-              className={`flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full px-3 text-sm whitespace-nowrap transition-colors ${
-                contentMode === 'wifi'
-                  ? 'bg-action text-action-fg font-semibold'
-                  : 'bg-surface-inset text-text-primary hover:bg-surface-raised'
-              }`}
-            >
-              <Wifi size={13} aria-hidden />
-              {contentModeWifiLabel}
-            </button>
-            <button
-              type="button"
-              aria-pressed={contentMode === 'vcard'}
-              onClick={() => onContentModeChange('vcard')}
-              className={`flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full px-3 text-sm whitespace-nowrap transition-colors ${
-                contentMode === 'vcard'
-                  ? 'bg-action text-action-fg font-semibold'
-                  : 'bg-surface-inset text-text-primary hover:bg-surface-raised'
-              }`}
-            >
-              <User size={13} aria-hidden />
-              {contentModeVCardLabel}
-            </button>
-            <button
-              type="button"
-              aria-pressed={contentMode === 'email'}
-              onClick={() => onContentModeChange('email')}
-              className={`flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full px-3 text-sm whitespace-nowrap transition-colors ${
-                contentMode === 'email'
-                  ? 'bg-action text-action-fg font-semibold'
-                  : 'bg-surface-inset text-text-primary hover:bg-surface-raised'
-              }`}
-            >
-              <Mail size={13} aria-hidden />
-              {contentModeEmailLabel}
-            </button>
-          </div>
+          <PillGroup
+            options={[
+              { value: 'text' as QRContentMode, label: contentModeTextLabel, icon: <Link size={13} aria-hidden /> },
+              { value: 'wifi' as QRContentMode, label: contentModeWifiLabel, icon: <Wifi size={13} aria-hidden /> },
+              { value: 'vcard' as QRContentMode, label: contentModeVCardLabel, icon: <User size={13} aria-hidden /> },
+              { value: 'email' as QRContentMode, label: contentModeEmailLabel, icon: <Mail size={13} aria-hidden /> },
+            ]}
+            value={contentMode}
+            onChange={onContentModeChange}
+            size="sm"
+            aria-label="Content type"
+          />
         )}
 
         {contentMode === 'wifi' && wifiConfig && onWifiSsidChange && onWifiPasswordChange && onWifiSecurityChange && onWifiHiddenChange ? (
@@ -383,23 +342,12 @@ export function QRControls({
               <span className="text-sm font-medium text-text-primary">{correctionLabel}</span>
               <Tooltip content={correctionTooltip} ariaLabel={correctionTooltipAriaLabel} />
             </div>
-            <div className="flex gap-2" role="group" aria-label={correctionLabel}>
-              {correctionOptions.map(({ value: optValue, label }) => (
-                <button
-                  key={optValue}
-                  type="button"
-                  aria-pressed={ecLevel === optValue}
-                  onClick={() => onEcLevelChange(optValue)}
-                  className={`flex h-11 flex-1 items-center justify-center rounded-full px-3 text-sm whitespace-nowrap transition-colors ${
-                    ecLevel === optValue
-                      ? 'bg-action text-action-fg font-semibold'
-                      : 'bg-surface-inset text-text-primary hover:bg-surface-raised'
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
+            <PillGroup
+              options={correctionOptions}
+              value={ecLevel}
+              onChange={onEcLevelChange}
+              aria-label={correctionLabel}
+            />
             <p className="text-xs text-text-secondary">
               {contentMode === 'wifi' ? wifiCorrectionHint : contentMode === 'vcard' ? vcardCorrectionHint : contentMode === 'email' ? emailCorrectionHint : correctionHint}
             </p>
@@ -433,23 +381,12 @@ export function QRControls({
             {/* Pixel Pattern pill toggle */}
             <div className="flex flex-col gap-1">
               <label id={pixelPatternLabelId} className="text-sm font-medium text-text-primary">{pixelPatternLabel}</label>
-              <div className="flex gap-2" role="group" aria-labelledby={pixelPatternLabelId}>
-                {pixelPatternOptions.map(({ value: optValue, label }) => (
-                  <button
-                    key={optValue}
-                    type="button"
-                    aria-pressed={pixelPattern === optValue}
-                    onClick={() => onPixelPatternChange(optValue)}
-                    className={`flex h-11 flex-1 items-center justify-center rounded-full px-3 text-sm transition-colors ${
-                      pixelPattern === optValue
-                        ? 'bg-action text-action-fg font-semibold'
-                        : 'bg-surface-inset text-text-primary hover:bg-surface-raised'
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
+              <PillGroup
+                options={pixelPatternOptions}
+                value={pixelPattern}
+                onChange={onPixelPatternChange}
+                aria-labelledby={pixelPatternLabelId}
+              />
             </div>
           </div>
 
