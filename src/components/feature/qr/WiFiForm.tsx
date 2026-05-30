@@ -2,6 +2,7 @@ import { useState, useId } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
 import { Input } from '../../common/Input'
 import { PillGroup } from '../../common/PillGroup'
+import { Tooltip } from '../../common/Tooltip'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import type { WiFiConfig, WiFiSecurity } from '../../../types/qr'
 
@@ -86,7 +87,7 @@ export function WiFiForm({ config, onSsidChange, onPasswordChange, onSecurityCha
       )}
 
       {/* Hidden network checkbox */}
-      <label htmlFor={hiddenCheckboxId} className="flex items-center gap-2.5 cursor-pointer select-none">
+      <div className="flex items-center gap-2.5">
         <input
           id={hiddenCheckboxId}
           type="checkbox"
@@ -94,8 +95,14 @@ export function WiFiForm({ config, onSsidChange, onPasswordChange, onSecurityCha
           onChange={(e) => onHiddenChange(e.target.checked)}
           className="h-4 w-4 rounded border-border-strong accent-action cursor-pointer"
         />
-        <span className="text-sm text-text-primary">{translate('controls.wifiHiddenLabel')}</span>
-      </label>
+        <label htmlFor={hiddenCheckboxId} className="text-sm text-text-primary cursor-pointer select-none">
+          {translate('controls.wifiHiddenLabel')}
+        </label>
+        <Tooltip
+          content={translate('controls.wifiHiddenTooltip')}
+          ariaLabel={translate('controls.wifiHiddenTooltipAriaLabel')}
+        />
+      </div>
     </div>
   )
 }
