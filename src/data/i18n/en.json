@@ -106,7 +106,10 @@
     "emailSubjectPlaceholder": "Subject line (optional)",
     "emailBodyLabel": "Message",
     "emailBodyPlaceholder": "Message body (optional)",
-    "emailCorrectionHint": "Highest reliability recommended for email codes."
+    "emailCorrectionHint": "Highest reliability recommended for email codes.",
+    "emailModeHint": "Scan to open a pre-addressed email draft.",
+    "emailToError": "Enter a valid email address",
+    "emailPayloadWarning": "Long message body makes the QR harder to scan reliably. Keep it concise."
   },
   "preview": {
     "sectionLabel": "Live Preview",
