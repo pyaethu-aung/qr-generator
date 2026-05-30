@@ -286,10 +286,10 @@ export function QRControls({
         {onContentModeChange && (
           <PillGroup
             options={[
-              { value: 'text' as QRContentMode, label: contentModeTextLabel, icon: <Link size={13} aria-hidden /> },
-              { value: 'wifi' as QRContentMode, label: contentModeWifiLabel, icon: <Wifi size={13} aria-hidden /> },
-              { value: 'vcard' as QRContentMode, label: contentModeVCardLabel, icon: <User size={13} aria-hidden /> },
-              { value: 'email' as QRContentMode, label: contentModeEmailLabel, icon: <Mail size={13} aria-hidden /> },
+              { value: 'text', label: contentModeTextLabel, icon: <Link size={13} aria-hidden /> },
+              { value: 'wifi', label: contentModeWifiLabel, icon: <Wifi size={13} aria-hidden /> },
+              { value: 'vcard', label: contentModeVCardLabel, icon: <User size={13} aria-hidden /> },
+              { value: 'email', label: contentModeEmailLabel, icon: <Mail size={13} aria-hidden /> },
             ]}
             value={contentMode}
             onChange={onContentModeChange}
