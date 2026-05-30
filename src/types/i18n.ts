@@ -68,9 +68,13 @@ export interface ControlStrings {
   wifiPasswordPlaceholder: string
   wifiSecurityLabel: string
   wifiHiddenLabel: string
+  wifiHiddenTooltip: string
+  wifiHiddenTooltipAriaLabel: string
   wifiSecurityWpa: string
   wifiSecurityWep: string
   wifiSecurityNone: string
+  wifiPasswordHint: string
+  wifiWepWarning: string
   wifiCorrectionHint: string
   wifiShowPassword: string
   wifiHidePassword: string
@@ -182,9 +186,13 @@ export type TranslationKey =
   | 'controls.wifiPasswordPlaceholder'
   | 'controls.wifiSecurityLabel'
   | 'controls.wifiHiddenLabel'
+  | 'controls.wifiHiddenTooltip'
+  | 'controls.wifiHiddenTooltipAriaLabel'
   | 'controls.wifiSecurityWpa'
   | 'controls.wifiSecurityWep'
   | 'controls.wifiSecurityNone'
+  | 'controls.wifiPasswordHint'
+  | 'controls.wifiWepWarning'
   | 'controls.wifiCorrectionHint'
   | 'controls.wifiShowPassword'
   | 'controls.wifiHidePassword'

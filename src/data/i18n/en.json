@@ -74,6 +74,8 @@
     "wifiPasswordPlaceholder": "Network password",
     "wifiSecurityLabel": "Security",
     "wifiHiddenLabel": "Hidden network",
+    "wifiHiddenTooltip": "Check this only if your network is hidden and doesn't appear in Wi-Fi scan results.",
+    "wifiHiddenTooltipAriaLabel": "Hidden network information",
     "wifiSecurityWpa": "WPA/WPA2",
     "wifiSecurityWep": "WEP",
     "wifiSecurityNone": "None",
