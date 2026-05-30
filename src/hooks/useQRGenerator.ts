@@ -23,6 +23,7 @@ export interface UseQRGeneratorReturn {
   inputError?: string
   canDownload: boolean
   recentDownload: 'png' | 'svg' | null
+  isPending: boolean
 }
 
 export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => {
@@ -75,6 +76,8 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
     () => Boolean(effectiveInput.trim()) && !effectiveError,
     [effectiveError, effectiveInput],
   )
+
+  const isPending = Boolean(effectiveInput.trim()) && !effectiveError && liveValue !== effectiveInput.trim()
 
   const downloadPng = useCallback(async (
     designConfig: QRDesignConfig,
@@ -172,6 +175,7 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
     downloadSvg,
     inputError,
     canDownload,
+    isPending,
     recentDownload,
   }
 }

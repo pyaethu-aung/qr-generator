@@ -11,10 +11,11 @@ export interface QRPreviewProps extends QRConfig {
   style?: React.CSSProperties
   logoDataUrl?: string | null
   logoSize?: number
+  isPending?: boolean
 }
 
 export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
-  ({ value, ecLevel, fgColor, bgColor, size = 220, designConfig = { eyeShape: 'Square', pixelPattern: 'Square' }, className, style, logoDataUrl, logoSize }, forwardedRef) => {
+  ({ value, ecLevel, fgColor, bgColor, size = 220, designConfig = { eyeShape: 'Square', pixelPattern: 'Square' }, className, style, logoDataUrl, logoSize, isPending }, forwardedRef) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
     const wrapperRef = useRef<HTMLDivElement | null>(null)
     const canFlashRef = useRef(false)
@@ -167,7 +168,11 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
               role="img"
               aria-label={ariaPlaceholder}
             >
-              <span className="text-sm">{placeholderCopy}</span>
+              {isPending ? (
+                <span className="h-5 w-5 motion-safe:animate-spin rounded-full border-2 border-border-strong border-t-text-secondary" aria-hidden />
+              ) : (
+                <span className="text-sm">{placeholderCopy}</span>
+              )}
             </div>
           ) : (
             <div

@@ -33,6 +33,7 @@ export const QRGenerator = () => {
     inputError,
     canDownload,
     recentDownload,
+    isPending,
   } = useQRGenerator(contentMode === 'wifi' ? wifiString : contentMode === 'vcard' ? vcardString : contentMode === 'email' ? emailString : undefined)
 
   const {
@@ -178,6 +179,7 @@ export const QRGenerator = () => {
                 logoDataUrl={logoDataUrl}
                 logoSize={logoSize}
                 size={300}
+                isPending={isPending}
               />
               <div className="grid grid-cols-3 gap-2">
                 <button
