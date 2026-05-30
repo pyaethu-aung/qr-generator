@@ -383,10 +383,10 @@ export function QRControls({
                     aria-label={label}
                     aria-pressed={eyeShape === optValue}
                     onClick={() => onEyeShapeChange(optValue)}
-                    className={`flex h-9 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
+                    className={`flex h-9 items-center justify-center rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
                       eyeShape === optValue
-                        ? 'bg-action text-action-fg'
-                        : 'bg-surface-inset text-text-secondary hover:bg-surface-raised hover:text-text-primary'
+                        ? 'border-action bg-surface-inset text-action'
+                        : 'border-transparent bg-surface-inset text-text-secondary hover:bg-surface-raised hover:text-text-primary'
                     }`}
                   >
                     <EyeShapeIcon shape={optValue} size={18} />
