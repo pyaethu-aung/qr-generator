@@ -78,6 +78,7 @@
     "wifiSecurityWep": "WEP",
     "wifiSecurityNone": "None",
     "wifiPasswordHint": "Required for WPA/WPA2 networks.",
+    "wifiWepWarning": "WEP is outdated and easily cracked. Use WPA/WPA2 if possible.",
     "wifiCorrectionHint": "Printed codes scan best at Highest reliability.",
     "wifiShowPassword": "Show password",
     "wifiHidePassword": "Hide password",
