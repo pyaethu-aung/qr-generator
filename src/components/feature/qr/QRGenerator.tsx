@@ -104,6 +104,7 @@ export const QRGenerator = () => {
               <QRControls
                 value={inputValue}
                 onValueChange={setInputValue}
+                hasContent={!!liveValue}
                 ecLevel={inputEcLevel}
                 onEcLevelChange={setInputEcLevel}
                 fgColor={inputFgColor}
