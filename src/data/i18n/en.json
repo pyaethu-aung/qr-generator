@@ -77,6 +77,7 @@
     "wifiSecurityWpa": "WPA/WPA2",
     "wifiSecurityWep": "WEP",
     "wifiSecurityNone": "None",
+    "wifiPasswordHint": "Required for WPA/WPA2 networks.",
     "wifiCorrectionHint": "Printed codes scan best at Highest reliability.",
     "wifiShowPassword": "Show password",
     "wifiHidePassword": "Hide password",

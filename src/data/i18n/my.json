@@ -77,6 +77,7 @@
     "wifiSecurityWpa": "WPA/WPA2",
     "wifiSecurityWep": "WEP",
     "wifiSecurityNone": "မရှိ",
+    "wifiPasswordHint": "WPA/WPA2 ကွန်ရက်များအတွက် လိုအပ်သည်။",
     "wifiCorrectionHint": "ပရင့်ထုတ်ထားသော ကုဒ်များအတွက် အမြင့်ဆုံး ယုံကြည်ရနိုင်မှု အကောင်းဆုံး",
     "wifiShowPassword": "စကားဝှက် ပြသပါ",
     "wifiHidePassword": "စကားဝှက် ဖျောက်ပါ",

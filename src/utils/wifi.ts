@@ -7,6 +7,7 @@ function escapeWifiField(value: string): string {
 export function buildWifiString(config: WiFiConfig): string {
   const { ssid, password, security, hidden } = config
   if (!ssid.trim()) return ''
+  if (security !== 'nopass' && !password.trim()) return ''
 
   const parts = [`T:${security}`, `S:${escapeWifiField(ssid)}`]
   if (security !== 'nopass' && password) {

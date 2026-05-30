@@ -73,6 +73,7 @@ export function WiFiForm({ config, onSsidChange, onPasswordChange, onSecurityCha
               {showPassword ? <EyeOff size={16} aria-hidden /> : <Eye size={16} aria-hidden />}
             </button>
           </div>
+          <p className="text-xs text-text-secondary">{translate('controls.wifiPasswordHint')}</p>
         </div>
       )}
 
