@@ -85,14 +85,13 @@ export const QRGenerator = () => {
   return (
     <section className="relative isolate overflow-x-hidden px-2 pb-12 sm:px-6 lg:px-8">
       <div className="relative mx-auto max-w-6xl space-y-3">
-        <div className="text-center pt-16 pb-8 px-6 sm:px-12">
+        <div className="text-center pt-10 pb-4 px-6 sm:px-12">
           <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-action">
             {translate('hero.badge')}
           </p>
-          <h2 className="mt-2 text-2xl font-bold text-text-primary sm:text-4xl">
+          <h2 className="mt-1.5 text-2xl font-bold text-text-primary sm:text-4xl">
             {translate('hero.title')}
           </h2>
-          <p className="mt-2 text-sm text-text-secondary sm:text-base">{translate('hero.subtitle')}</p>
         </div>
 
         <div className="rounded-xl border border-border-strong bg-surface-overlay p-8 shadow-lg w-full max-w-full overflow-hidden">
