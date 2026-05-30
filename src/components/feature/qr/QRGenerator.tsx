@@ -159,7 +159,7 @@ export const QRGenerator = () => {
               />
             </div>
 
-            <div className="order-1 md:order-2 space-y-5">
+            <div className="order-1 md:order-2 space-y-4">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-text-secondary">
                   {translate('preview.sectionLabel')}
@@ -179,59 +179,54 @@ export const QRGenerator = () => {
                 logoSize={logoSize}
                 size={300}
               />
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => void downloadPng(designConfig, logoDataUrl, logoSize)}
+                  disabled={!canDownload}
+                  className="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-border-subtle bg-surface-raised px-3 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {recentDownload === 'png' ? <Check size={15} aria-hidden className="text-action shrink-0" /> : <Download size={15} aria-hidden className="shrink-0" />}
+                  <span className="truncate">{translate('controls.downloadPng')}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void downloadSvg(designConfig, logoDataUrl, logoSize)}
+                  disabled={!canDownload}
+                  className="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-border-subtle bg-surface-raised px-3 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {recentDownload === 'svg' ? <Check size={15} aria-hidden className="text-action shrink-0" /> : <Download size={15} aria-hidden className="shrink-0" />}
+                  <span className="truncate">{translate('controls.downloadSvg')}</span>
+                </button>
+                <button
+                  type="button"
+                  data-testid="share-qr-button"
+                  disabled={isShareDisabled}
+                  aria-busy={isSharing}
+                  aria-disabled={isShareDisabled}
+                  aria-describedby={actionStatusMessage ? shareStatusId : undefined}
+                  onClick={handleShareClick}
+                  className={`flex h-11 w-full items-center justify-center gap-1.5 rounded-xl border px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                    liveValue
+                      ? 'border-border-subtle bg-surface-raised text-text-primary focus-visible:ring-focus-ring hover:bg-surface-inset'
+                      : 'border-border-subtle bg-surface-inset text-text-disabled'
+                  } ${isShareDisabled ? 'cursor-not-allowed opacity-50' : ''} ${isSharing ? 'cursor-wait' : ''}`}
+                >
+                  <Share2 size={15} aria-hidden className="shrink-0" />
+                  <span className="truncate">{translate('preview.shareButtonLabel')}</span>
+                </button>
+              </div>
+              {actionStatusMessage && (
+                <p
+                  role="status"
+                  aria-live="polite"
+                  id={shareStatusId}
+                  className="text-sm text-text-secondary text-center"
+                >
+                  {actionStatusMessage}
+                </p>
+              )}
             </div>
-          </div>
-
-          {/* Unified action row */}
-          <div className="mt-8 border-t border-border-subtle pt-6">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <button
-                type="button"
-                onClick={() => void downloadPng(designConfig, logoDataUrl, logoSize)}
-                disabled={!canDownload}
-                className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-border-subtle bg-surface-raised px-4 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {recentDownload === 'png' ? <Check size={16} aria-hidden className="text-action" /> : <Download size={16} aria-hidden />}
-                {translate('controls.downloadPng')}
-              </button>
-              <button
-                type="button"
-                onClick={() => void downloadSvg(designConfig, logoDataUrl, logoSize)}
-                disabled={!canDownload}
-                className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-border-subtle bg-surface-raised px-4 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {recentDownload === 'svg' ? <Check size={16} aria-hidden className="text-action" /> : <Download size={16} aria-hidden />}
-                {translate('controls.downloadSvg')}
-              </button>
-              <button
-                type="button"
-                data-testid="share-qr-button"
-                disabled={isShareDisabled}
-                aria-label={translate('preview.shareButtonLabel')}
-                aria-busy={isSharing}
-                aria-disabled={isShareDisabled}
-                aria-describedby={actionStatusMessage ? shareStatusId : undefined}
-                onClick={handleShareClick}
-                className={`flex h-11 w-full items-center justify-center gap-2 rounded-xl border px-4 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
-                  liveValue
-                    ? 'border-border-subtle bg-surface-raised text-text-primary focus-visible:ring-focus-ring hover:bg-surface-inset'
-                    : 'border-border-subtle bg-surface-inset text-text-disabled'
-                } ${isShareDisabled ? 'cursor-not-allowed opacity-70' : ''} ${isSharing ? 'cursor-wait' : ''}`}
-              >
-                <Share2 size={16} aria-hidden />
-                {translate('preview.shareButtonLabel')}
-              </button>
-            </div>
-            {actionStatusMessage && (
-              <p
-                role="status"
-                aria-live="polite"
-                id={shareStatusId}
-                className="mt-3 text-sm text-text-secondary text-center"
-              >
-                {actionStatusMessage}
-              </p>
-            )}
           </div>
         </div>
       </div>
