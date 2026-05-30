@@ -76,12 +76,10 @@ describe('QRControls configuration updates', () => {
     expect(inactiveButton).toHaveAttribute('aria-pressed', 'false')
   })
 
-  it('[US1] calls onEyeShapeChange when eye shape dropdown changes', () => {
+  it('[US1] calls onEyeShapeChange when an eye shape swatch is clicked', () => {
     const { onEyeShapeChange } = setup()
 
-    fireEvent.change(screen.getByRole('combobox', { name: /Eye Shape/i }), {
-      target: { value: 'Hexagon' },
-    })
+    fireEvent.click(screen.getByRole('button', { name: 'Hexagon' }))
 
     expect(onEyeShapeChange).toHaveBeenCalledWith('Hexagon')
   })
@@ -95,10 +93,12 @@ describe('QRControls configuration updates', () => {
   })
 
   it('marks the active pixel pattern pill with aria-pressed=true', () => {
-    setup({ pixelPattern: 'Square' })
+    setup({ eyeShape: 'Rounded', pixelPattern: 'Square' })
 
-    const activeButton = screen.getByRole('button', { name: 'Square' })
-    expect(activeButton).toHaveAttribute('aria-pressed', 'true')
+    // Use getByRole within the Pixel Pattern group to disambiguate from eye shape swatches
+    const pixelGroup = screen.getByRole('group', { name: 'Pixel Pattern' })
+    const activeButton = pixelGroup.querySelector('[aria-pressed="true"]')
+    expect(activeButton).toHaveTextContent('Square')
   })
 
   it('calls color change handlers when pickers are used', () => {

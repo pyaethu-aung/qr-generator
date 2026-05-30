@@ -6,7 +6,22 @@ import { Tooltip } from '../../common/Tooltip'
 import { WiFiForm } from './WiFiForm'
 import { VCardForm } from './VCardForm'
 import { EmailForm } from './EmailForm'
-import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig } from '../../../types/qr'
+import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig, QREyeShape } from '../../../types/qr'
+
+function EyeShapeIcon({ shape, size = 20 }: { shape: QREyeShape; size?: number }) {
+  const paths: Record<QREyeShape, string> = {
+    Square:  'M0,0 h28 v28 h-28 Z M4,4 h20 v20 h-20 Z M8,8 h12 v12 h-12 Z',
+    Rounded: 'M6,0 h16 a6,6 0 0 1 6,6 v16 a6,6 0 0 1 -6,6 h-16 a6,6 0 0 1 -6,-6 v-16 a6,6 0 0 1 6,-6 Z M8,4 h12 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-12 a4,4 0 0 1 -4,-4 v-12 a4,4 0 0 1 4,-4 Z M8,14 a6,6 0 1 0 12,0 a6,6 0 1 0 -12,0 Z',
+    Diamond: 'M14,0 L28,14 L14,28 L0,14 Z M14,4 L24,14 L14,24 L4,14 Z M14,8 L20,14 L14,20 L8,14 Z',
+    Leaf:    'M0,0 h22 a6,6 0 0 1 6,6 v22 h-22 a6,6 0 0 1 -6,-6 Z M4,4 h16 a4,4 0 0 1 4,4 v16 h-16 a4,4 0 0 1 -4,-4 Z M8,8 h10 a2,2 0 0 1 2,2 v10 h-10 a2,2 0 0 1 -2,-2 Z',
+    Hexagon: 'M14,0 L28,7 L28,21 L14,28 L0,21 L0,7 Z M14,4 L24,9 L24,19 L14,24 L4,19 L4,9 Z M14,8 L20,11 L20,17 L14,20 L8,17 L8,11 Z',
+  }
+  return (
+    <svg viewBox="0 0 28 28" width={size} height={size} fill="currentColor" aria-hidden>
+      <path d={paths[shape]} fillRule="evenodd" />
+    </svg>
+  )
+}
 
 function loadImageFromUrl(url: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -216,7 +231,6 @@ export function QRControls({
   const [isLoadingLogo, setIsLoadingLogo] = useState(false)
   const [isLogoOpen, setIsLogoOpen] = useState(true)
 
-  const eyeShapeId = useId()
   const pixelPatternLabelId = useId()
   const fgColorId = useId()
   const bgColorId = useId()
@@ -354,27 +368,27 @@ export function QRControls({
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            {/* Eye Shape styled select */}
+            {/* Eye Shape swatch grid */}
             <div className="flex flex-col gap-1">
-              <label htmlFor={eyeShapeId} className="text-sm font-medium text-text-primary">{eyeShapeLabel}</label>
-              <div className="relative">
-                <select
-                  id={eyeShapeId}
-                  className="block h-11 w-full appearance-none rounded-lg border border-border-subtle bg-surface-inset px-3 pr-8 text-sm text-text-primary shadow-sm focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring"
-                  value={eyeShape}
-                  onChange={(e) => onEyeShapeChange(e.target.value as import('../../../types/qr').QREyeShape)}
-                >
-                  {eyeShapeOptions.map(({ value: optValue, label }) => (
-                    <option key={optValue} value={optValue}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown
-                  size={16}
-                  className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary"
-                  aria-hidden
-                />
+              <span className="text-sm font-medium text-text-primary">{eyeShapeLabel}</span>
+              <div role="group" aria-label={eyeShapeLabel} className="grid grid-cols-5 gap-1">
+                {eyeShapeOptions.map(({ value: optValue, label }) => (
+                  <button
+                    key={optValue}
+                    type="button"
+                    title={label}
+                    aria-label={label}
+                    aria-pressed={eyeShape === optValue}
+                    onClick={() => onEyeShapeChange(optValue)}
+                    className={`flex h-9 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
+                      eyeShape === optValue
+                        ? 'bg-action text-action-fg'
+                        : 'bg-surface-inset text-text-secondary hover:bg-surface-raised hover:text-text-primary'
+                    }`}
+                  >
+                    <EyeShapeIcon shape={optValue} size={18} />
+                  </button>
+                ))}
               </div>
             </div>
 
