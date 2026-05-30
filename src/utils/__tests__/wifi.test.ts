@@ -34,21 +34,23 @@ describe('buildWifiString', () => {
     )
   })
 
-  it('omits password field when password is empty', () => {
-    expect(buildWifiString({ ssid: 'MyNet', password: '', security: 'WPA', hidden: false })).toBe(
-      'WIFI:T:WPA;S:MyNet;;'
-    )
+  it('returns empty string when WPA selected but password is empty', () => {
+    expect(buildWifiString({ ssid: 'MyNet', password: '', security: 'WPA', hidden: false })).toBe('')
+  })
+
+  it('returns empty string when WPA selected and password is whitespace only', () => {
+    expect(buildWifiString({ ssid: 'MyNet', password: '   ', security: 'WPA', hidden: false })).toBe('')
   })
 
   it('escapes backslash in SSID', () => {
-    expect(buildWifiString({ ssid: 'Net\\Work', password: '', security: 'WPA', hidden: false })).toBe(
-      'WIFI:T:WPA;S:Net\\\\Work;;'
+    expect(buildWifiString({ ssid: 'Net\\Work', password: 'pass', security: 'WPA', hidden: false })).toBe(
+      'WIFI:T:WPA;S:Net\\\\Work;P:pass;;'
     )
   })
 
   it('escapes semicolons in SSID', () => {
-    expect(buildWifiString({ ssid: 'A;B', password: '', security: 'WPA', hidden: false })).toBe(
-      'WIFI:T:WPA;S:A\\;B;;'
+    expect(buildWifiString({ ssid: 'A;B', password: 'pass', security: 'WPA', hidden: false })).toBe(
+      'WIFI:T:WPA;S:A\\;B;P:pass;;'
     )
   })
 
@@ -61,6 +63,12 @@ describe('buildWifiString', () => {
   it('escapes commas in password', () => {
     expect(buildWifiString({ ssid: 'Net', password: 'a,b', security: 'WPA', hidden: false })).toBe(
       'WIFI:T:WPA;S:Net;P:a\\,b;;'
+    )
+  })
+
+  it('nopass with empty password builds valid string', () => {
+    expect(buildWifiString({ ssid: 'OpenNet', password: '', security: 'nopass', hidden: false })).toBe(
+      'WIFI:T:nopass;S:OpenNet;;'
     )
   })
 
