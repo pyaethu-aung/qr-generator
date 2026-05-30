@@ -179,7 +179,7 @@ export function QRControls({
   ],
   isRiskyPattern,
   onDismissWarning,
-  correctionTooltip = 'How much of the QR code can be covered or damaged and still scan. Low gives a compact code; Max lets you overlay a logo at the cost of a denser pattern.',
+  correctionTooltip = 'How much of the QR code can be covered or damaged and still scan. Low gives a compact code; Highest lets you overlay a logo at the cost of a denser pattern.',
   correctionTooltipAriaLabel = 'About error correction',
   dismissWarningAriaLabel = 'Dismiss warning',
   correctionHint = 'Higher = survives damage and supports logos.',
@@ -194,7 +194,7 @@ export function QRControls({
   onWifiPasswordChange,
   onWifiSecurityChange,
   onWifiHiddenChange,
-  wifiCorrectionHint = 'Printed codes scan best at Max reliability.',
+  wifiCorrectionHint = 'Printed codes scan best at Highest reliability.',
   contentModeVCardLabel = 'Contact',
   vcardConfig,
   onVCardFirstNameChange,
@@ -204,13 +204,13 @@ export function QRControls({
   onVCardCompanyChange,
   onVCardJobTitleChange,
   onVCardWebsiteChange,
-  vcardCorrectionHint = 'Max reliability recommended for contact cards.',
+  vcardCorrectionHint = 'Highest reliability recommended for contact cards.',
   contentModeEmailLabel = 'Email',
   emailConfig,
   onEmailToChange,
   onEmailSubjectChange,
   onEmailBodyChange,
-  emailCorrectionHint = 'Max reliability recommended for email codes.',
+  emailCorrectionHint = 'Highest reliability recommended for email codes.',
   logoLabel = 'Logo',
   logoSizeLabel = 'Logo Size',
   logoUploadHint = 'Click or drop image',
@@ -340,7 +340,7 @@ export function QRControls({
           />
         ) : (
           <Input
-            label="Link / Text"
+            aria-label={contentModeTextLabel}
             placeholder={placeholder}
             value={value}
             onChange={(e) => onValueChange(e.target.value)}

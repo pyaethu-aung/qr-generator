@@ -24,7 +24,7 @@
   },
   "layout": {
     "headerTitle": "QR Code Generator",
-    "headerSubtitle": "Generate, style, and download high-quality QR codes without touching a backend.",
+    "headerSubtitle": "No sign-up needed. Runs entirely in your browser.",
     "navLabel": "Site controls",
     "themeToggleToLight": "Switch to light theme",
     "themeToggleToDark": "Switch to dark theme",
@@ -47,9 +47,9 @@
     "correctionLow": "Low (7%)",
     "correctionMedium": "Medium (15%)",
     "correctionQuartile": "High (25%)",
-    "correctionHigh": "Max (30%)",
+    "correctionHigh": "Highest (30%)",
     "correctionHint": "Higher = survives damage and supports logos.",
-    "correctionTooltip": "How much of the QR code can be covered or damaged and still scan. Low gives a compact code; High lets you overlay a logo at the cost of a denser pattern.",
+    "correctionTooltip": "How much of the QR code can be covered or damaged and still scan. Low gives a compact code; Highest lets you overlay a logo at the cost of a denser pattern.",
     "foregroundLabel": "Foreground",
     "backgroundLabel": "Background",
     "generate": "Generate QR Code",
@@ -77,7 +77,7 @@
     "wifiSecurityWpa": "WPA/WPA2",
     "wifiSecurityWep": "WEP",
     "wifiSecurityNone": "None",
-    "wifiCorrectionHint": "Printed codes scan best at Max reliability.",
+    "wifiCorrectionHint": "Printed codes scan best at Highest reliability.",
     "wifiShowPassword": "Show password",
     "wifiHidePassword": "Hide password",
     "contentModeVCard": "Contact",
@@ -96,7 +96,7 @@
     "vcardJobTitlePlaceholder": "Designer",
     "vcardWebsiteLabel": "Website",
     "vcardWebsitePlaceholder": "https://example.com",
-    "vcardCorrectionHint": "Contact QR codes are data-dense — Max reliability is recommended.",
+    "vcardCorrectionHint": "Contact QR codes are data-dense — Highest reliability is recommended.",
     "contentModeEmail": "Email",
     "emailToLabel": "To",
     "emailToPlaceholder": "recipient@example.com",
@@ -104,7 +104,7 @@
     "emailSubjectPlaceholder": "Subject line (optional)",
     "emailBodyLabel": "Message",
     "emailBodyPlaceholder": "Message body (optional)",
-    "emailCorrectionHint": "Max reliability recommended for email codes."
+    "emailCorrectionHint": "Highest reliability recommended for email codes."
   },
   "preview": {
     "sectionLabel": "Live Preview",
