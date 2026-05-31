@@ -309,7 +309,6 @@ export function QRControls({
             ]}
             value={contentMode}
             onChange={onContentModeChange}
-            size="sm"
             aria-label="Content type"
           />
         )}
@@ -383,7 +382,7 @@ export function QRControls({
                     aria-label={label}
                     aria-pressed={eyeShape === optValue}
                     onClick={() => onEyeShapeChange(optValue)}
-                    className={`flex h-9 items-center justify-center rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
+                    className={`flex h-10 items-center justify-center rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
                       eyeShape === optValue
                         ? 'border-action bg-surface-inset text-action'
                         : 'border-transparent bg-surface-inset text-text-secondary hover:bg-surface-raised hover:text-text-primary'
@@ -545,7 +544,7 @@ export function QRControls({
                     <button
                       type="button"
                       onClick={() => setShowUrlInput(true)}
-                      className="self-start py-2 px-1 text-xs text-action hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action rounded"
+                      className="self-start py-3 px-1 text-xs text-action hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action rounded"
                     >
                       {logoPasteUrl}
                     </button>
@@ -554,7 +553,7 @@ export function QRControls({
                       type="url"
                       placeholder="https://…"
                       aria-label={logoUrlAriaLabel}
-                      className="h-9 w-full rounded-lg border border-border-strong bg-surface-inset px-3 text-sm text-text-primary placeholder:text-text-disabled focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring"
+                      className="h-11 w-full rounded-lg border border-border-strong bg-surface-inset px-3 text-sm text-text-primary placeholder:text-text-disabled focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') void handleUrlSubmit(e.currentTarget.value)
                         if (e.key === 'Escape') setShowUrlInput(false)
