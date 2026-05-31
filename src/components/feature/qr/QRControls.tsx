@@ -503,6 +503,7 @@ export function QRControls({
                     type="button"
                     onClick={handleRemove}
                     aria-label={logoRemoveLabel}
+                    title={logoRemoveLabel}
                     className="shrink-0 rounded p-1 text-text-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                   >
                     <X size={14} aria-hidden />
