@@ -22,7 +22,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         'focus:outline-none focus:ring-2 focus:ring-focus-ring focus:border-focus-ring',
         fullWidth && 'w-full',
         disabled && 'bg-action-disabled text-text-disabled cursor-not-allowed',
-        error && 'border-error-border focus:ring-error focus:border-error',
+        error && 'border-error focus:ring-error focus:border-error',
         className,
       ),
     )
