@@ -98,12 +98,12 @@ describe('WiFiForm', () => {
 
   it('renders the hidden network checkbox', () => {
     setup()
-    expect(screen.getByLabelText(/Hidden network/i)).toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: /Hidden network/i })).toBeInTheDocument()
   })
 
   it('calls onHiddenChange when checkbox is toggled', () => {
     const { onHiddenChange } = setup()
-    fireEvent.click(screen.getByLabelText(/Hidden network/i))
+    fireEvent.click(screen.getByRole('checkbox', { name: /Hidden network/i }))
     expect(onHiddenChange).toHaveBeenCalledWith(true)
   })
 })
