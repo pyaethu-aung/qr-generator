@@ -46,6 +46,7 @@ export function EmailForm({ config, onToChange, onSubjectChange, onBodyChange }:
         error={toError}
         type="email"
         autoComplete="email"
+        required
       />
       <Input
         label={translate('controls.emailSubjectLabel')}
