@@ -42,6 +42,8 @@ export function VCardForm({
           value={config.firstName}
           onChange={(e) => onFirstNameChange(e.target.value)}
           autoComplete="given-name"
+          required
+          helperText={translate('controls.vcardNameHint')}
         />
         <Input
           label={translate('controls.vcardLastNameLabel')}

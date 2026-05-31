@@ -87,6 +87,7 @@
     "contentModeVCard": "အဆက်အသွယ်",
     "vcardFirstNameLabel": "နာမည်",
     "vcardFirstNamePlaceholder": "မင်းမင်း",
+    "vcardNameHint": "နာမည်အနည်းဆုံး တစ်ခု လိုအပ်သည်။",
     "vcardLastNameLabel": "မျိုးနွယ်အမည်",
     "vcardLastNamePlaceholder": "အောင်",
     "vcardPhoneLabel": "ဖုန်းနံပါတ်",

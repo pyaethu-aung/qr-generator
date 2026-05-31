@@ -81,6 +81,7 @@ export interface ControlStrings {
   contentModeVCard: string
   vcardFirstNameLabel: string
   vcardFirstNamePlaceholder: string
+  vcardNameHint: string
   vcardLastNameLabel: string
   vcardLastNamePlaceholder: string
   vcardPhoneLabel: string
@@ -199,6 +200,7 @@ export type TranslationKey =
   | 'controls.contentModeVCard'
   | 'controls.vcardFirstNameLabel'
   | 'controls.vcardFirstNamePlaceholder'
+  | 'controls.vcardNameHint'
   | 'controls.vcardLastNameLabel'
   | 'controls.vcardLastNamePlaceholder'
   | 'controls.vcardPhoneLabel'

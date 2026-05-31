@@ -35,6 +35,7 @@ export function WiFiForm({ config, onSsidChange, onPasswordChange, onSecurityCha
         value={config.ssid}
         onChange={(e) => onSsidChange(e.target.value)}
         autoComplete="off"
+        required
       />
 
       {/* Security type pills */}
@@ -62,6 +63,7 @@ export function WiFiForm({ config, onSsidChange, onPasswordChange, onSecurityCha
         <div className="flex flex-col gap-1">
           <label htmlFor={passwordId} className="text-sm font-medium text-text-primary">
             {translate('controls.wifiPasswordLabel')}
+            <abbr title="required" className="ml-0.5 text-error no-underline" aria-hidden>*</abbr>
           </label>
           <div className="relative">
             <input
