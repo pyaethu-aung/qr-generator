@@ -92,6 +92,7 @@ export interface QRControlsProps {
   // Content mode (text vs wifi)
   contentMode?: QRContentMode
   onContentModeChange?: (mode: QRContentMode) => void
+  contentTypeLabel?: string
   contentModeTextLabel?: string
   contentModeWifiLabel?: string
   wifiConfig?: WiFiConfig
@@ -189,6 +190,7 @@ export function QRControls({
   downloadStatusMessage = 'Downloaded',
   contentMode = 'text',
   onContentModeChange,
+  contentTypeLabel = 'Select content type',
   contentModeTextLabel = 'Link / Text',
   contentModeWifiLabel = 'Wi-Fi',
   wifiConfig,
@@ -309,7 +311,7 @@ export function QRControls({
             ]}
             value={contentMode}
             onChange={onContentModeChange}
-            aria-label="Content type"
+            aria-label={contentTypeLabel}
           />
         )}
 
