@@ -2,7 +2,7 @@ import { useState, useId, useMemo } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { Input } from '../../common/Input'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
-import { buildEmailString } from '../../../utils/email'
+import { buildEmailString, EMAIL_REGEX } from '../../../utils/email'
 import type { EmailConfig } from '../../../types/qr'
 
 const EMAIL_PAYLOAD_WARN = 300
@@ -30,7 +30,7 @@ export function EmailForm({ config, onToChange, onSubjectChange, onBodyChange }:
   const validateEmail = (value: string) => {
     const trimmed = value.trim()
     if (!trimmed) { setToError(undefined); return }
-    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)
+    const valid = EMAIL_REGEX.test(trimmed)
     setToError(valid ? undefined : translate('controls.emailToError'))
   }
 

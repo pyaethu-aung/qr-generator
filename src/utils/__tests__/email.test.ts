@@ -17,6 +17,12 @@ describe('buildEmailString', () => {
     expect(buildEmailString({ ...base, to: '   ' })).toBe('')
   })
 
+  it('returns empty string when to is not a valid email address', () => {
+    expect(buildEmailString({ ...base, to: 'not-an-email' })).toBe('')
+    expect(buildEmailString({ ...base, to: 'missing@tld' })).toBe('')
+    expect(buildEmailString({ ...base, to: '@nodomain.com' })).toBe('')
+  })
+
   it('builds a minimal mailto with to only', () => {
     const result = buildEmailString(base)
     expect(result).toBe('mailto:jane@example.com')
