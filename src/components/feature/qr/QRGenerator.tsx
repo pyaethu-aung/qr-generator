@@ -62,8 +62,8 @@ export const QRGenerator = () => {
   const [qrAnnouncement, setQrAnnouncement] = useState('')
 
   useEffect(() => {
-    if (!liveValue) { setQrAnnouncement(''); return }
-    const t = setTimeout(() => setQrAnnouncement(translate('preview.qrUpdated')), 500)
+    const text = liveValue ? translate('preview.qrUpdated') : ''
+    const t = setTimeout(() => setQrAnnouncement(text), liveValue ? 500 : 0)
     return () => clearTimeout(t)
   }, [liveValue, translate])
 
