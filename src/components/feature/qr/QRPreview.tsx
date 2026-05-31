@@ -177,7 +177,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
           ) : (
             <div
               ref={wrapperRef}
-              className="qr-enter rounded-lg p-4"
+              className="qr-enter rounded-lg p-4 overflow-hidden"
               style={{ backgroundColor: bgColor ?? '#ffffff' }}
               onAnimationEnd={(e) => {
                 if (e.animationName === 'qr-enter') canFlashRef.current = true
