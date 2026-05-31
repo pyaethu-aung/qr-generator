@@ -342,7 +342,7 @@ export function QRControls({
           />
         ) : (
           <Input
-            aria-label={contentModeTextLabel}
+            label={contentModeTextLabel}
             placeholder={placeholder}
             value={value}
             onChange={(e) => onValueChange(e.target.value)}
