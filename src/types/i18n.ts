@@ -60,6 +60,7 @@ export interface ControlStrings {
   correctionHigh: string
   correctionTooltip: string
   dismissWarningAriaLabel: string
+  contentTypeLabel: string
   contentModeText: string
   contentModeWifi: string
   wifiSsidLabel: string
@@ -112,6 +113,7 @@ export interface PreviewStrings {
   placeholder: string
   ariaValue: string
   ariaPlaceholder: string
+  qrUpdated: string
   shareButtonLabel: string
   shareStatusSharing: string
   shareStatusShared: string
@@ -179,6 +181,7 @@ export type TranslationKey =
   | 'controls.correctionHigh'
   | 'controls.correctionTooltip'
   | 'controls.dismissWarningAriaLabel'
+  | 'controls.contentTypeLabel'
   | 'controls.contentModeText'
   | 'controls.contentModeWifi'
   | 'controls.wifiSsidLabel'
@@ -235,4 +238,5 @@ export type TranslationKey =
   | 'preview.placeholder'
   | 'preview.ariaValue'
   | 'preview.ariaPlaceholder'
+  | 'preview.qrUpdated'
   | 'preview.shareButtonLabel'

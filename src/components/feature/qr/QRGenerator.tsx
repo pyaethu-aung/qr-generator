@@ -59,6 +59,13 @@ export const QRGenerator = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const { share, isSharing, shareRequest } = useQRShare()
   const shareStatusId = useId()
+  const [qrAnnouncement, setQrAnnouncement] = useState('')
+
+  useEffect(() => {
+    if (!liveValue) { setQrAnnouncement(''); return }
+    const t = setTimeout(() => setQrAnnouncement(translate('preview.qrUpdated')), 500)
+    return () => clearTimeout(t)
+  }, [liveValue, translate])
 
   const handleShareClick = useCallback(() => {
     void share(canvasRef.current)
@@ -84,6 +91,7 @@ export const QRGenerator = () => {
 
   return (
     <section className="relative isolate overflow-x-hidden px-2 pb-12 sm:px-6 lg:px-8">
+      <span className="sr-only" aria-live="polite" aria-atomic="true">{qrAnnouncement}</span>
       <div className="relative mx-auto max-w-6xl space-y-3">
         <div className="text-center pt-10 pb-4 px-6 sm:px-12">
           <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-action">
@@ -138,6 +146,7 @@ export const QRGenerator = () => {
                 inputError={inputError ?? undefined}
                 contentMode={contentMode}
                 onContentModeChange={setContentMode}
+                contentTypeLabel={translate('controls.contentTypeLabel')}
                 contentModeTextLabel={translate('controls.contentModeText')}
                 contentModeWifiLabel={translate('controls.contentModeWifi')}
                 wifiConfig={wifiConfig}
