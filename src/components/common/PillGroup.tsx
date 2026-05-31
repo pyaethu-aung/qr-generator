@@ -38,7 +38,7 @@ export function PillGroup<T extends string>({
           key={option.value}
           type="button"
           aria-pressed={value === option.value}
-          onClick={(e) => { onChange(option.value); e.currentTarget.scrollIntoView({ block: 'nearest', inline: 'nearest' }) }}
+          onClick={(e) => { onChange(option.value); e.currentTarget.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }) }}
           className={[
             'flex flex-1 items-center justify-center rounded-full px-3 text-sm whitespace-nowrap transition-colors',
             size === 'sm' ? 'h-9' : 'h-11',
