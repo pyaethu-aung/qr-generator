@@ -28,7 +28,7 @@ export function PillGroup<T extends string>({
 
   return (
     <div
-      className="flex gap-2"
+      className="flex gap-2 overflow-x-auto scrollbar-none"
       role="group"
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy}
@@ -38,7 +38,7 @@ export function PillGroup<T extends string>({
           key={option.value}
           type="button"
           aria-pressed={value === option.value}
-          onClick={() => onChange(option.value)}
+          onClick={(e) => { onChange(option.value); e.currentTarget.scrollIntoView({ block: 'nearest', inline: 'nearest' }) }}
           className={[
             'flex flex-1 items-center justify-center rounded-full px-3 text-sm whitespace-nowrap transition-colors',
             size === 'sm' ? 'h-9' : 'h-11',
