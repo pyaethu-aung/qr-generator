@@ -105,6 +105,9 @@ export interface ControlStrings {
   emailBodyLabel: string
   emailBodyPlaceholder: string
   emailCorrectionHint: string
+  emailModeHint: string
+  emailToError: string
+  emailPayloadWarning: string
 }
 
 export interface PreviewStrings {
@@ -226,6 +229,9 @@ export type TranslationKey =
   | 'controls.emailBodyLabel'
   | 'controls.emailBodyPlaceholder'
   | 'controls.emailCorrectionHint'
+  | 'controls.emailModeHint'
+  | 'controls.emailToError'
+  | 'controls.emailPayloadWarning'
   | 'preview.sectionLabel'
   | 'preview.shareStatusSharing'
   | 'preview.shareStatusShared'
