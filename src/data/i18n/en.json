@@ -87,6 +87,7 @@
     "contentModeVCard": "Contact",
     "vcardFirstNameLabel": "First Name",
     "vcardFirstNamePlaceholder": "Jane",
+    "vcardNameHint": "At least one name is required.",
     "vcardLastNameLabel": "Last Name",
     "vcardLastNamePlaceholder": "Smith",
     "vcardPhoneLabel": "Phone",
