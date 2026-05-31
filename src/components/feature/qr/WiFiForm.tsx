@@ -79,7 +79,7 @@ export function WiFiForm({ config, onSsidChange, onPasswordChange, onSecurityCha
               type="button"
               aria-label={showPassword ? translate('controls.wifiHidePassword') : translate('controls.wifiShowPassword')}
               onClick={() => setShowPassword((v) => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
+              className="absolute right-1 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center text-text-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
             >
               {showPassword ? <EyeOff size={16} aria-hidden /> : <Eye size={16} aria-hidden />}
             </button>
