@@ -6,20 +6,86 @@ import { Tooltip } from '../../common/Tooltip'
 import { WiFiForm } from './WiFiForm'
 import { VCardForm } from './VCardForm'
 import { EmailForm } from './EmailForm'
-import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig, QREyeShape } from '../../../types/qr'
+import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig, QREyeFrameShape, QREyeCenterShape } from '../../../types/qr'
 
-function EyeShapeIcon({ shape, size = 20 }: { shape: QREyeShape; size?: number }) {
-  const paths: Record<QREyeShape, string> = {
-    Square:  'M0,0 h28 v28 h-28 Z M4,4 h20 v20 h-20 Z M8,8 h12 v12 h-12 Z',
-    Rounded: 'M6,0 h16 a6,6 0 0 1 6,6 v16 a6,6 0 0 1 -6,6 h-16 a6,6 0 0 1 -6,-6 v-16 a6,6 0 0 1 6,-6 Z M8,4 h12 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-12 a4,4 0 0 1 -4,-4 v-12 a4,4 0 0 1 4,-4 Z M8,14 a6,6 0 1 0 12,0 a6,6 0 1 0 -12,0 Z',
-    Diamond: 'M14,0 L28,14 L14,28 L0,14 Z M14,4 L24,14 L14,24 L4,14 Z M14,8 L20,14 L14,20 L8,14 Z',
-    Leaf:    'M0,0 h22 a6,6 0 0 1 6,6 v22 h-22 a6,6 0 0 1 -6,-6 Z M4,4 h16 a4,4 0 0 1 4,4 v16 h-16 a4,4 0 0 1 -4,-4 Z M8,8 h10 a2,2 0 0 1 2,2 v10 h-10 a2,2 0 0 1 -2,-2 Z',
-    Hexagon: 'M14,0 L28,7 L28,21 L14,28 L0,21 L0,7 Z M14,4 L24,9 L24,19 L14,24 L4,19 L4,9 Z M14,8 L20,11 L20,17 L14,20 L8,17 L8,11 Z',
+// Eye FRAME swatch — the outer ring only (outer boundary + 5×5 hole, even-odd).
+function EyeFrameIcon({ shape, size = 18 }: { shape: QREyeFrameShape; size?: number }) {
+  const paths: Record<QREyeFrameShape, string> = {
+    Square:  'M0,0 h28 v28 h-28 Z M4,4 h20 v20 h-20 Z',
+    Rounded: 'M6,0 h16 a6,6 0 0 1 6,6 v16 a6,6 0 0 1 -6,6 h-16 a6,6 0 0 1 -6,-6 v-16 a6,6 0 0 1 6,-6 Z M8,4 h12 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-12 a4,4 0 0 1 -4,-4 v-12 a4,4 0 0 1 4,-4 Z',
+    Circle:  'M0,14 a14,14 0 1 0 28,0 a14,14 0 1 0 -28,0 Z M4,14 a10,10 0 1 0 20,0 a10,10 0 1 0 -20,0 Z',
+    Leaf:    'M0,0 h22 a6,6 0 0 1 6,6 v22 h-22 a6,6 0 0 1 -6,-6 Z M4,4 h16 a4,4 0 0 1 4,4 v16 h-16 a4,4 0 0 1 -4,-4 Z',
+    Hexagon: 'M14,0 L28,7 L28,21 L14,28 L0,21 L0,7 Z M14,4 L24,9 L24,19 L14,24 L4,19 L4,9 Z',
   }
   return (
     <svg viewBox="0 0 28 28" width={size} height={size} fill="currentColor" aria-hidden>
       <path d={paths[shape]} fillRule="evenodd" />
     </svg>
+  )
+}
+
+// Eye CENTER swatch — the inner dot only, drawn at the 3×3 zone scaled into the viewBox.
+function EyeCenterIcon({ shape, size = 18 }: { shape: QREyeCenterShape; size?: number }) {
+  const paths: Record<QREyeCenterShape, string> = {
+    Square:  'M8,8 h12 v12 h-12 Z',
+    Rounded: 'M11,8 h6 a3,3 0 0 1 3,3 v6 a3,3 0 0 1 -3,3 h-6 a3,3 0 0 1 -3,-3 v-6 a3,3 0 0 1 3,-3 Z',
+    Dot:     'M8,14 a6,6 0 1 0 12,0 a6,6 0 1 0 -12,0 Z',
+    Diamond: 'M14,8 L20,14 L14,20 L8,14 Z',
+  }
+  return (
+    <svg viewBox="0 0 28 28" width={size} height={size} fill="currentColor" aria-hidden>
+      <path d={paths[shape]} />
+    </svg>
+  )
+}
+
+// Color picker for an eye part. A null value means "inherit the foreground color";
+// the swatch then shows the foreground and a reset link is hidden. Touching the picker
+// sets an explicit color; the reset link reverts to inherit (null).
+function EyeColorField({
+  id,
+  label,
+  color,
+  fallbackColor,
+  onChange,
+  matchLabel,
+}: {
+  id: string
+  label: string
+  color: string | null
+  fallbackColor: string
+  onChange: (color: string | null) => void
+  matchLabel: string
+}) {
+  const effective = color ?? fallbackColor
+  return (
+    <div className="min-w-[120px] flex-1 flex flex-col gap-1">
+      <div className="flex items-baseline justify-between gap-2">
+        <label htmlFor={id} className="text-sm font-medium text-text-primary">{label}</label>
+        {color !== null && (
+          <button
+            type="button"
+            onClick={() => onChange(null)}
+            className="text-xs text-action hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
+          >
+            {matchLabel}
+          </button>
+        )}
+      </div>
+      <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3 focus-within:ring-2 focus-within:ring-focus-ring focus-within:outline-none">
+        <div className="h-5 w-5 shrink-0 rounded-full border border-border-strong" style={{ backgroundColor: effective }} />
+        <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
+          {effective}
+        </span>
+        <input
+          id={id}
+          type="color"
+          value={effective}
+          onChange={(e) => onChange(e.target.value)}
+          className="absolute inset-0 h-full w-full cursor-pointer opacity-0 focus:outline-none"
+        />
+      </div>
+    </div>
   )
 }
 
@@ -73,13 +139,24 @@ export interface QRControlsProps {
   downloadPngLabel?: string
   downloadSvgLabel?: string
   correctionOptions?: { value: QRErrorCorrectionLevel; label: string }[]
-  eyeShape: import('../../../types/qr').QREyeShape
-  onEyeShapeChange: (shape: import('../../../types/qr').QREyeShape) => void
+  eyeFrameShape: QREyeFrameShape
+  onEyeFrameShapeChange: (shape: QREyeFrameShape) => void
+  eyeCenterShape: QREyeCenterShape
+  onEyeCenterShapeChange: (shape: QREyeCenterShape) => void
+  eyeFrameColor: string | null
+  onEyeFrameColorChange: (color: string | null) => void
+  eyeCenterColor: string | null
+  onEyeCenterColorChange: (color: string | null) => void
   pixelPattern: import('../../../types/qr').QRPixelPattern
   onPixelPatternChange: (pattern: import('../../../types/qr').QRPixelPattern) => void
-  eyeShapeLabel?: string
+  eyeFrameLabel?: string
+  eyeCenterLabel?: string
+  eyeFrameColorLabel?: string
+  eyeCenterColorLabel?: string
+  eyeColorMatchForegroundLabel?: string
   pixelPatternLabel?: string
-  eyeShapeOptions?: { value: import('../../../types/qr').QREyeShape; label: string }[]
+  eyeFrameOptions?: { value: QREyeFrameShape; label: string }[]
+  eyeCenterOptions?: { value: QREyeCenterShape; label: string }[]
   pixelPatternOptions?: { value: import('../../../types/qr').QRPixelPattern; label: string }[]
   isRiskyPattern?: boolean
   onDismissWarning?: () => void
@@ -163,18 +240,34 @@ export function QRControls({
     { value: 'Q', label: 'High (25%)' },
     { value: 'H', label: 'Highest (30%)' },
   ],
-  eyeShape,
-  onEyeShapeChange,
+  eyeFrameShape,
+  onEyeFrameShapeChange,
+  eyeCenterShape,
+  onEyeCenterShapeChange,
+  eyeFrameColor,
+  onEyeFrameColorChange,
+  eyeCenterColor,
+  onEyeCenterColorChange,
   pixelPattern,
   onPixelPatternChange,
-  eyeShapeLabel = 'Eye Shape',
+  eyeFrameLabel = 'Eye Border',
+  eyeCenterLabel = 'Eye Center',
+  eyeFrameColorLabel = 'Eye Border Color',
+  eyeCenterColorLabel = 'Eye Center Color',
+  eyeColorMatchForegroundLabel = 'Match foreground',
   pixelPatternLabel = 'Pixel Pattern',
-  eyeShapeOptions = [
+  eyeFrameOptions = [
     { value: 'Square', label: 'Square' },
     { value: 'Rounded', label: 'Rounded' },
-    { value: 'Diamond', label: 'Diamond' },
+    { value: 'Circle', label: 'Circle' },
     { value: 'Leaf', label: 'Leaf' },
     { value: 'Hexagon', label: 'Hexagon' },
+  ],
+  eyeCenterOptions = [
+    { value: 'Square', label: 'Square' },
+    { value: 'Rounded', label: 'Rounded' },
+    { value: 'Dot', label: 'Dot' },
+    { value: 'Diamond', label: 'Diamond' },
   ],
   pixelPatternOptions = [
     { value: 'Square', label: 'Square' },
@@ -238,6 +331,8 @@ export function QRControls({
   const pixelPatternLabelId = useId()
   const fgColorId = useId()
   const bgColorId = useId()
+  const eyeFrameColorId = useId()
+  const eyeCenterColorId = useId()
   const logoSizeId = useId()
   const logoFileId = useId()
 
@@ -373,40 +468,64 @@ export function QRControls({
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            {/* Eye Shape swatch grid */}
+            {/* Eye Border (frame) swatch grid */}
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-medium text-text-primary">{eyeShapeLabel}</span>
-              <div role="group" aria-label={eyeShapeLabel} className="grid grid-cols-5 gap-1">
-                {eyeShapeOptions.map(({ value: optValue, label }) => (
+              <span className="text-sm font-medium text-text-primary">{eyeFrameLabel}</span>
+              <div role="group" aria-label={eyeFrameLabel} className="grid grid-cols-5 gap-1">
+                {eyeFrameOptions.map(({ value: optValue, label }) => (
                   <button
                     key={optValue}
                     type="button"
                     title={label}
                     aria-label={label}
-                    aria-pressed={eyeShape === optValue}
-                    onClick={() => onEyeShapeChange(optValue)}
+                    aria-pressed={eyeFrameShape === optValue}
+                    onClick={() => onEyeFrameShapeChange(optValue)}
                     className={`flex h-10 items-center justify-center rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
-                      eyeShape === optValue
+                      eyeFrameShape === optValue
                         ? 'border-action bg-surface-inset text-action'
                         : 'border-transparent bg-surface-inset text-text-secondary hover:bg-surface-raised hover:text-text-primary'
                     }`}
                   >
-                    <EyeShapeIcon shape={optValue} size={18} />
+                    <EyeFrameIcon shape={optValue} size={18} />
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Pixel Pattern pill toggle */}
+            {/* Eye Center (ball) swatch grid */}
             <div className="flex flex-col gap-1">
-              <label id={pixelPatternLabelId} className="text-sm font-medium text-text-primary">{pixelPatternLabel}</label>
-              <PillGroup
-                options={pixelPatternOptions}
-                value={pixelPattern}
-                onChange={onPixelPatternChange}
-                aria-labelledby={pixelPatternLabelId}
-              />
+              <span className="text-sm font-medium text-text-primary">{eyeCenterLabel}</span>
+              <div role="group" aria-label={eyeCenterLabel} className="grid grid-cols-4 gap-1">
+                {eyeCenterOptions.map(({ value: optValue, label }) => (
+                  <button
+                    key={optValue}
+                    type="button"
+                    title={label}
+                    aria-label={label}
+                    aria-pressed={eyeCenterShape === optValue}
+                    onClick={() => onEyeCenterShapeChange(optValue)}
+                    className={`flex h-10 items-center justify-center rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
+                      eyeCenterShape === optValue
+                        ? 'border-action bg-surface-inset text-action'
+                        : 'border-transparent bg-surface-inset text-text-secondary hover:bg-surface-raised hover:text-text-primary'
+                    }`}
+                  >
+                    <EyeCenterIcon shape={optValue} size={18} />
+                  </button>
+                ))}
+              </div>
             </div>
+          </div>
+
+          {/* Pixel Pattern pill toggle */}
+          <div className="flex flex-col gap-1">
+            <label id={pixelPatternLabelId} className="text-sm font-medium text-text-primary">{pixelPatternLabel}</label>
+            <PillGroup
+              options={pixelPatternOptions}
+              value={pixelPattern}
+              onChange={onPixelPatternChange}
+              aria-labelledby={pixelPatternLabelId}
+            />
           </div>
 
           {isRiskyPattern && (
@@ -469,6 +588,24 @@ export function QRControls({
                 />
               </div>
             </div>
+
+            <EyeColorField
+              id={eyeFrameColorId}
+              label={eyeFrameColorLabel}
+              color={eyeFrameColor}
+              fallbackColor={fgColor}
+              onChange={onEyeFrameColorChange}
+              matchLabel={eyeColorMatchForegroundLabel}
+            />
+
+            <EyeColorField
+              id={eyeCenterColorId}
+              label={eyeCenterColorLabel}
+              color={eyeCenterColor}
+              fallbackColor={fgColor}
+              onChange={onEyeCenterColorChange}
+              matchLabel={eyeColorMatchForegroundLabel}
+            />
           </div>
 
           {/* Logo upload */}

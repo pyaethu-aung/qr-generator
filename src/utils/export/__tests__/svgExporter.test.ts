@@ -24,7 +24,10 @@ describe('svgExporter', () => {
     bgColor: '#FFFFFF',
     margin: 0,
     designConfig: {
-      eyeShape: 'Square',
+      eyeFrameShape: 'Square',
+      eyeCenterShape: 'Square',
+      eyeFrameColor: null,
+      eyeCenterColor: null,
       pixelPattern: 'Square'
     }
   }
@@ -59,6 +62,45 @@ describe('svgExporter', () => {
 
       // SVG should contain the red color
       expect(text.toLowerCase()).toContain('#ff0000')
+    })
+
+    it('applies distinct eye border and center colors when set', async () => {
+      const customConfig: SvgExportConfig = {
+        ...mockConfig,
+        designConfig: {
+          eyeFrameShape: 'Square',
+          eyeCenterShape: 'Dot',
+          eyeFrameColor: '#aa11bb',
+          eyeCenterColor: '#22cc33',
+          pixelPattern: 'Square',
+        },
+      }
+
+      const blob = await exportSvg('Test', customConfig)
+      const text = await blobToText(blob)
+
+      expect(text.toLowerCase()).toContain('#aa11bb')
+      expect(text.toLowerCase()).toContain('#22cc33')
+    })
+
+    it('falls back to the foreground color for eyes when colors are null', async () => {
+      const customConfig: SvgExportConfig = {
+        ...mockConfig,
+        fgColor: '#FF0000',
+        designConfig: {
+          eyeFrameShape: 'Square',
+          eyeCenterShape: 'Square',
+          eyeFrameColor: null,
+          eyeCenterColor: null,
+          pixelPattern: 'Square',
+        },
+      }
+
+      const blob = await exportSvg('Test', customConfig)
+      const text = await blobToText(blob)
+
+      // both data and eye paths use the foreground color
+      expect(text.toLowerCase().split('#ff0000').length - 1).toBeGreaterThanOrEqual(3)
     })
 
     it('preserves background color', async () => {

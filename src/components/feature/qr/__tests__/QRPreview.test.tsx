@@ -10,7 +10,10 @@ describe('QRPreview', () => {
     fgColor: '#000000',
     bgColor: '#ffffff',
     designConfig: {
-      eyeShape: 'Square' as const,
+      eyeFrameShape: 'Square' as const,
+      eyeCenterShape: 'Square' as const,
+      eyeFrameColor: null,
+      eyeCenterColor: null,
       pixelPattern: 'Square' as const,
     },
   }

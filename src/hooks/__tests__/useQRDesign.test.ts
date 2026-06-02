@@ -65,6 +65,70 @@ describe('useQRDesign - logo state', () => {
   })
 })
 
+describe('useQRDesign - eye shapes & colors', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.clearAllMocks()
+  })
+
+  it('defaults to square frame/center inheriting the foreground color', () => {
+    const { result } = renderHook(() => useQRDesign('', 'M'))
+    expect(result.current.designConfig).toMatchObject({
+      eyeFrameShape: 'Square',
+      eyeCenterShape: 'Square',
+      eyeFrameColor: null,
+      eyeCenterColor: null,
+      pixelPattern: 'Square',
+    })
+  })
+
+  it('updates frame/center shapes and colors independently', () => {
+    const { result } = renderHook(() => useQRDesign('', 'M'))
+
+    act(() => result.current.setEyeFrameShape('Circle'))
+    act(() => result.current.setEyeCenterShape('Diamond'))
+    act(() => result.current.setEyeFrameColor('#A04D28'))
+    act(() => result.current.setEyeCenterColor('#123456'))
+
+    expect(result.current.designConfig).toMatchObject({
+      eyeFrameShape: 'Circle',
+      eyeCenterShape: 'Diamond',
+      eyeFrameColor: '#A04D28',
+      eyeCenterColor: '#123456',
+    })
+
+    act(() => result.current.setEyeFrameColor(null))
+    expect(result.current.designConfig.eyeFrameColor).toBeNull()
+  })
+
+  it('migrates a legacy single eyeShape from localStorage into split frame/center shapes', () => {
+    localStorage.setItem(
+      'qr-generator-design-config',
+      JSON.stringify({ eyeShape: 'Diamond', pixelPattern: 'Dots' }),
+    )
+
+    const { result } = renderHook(() => useQRDesign('', 'M'))
+    expect(result.current.designConfig).toEqual({
+      eyeFrameShape: 'Square',
+      eyeCenterShape: 'Diamond',
+      eyeFrameColor: null,
+      eyeCenterColor: null,
+      pixelPattern: 'Dots',
+    })
+  })
+
+  it('maps legacy Rounded to rounded frame and center', () => {
+    localStorage.setItem(
+      'qr-generator-design-config',
+      JSON.stringify({ eyeShape: 'Rounded', pixelPattern: 'Square' }),
+    )
+
+    const { result } = renderHook(() => useQRDesign('', 'M'))
+    expect(result.current.designConfig.eyeFrameShape).toBe('Rounded')
+    expect(result.current.designConfig.eyeCenterShape).toBe('Rounded')
+  })
+})
+
 describe('useQRDesign - isRiskyPattern', () => {
   beforeEach(() => {
     localStorage.clear()

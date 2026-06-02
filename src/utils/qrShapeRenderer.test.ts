@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseQRCode, getEyePath, getDataPath, generateQRPaths } from './qrShapeRenderer'
+import { parseQRCode, getEyeFramePath, getEyeCenterPath, getDataPath, generateQRPaths } from './qrShapeRenderer'
 import type { QRModule } from './qrShapeRenderer'
 
 describe('qrShapeRenderer Matrix Parser (Foundational)', () => {
@@ -49,19 +49,40 @@ describe('qrShapeRenderer Matrix Parser (Foundational)', () => {
     expect(lightModules.length).toBeGreaterThan(0)
   })
 
-  it('[US1] should correctly compute eye shape standard variants including Diamond, Hexagon, Leaf and Rounded offsets', () => {
-    // Top left eye at 0,0 size 10 
-    const svgPathSquare = getEyePath('Square', 0, 0, 10);
-    // Should contain pure square commands standard inside M/h/v
-    expect(svgPathSquare).toContain('M0,0')
-    expect(svgPathSquare).toContain('h70') // 7 * 10
-    
-    const svgPathLeaf = getEyePath('Leaf', 0, 0, 10);
-    expect(svgPathLeaf).toContain('a15,15') // Using arc for the leaf side
+  it('[US1] eye FRAME paths render an outer ring (outer boundary + 5×5 hole) per shape', () => {
+    // Top left eye at 0,0 size 10
+    const square = getEyeFramePath('Square', 0, 0, 10);
+    expect(square).toContain('M0,0')
+    expect(square).toContain('h70') // outer 7 * 10
+    expect(square).toContain('M10,10') // 5×5 hole inset 1 module
+    expect(square).toContain('h50')    // hole 5 * 10
+    // Frame excludes the dark 3×3 center
+    expect(square).not.toContain('h30')
 
-    const svgPathHexagon = getEyePath('Hexagon', 0, 0, 10);
-    // Center of hexagon X component is 35 (x + 3.5 * s)
-    expect(svgPathHexagon).toContain('M35,0')
+    const leaf = getEyeFramePath('Leaf', 0, 0, 10);
+    expect(leaf).toContain('a15,15') // rounded corner arc on the leaf side
+
+    const hexagon = getEyeFramePath('Hexagon', 0, 0, 10);
+    expect(hexagon).toContain('M35,0') // pointy-top hexagon apex at x + 3.5*s
+
+    const circle = getEyeFramePath('Circle', 0, 0, 10);
+    expect(circle).toContain('a35,35') // outer circle radius 3.5 * 10
+    expect(circle).toContain('a25,25') // hole circle radius 2.5 * 10
+  })
+
+  it('[US1] eye CENTER paths render the inner 3×3 dot per shape', () => {
+    const square = getEyeCenterPath('Square', 0, 0, 10);
+    expect(square).toContain('M20,20') // inset 2 modules
+    expect(square).toContain('h30')    // 3 * 10
+
+    const dot = getEyeCenterPath('Dot', 0, 0, 10);
+    expect(dot).toContain('a15,15') // radius 1.5 * 10
+
+    const diamond = getEyeCenterPath('Diamond', 0, 0, 10);
+    expect(diamond).toContain('M35,20') // top vertex at (cx, y+2s)
+
+    const rounded = getEyeCenterPath('Rounded', 0, 0, 10);
+    expect(rounded).toContain('a7.5,7.5') // corner radius 0.75 * 10
   })
 
   it('[US2] should correctly compute data dot radius coordinate mapping', () => {
@@ -77,15 +98,16 @@ describe('qrShapeRenderer Matrix Parser (Foundational)', () => {
   })
 
   it('generates fully compiled valid SVG path strings encompassing data and eyes', () => {
-     const paths = generateQRPaths('test render sequence', 'L', 'Hexagon', 'Dots', 10);
+     const paths = generateQRPaths('test render sequence', 'L', 'Hexagon', 'Dot', 'Dots', 10);
      expect(paths.size).toBeGreaterThan(20)
-     expect(paths.eyesPath).toContain('M35,0') // Top left hexagon center-top check
+     expect(paths.eyeFramePath).toContain('M35,0') // Top left hexagon frame apex
+     expect(paths.eyeCenterPath).toContain('a15,15') // Dot center radius 1.5 * 10
      // Ensure eye geometries and standard dot formats map appropriately
      expect(paths.dataPath).toContain('a4.5,4.5 0 1,0 0,9')
   })
 
   it('generateQRPaths includes eyeBgPath with three 8×8 background rects', () => {
-    const { eyeBgPath, size } = generateQRPaths('test', 'M', 'Diamond', 'Square', 10);
+    const { eyeBgPath, size } = generateQRPaths('test', 'M', 'Square', 'Diamond', 'Square', 10);
     expect(eyeBgPath).toContain('M0,0 h80 v80 h-80 Z');
     expect(eyeBgPath).toContain(`M${(size-8)*10},0`);
     expect(eyeBgPath).toContain(`M0,${(size-8)*10}`);

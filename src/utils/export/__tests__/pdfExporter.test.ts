@@ -21,7 +21,10 @@ describe.skip('pdfExporter', () => {
     dpi: 72 as const,
     dimension: 1000,
     designConfig: {
-      eyeShape: 'Square' as const,
+      eyeFrameShape: 'Square' as const,
+      eyeCenterShape: 'Square' as const,
+      eyeFrameColor: null,
+      eyeCenterColor: null,
       pixelPattern: 'Square' as const,
     },
   }

@@ -22,22 +22,25 @@ export async function exportSvg(
     ecLevel = 'M',
     fgColor = '#000000',
     bgColor = '#FFFFFF',
-    designConfig = { eyeShape: 'Square', pixelPattern: 'Square' },
+    designConfig = { eyeFrameShape: 'Square', eyeCenterShape: 'Square', eyeFrameColor: null, eyeCenterColor: null, pixelPattern: 'Square' },
     logoDataUrl,
     logoSize = 20,
   } = config
 
   const cellSize = 10
-  const { dataPath, eyesPath, eyeBgPath, size } = generateQRPaths(
+  const { dataPath, eyeFramePath, eyeCenterPath, eyeBgPath, size } = generateQRPaths(
     value,
     ecLevel,
-    designConfig.eyeShape,
+    designConfig.eyeFrameShape,
+    designConfig.eyeCenterShape,
     designConfig.pixelPattern,
     cellSize
   )
 
   const viewboxSize = size * cellSize + margin * 2 * cellSize
   const dataShapeRendering = designConfig.pixelPattern === 'Dots' ? 'geometricPrecision' : 'crispEdges'
+  const frameColor = designConfig.eyeFrameColor ?? fgColor
+  const centerColor = designConfig.eyeCenterColor ?? fgColor
 
   let logoSvgElements = ''
   if (logoDataUrl) {
@@ -57,7 +60,8 @@ export async function exportSvg(
 <rect width="100%" height="100%" fill="${bgColor}"/>
 <path fill="${fgColor}" shape-rendering="${dataShapeRendering}" transform="translate(${margin * cellSize}, ${margin * cellSize})" d="${dataPath}" />
 <path fill="${bgColor}" transform="translate(${margin * cellSize}, ${margin * cellSize})" d="${eyeBgPath}" />
-<path fill="${fgColor}" fill-rule="evenodd" transform="translate(${margin * cellSize}, ${margin * cellSize})" d="${eyesPath}" />
+<path fill="${frameColor}" fill-rule="evenodd" transform="translate(${margin * cellSize}, ${margin * cellSize})" d="${eyeFramePath}" />
+<path fill="${centerColor}" transform="translate(${margin * cellSize}, ${margin * cellSize})" d="${eyeCenterPath}" />
 ${logoSvgElements}</svg>`
 
   return new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })
