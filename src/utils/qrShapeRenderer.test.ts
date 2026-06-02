@@ -138,4 +138,17 @@ describe('qrShapeRenderer Matrix Parser (Foundational)', () => {
     expect(cross).toContain('M30,20') // top-left of cross top arm: x+3s=30, y+2s=20
     expect(cross).toContain('h10')    // arm width = s = 10
   })
+
+  it('[US3] new data PATTERNS render correct module paths', () => {
+    const rounded = getDataPath('Rounded', 10, 20, 10);
+    expect(rounded).toContain('a3.5,3.5') // corner arc r=0.35*10
+
+    const diamond = getDataPath('Diamond', 10, 20, 10);
+    expect(diamond).toContain('M15,21')  // top vertex at x+0.5s=15, y+0.1s=21
+    expect(diamond).toContain('L19,25')  // right vertex at x+0.9s=19, y+0.5s=25
+
+    const vertical = getDataPath('Vertical', 10, 20, 10);
+    expect(vertical).toContain('M11,20') // x+0.1s=11, y=20
+    expect(vertical).toContain('h8')     // width=0.8s=8
+  })
 })

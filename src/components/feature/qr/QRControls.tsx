@@ -6,7 +6,7 @@ import { Tooltip } from '../../common/Tooltip'
 import { WiFiForm } from './WiFiForm'
 import { VCardForm } from './VCardForm'
 import { EmailForm } from './EmailForm'
-import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig, QREyeFrameShape, QREyeCenterShape } from '../../../types/qr'
+import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig, QREyeFrameShape, QREyeCenterShape, QRPixelPattern } from '../../../types/qr'
 
 // Eye FRAME swatch — the outer ring only (outer boundary + 5×5 hole, even-odd).
 function EyeFrameIcon({ shape, size = 18 }: { shape: QREyeFrameShape; size?: number }) {
@@ -42,6 +42,30 @@ function EyeCenterIcon({ shape, size = 18 }: { shape: QREyeCenterShape; size?: n
       <path d={paths[shape]} />
     </svg>
   )
+}
+
+// PIXEL PATTERN swatch — 3×3 grid of module previews (8px module, 2px gap, 28×28 total).
+function PixelPatternIcon({ pattern, size = 18 }: { pattern: QRPixelPattern; size?: number }) {
+  const positions = [0, 10, 20]
+  const modules: string[] = []
+  for (const y of positions) {
+    for (const x of positions) {
+      modules.push(previewModulePath(pattern, x, y))
+    }
+  }
+  return (
+    <svg viewBox="0 0 28 28" width={size} height={size} fill="currentColor" aria-hidden>
+      <path d={modules.join(' ')} />
+    </svg>
+  )
+}
+
+function previewModulePath(pattern: QRPixelPattern, x: number, y: number): string {
+  if (pattern === 'Dots')     return `M${x+4},${y+0.4} a3.6,3.6 0 1,0 0,7.2 a3.6,3.6 0 1,0 0,-7.2 Z`
+  if (pattern === 'Rounded')  return `M${x+2.8},${y} h2.4 a2.8,2.8 0 0 1 2.8,2.8 v2.4 a2.8,2.8 0 0 1 -2.8,2.8 h-2.4 a2.8,2.8 0 0 1 -2.8,-2.8 v-2.4 a2.8,2.8 0 0 1 2.8,-2.8 Z`
+  if (pattern === 'Diamond')  return `M${x+4},${y+0.8} L${x+7.2},${y+4} L${x+4},${y+7.2} L${x+0.8},${y+4} Z`
+  if (pattern === 'Vertical') return `M${x+0.8},${y} h6.4 v8 h-6.4 Z`
+  return `M${x},${y} h8 v8 h-8 Z`
 }
 
 // Color picker for an eye part. A null value means "inherit the foreground color";
@@ -281,7 +305,10 @@ export function QRControls({
   ],
   pixelPatternOptions = [
     { value: 'Square', label: 'Square' },
+    { value: 'Rounded', label: 'Rounded' },
     { value: 'Dots', label: 'Dots' },
+    { value: 'Diamond', label: 'Diamond' },
+    { value: 'Vertical', label: 'Vertical' },
   ],
   isRiskyPattern,
   onDismissWarning,
@@ -529,13 +556,26 @@ export function QRControls({
 
           {/* Pixel Pattern pill toggle */}
           <div className="flex flex-col gap-1">
-            <label id={pixelPatternLabelId} className="text-sm font-medium text-text-primary">{pixelPatternLabel}</label>
-            <PillGroup
-              options={pixelPatternOptions}
-              value={pixelPattern}
-              onChange={onPixelPatternChange}
-              aria-labelledby={pixelPatternLabelId}
-            />
+            <span className="text-sm font-medium text-text-primary" id={pixelPatternLabelId}>{pixelPatternLabel}</span>
+            <div role="group" aria-labelledby={pixelPatternLabelId} className="grid grid-cols-5 gap-1">
+              {pixelPatternOptions.map(({ value: optValue, label }) => (
+                <button
+                  key={optValue}
+                  type="button"
+                  title={label}
+                  aria-label={label}
+                  aria-pressed={pixelPattern === optValue}
+                  onClick={() => onPixelPatternChange(optValue)}
+                  className={`flex h-10 items-center justify-center rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
+                    pixelPattern === optValue
+                      ? 'border-action bg-surface-inset text-action'
+                      : 'border-transparent bg-surface-inset text-text-secondary hover:bg-surface-raised hover:text-text-primary'
+                  }`}
+                >
+                  <PixelPatternIcon pattern={optValue} size={18} />
+                </button>
+              ))}
+            </div>
           </div>
 
           {isRiskyPattern && (

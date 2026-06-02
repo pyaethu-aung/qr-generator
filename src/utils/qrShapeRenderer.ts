@@ -180,6 +180,22 @@ export function getDataPath(pattern: import('../types/qr').QRPixelPattern, x: nu
     const r = 0.45 * s
     return `M${x + 0.5 * s},${y + (0.5 * s - r)} a${r},${r} 0 1,0 0,${2 * r} a${r},${r} 0 1,0 0,${-2 * r} `
   }
+  if (pattern === 'Rounded') {
+    const r = 0.35 * s
+    const straight = 0.3 * s
+    return (
+      `M${x+r},${y} h${straight} a${r},${r} 0 0 1 ${r},${r} ` +
+      `v${straight} a${r},${r} 0 0 1 -${r},${r} ` +
+      `h-${straight} a${r},${r} 0 0 1 -${r},-${r} ` +
+      `v-${straight} a${r},${r} 0 0 1 ${r},-${r} Z `
+    )
+  }
+  if (pattern === 'Diamond') {
+    return `M${x+0.5*s},${y+0.1*s} L${x+0.9*s},${y+0.5*s} L${x+0.5*s},${y+0.9*s} L${x+0.1*s},${y+0.5*s} Z `
+  }
+  if (pattern === 'Vertical') {
+    return `M${x+0.1*s},${y} h${0.8*s} v${s} h-${0.8*s} Z `
+  }
   return `M${x},${y} h${s} v${s} h-${s} Z `;
 }
 
