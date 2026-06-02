@@ -160,13 +160,12 @@ describe('QRControls configuration updates', () => {
     expect(onPixelPatternChange).toHaveBeenCalledWith('Dots')
   })
 
-  it('marks the active pixel pattern pill with aria-pressed=true', () => {
+  it('marks the active pixel pattern swatch with aria-pressed=true', () => {
     setup({ eyeFrameShape: 'Rounded', pixelPattern: 'Square' })
 
-    // Use getByRole within the Pixel Pattern group to disambiguate from eye shape swatches
     const pixelGroup = screen.getByRole('group', { name: 'Pixel Pattern' })
     const activeButton = pixelGroup.querySelector('[aria-pressed="true"]')
-    expect(activeButton).toHaveTextContent('Square')
+    expect(activeButton).toHaveAttribute('aria-label', 'Square')
   })
 
   it('calls color change handlers when pickers are used', () => {

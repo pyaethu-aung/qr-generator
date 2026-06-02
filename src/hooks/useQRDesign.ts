@@ -108,7 +108,8 @@ export function useQRDesign(value: string = '', ecLevel: 'L' | 'M' | 'Q' | 'H' =
 
   const matrixSize = getMatrixSize(value, ecLevel)
   const [isWarningDismissed, setIsWarningDismissed] = useState(false)
-  const isRiskyPattern = !isWarningDismissed && designConfig.pixelPattern === 'Dots' && matrixSize >= 41
+  const RISKY_PATTERNS = new Set<QRPixelPattern>(['Dots', 'Vertical'])
+  const isRiskyPattern = !isWarningDismissed && RISKY_PATTERNS.has(designConfig.pixelPattern) && matrixSize >= 41
 
   const dismissWarning = () => setIsWarningDismissed(true)
 
