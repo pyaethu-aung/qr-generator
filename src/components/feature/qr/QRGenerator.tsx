@@ -210,7 +210,7 @@ export const QRGenerator = () => {
                 size={300}
                 isPending={isPending}
               />
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <button
                   type="button"
                   onClick={() => void downloadPng(designConfig, logoDataUrl, logoSize)}
@@ -237,7 +237,7 @@ export const QRGenerator = () => {
                   aria-disabled={isShareDisabled}
                   aria-describedby={actionStatusMessage ? shareStatusId : undefined}
                   onClick={handleShareClick}
-                  className={`col-span-2 sm:col-span-1 flex h-11 w-full items-center justify-center gap-1.5 rounded-xl border px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                  className={`flex h-11 w-full items-center justify-center gap-1.5 rounded-xl border px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
                     liveValue
                       ? 'border-border-subtle bg-surface-raised text-text-primary focus-visible:ring-focus-ring hover:bg-surface-inset'
                       : 'border-border-subtle bg-surface-inset text-text-disabled'
