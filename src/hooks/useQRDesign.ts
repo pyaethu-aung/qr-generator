@@ -13,6 +13,8 @@ const EC_LOGO_MAX: Record<QRErrorCorrectionLevel, number> = { L: 7, M: 15, Q: 25
 
 const DESIGN_STORAGE_KEY = 'qr-generator-design-config'
 
+const RISKY_PATTERNS = new Set<QRPixelPattern>(['Dots', 'Vertical'])
+
 const DEFAULT_DESIGN_CONFIG: QRDesignConfig = {
   eyeFrameShape: 'Square',
   eyeCenterShape: 'Square',
@@ -108,7 +110,6 @@ export function useQRDesign(value: string = '', ecLevel: 'L' | 'M' | 'Q' | 'H' =
 
   const matrixSize = getMatrixSize(value, ecLevel)
   const [isWarningDismissed, setIsWarningDismissed] = useState(false)
-  const RISKY_PATTERNS = new Set<QRPixelPattern>(['Dots', 'Vertical'])
   const isRiskyPattern = !isWarningDismissed && RISKY_PATTERNS.has(designConfig.pixelPattern) && matrixSize >= 41
 
   const dismissWarning = () => setIsWarningDismissed(true)

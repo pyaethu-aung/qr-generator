@@ -8,38 +8,40 @@ import { VCardForm } from './VCardForm'
 import { EmailForm } from './EmailForm'
 import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig, QREyeFrameShape, QREyeCenterShape, QRPixelPattern } from '../../../types/qr'
 
+const FRAME_PATHS: Record<QREyeFrameShape, string> = {
+  Square:      'M0,0 h28 v28 h-28 Z M4,4 h20 v20 h-20 Z',
+  Rounded:     'M6,0 h16 a6,6 0 0 1 6,6 v16 a6,6 0 0 1 -6,6 h-16 a6,6 0 0 1 -6,-6 v-16 a6,6 0 0 1 6,-6 Z M8,4 h12 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-12 a4,4 0 0 1 -4,-4 v-12 a4,4 0 0 1 4,-4 Z',
+  Circle:      'M0,14 a14,14 0 1 0 28,0 a14,14 0 1 0 -28,0 Z M4,14 a10,10 0 1 0 20,0 a10,10 0 1 0 -20,0 Z',
+  Leaf:        'M0,0 h22 a6,6 0 0 1 6,6 v22 h-22 a6,6 0 0 1 -6,-6 Z M4,4 h16 a4,4 0 0 1 4,4 v16 h-16 a4,4 0 0 1 -4,-4 Z',
+  Hexagon:     'M14,0 L28,7 L28,21 L14,28 L0,21 L0,7 Z M14,4 L24,9 L24,19 L14,24 L4,19 L4,9 Z',
+  SquareRound: 'M0,0 h28 v28 h-28 Z M8,4 h12 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-12 a4,4 0 0 1 -4,-4 v-12 a4,4 0 0 1 4,-4 Z',
+  RoundSquare: 'M6,0 h16 a6,6 0 0 1 6,6 v16 a6,6 0 0 1 -6,6 h-16 a6,6 0 0 1 -6,-6 v-16 a6,6 0 0 1 6,-6 Z M4,4 h20 v20 h-20 Z',
+  Diamond:     'M14,0 L28,14 L14,28 L0,14 Z M14,4 L24,14 L14,24 L4,14 Z',
+}
+
+const CENTER_PATHS: Record<QREyeCenterShape, string> = {
+  Square:  'M8,8 h12 v12 h-12 Z',
+  Rounded: 'M11,8 h6 a3,3 0 0 1 3,3 v6 a3,3 0 0 1 -3,3 h-6 a3,3 0 0 1 -3,-3 v-6 a3,3 0 0 1 3,-3 Z',
+  Dot:     'M8,14 a6,6 0 1 0 12,0 a6,6 0 1 0 -12,0 Z',
+  Diamond: 'M14,8 L20,14 L14,20 L8,14 Z',
+  Star:    'M14,6 L16.06,11.17 L21.61,11.53 L17.33,15.08 L18.70,20.47 L14,17.5 L9.30,20.47 L10.67,15.08 L6.39,11.53 L11.94,11.17 Z',
+  Cross:   'M10,4 h8 v6 h6 v8 h-6 v6 h-8 v-6 h-6 v-8 h6 Z',
+}
+
 // Eye FRAME swatch — the outer ring only (outer boundary + 5×5 hole, even-odd).
 function EyeFrameIcon({ shape, size = 18 }: { shape: QREyeFrameShape; size?: number }) {
-  const paths: Record<QREyeFrameShape, string> = {
-    Square:      'M0,0 h28 v28 h-28 Z M4,4 h20 v20 h-20 Z',
-    Rounded:     'M6,0 h16 a6,6 0 0 1 6,6 v16 a6,6 0 0 1 -6,6 h-16 a6,6 0 0 1 -6,-6 v-16 a6,6 0 0 1 6,-6 Z M8,4 h12 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-12 a4,4 0 0 1 -4,-4 v-12 a4,4 0 0 1 4,-4 Z',
-    Circle:      'M0,14 a14,14 0 1 0 28,0 a14,14 0 1 0 -28,0 Z M4,14 a10,10 0 1 0 20,0 a10,10 0 1 0 -20,0 Z',
-    Leaf:        'M0,0 h22 a6,6 0 0 1 6,6 v22 h-22 a6,6 0 0 1 -6,-6 Z M4,4 h16 a4,4 0 0 1 4,4 v16 h-16 a4,4 0 0 1 -4,-4 Z',
-    Hexagon:     'M14,0 L28,7 L28,21 L14,28 L0,21 L0,7 Z M14,4 L24,9 L24,19 L14,24 L4,19 L4,9 Z',
-    SquareRound: 'M0,0 h28 v28 h-28 Z M8,4 h12 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-12 a4,4 0 0 1 -4,-4 v-12 a4,4 0 0 1 4,-4 Z',
-    RoundSquare: 'M6,0 h16 a6,6 0 0 1 6,6 v16 a6,6 0 0 1 -6,6 h-16 a6,6 0 0 1 -6,-6 v-16 a6,6 0 0 1 6,-6 Z M4,4 h20 v20 h-20 Z',
-    Diamond:     'M14,0 L28,14 L14,28 L0,14 Z M14,4 L24,14 L14,24 L4,14 Z',
-  }
   return (
     <svg viewBox="0 0 28 28" width={size} height={size} fill="currentColor" aria-hidden>
-      <path d={paths[shape]} fillRule="evenodd" />
+      <path d={FRAME_PATHS[shape]} fillRule="evenodd" />
     </svg>
   )
 }
 
 // Eye CENTER swatch — the inner dot only, drawn at the 3×3 zone scaled into the viewBox.
 function EyeCenterIcon({ shape, size = 18 }: { shape: QREyeCenterShape; size?: number }) {
-  const paths: Record<QREyeCenterShape, string> = {
-    Square:  'M8,8 h12 v12 h-12 Z',
-    Rounded: 'M11,8 h6 a3,3 0 0 1 3,3 v6 a3,3 0 0 1 -3,3 h-6 a3,3 0 0 1 -3,-3 v-6 a3,3 0 0 1 3,-3 Z',
-    Dot:     'M8,14 a6,6 0 1 0 12,0 a6,6 0 1 0 -12,0 Z',
-    Diamond: 'M14,8 L20,14 L14,20 L8,14 Z',
-    Star:    'M14,6 L16.06,11.17 L21.61,11.53 L17.33,15.08 L18.70,20.47 L14,17.5 L9.30,20.47 L10.67,15.08 L6.39,11.53 L11.94,11.17 Z',
-    Cross:   'M10,4 h8 v6 h6 v8 h-6 v6 h-8 v-6 h-6 v-8 h6 Z',
-  }
   return (
     <svg viewBox="0 0 28 28" width={size} height={size} fill="currentColor" aria-hidden>
-      <path d={paths[shape]} />
+      <path d={CENTER_PATHS[shape]} />
     </svg>
   )
 }
@@ -554,7 +556,7 @@ export function QRControls({
             </div>
           </div>
 
-          {/* Pixel Pattern pill toggle */}
+          {/* Pixel Pattern swatch grid */}
           <div className="flex flex-col gap-1">
             <span className="text-sm font-medium text-text-primary" id={pixelPatternLabelId}>{pixelPatternLabel}</span>
             <div role="group" aria-labelledby={pixelPatternLabelId} className="grid grid-cols-5 gap-1">
