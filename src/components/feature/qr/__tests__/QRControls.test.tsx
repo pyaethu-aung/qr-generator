@@ -91,8 +91,7 @@ describe('QRControls configuration updates', () => {
   it('[US1] calls onEyeFrameShapeChange when an eye border swatch is clicked', () => {
     const { onEyeFrameShapeChange } = setup()
 
-    // Hexagon only exists in the Eye Border group
-    fireEvent.click(screen.getByRole('button', { name: 'Hexagon' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Hexagon frame' }))
 
     expect(onEyeFrameShapeChange).toHaveBeenCalledWith('Hexagon')
   })
@@ -100,8 +99,7 @@ describe('QRControls configuration updates', () => {
   it('[US1] calls onEyeCenterShapeChange when an eye center swatch is clicked', () => {
     const { onEyeCenterShapeChange } = setup()
 
-    // Dot only exists in the Eye Center group
-    fireEvent.click(screen.getByRole('button', { name: 'Dot' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Dot center' }))
 
     expect(onEyeCenterShapeChange).toHaveBeenCalledWith('Dot')
   })
@@ -112,8 +110,8 @@ describe('QRControls configuration updates', () => {
     const borderGroup = screen.getByRole('group', { name: 'Eye Border' })
     const centerGroup = screen.getByRole('group', { name: 'Eye Center' })
 
-    expect(borderGroup.querySelector('[aria-pressed="true"]')).toHaveAttribute('aria-label', 'Circle')
-    expect(centerGroup.querySelector('[aria-pressed="true"]')).toHaveAttribute('aria-label', 'Diamond')
+    expect(borderGroup.querySelector('[aria-pressed="true"]')).toHaveAttribute('aria-label', 'Circle frame')
+    expect(centerGroup.querySelector('[aria-pressed="true"]')).toHaveAttribute('aria-label', 'Diamond center')
   })
 
   it('reveals "Match foreground" reset only after an eye color is set, and reverts to inherit', () => {
@@ -155,7 +153,7 @@ describe('QRControls configuration updates', () => {
   it('[US2] calls onPixelPatternChange when a pixel pattern pill is clicked', () => {
     const { onPixelPatternChange } = setup()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Dots' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Dots pattern' }))
 
     expect(onPixelPatternChange).toHaveBeenCalledWith('Dots')
   })
@@ -165,7 +163,7 @@ describe('QRControls configuration updates', () => {
 
     const pixelGroup = screen.getByRole('group', { name: 'Pixel Pattern' })
     const activeButton = pixelGroup.querySelector('[aria-pressed="true"]')
-    expect(activeButton).toHaveAttribute('aria-label', 'Square')
+    expect(activeButton).toHaveAttribute('aria-label', 'Square pattern')
   })
 
   it('calls color change handlers when pickers are used', () => {

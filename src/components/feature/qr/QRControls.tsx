@@ -515,11 +515,11 @@ export function QRControls({
                   <button
                     key={optValue}
                     type="button"
-                    title={label}
-                    aria-label={label}
+                    title={`${label} frame`}
+                    aria-label={`${label} frame`}
                     aria-pressed={eyeFrameShape === optValue}
                     onClick={() => onEyeFrameShapeChange(optValue)}
-                    className={`flex h-10 items-center justify-center rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
+                    className={`flex h-11 items-center justify-center rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
                       eyeFrameShape === optValue
                         ? 'border-action bg-surface-inset text-action'
                         : 'border-transparent bg-surface-inset text-text-secondary hover:bg-surface-raised hover:text-text-primary'
@@ -539,11 +539,11 @@ export function QRControls({
                   <button
                     key={optValue}
                     type="button"
-                    title={label}
-                    aria-label={label}
+                    title={`${label} center`}
+                    aria-label={`${label} center`}
                     aria-pressed={eyeCenterShape === optValue}
                     onClick={() => onEyeCenterShapeChange(optValue)}
-                    className={`flex h-10 items-center justify-center rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
+                    className={`flex h-11 items-center justify-center rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
                       eyeCenterShape === optValue
                         ? 'border-action bg-surface-inset text-action'
                         : 'border-transparent bg-surface-inset text-text-secondary hover:bg-surface-raised hover:text-text-primary'
@@ -564,11 +564,11 @@ export function QRControls({
                 <button
                   key={optValue}
                   type="button"
-                  title={label}
-                  aria-label={label}
+                  title={`${label} pattern`}
+                  aria-label={`${label} pattern`}
                   aria-pressed={pixelPattern === optValue}
                   onClick={() => onPixelPatternChange(optValue)}
-                  className={`flex h-10 items-center justify-center rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
+                  className={`flex h-11 items-center justify-center rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
                     pixelPattern === optValue
                       ? 'border-action bg-surface-inset text-action'
                       : 'border-transparent bg-surface-inset text-text-secondary hover:bg-surface-raised hover:text-text-primary'
