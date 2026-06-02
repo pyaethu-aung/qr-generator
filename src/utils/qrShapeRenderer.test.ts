@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseQRCode, getEyeFramePath, getEyeCenterPath, getDataPath, generateQRPaths } from './qrShapeRenderer'
+import { parseQRCode, getEyeFramePath, getEyeCenterPath, getDataPath, getDataShapeRendering, generateQRPaths } from './qrShapeRenderer'
 import type { QRModule } from './qrShapeRenderer'
 
 describe('qrShapeRenderer Matrix Parser (Foundational)', () => {
@@ -150,5 +150,13 @@ describe('qrShapeRenderer Matrix Parser (Foundational)', () => {
     const vertical = getDataPath('Vertical', 10, 20, 10);
     expect(vertical).toContain('M11,20') // x+0.1s=11, y=20
     expect(vertical).toContain('h8')     // width=0.8s=8
+  })
+
+  it('getDataShapeRendering returns crispEdges only for rectilinear patterns', () => {
+    expect(getDataShapeRendering('Square')).toBe('crispEdges')
+    expect(getDataShapeRendering('Vertical')).toBe('crispEdges')
+    expect(getDataShapeRendering('Dots')).toBe('geometricPrecision')
+    expect(getDataShapeRendering('Rounded')).toBe('geometricPrecision')
+    expect(getDataShapeRendering('Diamond')).toBe('geometricPrecision')
   })
 })

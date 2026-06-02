@@ -1,7 +1,7 @@
 import { useRef, useCallback, forwardRef, useEffect, useLayoutEffect } from 'react'
 
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
-import { generateQRPaths } from '../../../utils/qrShapeRenderer'
+import { generateQRPaths, getDataShapeRendering } from '../../../utils/qrShapeRenderer'
 import { compositeLoadedLogoOnCanvas } from '../../../utils/logoCompositor'
 import type { QRConfig, QRDesignConfig } from '../../../types/qr'
 
@@ -109,7 +109,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
         designConfig.pixelPattern,
       )
       const viewBoxSize = matrixSize * 10
-      const dataShapeRendering = designConfig.pixelPattern === 'Dots' ? 'geometricPrecision' : 'crispEdges'
+      const dataShapeRendering = getDataShapeRendering(designConfig.pixelPattern)
       const frameColor = designConfig.eyeFrameColor ?? fgColor
       const centerColor = designConfig.eyeCenterColor ?? fgColor
       const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewBoxSize} ${viewBoxSize}" width="${physicalSize}" height="${physicalSize}">
