@@ -46,28 +46,28 @@ function EyeCenterIcon({ shape, size = 18 }: { shape: QREyeCenterShape; size?: n
   )
 }
 
-// PIXEL PATTERN swatch — 3×3 grid of module previews (8px module, 2px gap, 28×28 total).
-function PixelPatternIcon({ pattern, size = 18 }: { pattern: QRPixelPattern; size?: number }) {
-  const positions = [0, 10, 20]
-  const modules: string[] = []
-  for (const y of positions) {
-    for (const x of positions) {
-      modules.push(previewModulePath(pattern, x, y))
-    }
-  }
-  return (
-    <svg viewBox="0 0 28 28" width={size} height={size} fill="currentColor" aria-hidden>
-      <path d={modules.join(' ')} />
-    </svg>
-  )
-}
-
 function previewModulePath(pattern: QRPixelPattern, x: number, y: number): string {
   if (pattern === 'Dots')     return `M${x+4},${y+0.4} a3.6,3.6 0 1,0 0,7.2 a3.6,3.6 0 1,0 0,-7.2 Z`
   if (pattern === 'Rounded')  return `M${x+2.8},${y} h2.4 a2.8,2.8 0 0 1 2.8,2.8 v2.4 a2.8,2.8 0 0 1 -2.8,2.8 h-2.4 a2.8,2.8 0 0 1 -2.8,-2.8 v-2.4 a2.8,2.8 0 0 1 2.8,-2.8 Z`
   if (pattern === 'Diamond')  return `M${x+4},${y+0.8} L${x+7.2},${y+4} L${x+4},${y+7.2} L${x+0.8},${y+4} Z`
   if (pattern === 'Vertical') return `M${x+0.8},${y} h6.4 v8 h-6.4 Z`
   return `M${x},${y} h8 v8 h-8 Z`
+}
+
+// Pre-computed at module load — 9 path strings per pattern, never changes at runtime.
+const PATTERN_PREVIEW_PATHS: Record<QRPixelPattern, string> = (() => {
+  const pos = [0, 10, 20]
+  const build = (p: QRPixelPattern) => pos.flatMap(y => pos.map(x => previewModulePath(p, x, y))).join(' ')
+  return { Square: build('Square'), Dots: build('Dots'), Rounded: build('Rounded'), Diamond: build('Diamond'), Vertical: build('Vertical') }
+})()
+
+// PIXEL PATTERN swatch — 3×3 grid of module previews (8px module, 2px gap, 28×28 total).
+function PixelPatternIcon({ pattern, size = 18 }: { pattern: QRPixelPattern; size?: number }) {
+  return (
+    <svg viewBox="0 0 28 28" width={size} height={size} fill="currentColor" aria-hidden>
+      <path d={PATTERN_PREVIEW_PATHS[pattern]} />
+    </svg>
+  )
 }
 
 // Color picker for an eye part. A null value means "inherit the foreground color";
@@ -104,7 +104,7 @@ function EyeColorField({
         )}
       </div>
       <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3 focus-within:ring-2 focus-within:ring-focus-ring focus-within:outline-none">
-        <div className="h-5 w-5 shrink-0 rounded-full border border-border-strong" style={{ backgroundColor: effective }} />
+        <div className="h-5 w-5 shrink-0 rounded-full border-2 border-border-strong" style={{ backgroundColor: effective }} />
         <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
           {effective}
         </span>
@@ -610,7 +610,7 @@ export function QRControls({
             <div className="min-w-[120px] flex-1 flex flex-col gap-1">
               <label htmlFor={fgColorId} className="text-sm font-medium text-text-primary">{foregroundLabel}</label>
               <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3 focus-within:ring-2 focus-within:ring-focus-ring focus-within:outline-none">
-                <div className="h-5 w-5 shrink-0 rounded-full border border-border-strong" style={{ backgroundColor: fgColor }} />
+                <div className="h-5 w-5 shrink-0 rounded-full border-2 border-border-strong" style={{ backgroundColor: fgColor }} />
                 <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
                   {fgColor}
                 </span>
@@ -627,7 +627,7 @@ export function QRControls({
             <div className="min-w-[120px] flex-1 flex flex-col gap-1">
               <label htmlFor={bgColorId} className="text-sm font-medium text-text-primary">{backgroundLabel}</label>
               <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3 focus-within:ring-2 focus-within:ring-focus-ring focus-within:outline-none">
-                <div className="h-5 w-5 shrink-0 rounded-full border border-border-strong" style={{ backgroundColor: bgColor }} />
+                <div className="h-5 w-5 shrink-0 rounded-full border-2 border-border-strong" style={{ backgroundColor: bgColor }} />
                 <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
                   {bgColor}
                 </span>
