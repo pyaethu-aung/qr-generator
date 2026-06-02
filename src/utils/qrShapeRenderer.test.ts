@@ -128,4 +128,14 @@ describe('qrShapeRenderer Matrix Parser (Foundational)', () => {
     expect(diamond).toContain('L70,35')  // outer right vertex at x+7s,y+3.5s
     expect(diamond).toContain('M35,10')  // inner apex at x+3.5s,y+s
   })
+
+  it('[US3] new eye CENTER shapes render correct paths', () => {
+    const star = getEyeCenterPath('Star', 0, 0, 10);
+    expect(star.length).toBeGreaterThan(0)
+    expect(star).toContain('M35,')  // top vertex of star at cx=x+3.5s=35
+
+    const cross = getEyeCenterPath('Cross', 0, 0, 10);
+    expect(cross).toContain('M30,20') // top-left of cross top arm: x+3s=30, y+2s=20
+    expect(cross).toContain('h10')    // arm width = s = 10
+  })
 })

@@ -153,6 +153,23 @@ export function getEyeCenterPath(shape: import('../types/qr').QREyeCenterShape, 
     return `M${cx},${y+2*s} L${x+5*s},${cy} L${cx},${y+5*s} L${x+2*s},${cy} Z`;
   }
 
+  if (shape === 'Star') {
+    // 5-point star, outer r=1.3s, inner r=0.55s, centered at (cx, cy)
+    return (
+      `M${cx},${cy-1.3*s} ` +
+      `L${cx+0.323*s},${cy-0.445*s} L${cx+1.236*s},${cy-0.402*s} ` +
+      `L${cx+0.523*s},${cy+0.170*s} L${cx+0.764*s},${cy+1.052*s} ` +
+      `L${cx},${cy+0.55*s} ` +
+      `L${cx-0.764*s},${cy+1.052*s} L${cx-0.523*s},${cy+0.170*s} ` +
+      `L${cx-1.236*s},${cy-0.402*s} L${cx-0.323*s},${cy-0.445*s} Z`
+    );
+  }
+
+  if (shape === 'Cross') {
+    // Plus/cross shape inside 3×3 zone: arm width = s, traced as 12-vertex polygon
+    return `M${x+3*s},${y+2*s} h${s} v${s} h${s} v${s} h-${s} v${s} h-${s} v-${s} h-${s} v-${s} h${s} Z`;
+  }
+
   // Square: dark 3×3
   return `M${x+2*s},${y+2*s} h${3*s} v${3*s} h-${3*s} Z`;
 }
