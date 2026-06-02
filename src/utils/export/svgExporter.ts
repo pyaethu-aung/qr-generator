@@ -1,5 +1,5 @@
 import type { QRConfig, QRDesignConfig } from '../../types/qr'
-import { generateQRPaths } from '../qrShapeRenderer'
+import { generateQRPaths, getDataShapeRendering } from '../qrShapeRenderer'
 import { rasterizeLogoForSvg } from '../logoCompositor'
 
 export interface SvgExportConfig extends QRConfig {
@@ -38,7 +38,7 @@ export async function exportSvg(
   )
 
   const viewboxSize = size * cellSize + margin * 2 * cellSize
-  const dataShapeRendering = designConfig.pixelPattern === 'Dots' ? 'geometricPrecision' : 'crispEdges'
+  const dataShapeRendering = getDataShapeRendering(designConfig.pixelPattern)
   const frameColor = designConfig.eyeFrameColor ?? fgColor
   const centerColor = designConfig.eyeCenterColor ?? fgColor
 

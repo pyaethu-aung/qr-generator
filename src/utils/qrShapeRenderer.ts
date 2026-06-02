@@ -174,6 +174,15 @@ export function getEyeCenterPath(shape: import('../types/qr').QREyeCenterShape, 
   return `M${x+2*s},${y+2*s} h${3*s} v${3*s} h-${3*s} Z`;
 }
 
+/**
+ * Returns the SVG `shape-rendering` value appropriate for a given pattern.
+ * Rectilinear patterns (Square, Vertical) use `crispEdges` for sharp pixel-aligned rendering.
+ * Curved or diagonal patterns (Rounded, Diamond, Dots) use `geometricPrecision` to avoid jagged edges.
+ */
+export function getDataShapeRendering(pattern: import('../types/qr').QRPixelPattern): 'crispEdges' | 'geometricPrecision' {
+  return (pattern === 'Square' || pattern === 'Vertical') ? 'crispEdges' : 'geometricPrecision'
+}
+
 export function getDataPath(pattern: import('../types/qr').QRPixelPattern, x: number, y: number, cellSize: number): string {
   const s = cellSize;
   if (pattern === 'Dots') {
