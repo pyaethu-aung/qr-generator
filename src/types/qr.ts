@@ -54,7 +54,7 @@ export interface ShareRequest {
 export type QREyeShape = 'Square' | 'Rounded' | 'Diamond' | 'Leaf' | 'Hexagon'
 
 export type QREyeFrameShape = 'Square' | 'Rounded' | 'Circle' | 'Leaf' | 'Hexagon' | 'SquareRound' | 'RoundSquare' | 'Diamond'
-export type QREyeCenterShape = 'Square' | 'Rounded' | 'Dot' | 'Diamond'
+export type QREyeCenterShape = 'Square' | 'Rounded' | 'Dot' | 'Diamond' | 'Star' | 'Cross'
 export type QRPixelPattern = 'Square' | 'Dots'
 
 export interface QRDesignConfig {

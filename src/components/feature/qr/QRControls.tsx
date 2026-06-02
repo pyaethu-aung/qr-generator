@@ -34,6 +34,8 @@ function EyeCenterIcon({ shape, size = 18 }: { shape: QREyeCenterShape; size?: n
     Rounded: 'M11,8 h6 a3,3 0 0 1 3,3 v6 a3,3 0 0 1 -3,3 h-6 a3,3 0 0 1 -3,-3 v-6 a3,3 0 0 1 3,-3 Z',
     Dot:     'M8,14 a6,6 0 1 0 12,0 a6,6 0 1 0 -12,0 Z',
     Diamond: 'M14,8 L20,14 L14,20 L8,14 Z',
+    Star:    'M14,6 L16.06,11.17 L21.61,11.53 L17.33,15.08 L18.70,20.47 L14,17.5 L9.30,20.47 L10.67,15.08 L6.39,11.53 L11.94,11.17 Z',
+    Cross:   'M10,4 h8 v6 h6 v8 h-6 v6 h-8 v-6 h-6 v-8 h6 Z',
   }
   return (
     <svg viewBox="0 0 28 28" width={size} height={size} fill="currentColor" aria-hidden>
@@ -274,6 +276,8 @@ export function QRControls({
     { value: 'Rounded', label: 'Rounded' },
     { value: 'Dot', label: 'Dot' },
     { value: 'Diamond', label: 'Diamond' },
+    { value: 'Star', label: 'Star' },
+    { value: 'Cross', label: 'Cross' },
   ],
   pixelPatternOptions = [
     { value: 'Square', label: 'Square' },
@@ -501,7 +505,7 @@ export function QRControls({
             {/* Eye Center (ball) swatch grid */}
             <div className="flex flex-col gap-1">
               <span className="text-sm font-medium text-text-primary">{eyeCenterLabel}</span>
-              <div role="group" aria-label={eyeCenterLabel} className="grid grid-cols-4 gap-1">
+              <div role="group" aria-label={eyeCenterLabel} className="grid grid-cols-3 gap-1">
                 {eyeCenterOptions.map(({ value: optValue, label }) => (
                   <button
                     key={optValue}
