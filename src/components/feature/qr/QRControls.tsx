@@ -11,11 +11,14 @@ import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, V
 // Eye FRAME swatch — the outer ring only (outer boundary + 5×5 hole, even-odd).
 function EyeFrameIcon({ shape, size = 18 }: { shape: QREyeFrameShape; size?: number }) {
   const paths: Record<QREyeFrameShape, string> = {
-    Square:  'M0,0 h28 v28 h-28 Z M4,4 h20 v20 h-20 Z',
-    Rounded: 'M6,0 h16 a6,6 0 0 1 6,6 v16 a6,6 0 0 1 -6,6 h-16 a6,6 0 0 1 -6,-6 v-16 a6,6 0 0 1 6,-6 Z M8,4 h12 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-12 a4,4 0 0 1 -4,-4 v-12 a4,4 0 0 1 4,-4 Z',
-    Circle:  'M0,14 a14,14 0 1 0 28,0 a14,14 0 1 0 -28,0 Z M4,14 a10,10 0 1 0 20,0 a10,10 0 1 0 -20,0 Z',
-    Leaf:    'M0,0 h22 a6,6 0 0 1 6,6 v22 h-22 a6,6 0 0 1 -6,-6 Z M4,4 h16 a4,4 0 0 1 4,4 v16 h-16 a4,4 0 0 1 -4,-4 Z',
-    Hexagon: 'M14,0 L28,7 L28,21 L14,28 L0,21 L0,7 Z M14,4 L24,9 L24,19 L14,24 L4,19 L4,9 Z',
+    Square:      'M0,0 h28 v28 h-28 Z M4,4 h20 v20 h-20 Z',
+    Rounded:     'M6,0 h16 a6,6 0 0 1 6,6 v16 a6,6 0 0 1 -6,6 h-16 a6,6 0 0 1 -6,-6 v-16 a6,6 0 0 1 6,-6 Z M8,4 h12 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-12 a4,4 0 0 1 -4,-4 v-12 a4,4 0 0 1 4,-4 Z',
+    Circle:      'M0,14 a14,14 0 1 0 28,0 a14,14 0 1 0 -28,0 Z M4,14 a10,10 0 1 0 20,0 a10,10 0 1 0 -20,0 Z',
+    Leaf:        'M0,0 h22 a6,6 0 0 1 6,6 v22 h-22 a6,6 0 0 1 -6,-6 Z M4,4 h16 a4,4 0 0 1 4,4 v16 h-16 a4,4 0 0 1 -4,-4 Z',
+    Hexagon:     'M14,0 L28,7 L28,21 L14,28 L0,21 L0,7 Z M14,4 L24,9 L24,19 L14,24 L4,19 L4,9 Z',
+    SquareRound: 'M0,0 h28 v28 h-28 Z M8,4 h12 a4,4 0 0 1 4,4 v12 a4,4 0 0 1 -4,4 h-12 a4,4 0 0 1 -4,-4 v-12 a4,4 0 0 1 4,-4 Z',
+    RoundSquare: 'M6,0 h16 a6,6 0 0 1 6,6 v16 a6,6 0 0 1 -6,6 h-16 a6,6 0 0 1 -6,-6 v-16 a6,6 0 0 1 6,-6 Z M4,4 h20 v20 h-20 Z',
+    Diamond:     'M14,0 L28,14 L14,28 L0,14 Z M14,4 L24,14 L14,24 L4,14 Z',
   }
   return (
     <svg viewBox="0 0 28 28" width={size} height={size} fill="currentColor" aria-hidden>
@@ -262,6 +265,9 @@ export function QRControls({
     { value: 'Circle', label: 'Circle' },
     { value: 'Leaf', label: 'Leaf' },
     { value: 'Hexagon', label: 'Hexagon' },
+    { value: 'SquareRound', label: 'Square Round' },
+    { value: 'RoundSquare', label: 'Round Square' },
+    { value: 'Diamond', label: 'Diamond' },
   ],
   eyeCenterOptions = [
     { value: 'Square', label: 'Square' },
@@ -471,7 +477,7 @@ export function QRControls({
             {/* Eye Border (frame) swatch grid */}
             <div className="flex flex-col gap-1">
               <span className="text-sm font-medium text-text-primary">{eyeFrameLabel}</span>
-              <div role="group" aria-label={eyeFrameLabel} className="grid grid-cols-5 gap-1">
+              <div role="group" aria-label={eyeFrameLabel} className="grid grid-cols-4 gap-1">
                 {eyeFrameOptions.map(({ value: optValue, label }) => (
                   <button
                     key={optValue}

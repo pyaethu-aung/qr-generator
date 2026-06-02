@@ -96,6 +96,31 @@ export function getEyeFramePath(shape: import('../types/qr').QREyeFrameShape, x:
     );
   }
 
+  if (shape === 'SquareRound') {
+    // outer 7×7 square → 5×5 rounded hole (r=s)
+    return (
+      `M${x},${y} h${7*s} v${7*s} h-${7*s} Z ` +
+      `M${x+2*s},${y+s} h${3*s} a${s},${s} 0 0 1 ${s},${s} v${3*s} a${s},${s} 0 0 1 -${s},${s} h-${3*s} a${s},${s} 0 0 1 -${s},-${s} v-${3*s} a${s},${s} 0 0 1 ${s},-${s} Z`
+    );
+  }
+
+  if (shape === 'RoundSquare') {
+    // outer rounded ring (r=1.5s) → square 5×5 hole
+    return (
+      `M${x+1.5*s},${y} h${4*s} a${1.5*s},${1.5*s} 0 0 1 ${1.5*s},${1.5*s} v${4*s} a${1.5*s},${1.5*s} 0 0 1 -${1.5*s},${1.5*s} h-${4*s} a${1.5*s},${1.5*s} 0 0 1 -${1.5*s},-${1.5*s} v-${4*s} a${1.5*s},${1.5*s} 0 0 1 ${1.5*s},-${1.5*s} Z ` +
+      `M${x+s},${y+s} h${5*s} v${5*s} h-${5*s} Z`
+    );
+  }
+
+  if (shape === 'Diamond') {
+    const cx = x + 3.5*s;
+    // outer rotated 45° diamond → inner diamond hole
+    return (
+      `M${cx},${y} L${x+7*s},${y+3.5*s} L${cx},${y+7*s} L${x},${y+3.5*s} Z ` +
+      `M${cx},${y+s} L${x+6*s},${y+3.5*s} L${cx},${y+6*s} L${x+s},${y+3.5*s} Z`
+    );
+  }
+
   // Square: outer 7×7 → 5×5 hole
   return (
     `M${x},${y} h${7*s} v${7*s} h-${7*s} Z ` +
