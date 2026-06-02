@@ -49,6 +49,12 @@ export interface ControlStrings {
   correctionHint: string
   foregroundLabel: string
   backgroundLabel: string
+  eyeFrameLabel: string
+  eyeCenterLabel: string
+  eyeFrameColorLabel: string
+  eyeCenterColorLabel: string
+  eyeColorMatchForeground: string
+  pixelPatternLabel: string
   generate: string
   downloadsTitle: string
   downloadPng: string
@@ -173,6 +179,12 @@ export type TranslationKey =
   | 'controls.correctionHint'
   | 'controls.foregroundLabel'
   | 'controls.backgroundLabel'
+  | 'controls.eyeFrameLabel'
+  | 'controls.eyeCenterLabel'
+  | 'controls.eyeFrameColorLabel'
+  | 'controls.eyeCenterColorLabel'
+  | 'controls.eyeColorMatchForeground'
+  | 'controls.pixelPatternLabel'
   | 'controls.generate'
   | 'controls.downloadsTitle'
   | 'controls.downloadPng'
