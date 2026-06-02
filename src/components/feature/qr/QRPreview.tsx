@@ -71,7 +71,9 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
       if (!value) canFlashRef.current = false
     }, [value])
 
-    // Set canvas pixel dimensions before paint to avoid a blank first frame
+    // Set canvas pixel dimensions before paint to avoid a blank first frame.
+    // CSS display sizing is handled by Tailwind (w-full + aspect-square on the element)
+    // so only the buffer dimensions are set here.
     useLayoutEffect(() => {
       const canvas = canvasRef.current
       if (!canvas || !value) return
@@ -79,8 +81,6 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
       const physicalSize = Math.round(size * dpr)
       canvas.width = physicalSize
       canvas.height = physicalSize
-      canvas.style.width = `${size}px`
-      canvas.style.height = `${size}px`
     }, [size, value])
 
     // Effect 1 (heavy): Regenerate QR base when QR content or appearance changes
@@ -167,8 +167,8 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
         <div className="flex items-center justify-center min-h-[220px] md:h-[536px] rounded-lg border border-border-subtle bg-surface-inset">
           {!value ? (
             <div
-              className="flex items-center justify-center bg-surface-inset text-text-disabled rounded-lg border-2 border-dashed border-border-subtle"
-              style={{ width: size, height: size }}
+              className="flex items-center justify-center w-full bg-surface-inset text-text-disabled rounded-lg border-2 border-dashed border-border-subtle aspect-square"
+              style={{ maxWidth: size }}
               role="img"
               aria-label={ariaPlaceholder}
             >
@@ -181,8 +181,8 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
           ) : (
             <div
               ref={wrapperRef}
-              className="qr-enter rounded-lg p-4 overflow-hidden"
-              style={{ backgroundColor: bgColor ?? '#ffffff' }}
+              className="qr-enter w-full rounded-lg p-4 overflow-hidden"
+              style={{ backgroundColor: bgColor ?? '#ffffff', maxWidth: size + 32 }}
               onAnimationEnd={(e) => {
                 if (e.animationName === 'qr-enter') canFlashRef.current = true
               }}
@@ -192,6 +192,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
                   canvasRef.current = node
                   assignForwardedRef(node)
                 }}
+                className="w-full aspect-square block"
                 data-testid="qr-code-canvas"
                 data-value={value}
                 data-fg={fgColor}
