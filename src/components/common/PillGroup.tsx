@@ -28,7 +28,7 @@ export function PillGroup<T extends string>({
 
   return (
     <div
-      className="flex gap-2 overflow-x-auto scrollbar-none"
+      className="flex flex-wrap gap-2"
       role="group"
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy}
