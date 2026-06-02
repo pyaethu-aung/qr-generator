@@ -50,10 +50,19 @@ export interface ShareRequest {
   errorMessage?: string
 }
 
+/** @deprecated Superseded by QREyeFrameShape + QREyeCenterShape. Kept only for localStorage migration. */
 export type QREyeShape = 'Square' | 'Rounded' | 'Diamond' | 'Leaf' | 'Hexagon'
+
+export type QREyeFrameShape = 'Square' | 'Rounded' | 'Circle' | 'Leaf' | 'Hexagon'
+export type QREyeCenterShape = 'Square' | 'Rounded' | 'Dot' | 'Diamond'
 export type QRPixelPattern = 'Square' | 'Dots'
 
 export interface QRDesignConfig {
-  eyeShape: QREyeShape
+  eyeFrameShape: QREyeFrameShape
+  eyeCenterShape: QREyeCenterShape
+  /** null = inherit the foreground color */
+  eyeFrameColor: string | null
+  /** null = inherit the foreground color */
+  eyeCenterColor: string | null
   pixelPattern: QRPixelPattern
 }

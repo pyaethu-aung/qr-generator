@@ -6,16 +6,25 @@ import * as qrShapeRenderer from '../../utils/qrShapeRenderer'
 import * as svgExporter from '../../utils/export/svgExporter'
 import type { QRDesignConfig } from '../../types/qr'
 
-const DEFAULT_DESIGN_CONFIG: QRDesignConfig = { eyeShape: 'Square', pixelPattern: 'Square' }
+const DEFAULT_DESIGN_CONFIG: QRDesignConfig = {
+  eyeFrameShape: 'Square',
+  eyeCenterShape: 'Square',
+  eyeFrameColor: null,
+  eyeCenterColor: null,
+  pixelPattern: 'Square',
+}
+
+const MOCK_PATHS = {
+  dataPath: 'M0,0',
+  eyeFramePath: 'M0,0',
+  eyeCenterPath: 'M0,0',
+  eyeBgPath: 'M0,0',
+  size: 21,
+}
 
 vi.spyOn(downloadUtils, 'downloadBlob').mockImplementation(() => {})
 
-vi.spyOn(qrShapeRenderer, 'generateQRPaths').mockReturnValue({
-  dataPath: 'M0,0',
-  eyesPath: 'M0,0',
-  eyeBgPath: 'M0,0',
-  size: 21,
-})
+vi.spyOn(qrShapeRenderer, 'generateQRPaths').mockReturnValue(MOCK_PATHS)
 
 vi.spyOn(svgExporter, 'exportSvg').mockResolvedValue(
   new Blob(['<svg/>'], { type: 'image/svg+xml' }),
@@ -45,12 +54,7 @@ describe('useQRGenerator', () => {
     vi.clearAllMocks()
     vi.useFakeTimers()
     vi.spyOn(downloadUtils, 'downloadBlob').mockImplementation(() => {})
-    vi.spyOn(qrShapeRenderer, 'generateQRPaths').mockReturnValue({
-      dataPath: 'M0,0',
-      eyesPath: 'M0,0',
-      eyeBgPath: 'M0,0',
-      size: 21,
-    })
+    vi.spyOn(qrShapeRenderer, 'generateQRPaths').mockReturnValue(MOCK_PATHS)
     vi.spyOn(svgExporter, 'exportSvg').mockResolvedValue(
       new Blob(['<svg/>'], { type: 'image/svg+xml' }),
     )
@@ -144,7 +148,8 @@ describe('useQRGenerator', () => {
     expect(qrShapeRenderer.generateQRPaths).toHaveBeenCalledWith(
       'test-qr',
       expect.any(String),
-      DEFAULT_DESIGN_CONFIG.eyeShape,
+      DEFAULT_DESIGN_CONFIG.eyeFrameShape,
+      DEFAULT_DESIGN_CONFIG.eyeCenterShape,
       DEFAULT_DESIGN_CONFIG.pixelPattern,
     )
     expect(downloadUtils.downloadBlob).toHaveBeenCalled()

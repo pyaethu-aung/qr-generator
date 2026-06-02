@@ -15,7 +15,7 @@ export interface QRPreviewProps extends QRConfig {
 }
 
 export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
-  ({ value, ecLevel, fgColor, bgColor, size = 220, designConfig = { eyeShape: 'Square', pixelPattern: 'Square' }, className, style, logoDataUrl, logoSize, isPending }, forwardedRef) => {
+  ({ value, ecLevel, fgColor, bgColor, size = 220, designConfig = { eyeFrameShape: 'Square', eyeCenterShape: 'Square', eyeFrameColor: null, eyeCenterColor: null, pixelPattern: 'Square' }, className, style, logoDataUrl, logoSize, isPending }, forwardedRef) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
     const wrapperRef = useRef<HTMLDivElement | null>(null)
     const canFlashRef = useRef(false)
@@ -101,19 +101,23 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
       const gen = ++baseGenRef.current
       const dpr = window.devicePixelRatio || 1
       const physicalSize = Math.round(size * dpr)
-      const { dataPath, eyesPath, eyeBgPath, size: matrixSize } = generateQRPaths(
+      const { dataPath, eyeFramePath, eyeCenterPath, eyeBgPath, size: matrixSize } = generateQRPaths(
         value,
         ecLevel,
-        designConfig.eyeShape,
+        designConfig.eyeFrameShape,
+        designConfig.eyeCenterShape,
         designConfig.pixelPattern,
       )
       const viewBoxSize = matrixSize * 10
       const dataShapeRendering = designConfig.pixelPattern === 'Dots' ? 'geometricPrecision' : 'crispEdges'
+      const frameColor = designConfig.eyeFrameColor ?? fgColor
+      const centerColor = designConfig.eyeCenterColor ?? fgColor
       const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewBoxSize} ${viewBoxSize}" width="${physicalSize}" height="${physicalSize}">
         <rect width="100%" height="100%" fill="${bgColor}" />
         <path d="${dataPath}" fill="${fgColor}" shape-rendering="${dataShapeRendering}" />
         <path d="${eyeBgPath}" fill="${bgColor}" />
-        <path d="${eyesPath}" fill="${fgColor}" fill-rule="evenodd" />
+        <path d="${eyeFramePath}" fill="${frameColor}" fill-rule="evenodd" />
+        <path d="${eyeCenterPath}" fill="${centerColor}" />
       </svg>`
       const img = new Image()
       img.onload = () => {

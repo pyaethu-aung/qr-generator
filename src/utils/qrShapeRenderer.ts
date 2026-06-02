@@ -52,62 +52,84 @@ export function parseQRCode(value: string, ecLevel: 'L' | 'M' | 'Q' | 'H'): Pars
   return { size, modules }
 }
 
-export function getEyePath(shape: import('../types/qr').QREyeShape, x: number, y: number, cellSize: number): string {
+/**
+ * Eye FRAME (outer ring). Returns two subpaths — the outer 7×7 boundary and the 5×5
+ * hole — meant to be rendered with `fill-rule="evenodd"` so the hole punches the ring.
+ * The dark 3×3 center is NOT included here; see {@link getEyeCenterPath}. Splitting the
+ * frame from the center lets each take an independent shape and color.
+ */
+export function getEyeFramePath(shape: import('../types/qr').QREyeFrameShape, x: number, y: number, cellSize: number): string {
   const s = cellSize;
-  // All eye paths use even-odd fill rule (declared on the <path> element).
-  // Subpaths must be ordered: outer frame → separator gap → inner center.
-  // The even-odd rule automatically punches holes at every alternating subpath,
-  // creating the mandatory 3-layer eye structure without needing to think about
-  // individual winding directions.
-
-  // Square: outer 7×7 → white 5×5 gap → dark 3×3 center
-  const squarePath =
-    `M${x},${y} h${7*s} v${7*s} h-${7*s} Z ` +
-    `M${x+s},${y+s} h${5*s} v${5*s} h-${5*s} Z ` +
-    `M${x+2*s},${y+2*s} h${3*s} v${3*s} h-${3*s} Z`;
 
   if (shape === 'Rounded') {
-    // Rounded: outer 7×7 (r=1.5s) → white 5×5 gap (r=s) → dark 3×3 center as circle (r=1.5s)
+    // outer 7×7 (r=1.5s) → 5×5 hole (r=s)
     return (
       `M${x+1.5*s},${y} h${4*s} a${1.5*s},${1.5*s} 0 0 1 ${1.5*s},${1.5*s} v${4*s} a${1.5*s},${1.5*s} 0 0 1 -${1.5*s},${1.5*s} h-${4*s} a${1.5*s},${1.5*s} 0 0 1 -${1.5*s},-${1.5*s} v-${4*s} a${1.5*s},${1.5*s} 0 0 1 ${1.5*s},-${1.5*s} Z ` +
-      `M${x+2*s},${y+s} h${3*s} a${s},${s} 0 0 1 ${s},${s} v${3*s} a${s},${s} 0 0 1 -${s},${s} h-${3*s} a${s},${s} 0 0 1 -${s},-${s} v-${3*s} a${s},${s} 0 0 1 ${s},-${s} Z ` +
-      `M${x+2*s},${y+3.5*s} a${1.5*s},${1.5*s} 0 1 0 ${3*s},0 a${1.5*s},${1.5*s} 0 1 0 -${3*s},0 Z`
+      `M${x+2*s},${y+s} h${3*s} a${s},${s} 0 0 1 ${s},${s} v${3*s} a${s},${s} 0 0 1 -${s},${s} h-${3*s} a${s},${s} 0 0 1 -${s},-${s} v-${3*s} a${s},${s} 0 0 1 ${s},-${s} Z`
     );
   }
 
-  if (shape === 'Diamond') {
-    const cx = x + 3.5*s;
+  if (shape === 'Circle') {
     const cy = y + 3.5*s;
-    // outer diamond → white diamond gap (1 module inset) → dark 3×3-equiv center (2 modules inset)
+    // outer circle (r=3.5s) → hole circle (r=2.5s)
     return (
-      `M${cx},${y} L${x+7*s},${cy} L${cx},${y+7*s} L${x},${cy} Z ` +
-      `M${cx},${y+s} L${x+6*s},${cy} L${cx},${y+6*s} L${x+s},${cy} Z ` +
-      `M${cx},${y+2*s} L${x+5*s},${cy} L${cx},${y+5*s} L${x+2*s},${cy} Z`
+      `M${x},${cy} a${3.5*s},${3.5*s} 0 1 0 ${7*s},0 a${3.5*s},${3.5*s} 0 1 0 -${7*s},0 Z ` +
+      `M${x+s},${cy} a${2.5*s},${2.5*s} 0 1 0 ${5*s},0 a${2.5*s},${2.5*s} 0 1 0 -${5*s},0 Z`
     );
   }
 
   if (shape === 'Leaf') {
-    // Top-left sharp, bottom-right rounded outer → white gap inner → dark center
+    // Top-left sharp, bottom-right rounded outer → 5×5 hole (matching corners)
     return (
       `M${x},${y} h${5.5*s} a${1.5*s},${1.5*s} 0 0 1 ${1.5*s},${1.5*s} v${5.5*s} h-${5.5*s} a${1.5*s},${1.5*s} 0 0 1 -${1.5*s},-${1.5*s} Z ` +
-      `M${x+s},${y+s} h${4*s} a${s},${s} 0 0 1 ${s},${s} v${4*s} h-${4*s} a${s},${s} 0 0 1 -${s},-${s} Z ` +
-      `M${x+2*s},${y+2*s} h${2.5*s} a${0.5*s},${0.5*s} 0 0 1 ${0.5*s},${0.5*s} v${2.5*s} h-${2.5*s} a${0.5*s},${0.5*s} 0 0 1 -${0.5*s},-${0.5*s} Z`
+      `M${x+s},${y+s} h${4*s} a${s},${s} 0 0 1 ${s},${s} v${4*s} h-${4*s} a${s},${s} 0 0 1 -${s},-${s} Z`
     );
   }
 
   if (shape === 'Hexagon') {
     const cx = x + 3.5*s;
     // Pointy-top hexagon: side vertices at H/4 and 3H/4 of each layer's height.
-    // outer 7s tall: sides at 1.75s, 5.25s. gap 5s tall (y+s..y+6s): sides at y+2.25s, y+4.75s.
-    // inner 3s tall (y+2s..y+5s): sides at y+2.75s, y+4.25s.
+    // outer 7s tall: sides at 1.75s, 5.25s. hole 5s tall (y+s..y+6s): sides at y+2.25s, y+4.75s.
     return (
       `M${cx},${y} L${x+7*s},${y+1.75*s} L${x+7*s},${y+5.25*s} L${cx},${y+7*s} L${x},${y+5.25*s} L${x},${y+1.75*s} Z ` +
-      `M${cx},${y+s} L${x+6*s},${y+2.25*s} L${x+6*s},${y+4.75*s} L${cx},${y+6*s} L${x+s},${y+4.75*s} L${x+s},${y+2.25*s} Z ` +
-      `M${cx},${y+2*s} L${x+5*s},${y+2.75*s} L${x+5*s},${y+4.25*s} L${cx},${y+5*s} L${x+2*s},${y+4.25*s} L${x+2*s},${y+2.75*s} Z`
+      `M${cx},${y+s} L${x+6*s},${y+2.25*s} L${x+6*s},${y+4.75*s} L${cx},${y+6*s} L${x+s},${y+4.75*s} L${x+s},${y+2.25*s} Z`
     );
   }
 
-  return squarePath;
+  // Square: outer 7×7 → 5×5 hole
+  return (
+    `M${x},${y} h${7*s} v${7*s} h-${7*s} Z ` +
+    `M${x+s},${y+s} h${5*s} v${5*s} h-${5*s} Z`
+  );
+}
+
+/**
+ * Eye CENTER (the dark 3×3 dot, inset 2 modules). A single filled subpath rendered with
+ * the default non-zero fill rule. Pairs with any {@link getEyeFramePath} shape.
+ */
+export function getEyeCenterPath(shape: import('../types/qr').QREyeCenterShape, x: number, y: number, cellSize: number): string {
+  const s = cellSize;
+  const cx = x + 3.5*s;
+  const cy = y + 3.5*s;
+
+  if (shape === 'Rounded') {
+    // 3×3 rounded square (r=0.75s)
+    return (
+      `M${x+2.75*s},${y+2*s} h${1.5*s} a${0.75*s},${0.75*s} 0 0 1 ${0.75*s},${0.75*s} v${1.5*s} a${0.75*s},${0.75*s} 0 0 1 -${0.75*s},${0.75*s} h-${1.5*s} a${0.75*s},${0.75*s} 0 0 1 -${0.75*s},-${0.75*s} v-${1.5*s} a${0.75*s},${0.75*s} 0 0 1 ${0.75*s},-${0.75*s} Z`
+    );
+  }
+
+  if (shape === 'Dot') {
+    // circle (r=1.5s) centered in the 3×3 zone
+    return `M${x+2*s},${cy} a${1.5*s},${1.5*s} 0 1 0 ${3*s},0 a${1.5*s},${1.5*s} 0 1 0 -${3*s},0 Z`;
+  }
+
+  if (shape === 'Diamond') {
+    return `M${cx},${y+2*s} L${x+5*s},${cy} L${cx},${y+5*s} L${x+2*s},${cy} Z`;
+  }
+
+  // Square: dark 3×3
+  return `M${x+2*s},${y+2*s} h${3*s} v${3*s} h-${3*s} Z`;
 }
 
 export function getDataPath(pattern: import('../types/qr').QRPixelPattern, x: number, y: number, cellSize: number): string {
@@ -119,10 +141,17 @@ export function getDataPath(pattern: import('../types/qr').QRPixelPattern, x: nu
   return `M${x},${y} h${s} v${s} h-${s} Z `;
 }
 
-export function generateQRPaths(value: string, ecLevel: 'L'|'M'|'Q'|'H', eyeShape: import('../types/qr').QREyeShape, pattern: import('../types/qr').QRPixelPattern, cellSize: number = 10) {
+export function generateQRPaths(
+  value: string,
+  ecLevel: 'L'|'M'|'Q'|'H',
+  eyeFrameShape: import('../types/qr').QREyeFrameShape,
+  eyeCenterShape: import('../types/qr').QREyeCenterShape,
+  pattern: import('../types/qr').QRPixelPattern,
+  cellSize: number = 10,
+) {
   const parsed = parseQRCode(value, ecLevel);
   const size = parsed.size;
-  
+
   let dataPath = '';
   parsed.modules.forEach(m => {
     if (m.isDark && m.type === 'data') {
@@ -130,11 +159,20 @@ export function generateQRPaths(value: string, ecLevel: 'L'|'M'|'Q'|'H', eyeShap
     }
   });
 
-  // Calculate standard 3 eyes locations strictly at top-left, top-right, bottom-left
-  const eyesPath =
-    getEyePath(eyeShape, 0, 0, cellSize) + ' ' +
-    getEyePath(eyeShape, (size - 7) * cellSize, 0, cellSize) + ' ' +
-    getEyePath(eyeShape, 0, (size - 7) * cellSize, cellSize);
+  // Standard 3 eye locations: top-left, top-right, bottom-left.
+  // Frame (ring, even-odd) and center (fill) are emitted as separate paths so each can
+  // carry an independent shape and color.
+  const eyePositions: [number, number][] = [
+    [0, 0],
+    [(size - 7) * cellSize, 0],
+    [0, (size - 7) * cellSize],
+  ];
+  const eyeFramePath = eyePositions
+    .map(([ex, ey]) => getEyeFramePath(eyeFrameShape, ex, ey, cellSize))
+    .join(' ');
+  const eyeCenterPath = eyePositions
+    .map(([ex, ey]) => getEyeCenterPath(eyeCenterShape, ex, ey, cellSize))
+    .join(' ');
 
   // 8×8 background rects (eye zone + 1-module separator) per eye position.
   // Separator modules are always white per QR spec, so covering them is safe.
@@ -147,5 +185,5 @@ export function generateQRPaths(value: string, ecLevel: 'L'|'M'|'Q'|'H', eyeShap
     `M${(size-8)*c},0 h${8*c} v${8*c} h-${8*c} Z ` +
     `M0,${(size-8)*c} h${8*c} v${8*c} h-${8*c} Z`;
 
-  return { dataPath, eyesPath, eyeBgPath, size };
+  return { dataPath, eyeFramePath, eyeCenterPath, eyeBgPath, size };
 }

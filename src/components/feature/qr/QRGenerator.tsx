@@ -38,7 +38,10 @@ export const QRGenerator = () => {
 
   const {
     designConfig,
-    setEyeShape,
+    setEyeFrameShape,
+    setEyeCenterShape,
+    setEyeFrameColor,
+    setEyeCenterColor,
     setPixelPattern,
     isRiskyPattern,
     dismissWarning,
@@ -131,10 +134,22 @@ export const QRGenerator = () => {
                   { value: 'Q', label: translate('controls.correctionQuartile') },
                   { value: 'H', label: translate('controls.correctionHigh') },
                 ]}
-                eyeShape={designConfig.eyeShape}
-                onEyeShapeChange={setEyeShape}
+                eyeFrameShape={designConfig.eyeFrameShape}
+                onEyeFrameShapeChange={setEyeFrameShape}
+                eyeCenterShape={designConfig.eyeCenterShape}
+                onEyeCenterShapeChange={setEyeCenterShape}
+                eyeFrameColor={designConfig.eyeFrameColor}
+                onEyeFrameColorChange={setEyeFrameColor}
+                eyeCenterColor={designConfig.eyeCenterColor}
+                onEyeCenterColorChange={setEyeCenterColor}
+                eyeFrameLabel={translate('controls.eyeFrameLabel')}
+                eyeCenterLabel={translate('controls.eyeCenterLabel')}
+                eyeFrameColorLabel={translate('controls.eyeFrameColorLabel')}
+                eyeCenterColorLabel={translate('controls.eyeCenterColorLabel')}
+                eyeColorMatchForegroundLabel={translate('controls.eyeColorMatchForeground')}
                 pixelPattern={designConfig.pixelPattern}
                 onPixelPatternChange={setPixelPattern}
+                pixelPatternLabel={translate('controls.pixelPatternLabel')}
                 isRiskyPattern={isRiskyPattern}
                 onDismissWarning={dismissWarning}
                 dismissWarningAriaLabel={translate('controls.dismissWarningAriaLabel')}
