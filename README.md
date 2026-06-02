@@ -6,6 +6,24 @@
 
 Single-page app for generating QR codes with real-time preview and download.
 
+## Customization
+
+QR codes can be styled before download:
+
+- **Eye border & eye center** — the three finder squares are styled as two
+  independent parts: the outer border (Square, Rounded, Circle, Leaf, Hexagon)
+  and the inner center (Square, Rounded, Dot, Diamond), in any combination.
+- **Eye colors** — the border and center each take their own color, independent
+  of the data modules. Both default to the foreground color ("Match foreground").
+- **Pixel pattern** — data modules render as Square or Dots.
+- **Colors, error correction & logo** — foreground/background colors, EC level,
+  and an optional centered logo overlay.
+
+The white separator gap and dark center are always preserved, so any eye
+combination stays scannable. Path rendering lives in
+`src/utils/qrShapeRenderer.ts`; styling state is owned by `useQRDesign` and
+persisted to `localStorage`.
+
 ## Stack
 
 - React 19, TypeScript, Vite 7
