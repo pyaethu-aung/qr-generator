@@ -112,4 +112,20 @@ describe('qrShapeRenderer Matrix Parser (Foundational)', () => {
     expect(eyeBgPath).toContain(`M${(size-8)*10},0`);
     expect(eyeBgPath).toContain(`M0,${(size-8)*10}`);
   })
+
+  it('[US3] new eye FRAME shapes render correct outer/inner geometry', () => {
+    const squareRound = getEyeFramePath('SquareRound', 0, 0, 10);
+    expect(squareRound).toContain('M0,0')    // square outer start
+    expect(squareRound).toContain('h70')     // outer 7 * 10
+    expect(squareRound).toContain('a10,10') // rounded inner hole arc
+
+    const roundSquare = getEyeFramePath('RoundSquare', 0, 0, 10);
+    expect(roundSquare).toContain('a15,15') // rounded outer arc r=1.5*10
+    expect(roundSquare).toContain('h50')    // square 5×5 inner hole h=5*10
+
+    const diamond = getEyeFramePath('Diamond', 0, 0, 10);
+    expect(diamond).toContain('M35,0')   // outer apex at x+3.5s=35
+    expect(diamond).toContain('L70,35')  // outer right vertex at x+7s,y+3.5s
+    expect(diamond).toContain('M35,10')  // inner apex at x+3.5s,y+s
+  })
 })
