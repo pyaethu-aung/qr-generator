@@ -619,13 +619,13 @@ export function QRControls({
                 </svg>
                 <div className="flex flex-col">
                   <strong className="font-semibold block">Readability Risk</strong>
-                  <span className="opacity-90">High density shapes may affect camera readability.</span>
+                  <span>High density shapes may affect camera readability.</span>
                 </div>
               </div>
               {onDismissWarning && (
                 <button
                   onClick={onDismissWarning}
-                  className="ml-4 shrink-0 rounded-md p-1 text-warning hover:bg-warning-border/20 focus:outline-none focus:ring-2 focus:ring-warning focus:ring-offset-2"
+                  className="ml-4 shrink-0 rounded-md p-2.5 text-warning hover:bg-warning-border/20 focus:outline-none focus:ring-2 focus:ring-warning focus:ring-offset-2"
                   aria-label={dismissWarningAriaLabel}
                 >
                   <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
