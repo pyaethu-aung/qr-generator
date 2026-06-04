@@ -606,58 +606,62 @@ export function QRControls({
           )}
 
           {/* Color pickers — 44px inset boxes */}
-          <div className="flex flex-wrap gap-4">
-            <div className="min-w-[120px] flex-1 flex flex-col gap-1">
-              <label htmlFor={fgColorId} className="text-sm font-medium text-text-primary">{foregroundLabel}</label>
-              <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3 focus-within:ring-2 focus-within:ring-focus-ring focus-within:outline-none">
-                <div className="h-5 w-5 shrink-0 rounded-full border-2 border-border-strong" style={{ backgroundColor: fgColor }} />
-                <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
-                  {fgColor}
-                </span>
-                <input
-                  id={fgColorId}
-                  type="color"
-                  value={fgColor}
-                  onChange={(e) => onFgColorChange(e.target.value)}
-                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0 focus:outline-none"
-                />
+          <div className="flex flex-col gap-4">
+            <div className="flex gap-4">
+              <div className="min-w-[120px] flex-1 flex flex-col gap-1">
+                <label htmlFor={fgColorId} className="text-sm font-medium text-text-primary">{foregroundLabel}</label>
+                <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3 focus-within:ring-2 focus-within:ring-focus-ring focus-within:outline-none">
+                  <div className="h-5 w-5 shrink-0 rounded-full border-2 border-border-strong" style={{ backgroundColor: fgColor }} />
+                  <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
+                    {fgColor}
+                  </span>
+                  <input
+                    id={fgColorId}
+                    type="color"
+                    value={fgColor}
+                    onChange={(e) => onFgColorChange(e.target.value)}
+                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="min-w-[120px] flex-1 flex flex-col gap-1">
+                <label htmlFor={bgColorId} className="text-sm font-medium text-text-primary">{backgroundLabel}</label>
+                <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3 focus-within:ring-2 focus-within:ring-focus-ring focus-within:outline-none">
+                  <div className="h-5 w-5 shrink-0 rounded-full border-2 border-border-strong" style={{ backgroundColor: bgColor }} />
+                  <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
+                    {bgColor}
+                  </span>
+                  <input
+                    id={bgColorId}
+                    type="color"
+                    value={bgColor}
+                    onChange={(e) => onBgColorChange(e.target.value)}
+                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0 focus:outline-none"
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="min-w-[120px] flex-1 flex flex-col gap-1">
-              <label htmlFor={bgColorId} className="text-sm font-medium text-text-primary">{backgroundLabel}</label>
-              <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3 focus-within:ring-2 focus-within:ring-focus-ring focus-within:outline-none">
-                <div className="h-5 w-5 shrink-0 rounded-full border-2 border-border-strong" style={{ backgroundColor: bgColor }} />
-                <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
-                  {bgColor}
-                </span>
-                <input
-                  id={bgColorId}
-                  type="color"
-                  value={bgColor}
-                  onChange={(e) => onBgColorChange(e.target.value)}
-                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0 focus:outline-none"
-                />
-              </div>
+            <div className="flex gap-4">
+              <EyeColorField
+                id={eyeFrameColorId}
+                label={eyeFrameColorLabel}
+                color={eyeFrameColor}
+                fallbackColor={fgColor}
+                onChange={onEyeFrameColorChange}
+                matchLabel={eyeColorMatchForegroundLabel}
+              />
+
+              <EyeColorField
+                id={eyeCenterColorId}
+                label={eyeCenterColorLabel}
+                color={eyeCenterColor}
+                fallbackColor={fgColor}
+                onChange={onEyeCenterColorChange}
+                matchLabel={eyeColorMatchForegroundLabel}
+              />
             </div>
-
-            <EyeColorField
-              id={eyeFrameColorId}
-              label={eyeFrameColorLabel}
-              color={eyeFrameColor}
-              fallbackColor={fgColor}
-              onChange={onEyeFrameColorChange}
-              matchLabel={eyeColorMatchForegroundLabel}
-            />
-
-            <EyeColorField
-              id={eyeCenterColorId}
-              label={eyeCenterColorLabel}
-              color={eyeCenterColor}
-              fallbackColor={fgColor}
-              onChange={onEyeCenterColorChange}
-              matchLabel={eyeColorMatchForegroundLabel}
-            />
           </div>
 
           {/* Logo upload */}
