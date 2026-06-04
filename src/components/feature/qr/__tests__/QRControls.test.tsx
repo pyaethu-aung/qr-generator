@@ -216,3 +216,69 @@ describe('QRControls configuration updates', () => {
     expect(screen.queryByRole('button', { name: /Generate QR Code/i })).not.toBeInTheDocument()
   })
 })
+
+describe('color contrast warning', () => {
+  it('does not show a warning when contrast is good (dark on light)', () => {
+    setup({ fgColor: '#000000', bgColor: '#ffffff' })
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('shows a "Contrast Risk" warning when fg/bg contrast ratio is below 3:1', () => {
+    // #cccccc on #ffffff ≈ 1.6:1 — well below threshold
+    setup({ fgColor: '#cccccc', bgColor: '#ffffff' })
+
+    expect(screen.getByRole('alert')).toBeInTheDocument()
+    expect(screen.getByText('Contrast Risk')).toBeInTheDocument()
+  })
+
+  it('shows an "Inverted Colors" warning when fg is lighter than bg with good contrast', () => {
+    // #ffffff on #000000 is 21:1 but inverted
+    setup({ fgColor: '#ffffff', bgColor: '#000000' })
+
+    expect(screen.getByRole('alert')).toBeInTheDocument()
+    expect(screen.getByText('Inverted Colors')).toBeInTheDocument()
+  })
+
+  it('hides the warning after the dismiss button is clicked', () => {
+    setup({ fgColor: '#cccccc', bgColor: '#ffffff' })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Dismiss contrast warning' }))
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('resets dismissal and shows warning again when colors change', () => {
+    const { rerender } = setup({ fgColor: '#cccccc', bgColor: '#ffffff' })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Dismiss contrast warning' }))
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+
+    rerender(
+      <LocaleProvider>
+        <QRControls
+          value=""
+          ecLevel="M"
+          eyeFrameShape="Square"
+          eyeCenterShape="Square"
+          eyeFrameColor={null}
+          eyeCenterColor={null}
+          pixelPattern="Square"
+          fgColor="#dddddd"
+          bgColor="#ffffff"
+          onValueChange={vi.fn()}
+          onEcLevelChange={vi.fn()}
+          onEyeFrameShapeChange={vi.fn()}
+          onEyeCenterShapeChange={vi.fn()}
+          onEyeFrameColorChange={vi.fn()}
+          onEyeCenterColorChange={vi.fn()}
+          onPixelPatternChange={vi.fn()}
+          onFgColorChange={vi.fn()}
+          onBgColorChange={vi.fn()}
+        />
+      </LocaleProvider>,
+    )
+
+    expect(screen.getByRole('alert')).toBeInTheDocument()
+  })
+})
