@@ -1,4 +1,4 @@
-import { useRef, useState, useId, useEffect } from 'react'
+import { useRef, useState, useId } from 'react'
 import { Download, Check, ChevronDown, ChevronUp, Upload, X, Wifi, Link, User, Mail } from 'lucide-react'
 import { Input } from '../../common/Input'
 import { PillGroup } from '../../common/PillGroup'
@@ -397,13 +397,13 @@ export function QRControls({
   const logoSizeId = useId()
   const logoFileId = useId()
 
-  const [isContrastDismissed, setIsContrastDismissed] = useState(false)
-  useEffect(() => { setIsContrastDismissed(false) }, [fgColor, bgColor])
+  const [dismissedColors, setDismissedColors] = useState<{ fg: string; bg: string } | null>(null)
   const fgLum = relativeLuminance(fgColor)
   const bgLum = relativeLuminance(bgColor)
   const colorContrast = wcagContrastRatio(fgColor, bgColor)
   const isLowContrast = colorContrast !== null && colorContrast < 3
   const isInvertedColors = !isLowContrast && fgLum !== null && bgLum !== null && fgLum > bgLum
+  const isContrastDismissed = dismissedColors !== null && dismissedColors.fg === fgColor && dismissedColors.bg === bgColor
   const showContrastWarning = !isContrastDismissed && (isLowContrast || isInvertedColors)
   const contrastRatioLabel = colorContrast !== null ? `${colorContrast.toFixed(1)}:1` : null
 
@@ -847,7 +847,7 @@ export function QRControls({
             </div>
             <button
               type="button"
-              onClick={() => setIsContrastDismissed(true)}
+              onClick={() => setDismissedColors({ fg: fgColor, bg: bgColor })}
               className="ml-4 shrink-0 rounded-md p-2.5 text-warning hover:bg-warning-border/20 focus:outline-none focus:ring-2 focus:ring-warning focus:ring-offset-2"
               aria-label="Dismiss contrast warning"
             >
