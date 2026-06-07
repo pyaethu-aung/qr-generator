@@ -115,8 +115,8 @@ describe('QRControls configuration updates', () => {
     setup({ eyeFrameShape: 'Circle', eyeCenterShape: 'Diamond' })
     openAppearance()
 
-    const borderGroup = screen.getByRole('group', { name: 'Eye Border' })
-    const centerGroup = screen.getByRole('group', { name: 'Eye Center' })
+    const borderGroup = screen.getByRole('group', { name: 'Corner Frame' })
+    const centerGroup = screen.getByRole('group', { name: 'Corner Dot' })
 
     expect(borderGroup.querySelector('[aria-pressed="true"]')).toHaveAttribute('aria-label', 'Circle frame')
     expect(centerGroup.querySelector('[aria-pressed="true"]')).toHaveAttribute('aria-label', 'Diamond center')
