@@ -59,6 +59,11 @@ const setup = (overrides: Partial<QRControlsProps> = {}) => {
   }
 }
 
+function openAppearance() {
+  const btn = screen.getByRole('button', { name: 'Appearance' })
+  if (btn.getAttribute('aria-expanded') === 'false') fireEvent.click(btn)
+}
+
 describe('QRControls configuration updates', () => {
   it('calls onValueChange when the input text changes', () => {
     const { onValueChange } = setup()
@@ -90,6 +95,7 @@ describe('QRControls configuration updates', () => {
 
   it('[US1] calls onEyeFrameShapeChange when an eye border swatch is clicked', () => {
     const { onEyeFrameShapeChange } = setup()
+    openAppearance()
 
     fireEvent.click(screen.getByRole('button', { name: 'Hexagon frame' }))
 
@@ -98,6 +104,7 @@ describe('QRControls configuration updates', () => {
 
   it('[US1] calls onEyeCenterShapeChange when an eye center swatch is clicked', () => {
     const { onEyeCenterShapeChange } = setup()
+    openAppearance()
 
     fireEvent.click(screen.getByRole('button', { name: 'Dot center' }))
 
@@ -106,6 +113,7 @@ describe('QRControls configuration updates', () => {
 
   it('border and center shape pickers are independent groups', () => {
     setup({ eyeFrameShape: 'Circle', eyeCenterShape: 'Diamond' })
+    openAppearance()
 
     const borderGroup = screen.getByRole('group', { name: 'Eye Border' })
     const centerGroup = screen.getByRole('group', { name: 'Eye Center' })
@@ -116,6 +124,7 @@ describe('QRControls configuration updates', () => {
 
   it('reveals "Match foreground" reset only after an eye color is set, and reverts to inherit', () => {
     const { rerender, onEyeFrameColorChange } = setup()
+    openAppearance()
 
     // Inherit by default → no reset link
     expect(screen.queryByRole('button', { name: 'Match foreground' })).not.toBeInTheDocument()
@@ -152,6 +161,7 @@ describe('QRControls configuration updates', () => {
 
   it('[US2] calls onPixelPatternChange when a pixel pattern pill is clicked', () => {
     const { onPixelPatternChange } = setup()
+    openAppearance()
 
     fireEvent.click(screen.getByRole('button', { name: 'Dots pattern' }))
 
@@ -160,6 +170,7 @@ describe('QRControls configuration updates', () => {
 
   it('marks the active pixel pattern swatch with aria-pressed=true', () => {
     setup({ eyeFrameShape: 'Rounded', pixelPattern: 'Square' })
+    openAppearance()
 
     const pixelGroup = screen.getByRole('group', { name: 'Pixel Pattern' })
     const activeButton = pixelGroup.querySelector('[aria-pressed="true"]')
@@ -168,6 +179,7 @@ describe('QRControls configuration updates', () => {
 
   it('calls color change handlers when pickers are used', () => {
     const { container, onFgColorChange, onBgColorChange, onEyeFrameColorChange, onEyeCenterColorChange } = setup()
+    openAppearance()
 
     // Foreground, Background, Eye Border, Eye Center
     const colorInputs = Array.from(container.querySelectorAll('input[type="color"]'))

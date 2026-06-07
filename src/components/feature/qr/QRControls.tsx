@@ -276,6 +276,7 @@ export interface QRControlsProps {
   logoErrorUrl?: string
   logoTransparencyHint?: string
   logoSizeCapHint?: string
+  appearanceLabel?: string
 }
 
 export function QRControls({
@@ -399,6 +400,7 @@ export function QRControls({
   logoErrorUrl = 'Could not load image from URL',
   logoTransparencyHint = 'PNG or SVG works best for transparent logos',
   logoSizeCapHint = 'Size capped at {max}% for this error correction level — switch to Highest for up to 30%',
+  appearanceLabel = 'Appearance',
 }: QRControlsProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [showUrlInput, setShowUrlInput] = useState(false)
@@ -407,6 +409,9 @@ export function QRControls({
   const [isDragOver, setIsDragOver] = useState(false)
   const [isLoadingLogo, setIsLoadingLogo] = useState(false)
   const [isLogoOpen, setIsLogoOpen] = useState(false)
+  const [isStyleOpen, setIsStyleOpen] = useState(() => {
+    try { return localStorage.getItem('qr-generator-style-open') === 'true' } catch { return false }
+  })
 
   const pixelPatternLabelId = useId()
   const fgColorId = useId()
@@ -557,164 +562,185 @@ export function QRControls({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Eye Border (frame) swatch grid */}
-            <div className="flex flex-col gap-1">
-              <span className="text-sm font-medium text-text-primary">{eyeFrameLabel}</span>
-              <div role="group" aria-label={eyeFrameLabel} className="grid grid-cols-4 gap-1">
-                {eyeFrameOptions.map(({ value: optValue, label }) => (
-                  <button
-                    key={optValue}
-                    type="button"
-                    title={`${label} frame`}
-                    aria-label={`${label} frame`}
-                    aria-pressed={eyeFrameShape === optValue}
-                    onClick={() => onEyeFrameShapeChange(optValue)}
-                    className={`flex h-11 items-center justify-center rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
-                      eyeFrameShape === optValue
-                        ? 'border-border-strong bg-surface-raised text-text-primary'
-                        : 'border-transparent bg-surface-inset text-text-secondary hover:bg-surface-raised hover:text-text-primary'
-                    }`}
-                  >
-                    <EyeFrameIcon shape={optValue} size={18} />
-                  </button>
-                ))}
-              </div>
-            </div>
+          <hr className="border-border-subtle" />
+          <button
+            type="button"
+            onClick={() => {
+              const next = !isStyleOpen
+              setIsStyleOpen(next)
+              try { localStorage.setItem('qr-generator-style-open', String(next)) } catch {}
+            }}
+            className="flex items-center justify-between w-full text-sm font-medium text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
+            aria-expanded={isStyleOpen}
+          >
+            <span>{appearanceLabel}</span>
+            {isStyleOpen ? (
+              <ChevronUp size={12} aria-hidden className="text-text-secondary" />
+            ) : (
+              <ChevronDown size={12} aria-hidden className="text-text-secondary" />
+            )}
+          </button>
 
-            {/* Eye Center (ball) swatch grid */}
-            <div className="flex flex-col gap-1">
-              <span className="text-sm font-medium text-text-primary">{eyeCenterLabel}</span>
-              <div role="group" aria-label={eyeCenterLabel} className="grid grid-cols-3 gap-1">
-                {eyeCenterOptions.map(({ value: optValue, label }) => (
-                  <button
-                    key={optValue}
-                    type="button"
-                    title={`${label} center`}
-                    aria-label={`${label} center`}
-                    aria-pressed={eyeCenterShape === optValue}
-                    onClick={() => onEyeCenterShapeChange(optValue)}
-                    className={`flex h-11 items-center justify-center rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
-                      eyeCenterShape === optValue
-                        ? 'border-border-strong bg-surface-raised text-text-primary'
-                        : 'border-transparent bg-surface-inset text-text-secondary hover:bg-surface-raised hover:text-text-primary'
-                    }`}
-                  >
-                    <EyeCenterIcon shape={optValue} size={18} />
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Pixel Pattern swatch grid */}
-          <div className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-text-primary" id={pixelPatternLabelId}>{pixelPatternLabel}</span>
-            <div role="group" aria-labelledby={pixelPatternLabelId} className="grid grid-cols-4 gap-1">
-              {pixelPatternOptions.map(({ value: optValue, label }) => (
-                <button
-                  key={optValue}
-                  type="button"
-                  title={`${label} pattern`}
-                  aria-label={`${label} pattern`}
-                  aria-pressed={pixelPattern === optValue}
-                  onClick={() => onPixelPatternChange(optValue)}
-                  className={`flex h-11 items-center justify-center rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
-                    pixelPattern === optValue
-                      ? 'border-border-strong bg-surface-raised text-text-primary'
-                      : 'border-transparent bg-surface-inset text-text-secondary hover:bg-surface-raised hover:text-text-primary'
-                  }`}
-                >
-                  <PixelPatternIcon pattern={optValue} size={18} />
-                </button>
-              ))}
-            </div>
-            <p className="text-xs text-text-secondary">Classy and Fluid merge touching modules into flowing shapes.</p>
-          </div>
-
-          {isRiskyPattern && (
-            <div className="flex items-start justify-between rounded-lg border border-warning-border bg-warning-surface p-3 text-sm text-warning shadow-sm" role="alert">
-              <div className="flex items-start gap-2">
-                <svg className="h-5 w-5 shrink-0 text-warning" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                </svg>
-                <div className="flex flex-col">
-                  <strong className="font-semibold block">Readability Risk</strong>
-                  <span>High density shapes may affect camera readability.</span>
+          {isStyleOpen && (<>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Eye Border (frame) swatch grid */}
+              <div className="flex flex-col gap-1">
+                <span className="text-sm font-medium text-text-primary">{eyeFrameLabel}</span>
+                <div role="group" aria-label={eyeFrameLabel} className="grid grid-cols-4 gap-1">
+                  {eyeFrameOptions.map(({ value: optValue, label }) => (
+                    <button
+                      key={optValue}
+                      type="button"
+                      title={`${label} frame`}
+                      aria-label={`${label} frame`}
+                      aria-pressed={eyeFrameShape === optValue}
+                      onClick={() => onEyeFrameShapeChange(optValue)}
+                      className={`flex h-11 items-center justify-center rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
+                        eyeFrameShape === optValue
+                          ? 'border-border-strong bg-surface-raised text-text-primary'
+                          : 'border-transparent bg-surface-inset text-text-secondary hover:bg-surface-raised hover:text-text-primary'
+                      }`}
+                    >
+                      <EyeFrameIcon shape={optValue} size={18} />
+                    </button>
+                  ))}
                 </div>
               </div>
-              {onDismissWarning && (
-                <button
-                  onClick={onDismissWarning}
-                  className="ml-4 shrink-0 rounded-md p-2.5 text-warning hover:bg-warning-border/20 focus:outline-none focus:ring-2 focus:ring-warning focus:ring-offset-2"
-                  aria-label={dismissWarningAriaLabel}
-                >
-                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+
+              {/* Eye Center (ball) swatch grid */}
+              <div className="flex flex-col gap-1">
+                <span className="text-sm font-medium text-text-primary">{eyeCenterLabel}</span>
+                <div role="group" aria-label={eyeCenterLabel} className="grid grid-cols-3 gap-1">
+                  {eyeCenterOptions.map(({ value: optValue, label }) => (
+                    <button
+                      key={optValue}
+                      type="button"
+                      title={`${label} center`}
+                      aria-label={`${label} center`}
+                      aria-pressed={eyeCenterShape === optValue}
+                      onClick={() => onEyeCenterShapeChange(optValue)}
+                      className={`flex h-11 items-center justify-center rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
+                        eyeCenterShape === optValue
+                          ? 'border-border-strong bg-surface-raised text-text-primary'
+                          : 'border-transparent bg-surface-inset text-text-secondary hover:bg-surface-raised hover:text-text-primary'
+                      }`}
+                    >
+                      <EyeCenterIcon shape={optValue} size={18} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Pixel Pattern swatch grid */}
+            <div className="flex flex-col gap-1">
+              <span className="text-sm font-medium text-text-primary" id={pixelPatternLabelId}>{pixelPatternLabel}</span>
+              <div role="group" aria-labelledby={pixelPatternLabelId} className="grid grid-cols-4 gap-1">
+                {pixelPatternOptions.map(({ value: optValue, label }) => (
+                  <button
+                    key={optValue}
+                    type="button"
+                    title={`${label} pattern`}
+                    aria-label={`${label} pattern`}
+                    aria-pressed={pixelPattern === optValue}
+                    onClick={() => onPixelPatternChange(optValue)}
+                    className={`flex h-11 items-center justify-center rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
+                      pixelPattern === optValue
+                        ? 'border-border-strong bg-surface-raised text-text-primary'
+                        : 'border-transparent bg-surface-inset text-text-secondary hover:bg-surface-raised hover:text-text-primary'
+                    }`}
+                  >
+                    <PixelPatternIcon pattern={optValue} size={18} />
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-text-secondary">Classy and Fluid merge touching modules into flowing shapes.</p>
+            </div>
+
+            {isRiskyPattern && (
+              <div className="flex items-start justify-between rounded-lg border border-warning-border bg-warning-surface p-3 text-sm text-warning shadow-sm" role="alert">
+                <div className="flex items-start gap-2">
+                  <svg className="h-5 w-5 shrink-0 text-warning" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                   </svg>
-                </button>
-              )}
-            </div>
-          )}
+                  <div className="flex flex-col">
+                    <strong className="font-semibold block">Readability Risk</strong>
+                    <span>High density shapes may affect camera readability.</span>
+                  </div>
+                </div>
+                {onDismissWarning && (
+                  <button
+                    onClick={onDismissWarning}
+                    className="ml-4 shrink-0 rounded-md p-2.5 text-warning hover:bg-warning-border/20 focus:outline-none focus:ring-2 focus:ring-warning focus:ring-offset-2"
+                    aria-label={dismissWarningAriaLabel}
+                  >
+                    <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            )}
 
-          {/* Color pickers — 44px inset boxes */}
-          <div className="flex flex-col gap-4">
-            <div className="flex gap-4">
-              <div className="min-w-[120px] flex-1 flex flex-col gap-1">
-                <label htmlFor={fgColorId} className="text-sm font-medium text-text-primary">{foregroundLabel}</label>
-                <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3 focus-within:ring-2 focus-within:ring-focus-ring focus-within:outline-none">
-                  <div className="h-5 w-5 shrink-0 rounded-full border-2 border-border-strong" style={{ backgroundColor: fgColor }} />
-                  <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
-                    {fgColor}
-                  </span>
-                  <input
-                    id={fgColorId}
-                    type="color"
-                    value={fgColor}
-                    onChange={(e) => onFgColorChange(e.target.value)}
-                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0 focus:outline-none"
-                  />
+            {/* Color pickers — 44px inset boxes */}
+            <div className="flex flex-col gap-4">
+              <div className="flex gap-4">
+                <div className="min-w-[120px] flex-1 flex flex-col gap-1">
+                  <label htmlFor={fgColorId} className="text-sm font-medium text-text-primary">{foregroundLabel}</label>
+                  <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3 focus-within:ring-2 focus-within:ring-focus-ring focus-within:outline-none">
+                    <div className="h-5 w-5 shrink-0 rounded-full border-2 border-border-strong" style={{ backgroundColor: fgColor }} />
+                    <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
+                      {fgColor}
+                    </span>
+                    <input
+                      id={fgColorId}
+                      type="color"
+                      value={fgColor}
+                      onChange={(e) => onFgColorChange(e.target.value)}
+                      className="absolute inset-0 h-full w-full cursor-pointer opacity-0 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="min-w-[120px] flex-1 flex flex-col gap-1">
+                  <label htmlFor={bgColorId} className="text-sm font-medium text-text-primary">{backgroundLabel}</label>
+                  <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3 focus-within:ring-2 focus-within:ring-focus-ring focus-within:outline-none">
+                    <div className="h-5 w-5 shrink-0 rounded-full border-2 border-border-strong" style={{ backgroundColor: bgColor }} />
+                    <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
+                      {bgColor}
+                    </span>
+                    <input
+                      id={bgColorId}
+                      type="color"
+                      value={bgColor}
+                      onChange={(e) => onBgColorChange(e.target.value)}
+                      className="absolute inset-0 h-full w-full cursor-pointer opacity-0 focus:outline-none"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div className="min-w-[120px] flex-1 flex flex-col gap-1">
-                <label htmlFor={bgColorId} className="text-sm font-medium text-text-primary">{backgroundLabel}</label>
-                <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3 focus-within:ring-2 focus-within:ring-focus-ring focus-within:outline-none">
-                  <div className="h-5 w-5 shrink-0 rounded-full border-2 border-border-strong" style={{ backgroundColor: bgColor }} />
-                  <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
-                    {bgColor}
-                  </span>
-                  <input
-                    id={bgColorId}
-                    type="color"
-                    value={bgColor}
-                    onChange={(e) => onBgColorChange(e.target.value)}
-                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0 focus:outline-none"
-                  />
-                </div>
+              <div className="flex gap-4">
+                <EyeColorField
+                  id={eyeFrameColorId}
+                  label={eyeFrameColorLabel}
+                  color={eyeFrameColor}
+                  fallbackColor={fgColor}
+                  onChange={onEyeFrameColorChange}
+                  matchLabel={eyeColorMatchForegroundLabel}
+                />
+
+                <EyeColorField
+                  id={eyeCenterColorId}
+                  label={eyeCenterColorLabel}
+                  color={eyeCenterColor}
+                  fallbackColor={fgColor}
+                  onChange={onEyeCenterColorChange}
+                  matchLabel={eyeColorMatchForegroundLabel}
+                />
               </div>
             </div>
-
-            <div className="flex gap-4">
-              <EyeColorField
-                id={eyeFrameColorId}
-                label={eyeFrameColorLabel}
-                color={eyeFrameColor}
-                fallbackColor={fgColor}
-                onChange={onEyeFrameColorChange}
-                matchLabel={eyeColorMatchForegroundLabel}
-              />
-
-              <EyeColorField
-                id={eyeCenterColorId}
-                label={eyeCenterColorLabel}
-                color={eyeCenterColor}
-                fallbackColor={fgColor}
-                onChange={onEyeCenterColorChange}
-                matchLabel={eyeColorMatchForegroundLabel}
-              />
-            </div>
-          </div>
+          </>)}
 
           {/* Logo upload */}
           {onLogoChange && (
