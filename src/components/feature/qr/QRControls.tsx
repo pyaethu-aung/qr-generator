@@ -47,10 +47,15 @@ function EyeCenterIcon({ shape, size = 18 }: { shape: QREyeCenterShape; size?: n
 }
 
 function previewModulePath(pattern: QRPixelPattern, x: number, y: number): string {
-  if (pattern === 'Dots')     return `M${x+4},${y+0.4} a3.6,3.6 0 1,0 0,7.2 a3.6,3.6 0 1,0 0,-7.2 Z`
-  if (pattern === 'Rounded')  return `M${x+2.8},${y} h2.4 a2.8,2.8 0 0 1 2.8,2.8 v2.4 a2.8,2.8 0 0 1 -2.8,2.8 h-2.4 a2.8,2.8 0 0 1 -2.8,-2.8 v-2.4 a2.8,2.8 0 0 1 2.8,-2.8 Z`
-  if (pattern === 'Diamond')  return `M${x+4},${y+0.8} L${x+7.2},${y+4} L${x+4},${y+7.2} L${x+0.8},${y+4} Z`
-  if (pattern === 'Vertical') return `M${x+0.8},${y} h6.4 v8 h-6.4 Z`
+  if (pattern === 'Dots')       return `M${x+4},${y+0.4} a3.6,3.6 0 1,0 0,7.2 a3.6,3.6 0 1,0 0,-7.2 Z`
+  if (pattern === 'Rounded')    return `M${x+2.8},${y} h2.4 a2.8,2.8 0 0 1 2.8,2.8 v2.4 a2.8,2.8 0 0 1 -2.8,2.8 h-2.4 a2.8,2.8 0 0 1 -2.8,-2.8 v-2.4 a2.8,2.8 0 0 1 2.8,-2.8 Z`
+  // Classy: top-left + bottom-right corners rounded (directional flow).
+  if (pattern === 'Classy')     return `M${x+3},${y} h5 v5 a3,3 0 0 1 -3,3 h-5 v-5 a3,3 0 0 1 3,-3 Z`
+  // Fluid: all four corners rounded (soft squircle).
+  if (pattern === 'Fluid')      return `M${x+3},${y} h2 a3,3 0 0 1 3,3 v2 a3,3 0 0 1 -3,3 h-2 a3,3 0 0 1 -3,-3 v-2 a3,3 0 0 1 3,-3 Z`
+  if (pattern === 'Diamond')    return `M${x+4},${y+0.8} L${x+7.2},${y+4} L${x+4},${y+7.2} L${x+0.8},${y+4} Z`
+  if (pattern === 'Vertical')   return `M${x+0.8},${y} h6.4 v8 h-6.4 Z`
+  if (pattern === 'Horizontal') return `M${x},${y+0.8} h8 v6.4 h-8 Z`
   return `M${x},${y} h8 v8 h-8 Z`
 }
 
@@ -58,7 +63,16 @@ function previewModulePath(pattern: QRPixelPattern, x: number, y: number): strin
 const PATTERN_PREVIEW_PATHS: Record<QRPixelPattern, string> = (() => {
   const pos = [0, 10, 20]
   const build = (p: QRPixelPattern) => pos.flatMap(y => pos.map(x => previewModulePath(p, x, y))).join(' ')
-  return { Square: build('Square'), Dots: build('Dots'), Rounded: build('Rounded'), Diamond: build('Diamond'), Vertical: build('Vertical') }
+  return {
+    Square: build('Square'),
+    Dots: build('Dots'),
+    Rounded: build('Rounded'),
+    Classy: build('Classy'),
+    Fluid: build('Fluid'),
+    Diamond: build('Diamond'),
+    Vertical: build('Vertical'),
+    Horizontal: build('Horizontal'),
+  }
 })()
 
 // PIXEL PATTERN swatch — 3×3 grid of module previews (8px module, 2px gap, 28×28 total).
@@ -329,10 +343,13 @@ export function QRControls({
   ],
   pixelPatternOptions = [
     { value: 'Square', label: 'Square' },
-    { value: 'Rounded', label: 'Rounded' },
     { value: 'Dots', label: 'Dots' },
+    { value: 'Rounded', label: 'Rounded' },
+    { value: 'Classy', label: 'Classy' },
+    { value: 'Fluid', label: 'Fluid' },
     { value: 'Diamond', label: 'Diamond' },
     { value: 'Vertical', label: 'Vertical' },
+    { value: 'Horizontal', label: 'Horizontal' },
   ],
   isRiskyPattern,
   onDismissWarning,
@@ -591,7 +608,7 @@ export function QRControls({
           {/* Pixel Pattern swatch grid */}
           <div className="flex flex-col gap-1">
             <span className="text-sm font-medium text-text-primary" id={pixelPatternLabelId}>{pixelPatternLabel}</span>
-            <div role="group" aria-labelledby={pixelPatternLabelId} className="grid grid-cols-5 gap-1">
+            <div role="group" aria-labelledby={pixelPatternLabelId} className="grid grid-cols-4 gap-1">
               {pixelPatternOptions.map(({ value: optValue, label }) => (
                 <button
                   key={optValue}
