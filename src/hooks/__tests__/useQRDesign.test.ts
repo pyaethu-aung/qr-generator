@@ -205,4 +205,23 @@ describe('useQRDesign - isRiskyPattern', () => {
     act(() => { result.current.setPixelPattern('Diamond') })
     expect(result.current.isRiskyPattern).toBe(false)
   })
+
+  it('triggers isRiskyPattern for Horizontal pattern at high density', () => {
+    const denseValue = 'https://example.com/'.repeat(50)
+    const { result } = renderHook(() => useQRDesign(denseValue, 'H'))
+
+    act(() => { result.current.setPixelPattern('Horizontal') })
+    expect(result.current.isRiskyPattern).toBe(true)
+  })
+
+  it('does not trigger isRiskyPattern for the connected patterns at high density', () => {
+    const denseValue = 'https://example.com/'.repeat(50)
+    const { result } = renderHook(() => useQRDesign(denseValue, 'H'))
+
+    act(() => { result.current.setPixelPattern('Classy') })
+    expect(result.current.isRiskyPattern).toBe(false)
+
+    act(() => { result.current.setPixelPattern('Fluid') })
+    expect(result.current.isRiskyPattern).toBe(false)
+  })
 })

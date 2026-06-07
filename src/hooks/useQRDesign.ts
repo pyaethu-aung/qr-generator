@@ -13,7 +13,7 @@ const EC_LOGO_MAX: Record<QRErrorCorrectionLevel, number> = { L: 7, M: 15, Q: 25
 
 const DESIGN_STORAGE_KEY = 'qr-generator-design-config'
 
-const RISKY_PATTERNS = new Set<QRPixelPattern>(['Dots', 'Vertical'])
+const RISKY_PATTERNS = new Set<QRPixelPattern>(['Dots', 'Vertical', 'Horizontal'])
 
 const DEFAULT_DESIGN_CONFIG: QRDesignConfig = {
   eyeFrameShape: 'Square',

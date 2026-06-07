@@ -176,14 +176,64 @@ export function getEyeCenterPath(shape: import('../types/qr').QREyeCenterShape, 
 
 /**
  * Returns the SVG `shape-rendering` value appropriate for a given pattern.
- * Rectilinear patterns (Square, Vertical) use `crispEdges` for sharp pixel-aligned rendering.
- * Curved or diagonal patterns (Rounded, Diamond, Dots) use `geometricPrecision` to avoid jagged edges.
+ * Rectilinear patterns (Square, Vertical, Horizontal) use `crispEdges` for sharp
+ * pixel-aligned rendering. Curved or diagonal patterns (Rounded, Diamond, Dots,
+ * Classy, Fluid) use `geometricPrecision` to avoid jagged edges.
  */
 export function getDataShapeRendering(pattern: import('../types/qr').QRPixelPattern): 'crispEdges' | 'geometricPrecision' {
-  return (pattern === 'Square' || pattern === 'Vertical') ? 'crispEdges' : 'geometricPrecision'
+  return (pattern === 'Square' || pattern === 'Vertical' || pattern === 'Horizontal') ? 'crispEdges' : 'geometricPrecision'
 }
 
-export function getDataPath(pattern: import('../types/qr').QRPixelPattern, x: number, y: number, cellSize: number): string {
+/**
+ * Orthogonal dark-neighbor flags for a single data module. `true` means an adjacent
+ * dark data module sits on that side. The connected patterns (Classy, Fluid) use these
+ * to round only the corners that face open space, so a run of modules merges into one
+ * continuous form while shared edges stay square.
+ */
+export interface DataNeighbors {
+  top: boolean
+  right: boolean
+  bottom: boolean
+  left: boolean
+}
+
+const NO_NEIGHBORS: DataNeighbors = { top: false, right: false, bottom: false, left: false }
+
+/**
+ * A cell whose corners round only when both of the corner's edges face open space.
+ * `eligible` gates which corners may round at all: Fluid permits all four (a soft,
+ * blobby mass); Classy permits only the top-left / bottom-right pair (a directional,
+ * leaf-like flow). Corners adjacent to a dark neighbor stay square so the shape connects.
+ */
+function connectedCellPath(
+  x: number,
+  y: number,
+  s: number,
+  r: number,
+  n: DataNeighbors,
+  eligible: { tl: boolean; tr: boolean; br: boolean; bl: boolean },
+): string {
+  const rTL = eligible.tl && !n.top && !n.left ? r : 0
+  const rTR = eligible.tr && !n.top && !n.right ? r : 0
+  const rBR = eligible.br && !n.bottom && !n.right ? r : 0
+  const rBL = eligible.bl && !n.bottom && !n.left ? r : 0
+  return (
+    `M${x + rTL},${y} ` +
+    `L${x + s - rTR},${y} ` + (rTR ? `a${r},${r} 0 0 1 ${r},${r} ` : '') +
+    `L${x + s},${y + s - rBR} ` + (rBR ? `a${r},${r} 0 0 1 -${r},${r} ` : '') +
+    `L${x + rBL},${y + s} ` + (rBL ? `a${r},${r} 0 0 1 -${r},-${r} ` : '') +
+    `L${x},${y + rTL} ` + (rTL ? `a${r},${r} 0 0 1 ${r},-${r} ` : '') +
+    'Z '
+  )
+}
+
+export function getDataPath(
+  pattern: import('../types/qr').QRPixelPattern,
+  x: number,
+  y: number,
+  cellSize: number,
+  neighbors: DataNeighbors = NO_NEIGHBORS,
+): string {
   const s = cellSize;
   if (pattern === 'Dots') {
     const r = 0.45 * s
@@ -199,11 +249,20 @@ export function getDataPath(pattern: import('../types/qr').QRPixelPattern, x: nu
       `v-${straight} a${r},${r} 0 0 1 ${r},-${r} Z `
     )
   }
+  if (pattern === 'Classy') {
+    return connectedCellPath(x, y, s, 0.5 * s, neighbors, { tl: true, tr: false, br: true, bl: false })
+  }
+  if (pattern === 'Fluid') {
+    return connectedCellPath(x, y, s, 0.5 * s, neighbors, { tl: true, tr: true, br: true, bl: true })
+  }
   if (pattern === 'Diamond') {
     return `M${x+0.5*s},${y+0.1*s} L${x+0.9*s},${y+0.5*s} L${x+0.5*s},${y+0.9*s} L${x+0.1*s},${y+0.5*s} Z `
   }
   if (pattern === 'Vertical') {
     return `M${x+0.1*s},${y} h${0.8*s} v${s} h-${0.8*s} Z `
+  }
+  if (pattern === 'Horizontal') {
+    return `M${x},${y+0.1*s} h${s} v${0.8*s} h-${s} Z `
   }
   return `M${x},${y} h${s} v${s} h-${s} Z `;
 }
@@ -219,10 +278,26 @@ export function generateQRPaths(
   const parsed = parseQRCode(value, ecLevel);
   const size = parsed.size;
 
+  // Set of dark data modules, keyed "x,y", for orthogonal-neighbor lookup. Connected
+  // patterns (Classy, Fluid) consult this so adjacent modules merge instead of rounding
+  // every cell in isolation. Eye modules are excluded — the white separator keeps data
+  // from ever connecting into an eye zone.
+  const darkData = new Set<string>();
+  parsed.modules.forEach(m => {
+    if (m.isDark && m.type === 'data') darkData.add(`${m.x},${m.y}`);
+  });
+  const has = (x: number, y: number) => darkData.has(`${x},${y}`);
+
   let dataPath = '';
   parsed.modules.forEach(m => {
     if (m.isDark && m.type === 'data') {
-      dataPath += getDataPath(pattern, m.x * cellSize, m.y * cellSize, cellSize);
+      const neighbors: DataNeighbors = {
+        top: has(m.x, m.y - 1),
+        right: has(m.x + 1, m.y),
+        bottom: has(m.x, m.y + 1),
+        left: has(m.x - 1, m.y),
+      };
+      dataPath += getDataPath(pattern, m.x * cellSize, m.y * cellSize, cellSize, neighbors);
     }
   });
 

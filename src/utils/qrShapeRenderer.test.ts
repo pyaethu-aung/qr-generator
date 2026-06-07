@@ -155,8 +155,51 @@ describe('qrShapeRenderer Matrix Parser (Foundational)', () => {
   it('getDataShapeRendering returns crispEdges only for rectilinear patterns', () => {
     expect(getDataShapeRendering('Square')).toBe('crispEdges')
     expect(getDataShapeRendering('Vertical')).toBe('crispEdges')
+    expect(getDataShapeRendering('Horizontal')).toBe('crispEdges')
     expect(getDataShapeRendering('Dots')).toBe('geometricPrecision')
     expect(getDataShapeRendering('Rounded')).toBe('geometricPrecision')
     expect(getDataShapeRendering('Diamond')).toBe('geometricPrecision')
+    expect(getDataShapeRendering('Classy')).toBe('geometricPrecision')
+    expect(getDataShapeRendering('Fluid')).toBe('geometricPrecision')
+  })
+
+  it('Horizontal pattern renders a full-width bar (mirror of Vertical)', () => {
+    const horizontal = getDataPath('Horizontal', 10, 20, 10)
+    expect(horizontal).toContain('M10,21') // x, y+0.1s=21
+    expect(horizontal).toContain('h10')    // full width = s
+    expect(horizontal).toContain('v8')     // height = 0.8s
+  })
+
+  it('Classy rounds only the top-left and bottom-right free corners', () => {
+    const classy = getDataPath('Classy', 10, 20, 10) // no neighbors → isolated
+    expect(classy).toContain('M15,20')              // starts inset by r=0.5s at the rounded TL
+    expect(classy).toContain('a5,5 0 0 1 -5,5')     // bottom-right arc
+    expect(classy).toContain('a5,5 0 0 1 5,-5')     // top-left arc
+    expect(classy).not.toContain('a5,5 0 0 1 5,5')  // top-right stays square
+  })
+
+  it('Fluid rounds all four free corners when isolated', () => {
+    const fluid = getDataPath('Fluid', 10, 20, 10) // no neighbors → isolated
+    expect(fluid).toContain('a5,5 0 0 1 5,5')   // top-right rounds too
+    expect(fluid).toContain('a5,5 0 0 1 -5,5')  // bottom-right
+    expect(fluid).toContain('a5,5 0 0 1 -5,-5') // bottom-left
+    expect(fluid).toContain('a5,5 0 0 1 5,-5')  // top-left
+  })
+
+  it('connected patterns keep edges square where a dark neighbor sits', () => {
+    // Fully surrounded module → every corner is suppressed → a plain square, no arcs.
+    const surrounded = getDataPath('Fluid', 0, 0, 10, { top: true, right: true, bottom: true, left: true })
+    expect(surrounded).not.toContain('a5,5')
+
+    // Neighbors below and to the left expose only the top-right corner.
+    const corner = getDataPath('Fluid', 0, 0, 10, { top: false, right: false, bottom: true, left: true })
+    expect(corner).toContain('a5,5 0 0 1 5,5')      // top-right rounds (top + right both open)
+    expect(corner).not.toContain('a5,5 0 0 1 -5,5')  // bottom-right suppressed by the bottom neighbor
+  })
+
+  it('generateQRPaths threads dark-neighbor data into connected patterns', () => {
+    // A connected pattern produces curved arcs where modules meet open space.
+    const { dataPath } = generateQRPaths('connected pattern check', 'M', 'Square', 'Square', 'Fluid', 10)
+    expect(dataPath).toContain('a5,5')
   })
 })
