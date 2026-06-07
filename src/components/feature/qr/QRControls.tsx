@@ -47,31 +47,33 @@ function EyeCenterIcon({ shape, size = 18 }: { shape: QREyeCenterShape; size?: n
 }
 
 function previewModulePath(pattern: QRPixelPattern, x: number, y: number): string {
-  if (pattern === 'Dots')       return `M${x+4},${y+0.4} a3.6,3.6 0 1,0 0,7.2 a3.6,3.6 0 1,0 0,-7.2 Z`
-  if (pattern === 'Rounded')    return `M${x+2.8},${y} h2.4 a2.8,2.8 0 0 1 2.8,2.8 v2.4 a2.8,2.8 0 0 1 -2.8,2.8 h-2.4 a2.8,2.8 0 0 1 -2.8,-2.8 v-2.4 a2.8,2.8 0 0 1 2.8,-2.8 Z`
-  // Classy: top-left + bottom-right corners rounded (directional flow).
-  if (pattern === 'Classy')     return `M${x+3},${y} h5 v5 a3,3 0 0 1 -3,3 h-5 v-5 a3,3 0 0 1 3,-3 Z`
-  // Fluid: all four corners rounded (soft squircle).
-  if (pattern === 'Fluid')      return `M${x+3},${y} h2 a3,3 0 0 1 3,3 v2 a3,3 0 0 1 -3,3 h-2 a3,3 0 0 1 -3,-3 v-2 a3,3 0 0 1 3,-3 Z`
-  if (pattern === 'Diamond')    return `M${x+4},${y+0.8} L${x+7.2},${y+4} L${x+4},${y+7.2} L${x+0.8},${y+4} Z`
-  if (pattern === 'Vertical')   return `M${x+0.8},${y} h6.4 v8 h-6.4 Z`
-  if (pattern === 'Horizontal') return `M${x},${y+0.8} h8 v6.4 h-8 Z`
+  if (pattern === 'Dots')     return `M${x+4},${y+0.4} a3.6,3.6 0 1,0 0,7.2 a3.6,3.6 0 1,0 0,-7.2 Z`
+  if (pattern === 'Rounded')  return `M${x+2.8},${y} h2.4 a2.8,2.8 0 0 1 2.8,2.8 v2.4 a2.8,2.8 0 0 1 -2.8,2.8 h-2.4 a2.8,2.8 0 0 1 -2.8,-2.8 v-2.4 a2.8,2.8 0 0 1 2.8,-2.8 Z`
+  if (pattern === 'Diamond')  return `M${x+4},${y+0.8} L${x+7.2},${y+4} L${x+4},${y+7.2} L${x+0.8},${y+4} Z`
+  if (pattern === 'Vertical') return `M${x+0.8},${y} h6.4 v8 h-6.4 Z`
   return `M${x},${y} h8 v8 h-8 Z`
 }
 
-// Pre-computed at module load — 9 path strings per pattern, never changes at runtime.
+// Pre-computed at module load, never changes at runtime.
+// Classy, Fluid, and Horizontal use full-viewbox connected-run paths so their
+// defining character (merging, asymmetric rounding, flat bars) reads at 18px.
+// The remaining patterns use a 3×3 isolated-module grid (8px module, 2px gap, 28×28 box).
 const PATTERN_PREVIEW_PATHS: Record<QRPixelPattern, string> = (() => {
   const pos = [0, 10, 20]
-  const build = (p: QRPixelPattern) => pos.flatMap(y => pos.map(x => previewModulePath(p, x, y))).join(' ')
+  const grid = (p: QRPixelPattern) => pos.flatMap(y => pos.map(x => previewModulePath(p, x, y))).join(' ')
   return {
-    Square: build('Square'),
-    Dots: build('Dots'),
-    Rounded: build('Rounded'),
-    Classy: build('Classy'),
-    Fluid: build('Fluid'),
-    Diamond: build('Diamond'),
-    Vertical: build('Vertical'),
-    Horizontal: build('Horizontal'),
+    Square:     grid('Square'),
+    Dots:       grid('Dots'),
+    Rounded:    grid('Rounded'),
+    Diamond:    grid('Diamond'),
+    Vertical:   grid('Vertical'),
+    // Connected-run: a 3-module horizontal run where internal edges merge.
+    // Classy — TL and BR outer corners rounded only; TR and BL stay sharp.
+    Classy:     'M1,13 a4,4 0 0 1 4,-4 h18 v6 a4,4 0 0 1 -4,4 h-18 v-6 Z',
+    // Fluid — left and right ends fully rounded; a pill that shows both ends merge.
+    Fluid:      'M1,14 a5,5 0 0 1 5,-5 h16 a5,5 0 0 1 5,5 a5,5 0 0 1 -5,5 h-16 a5,5 0 0 1 -5,-5 Z',
+    // Horizontal — three clearly flat full-width bars (unambiguous contrast with Square).
+    Horizontal: 'M1,2 h26 v7 h-26 Z M1,11 h26 v7 h-26 Z M1,20 h26 v7 h-26 Z',
   }
 })()
 
@@ -342,13 +344,13 @@ export function QRControls({
     { value: 'Cross', label: 'Cross' },
   ],
   pixelPatternOptions = [
-    { value: 'Square', label: 'Square' },
-    { value: 'Dots', label: 'Dots' },
-    { value: 'Rounded', label: 'Rounded' },
-    { value: 'Classy', label: 'Classy' },
-    { value: 'Fluid', label: 'Fluid' },
-    { value: 'Diamond', label: 'Diamond' },
-    { value: 'Vertical', label: 'Vertical' },
+    { value: 'Square',     label: 'Square' },
+    { value: 'Dots',       label: 'Dots' },
+    { value: 'Rounded',    label: 'Rounded' },
+    { value: 'Diamond',    label: 'Diamond' },
+    { value: 'Classy',     label: 'Classy' },
+    { value: 'Fluid',      label: 'Fluid' },
+    { value: 'Vertical',   label: 'Vertical' },
     { value: 'Horizontal', label: 'Horizontal' },
   ],
   isRiskyPattern,
@@ -627,6 +629,7 @@ export function QRControls({
                 </button>
               ))}
             </div>
+            <p className="text-xs text-text-secondary">Classy and Fluid merge touching modules into flowing shapes.</p>
           </div>
 
           {isRiskyPattern && (
