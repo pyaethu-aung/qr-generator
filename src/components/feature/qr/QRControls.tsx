@@ -600,7 +600,7 @@ export function QRControls({
                       onClick={() => onEyeFrameShapeChange(optValue)}
                       className={`flex h-11 items-center justify-center rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
                         eyeFrameShape === optValue
-                          ? 'border-border-strong bg-surface-raised text-text-primary'
+                          ? 'border-action bg-surface-raised text-text-primary'
                           : 'border-transparent bg-surface-inset text-text-secondary hover:bg-surface-raised hover:text-text-primary'
                       }`}
                     >
@@ -624,7 +624,7 @@ export function QRControls({
                       onClick={() => onEyeCenterShapeChange(optValue)}
                       className={`flex h-11 items-center justify-center rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
                         eyeCenterShape === optValue
-                          ? 'border-border-strong bg-surface-raised text-text-primary'
+                          ? 'border-action bg-surface-raised text-text-primary'
                           : 'border-transparent bg-surface-inset text-text-secondary hover:bg-surface-raised hover:text-text-primary'
                       }`}
                     >
@@ -657,7 +657,9 @@ export function QRControls({
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-text-secondary">Classy and Fluid merge touching modules into flowing shapes.</p>
+              {(pixelPattern === 'Classy' || pixelPattern === 'Fluid') && (
+                <p className="text-xs text-text-secondary">Merges touching modules into flowing shapes.</p>
+              )}
             </div>
 
             {isRiskyPattern && (
@@ -674,7 +676,7 @@ export function QRControls({
                 {onDismissWarning && (
                   <button
                     onClick={onDismissWarning}
-                    className="ml-4 shrink-0 rounded-md p-2.5 text-warning hover:bg-warning-border/20 focus:outline-none focus:ring-2 focus:ring-warning focus:ring-offset-2"
+                    className="ml-4 shrink-0 rounded-md p-2.5 text-warning hover:bg-warning-border/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                     aria-label={dismissWarningAriaLabel}
                   >
                     <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
@@ -762,7 +764,6 @@ export function QRControls({
                   <ChevronDown size={12} aria-hidden className="text-text-secondary" />
                 )}
               </button>
-
 
               {(isLogoOpen || logoDataUrl) && <>{logoDataUrl ? (
                 <div className="flex items-center gap-3 rounded-lg bg-surface-inset px-3 h-11">
