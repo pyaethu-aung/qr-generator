@@ -105,11 +105,12 @@ function EyeColorField({
   matchLabel: string
 }) {
   const effective = color ?? fallbackColor
+  const isInherited = color === null
   return (
     <div className="min-w-[120px] flex-1 flex flex-col gap-1">
       <div className="flex items-baseline justify-between gap-2">
         <label htmlFor={id} className="text-sm font-medium text-text-primary">{label}</label>
-        {color !== null && (
+        {!isInherited && (
           <button
             type="button"
             onClick={() => onChange(null)}
@@ -121,9 +122,11 @@ function EyeColorField({
       </div>
       <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3 focus-within:ring-2 focus-within:ring-focus-ring focus-within:outline-none">
         <div className="h-5 w-5 shrink-0 rounded-full border-2 border-border-strong" style={{ backgroundColor: effective }} />
-        <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
-          {effective}
-        </span>
+        {isInherited ? (
+          <span className="text-sm italic text-text-secondary truncate">{matchLabel}</span>
+        ) : (
+          <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">{effective}</span>
+        )}
         <input
           id={id}
           type="color"
