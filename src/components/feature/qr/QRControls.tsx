@@ -646,7 +646,7 @@ export function QRControls({
                     onClick={() => onPixelPatternChange(optValue)}
                     className={`flex h-11 items-center justify-center rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
                       pixelPattern === optValue
-                        ? 'border-border-strong bg-surface-raised text-text-primary'
+                        ? 'border-action bg-surface-raised text-text-primary'
                         : 'border-transparent bg-surface-inset text-text-secondary hover:bg-surface-raised hover:text-text-primary'
                     }`}
                   >
