@@ -41,6 +41,7 @@ export function PillGroup<T extends string>({
           onClick={(e) => { onChange(option.value); e.currentTarget.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }) }}
           className={[
             'flex flex-1 items-center justify-center rounded-full px-3 text-sm whitespace-nowrap transition-colors',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2',
             size === 'sm' ? 'h-9' : 'h-11',
             hasIcons ? 'gap-1.5' : '',
             value === option.value
