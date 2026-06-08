@@ -19,6 +19,13 @@ export interface PillGroupProps<T extends string = string> {
    * pill stays an equal-width cell instead of the last row's lone pill stretching full-width.
    */
   containerClassName?: string
+  /**
+   * Per-pill flex sizing. Default `flex-1` grows each pill to fill its row — right for a
+   * single row. For a wrapping set, pass a fixed basis with `grow-0` (e.g.
+   * `grow-0 basis-[calc(50%-0.25rem)]`) so pills stay equal-width and a partial last row
+   * centers under `justify-center` instead of stretching or leaving an empty grid cell.
+   */
+  itemClassName?: string
   'aria-label'?: string
   'aria-labelledby'?: string
 }
@@ -29,6 +36,7 @@ export function PillGroup<T extends string>({
   onChange,
   size = 'md',
   containerClassName = 'flex flex-wrap gap-2',
+  itemClassName = 'flex-1',
   'aria-label': ariaLabel,
   'aria-labelledby': ariaLabelledBy,
 }: PillGroupProps<T>) {
@@ -48,7 +56,8 @@ export function PillGroup<T extends string>({
           aria-pressed={value === option.value}
           onClick={(e) => { onChange(option.value); e.currentTarget.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }) }}
           className={[
-            'flex flex-1 items-center justify-center rounded-full px-3 text-sm whitespace-nowrap transition-colors',
+            'flex items-center justify-center rounded-full px-3 text-sm whitespace-nowrap transition-colors',
+            itemClassName,
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2',
             size === 'sm' ? 'h-9' : 'h-11',
             hasIcons ? 'gap-1.5' : '',
