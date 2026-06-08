@@ -66,3 +66,22 @@ export interface QRDesignConfig {
   eyeCenterColor: string | null
   pixelPattern: QRPixelPattern
 }
+
+/**
+ * Decorative frame wrapped around the QR with a call-to-action caption. All frames
+ * are drawn from code (SVG primitives), never from licensed/raster artwork. `None`
+ * is the default and renders the bare QR exactly as before.
+ */
+export type QRFrameStyle = 'None' | 'Banner' | 'Card' | 'Ticket' | 'Label' | 'Bubble' | 'Ticks'
+
+/** Which edge the caption sits on, for caption-bearing frames. */
+export type QRFramePosition = 'top' | 'bottom'
+
+export interface QRFrameConfig {
+  style: QRFrameStyle
+  /** Caption text, e.g. "SCAN ME". Empty renders the frame without a label. */
+  text: string
+  /** Frame accent color (band / border / brackets). */
+  color: string
+  position: QRFramePosition
+}

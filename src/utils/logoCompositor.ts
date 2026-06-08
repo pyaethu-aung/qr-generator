@@ -8,6 +8,19 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 }
 
 /**
+ * Where to place the logo on the canvas. When a frame shrinks and offsets the QR,
+ * the logo follows the QR region rather than the canvas center.
+ */
+export interface LogoPlacement {
+  /** Center x in canvas pixels. Defaults to the canvas center. */
+  centerX?: number
+  /** Center y in canvas pixels. Defaults to the canvas center. */
+  centerY?: number
+  /** Edge length the size % is taken from, in canvas pixels. Defaults to `canvasSize`. */
+  baseSize?: number
+}
+
+/**
  * Composites a pre-loaded logo image centered on an existing canvas context.
  * Synchronous — caller must supply an already-loaded HTMLImageElement.
  */
@@ -16,10 +29,12 @@ export function compositeLoadedLogoOnCanvas(
   logoImg: HTMLImageElement,
   logoSizePct: number,
   canvasSize: number,
+  placement: LogoPlacement = {},
 ): void {
-  const logoPx = Math.round(canvasSize * (logoSizePct / 100))
-  const cx = canvasSize / 2
-  const cy = canvasSize / 2
+  const base = placement.baseSize ?? canvasSize
+  const logoPx = Math.round(base * (logoSizePct / 100))
+  const cx = placement.centerX ?? canvasSize / 2
+  const cy = placement.centerY ?? canvasSize / 2
   const logoRadius = logoPx / 2
   const backingRadius = logoRadius + Math.max(4, Math.round(logoRadius * 0.1))
 
@@ -47,9 +62,10 @@ export async function compositeLogoOnCanvas(
   logoDataUrl: string,
   logoSizePct: number,
   canvasSize: number,
+  placement: LogoPlacement = {},
 ): Promise<void> {
   const logoImg = await loadImage(logoDataUrl)
-  compositeLoadedLogoOnCanvas(ctx, logoImg, logoSizePct, canvasSize)
+  compositeLoadedLogoOnCanvas(ctx, logoImg, logoSizePct, canvasSize, placement)
 }
 
 /**

@@ -1,12 +1,13 @@
 import { useRef, useCallback, forwardRef, useEffect, useLayoutEffect } from 'react'
 
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
-import { generateQRPaths, getDataShapeRendering } from '../../../utils/qrShapeRenderer'
+import { composeQrSvg } from '../../../utils/qrSvgComposer'
 import { compositeLoadedLogoOnCanvas } from '../../../utils/logoCompositor'
-import type { QRConfig, QRDesignConfig } from '../../../types/qr'
+import type { QRConfig, QRDesignConfig, QRFrameConfig } from '../../../types/qr'
 
 export interface QRPreviewProps extends QRConfig {
   designConfig?: QRDesignConfig
+  frameConfig?: QRFrameConfig
   className?: string
   style?: React.CSSProperties
   logoDataUrl?: string | null
@@ -15,7 +16,7 @@ export interface QRPreviewProps extends QRConfig {
 }
 
 export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
-  ({ value, ecLevel, fgColor, bgColor, size = 220, designConfig = { eyeFrameShape: 'Square', eyeCenterShape: 'Square', eyeFrameColor: null, eyeCenterColor: null, pixelPattern: 'Square' }, className, style, logoDataUrl, logoSize, isPending }, forwardedRef) => {
+  ({ value, ecLevel, fgColor, bgColor, size = 220, designConfig = { eyeFrameShape: 'Square', eyeCenterShape: 'Square', eyeFrameColor: null, eyeCenterColor: null, pixelPattern: 'Square' }, frameConfig, className, style, logoDataUrl, logoSize, isPending }, forwardedRef) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
     const wrapperRef = useRef<HTMLDivElement | null>(null)
     const canFlashRef = useRef(false)
@@ -30,6 +31,9 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
     sizeRef.current = size
     const logoSizeRef = useRef(logoSize)
     logoSizeRef.current = logoSize
+    // Logo placement as viewBox ratios (0..1), updated whenever the QR base regenerates.
+    // A frame offsets and shrinks the QR, so the logo follows the QR region, not the canvas.
+    const logoPlacementRef = useRef({ cx: 0.5, cy: 0.5, base: 1 })
 
     const { translate } = useLocaleContext()
 
@@ -62,7 +66,12 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
       const logoImg = logoImageRef.current
       const ls = logoSizeRef.current
       if (logoImg && ls) {
-        compositeLoadedLogoOnCanvas(ctx, logoImg, ls, physicalSize)
+        const p = logoPlacementRef.current
+        compositeLoadedLogoOnCanvas(ctx, logoImg, ls, physicalSize, {
+          centerX: p.cx * physicalSize,
+          centerY: p.cy * physicalSize,
+          baseSize: p.base * physicalSize,
+        })
       }
     }, [])
 
@@ -101,24 +110,20 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
       const gen = ++baseGenRef.current
       const dpr = window.devicePixelRatio || 1
       const physicalSize = Math.round(size * dpr)
-      const { dataPath, eyeFramePath, eyeCenterPath, eyeBgPath, size: matrixSize } = generateQRPaths(
+      const { body, viewBox, logoCenter, logoBase } = composeQrSvg({
         value,
         ecLevel,
-        designConfig.eyeFrameShape,
-        designConfig.eyeCenterShape,
-        designConfig.pixelPattern,
-      )
-      const viewBoxSize = matrixSize * 10
-      const dataShapeRendering = getDataShapeRendering(designConfig.pixelPattern)
-      const frameColor = designConfig.eyeFrameColor ?? fgColor
-      const centerColor = designConfig.eyeCenterColor ?? fgColor
-      const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewBoxSize} ${viewBoxSize}" width="${physicalSize}" height="${physicalSize}">
-        <rect width="100%" height="100%" fill="${bgColor}" />
-        <path d="${dataPath}" fill="${fgColor}" shape-rendering="${dataShapeRendering}" />
-        <path d="${eyeBgPath}" fill="${bgColor}" />
-        <path d="${eyeFramePath}" fill="${frameColor}" fill-rule="evenodd" />
-        <path d="${eyeCenterPath}" fill="${centerColor}" />
-      </svg>`
+        fgColor,
+        bgColor,
+        design: designConfig,
+        frame: frameConfig,
+      })
+      logoPlacementRef.current = {
+        cx: logoCenter.x / viewBox,
+        cy: logoCenter.y / viewBox,
+        base: logoBase / viewBox,
+      }
+      const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewBox} ${viewBox}" width="${physicalSize}" height="${physicalSize}">${body}</svg>`
       const img = new Image()
       img.onload = () => {
         if (gen !== baseGenRef.current) return
@@ -126,7 +131,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
         drawFrame()
       }
       img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgString)
-    }, [value, ecLevel, fgColor, bgColor, designConfig, size, drawFrame])
+    }, [value, ecLevel, fgColor, bgColor, designConfig, frameConfig, size, drawFrame])
 
     // Effect 2 (medium): Load/cache logo image when the data URL changes
     useEffect(() => {

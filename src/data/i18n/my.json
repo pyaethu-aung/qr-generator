@@ -119,7 +119,22 @@
     "emailCorrectionHint": "အီးမေးလ် QR ကုဒ်များအတွက် အမြင့်ဆုံး ယုံကြည်ရနိုင်မှု အကြံပြုသည်",
     "emailModeHint": "စကင်န်ဖတ်ပြီး ကြိုဖြည့်ထားသော အီးမေးလ် မူကြမ်း ဖွင့်ပါ။",
     "emailToError": "မှန်ကန်သော အီးမေးလ်လိပ်စာ ထည့်ပါ",
-    "emailPayloadWarning": "မက်ဆေ့ချ် အကြောင်းအရာ ရှည်လျှင် QR ကုဒ် စကင်န်ဖတ်ရ ခက်ခဲသည်။ တိုတိုရေးပါ။"
+    "emailPayloadWarning": "မက်ဆေ့ချ် အကြောင်းအရာ ရှည်လျှင် QR ကုဒ် စကင်န်ဖတ်ရ ခက်ခဲသည်။ တိုတိုရေးပါ။",
+    "frameLabel": "ဘောင်",
+    "frameStyleNone": "မရှိ",
+    "frameStyleBanner": "ဘန်နာ",
+    "frameStyleCard": "ကတ်",
+    "frameStyleTicket": "လက်မှတ်",
+    "frameStyleLabel": "တံဆိပ်",
+    "frameStyleBubble": "စကားပြော",
+    "frameStyleTicks": "ထောင့်များ",
+    "frameTextLabel": "စာသား",
+    "frameTextPlaceholder": "SCAN ME",
+    "frameTextHint": "ဘောင်ပေါ်တွင် ပြသမည်။ စာသားမလိုလျှင် ကွက်လပ်ထားပါ။",
+    "frameColorLabel": "ဘောင်အရောင်",
+    "framePositionLabel": "စာသားနေရာ",
+    "framePositionTop": "အပေါ်",
+    "framePositionBottom": "အောက်"
   },
   "preview": {
     "sectionLabel": "တိုက်ရိုက် ကြည့်ရှုမှု",

@@ -151,6 +151,7 @@ describe('useQRGenerator', () => {
       DEFAULT_DESIGN_CONFIG.eyeFrameShape,
       DEFAULT_DESIGN_CONFIG.eyeCenterShape,
       DEFAULT_DESIGN_CONFIG.pixelPattern,
+      expect.any(Number),
     )
     expect(downloadUtils.downloadBlob).toHaveBeenCalled()
   })

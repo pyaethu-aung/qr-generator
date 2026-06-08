@@ -1,8 +1,8 @@
 import { useCallback, useMemo, useState, useEffect, useRef } from 'react'
-import type { QRDesignConfig, QRErrorCorrectionLevel } from '../types/qr'
+import type { QRDesignConfig, QRErrorCorrectionLevel, QRFrameConfig } from '../types/qr'
 import { DEFAULT_QR_CONFIG, QR_SIZE_DOWNLOAD } from '../data/defaults'
 import { downloadBlob } from '../utils/download'
-import { generateQRPaths } from '../utils/qrShapeRenderer'
+import { composeQrSvg } from '../utils/qrSvgComposer'
 import { exportSvg } from '../utils/export/svgExporter'
 import { compositeLogoOnCanvas } from '../utils/logoCompositor'
 
@@ -18,8 +18,8 @@ export interface UseQRGeneratorReturn {
   setInputFgColor: (color: string) => void
   inputBgColor: string
   setInputBgColor: (color: string) => void
-  downloadPng: (designConfig: QRDesignConfig, logoDataUrl?: string | null, logoSize?: number) => Promise<void>
-  downloadSvg: (designConfig: QRDesignConfig, logoDataUrl?: string | null, logoSize?: number) => Promise<void>
+  downloadPng: (designConfig: QRDesignConfig, frameConfig?: QRFrameConfig, logoDataUrl?: string | null, logoSize?: number) => Promise<void>
+  downloadSvg: (designConfig: QRDesignConfig, frameConfig?: QRFrameConfig, logoDataUrl?: string | null, logoSize?: number) => Promise<void>
   inputError?: string
   canDownload: boolean
   recentDownload: 'png' | 'svg' | null
@@ -81,30 +81,22 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
 
   const downloadPng = useCallback(async (
     designConfig: QRDesignConfig,
+    frameConfig?: QRFrameConfig,
     logoDataUrl?: string | null,
     logoSize = 20,
   ) => {
     if (!effectiveInput.trim()) return
 
     try {
-      const { dataPath, eyeFramePath, eyeCenterPath, eyeBgPath, size: matrixSize } = generateQRPaths(
-        effectiveInput,
-        inputEcLevel,
-        designConfig.eyeFrameShape,
-        designConfig.eyeCenterShape,
-        designConfig.pixelPattern,
-      )
-      const viewBoxSize = matrixSize * 10
-      const dataShapeRendering = designConfig.pixelPattern === 'Dots' ? 'geometricPrecision' : 'crispEdges'
-      const frameColor = designConfig.eyeFrameColor ?? inputFgColor
-      const centerColor = designConfig.eyeCenterColor ?? inputFgColor
-      const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewBoxSize} ${viewBoxSize}" width="${QR_SIZE_DOWNLOAD}" height="${QR_SIZE_DOWNLOAD}">
-        <rect width="100%" height="100%" fill="${inputBgColor}" />
-        <path d="${dataPath}" fill="${inputFgColor}" shape-rendering="${dataShapeRendering}" />
-        <path d="${eyeBgPath}" fill="${inputBgColor}" />
-        <path d="${eyeFramePath}" fill="${frameColor}" fill-rule="evenodd" />
-        <path d="${eyeCenterPath}" fill="${centerColor}" />
-      </svg>`
+      const { body, viewBox, logoCenter, logoBase } = composeQrSvg({
+        value: effectiveInput,
+        ecLevel: inputEcLevel,
+        fgColor: inputFgColor,
+        bgColor: inputBgColor,
+        design: designConfig,
+        frame: frameConfig,
+      })
+      const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewBox} ${viewBox}" width="${QR_SIZE_DOWNLOAD}" height="${QR_SIZE_DOWNLOAD}">${body}</svg>`
 
       const canvas = document.createElement('canvas')
       canvas.width = QR_SIZE_DOWNLOAD
@@ -123,7 +115,12 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
       })
 
       if (logoDataUrl) {
-        await compositeLogoOnCanvas(ctx, logoDataUrl, logoSize, QR_SIZE_DOWNLOAD)
+        const scale = QR_SIZE_DOWNLOAD / viewBox
+        await compositeLogoOnCanvas(ctx, logoDataUrl, logoSize, QR_SIZE_DOWNLOAD, {
+          centerX: logoCenter.x * scale,
+          centerY: logoCenter.y * scale,
+          baseSize: logoBase * scale,
+        })
       }
 
       const blob = await new Promise<Blob>((resolve, reject) =>
@@ -141,6 +138,7 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
 
   const downloadSvg = useCallback(async (
     designConfig: QRDesignConfig,
+    frameConfig?: QRFrameConfig,
     logoDataUrl?: string | null,
     logoSize = 20,
   ) => {
@@ -153,6 +151,7 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
         fgColor: inputFgColor,
         bgColor: inputBgColor,
         designConfig,
+        frameConfig,
         logoDataUrl,
         logoSize,
       })
