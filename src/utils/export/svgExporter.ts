@@ -1,10 +1,11 @@
-import type { QRConfig, QRDesignConfig } from '../../types/qr'
-import { generateQRPaths, getDataShapeRendering } from '../qrShapeRenderer'
+import type { QRConfig, QRDesignConfig, QRFrameConfig } from '../../types/qr'
+import { composeQrSvg } from '../qrSvgComposer'
 import { rasterizeLogoForSvg } from '../logoCompositor'
 
 export interface SvgExportConfig extends QRConfig {
   margin?: number
   designConfig: QRDesignConfig
+  frameConfig?: QRFrameConfig
   logoDataUrl?: string | null
   logoSize?: number
 }
@@ -23,31 +24,34 @@ export async function exportSvg(
     fgColor = '#000000',
     bgColor = '#FFFFFF',
     designConfig = { eyeFrameShape: 'Square', eyeCenterShape: 'Square', eyeFrameColor: null, eyeCenterColor: null, pixelPattern: 'Square' },
+    frameConfig,
     logoDataUrl,
     logoSize = 20,
   } = config
 
   const cellSize = 10
-  const { dataPath, eyeFramePath, eyeCenterPath, eyeBgPath, size } = generateQRPaths(
+  const { body, viewBox, logoCenter, logoBase } = composeQrSvg({
     value,
     ecLevel,
-    designConfig.eyeFrameShape,
-    designConfig.eyeCenterShape,
-    designConfig.pixelPattern,
-    cellSize
-  )
+    fgColor,
+    bgColor,
+    design: designConfig,
+    frame: frameConfig,
+    cellSize,
+  })
 
-  const viewboxSize = size * cellSize + margin * 2 * cellSize
-  const dataShapeRendering = getDataShapeRendering(designConfig.pixelPattern)
-  const frameColor = designConfig.eyeFrameColor ?? fgColor
-  const centerColor = designConfig.eyeCenterColor ?? fgColor
+  // Quiet-zone margin is only added for the bare QR. Framed output carries its own
+  // padding, so a second margin would float it inside an oversized background.
+  const hasFrame = Boolean(frameConfig && frameConfig.style !== 'None')
+  const pad = hasFrame ? 0 : margin * cellSize
+  const totalSize = viewBox + pad * 2
 
   let logoSvgElements = ''
   if (logoDataUrl) {
-    const logoRenderPx = Math.round(viewboxSize * logoSize / 100)
+    const logoRenderPx = Math.round(logoBase * logoSize / 100)
     const rasterizedDataUrl = await rasterizeLogoForSvg(logoDataUrl, logoRenderPx)
-    const cx = viewboxSize / 2
-    const cy = viewboxSize / 2
+    const cx = pad + logoCenter.x
+    const cy = pad + logoCenter.y
     const logoRadius = logoRenderPx / 2
     const backingRadius = logoRadius + Math.max(4, Math.round(logoRadius * 0.1))
     logoSvgElements = `<defs><clipPath id="logo-clip"><circle cx="${cx}" cy="${cy}" r="${logoRadius}"/></clipPath></defs>
@@ -56,12 +60,9 @@ export async function exportSvg(
   }
 
   const svgString = `<?xml version="1.0" encoding="utf-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewboxSize} ${viewboxSize}">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${totalSize} ${totalSize}">
 <rect width="100%" height="100%" fill="${bgColor}"/>
-<path fill="${fgColor}" shape-rendering="${dataShapeRendering}" transform="translate(${margin * cellSize}, ${margin * cellSize})" d="${dataPath}" />
-<path fill="${bgColor}" transform="translate(${margin * cellSize}, ${margin * cellSize})" d="${eyeBgPath}" />
-<path fill="${frameColor}" fill-rule="evenodd" transform="translate(${margin * cellSize}, ${margin * cellSize})" d="${eyeFramePath}" />
-<path fill="${centerColor}" transform="translate(${margin * cellSize}, ${margin * cellSize})" d="${eyeCenterPath}" />
+<g transform="translate(${pad}, ${pad})">${body}</g>
 ${logoSvgElements}</svg>`
 
   return new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })

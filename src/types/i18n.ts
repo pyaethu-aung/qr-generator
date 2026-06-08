@@ -114,6 +114,21 @@ export interface ControlStrings {
   emailModeHint: string
   emailToError: string
   emailPayloadWarning: string
+  frameLabel: string
+  frameStyleNone: string
+  frameStyleBanner: string
+  frameStyleCard: string
+  frameStyleTicket: string
+  frameStyleLabel: string
+  frameStyleBubble: string
+  frameStyleTicks: string
+  frameTextLabel: string
+  frameTextPlaceholder: string
+  frameTextHint: string
+  frameColorLabel: string
+  framePositionLabel: string
+  framePositionTop: string
+  framePositionBottom: string
 }
 
 export interface PreviewStrings {
@@ -244,6 +259,21 @@ export type TranslationKey =
   | 'controls.emailModeHint'
   | 'controls.emailToError'
   | 'controls.emailPayloadWarning'
+  | 'controls.frameLabel'
+  | 'controls.frameStyleNone'
+  | 'controls.frameStyleBanner'
+  | 'controls.frameStyleCard'
+  | 'controls.frameStyleTicket'
+  | 'controls.frameStyleLabel'
+  | 'controls.frameStyleBubble'
+  | 'controls.frameStyleTicks'
+  | 'controls.frameTextLabel'
+  | 'controls.frameTextPlaceholder'
+  | 'controls.frameTextHint'
+  | 'controls.frameColorLabel'
+  | 'controls.framePositionLabel'
+  | 'controls.framePositionTop'
+  | 'controls.framePositionBottom'
   | 'preview.sectionLabel'
   | 'preview.shareStatusSharing'
   | 'preview.shareStatusShared'

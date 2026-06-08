@@ -50,6 +50,12 @@ export const QRGenerator = () => {
     logoSize,
     setLogoSize,
     maxLogoSize,
+    frameConfig,
+    setFrameStyle,
+    setFrameText,
+    setFrameColor,
+    setFramePosition,
+    frameTextLimit,
   } = useQRDesign(inputValue, inputEcLevel)
 
   const { translate } = useLocaleContext()
@@ -186,6 +192,32 @@ export const QRGenerator = () => {
                 onEmailSubjectChange={setSubject}
                 onEmailBodyChange={setBody}
                 emailCorrectionHint={translate('controls.emailCorrectionHint')}
+                frameStyle={frameConfig.style}
+                onFrameStyleChange={setFrameStyle}
+                frameText={frameConfig.text}
+                onFrameTextChange={setFrameText}
+                frameColor={frameConfig.color}
+                onFrameColorChange={setFrameColor}
+                framePosition={frameConfig.position}
+                onFramePositionChange={setFramePosition}
+                frameTextLimit={frameTextLimit}
+                frameLabel={translate('controls.frameLabel')}
+                frameTextLabel={translate('controls.frameTextLabel')}
+                frameTextPlaceholder={translate('controls.frameTextPlaceholder')}
+                frameTextHint={translate('controls.frameTextHint')}
+                frameColorLabel={translate('controls.frameColorLabel')}
+                framePositionLabel={translate('controls.framePositionLabel')}
+                framePositionTopLabel={translate('controls.framePositionTop')}
+                framePositionBottomLabel={translate('controls.framePositionBottom')}
+                frameStyleLabels={{
+                  None: translate('controls.frameStyleNone'),
+                  Banner: translate('controls.frameStyleBanner'),
+                  Card: translate('controls.frameStyleCard'),
+                  Ticket: translate('controls.frameStyleTicket'),
+                  Label: translate('controls.frameStyleLabel'),
+                  Bubble: translate('controls.frameStyleBubble'),
+                  Ticks: translate('controls.frameStyleTicks'),
+                }}
               />
             </div>
 
@@ -205,6 +237,7 @@ export const QRGenerator = () => {
                 fgColor={inputFgColor}
                 bgColor={inputBgColor}
                 designConfig={designConfig}
+                frameConfig={frameConfig}
                 logoDataUrl={logoDataUrl}
                 logoSize={logoSize}
                 size={300}
@@ -213,7 +246,7 @@ export const QRGenerator = () => {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <button
                   type="button"
-                  onClick={() => void downloadPng(designConfig, logoDataUrl, logoSize)}
+                  onClick={() => void downloadPng(designConfig, frameConfig, logoDataUrl, logoSize)}
                   disabled={!canDownload}
                   className="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-border-subtle bg-surface-raised px-3 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
@@ -222,7 +255,7 @@ export const QRGenerator = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => void downloadSvg(designConfig, logoDataUrl, logoSize)}
+                  onClick={() => void downloadSvg(designConfig, frameConfig, logoDataUrl, logoSize)}
                   disabled={!canDownload}
                   className="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-border-subtle bg-surface-raised px-3 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >

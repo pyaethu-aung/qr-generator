@@ -6,12 +6,42 @@ import type {
   QREyeFrameShape,
   QREyeCenterShape,
   QRPixelPattern,
+  QRFrameConfig,
+  QRFrameStyle,
+  QRFramePosition,
 } from '../types/qr'
 import { getMatrixSize } from '../utils/qrShapeRenderer'
 
 const EC_LOGO_MAX: Record<QRErrorCorrectionLevel, number> = { L: 7, M: 15, Q: 25, H: 30 }
 
 const DESIGN_STORAGE_KEY = 'qr-generator-design-config'
+const FRAME_STORAGE_KEY = 'qr-generator-frame-config'
+
+const FRAME_STYLES: QRFrameStyle[] = ['None', 'Banner', 'Card', 'Ticket', 'Label', 'Bubble', 'Ticks']
+const FRAME_TEXT_LIMIT = 24
+
+const DEFAULT_FRAME_CONFIG: QRFrameConfig = {
+  style: 'None',
+  text: 'SCAN ME',
+  color: '#A04D28',
+  position: 'bottom',
+}
+
+function loadFrameConfig(): QRFrameConfig {
+  try {
+    const stored = localStorage.getItem(FRAME_STORAGE_KEY)
+    if (!stored) return DEFAULT_FRAME_CONFIG
+    const parsed = JSON.parse(stored) as Partial<QRFrameConfig>
+    return {
+      style: FRAME_STYLES.includes(parsed.style as QRFrameStyle) ? (parsed.style as QRFrameStyle) : DEFAULT_FRAME_CONFIG.style,
+      text: typeof parsed.text === 'string' ? parsed.text.slice(0, FRAME_TEXT_LIMIT) : DEFAULT_FRAME_CONFIG.text,
+      color: typeof parsed.color === 'string' ? parsed.color : DEFAULT_FRAME_CONFIG.color,
+      position: parsed.position === 'top' ? 'top' : 'bottom',
+    }
+  } catch {
+    return DEFAULT_FRAME_CONFIG
+  }
+}
 
 const RISKY_PATTERNS = new Set<QRPixelPattern>(['Dots', 'Vertical', 'Horizontal'])
 
@@ -108,6 +138,32 @@ export function useQRDesign(value: string = '', ecLevel: 'L' | 'M' | 'Q' | 'H' =
     setDesignConfig(prev => ({ ...prev, pixelPattern }))
   }, [])
 
+  const [frameConfig, setFrameConfig] = useState<QRFrameConfig>(loadFrameConfig)
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(FRAME_STORAGE_KEY, JSON.stringify(frameConfig))
+    } catch {
+      // Ignore if localStorage is unavailable
+    }
+  }, [frameConfig])
+
+  const setFrameStyle = useCallback((style: QRFrameStyle) => {
+    setFrameConfig(prev => ({ ...prev, style }))
+  }, [])
+
+  const setFrameText = useCallback((text: string) => {
+    setFrameConfig(prev => ({ ...prev, text: text.slice(0, FRAME_TEXT_LIMIT) }))
+  }, [])
+
+  const setFrameColor = useCallback((color: string) => {
+    setFrameConfig(prev => ({ ...prev, color }))
+  }, [])
+
+  const setFramePosition = useCallback((position: QRFramePosition) => {
+    setFrameConfig(prev => ({ ...prev, position }))
+  }, [])
+
   const matrixSize = getMatrixSize(value, ecLevel)
   const [isWarningDismissed, setIsWarningDismissed] = useState(false)
   const isRiskyPattern = !isWarningDismissed && RISKY_PATTERNS.has(designConfig.pixelPattern) && matrixSize >= 41
@@ -136,5 +192,11 @@ export function useQRDesign(value: string = '', ecLevel: 'L' | 'M' | 'Q' | 'H' =
     logoSize,
     setLogoSize,
     maxLogoSize,
+    frameConfig,
+    setFrameStyle,
+    setFrameText,
+    setFrameColor,
+    setFramePosition,
+    frameTextLimit: FRAME_TEXT_LIMIT,
   }
 }

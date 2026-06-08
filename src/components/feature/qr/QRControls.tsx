@@ -6,7 +6,7 @@ import { Tooltip } from '../../common/Tooltip'
 import { WiFiForm } from './WiFiForm'
 import { VCardForm } from './VCardForm'
 import { EmailForm } from './EmailForm'
-import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig, QREyeFrameShape, QREyeCenterShape, QRPixelPattern } from '../../../types/qr'
+import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig, QREyeFrameShape, QREyeCenterShape, QRPixelPattern, QRFrameStyle, QRFramePosition } from '../../../types/qr'
 
 const FRAME_PATHS: Record<QREyeFrameShape, string> = {
   Square:      'M0,0 h28 v28 h-28 Z M4,4 h20 v20 h-20 Z',
@@ -82,6 +82,60 @@ function PixelPatternIcon({ pattern, size = 18 }: { pattern: QRPixelPattern; siz
   return (
     <svg viewBox="0 0 28 28" width={size} height={size} fill="currentColor" aria-hidden>
       <path d={PATTERN_PREVIEW_PATHS[pattern]} />
+    </svg>
+  )
+}
+
+// FRAME swatch — a schematic glyph: a faint QR proxy plus the frame's defining motif,
+// both in currentColor (the motif full strength, the proxy dimmed) so the frame reads at 20px.
+function FramePreviewIcon({ style, size = 20 }: { style: QRFrameStyle; size?: number }) {
+  const proxy = <rect x="8" y="8" width="16" height="16" rx="2.5" opacity="0.32" />
+  const motif = (() => {
+    switch (style) {
+      case 'Banner':
+        return <>
+          <rect x="7" y="4" width="18" height="15" rx="2" opacity="0.32" />
+          <rect x="7" y="22" width="18" height="6" rx="3" />
+        </>
+      case 'Card':
+        return <>
+          <rect x="4" y="4" width="24" height="24" rx="3.5" fill="none" stroke="currentColor" strokeWidth="2" />
+          <path d="M6 22 h20 v2 a2 2 0 0 1 -2 2 h-16 a2 2 0 0 1 -2 -2 Z" />
+          <rect x="9" y="8" width="14" height="11" rx="1.5" opacity="0.32" />
+        </>
+      case 'Ticket':
+        return <>
+          <rect x="5" y="5" width="22" height="22" rx="3" fill="none" stroke="currentColor" strokeWidth="2" />
+          <line x1="9" y1="21" x2="23" y2="21" stroke="currentColor" strokeWidth="1.5" strokeDasharray="2 1.6" strokeLinecap="round" />
+          <circle cx="5" cy="21" r="2" fill="currentColor" />
+          <circle cx="27" cy="21" r="2" fill="currentColor" />
+          <rect x="9" y="8" width="14" height="10" rx="1.5" opacity="0.32" />
+        </>
+      case 'Label':
+        return <>
+          <rect x="8" y="9" width="16" height="14" rx="2" opacity="0.32" />
+          <rect x="11" y="4" width="10" height="2.6" rx="1.3" />
+          <rect x="7" y="25" width="18" height="4" rx="2" />
+        </>
+      case 'Bubble':
+        return <>
+          <rect x="7" y="4" width="18" height="15" rx="2" opacity="0.32" />
+          <rect x="6" y="23" width="20" height="6" rx="3" />
+          <path d="M13 23 L19 23 L16 20 Z" />
+        </>
+      case 'Ticks':
+        return <>
+          {proxy}
+          <path d="M5 9 V5 H9 M23 5 H27 V9 M27 23 V27 H23 M9 27 H5 V23" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" />
+        </>
+      case 'None':
+      default:
+        return proxy
+    }
+  })()
+  return (
+    <svg viewBox="0 0 32 32" width={size} height={size} fill="currentColor" aria-hidden>
+      {motif}
     </svg>
   )
 }
@@ -280,6 +334,25 @@ export interface QRControlsProps {
   logoTransparencyHint?: string
   logoSizeCapHint?: string
   appearanceLabel?: string
+  // Frame
+  frameStyle?: QRFrameStyle
+  onFrameStyleChange?: (style: QRFrameStyle) => void
+  frameText?: string
+  onFrameTextChange?: (text: string) => void
+  frameColor?: string
+  onFrameColorChange?: (color: string) => void
+  framePosition?: QRFramePosition
+  onFramePositionChange?: (position: QRFramePosition) => void
+  frameTextLimit?: number
+  frameLabel?: string
+  frameTextLabel?: string
+  frameTextPlaceholder?: string
+  frameTextHint?: string
+  frameColorLabel?: string
+  framePositionLabel?: string
+  framePositionTopLabel?: string
+  framePositionBottomLabel?: string
+  frameStyleLabels?: Record<QRFrameStyle, string>
 }
 
 export function QRControls({
@@ -404,6 +477,32 @@ export function QRControls({
   logoTransparencyHint = 'PNG or SVG works best for transparent logos',
   logoSizeCapHint = 'Size capped at {max}% for this error correction level — switch to Highest for up to 30%',
   appearanceLabel = 'Appearance',
+  frameStyle = 'None',
+  onFrameStyleChange,
+  frameText = '',
+  onFrameTextChange,
+  frameColor = '#A04D28',
+  onFrameColorChange,
+  framePosition = 'bottom',
+  onFramePositionChange,
+  frameTextLimit = 24,
+  frameLabel = 'Frame',
+  frameTextLabel = 'Caption',
+  frameTextPlaceholder = 'SCAN ME',
+  frameTextHint = 'Shown on the frame. Leave empty for no caption.',
+  frameColorLabel = 'Frame Color',
+  framePositionLabel = 'Caption Position',
+  framePositionTopLabel = 'Top',
+  framePositionBottomLabel = 'Bottom',
+  frameStyleLabels = {
+    None: 'None',
+    Banner: 'Banner',
+    Card: 'Card',
+    Ticket: 'Ticket',
+    Label: 'Label',
+    Bubble: 'Bubble',
+    Ticks: 'Corners',
+  },
 }: QRControlsProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [showUrlInput, setShowUrlInput] = useState(false)
@@ -415,12 +514,17 @@ export function QRControls({
   const [isStyleOpen, setIsStyleOpen] = useState(() => {
     try { return localStorage.getItem('qr-generator-style-open') === 'true' } catch { return false }
   })
+  const [isFrameOpen, setIsFrameOpen] = useState(() => {
+    try { return localStorage.getItem('qr-generator-frame-open') === 'true' } catch { return false }
+  })
 
   const pixelPatternLabelId = useId()
   const fgColorId = useId()
   const bgColorId = useId()
   const eyeFrameColorId = useId()
   const eyeCenterColorId = useId()
+  const frameColorId = useId()
+  const frameStyleLabelId = useId()
   const logoSizeId = useId()
   const logoFileId = useId()
 
@@ -746,6 +850,113 @@ export function QRControls({
               </div>
             </div>
           </>)}
+
+          {/* Frame */}
+          {onFrameStyleChange && (
+            <div className="flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const next = !isFrameOpen
+                  setIsFrameOpen(next)
+                  try { localStorage.setItem('qr-generator-frame-open', String(next)) } catch { /* storage unavailable */ }
+                }}
+                className="flex items-center justify-between w-full text-sm font-medium text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
+                aria-expanded={isFrameOpen}
+              >
+                <span className="flex items-center gap-2">
+                  {frameLabel}
+                  {frameStyle !== 'None' && (
+                    <span className="rounded-full bg-action/15 px-2 py-0.5 text-[11px] font-semibold text-action">
+                      {frameStyleLabels[frameStyle]}
+                    </span>
+                  )}
+                </span>
+                {isFrameOpen ? (
+                  <ChevronUp size={12} aria-hidden className="text-text-secondary" />
+                ) : (
+                  <ChevronDown size={12} aria-hidden className="text-text-secondary" />
+                )}
+              </button>
+
+              {isFrameOpen && (
+                <div className="flex flex-col gap-4">
+                  <div role="group" aria-labelledby={frameStyleLabelId} className="grid grid-cols-4 gap-1">
+                    <span id={frameStyleLabelId} className="sr-only">{frameLabel}</span>
+                    {(['None', 'Banner', 'Card', 'Ticket', 'Label', 'Bubble', 'Ticks'] as QRFrameStyle[]).map((style) => (
+                      <button
+                        key={style}
+                        type="button"
+                        title={frameStyleLabels[style]}
+                        aria-label={frameStyleLabels[style]}
+                        aria-pressed={frameStyle === style}
+                        onClick={() => onFrameStyleChange(style)}
+                        className={`flex h-16 flex-col items-center justify-center gap-1 rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
+                          frameStyle === style
+                            ? 'border-action bg-surface-raised text-text-primary'
+                            : 'border-transparent bg-surface-inset text-text-secondary hover:bg-surface-raised hover:text-text-primary'
+                        }`}
+                      >
+                        <FramePreviewIcon style={style} size={22} />
+                        <span className="text-[10px] font-medium leading-none">{frameStyleLabels[style]}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {frameStyle !== 'None' && (
+                    <>
+                      {onFrameTextChange && (
+                        <div className="flex flex-col gap-1">
+                          <Input
+                            label={frameTextLabel}
+                            placeholder={frameTextPlaceholder}
+                            value={frameText}
+                            onChange={(e) => onFrameTextChange(e.target.value)}
+                            maxLength={frameTextLimit}
+                          />
+                          <p className="text-xs text-text-secondary">{frameTextHint}</p>
+                        </div>
+                      )}
+
+                      <div className="flex gap-4">
+                        {onFrameColorChange && (
+                          <div className="min-w-[120px] flex-1 flex flex-col gap-1">
+                            <label htmlFor={frameColorId} className="text-sm font-medium text-text-primary">{frameColorLabel}</label>
+                            <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3 focus-within:ring-2 focus-within:ring-focus-ring focus-within:outline-none">
+                              <div className="h-5 w-5 shrink-0 rounded-full border-2 border-border-strong" style={{ backgroundColor: frameColor }} />
+                              <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">{frameColor}</span>
+                              <input
+                                id={frameColorId}
+                                type="color"
+                                value={frameColor}
+                                onChange={(e) => onFrameColorChange(e.target.value)}
+                                className="absolute inset-0 h-full w-full cursor-pointer opacity-0 focus:outline-none"
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        {onFramePositionChange && (
+                          <div className="min-w-[120px] flex-1 flex flex-col gap-1">
+                            <span className="text-sm font-medium text-text-primary">{framePositionLabel}</span>
+                            <PillGroup
+                              options={[
+                                { value: 'top', label: framePositionTopLabel },
+                                { value: 'bottom', label: framePositionBottomLabel },
+                              ]}
+                              value={framePosition}
+                              onChange={onFramePositionChange}
+                              aria-label={framePositionLabel}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Logo upload */}
           {onLogoChange && (

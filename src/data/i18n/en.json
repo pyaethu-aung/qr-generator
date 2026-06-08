@@ -119,7 +119,22 @@
     "emailCorrectionHint": "Highest reliability recommended for email codes.",
     "emailModeHint": "Scan to open a pre-addressed email draft.",
     "emailToError": "Enter a valid email address",
-    "emailPayloadWarning": "Long message body makes the QR harder to scan reliably. Keep it concise."
+    "emailPayloadWarning": "Long message body makes the QR harder to scan reliably. Keep it concise.",
+    "frameLabel": "Frame",
+    "frameStyleNone": "None",
+    "frameStyleBanner": "Banner",
+    "frameStyleCard": "Card",
+    "frameStyleTicket": "Ticket",
+    "frameStyleLabel": "Label",
+    "frameStyleBubble": "Bubble",
+    "frameStyleTicks": "Corners",
+    "frameTextLabel": "Caption",
+    "frameTextPlaceholder": "SCAN ME",
+    "frameTextHint": "Shown on the frame. Leave empty for no caption.",
+    "frameColorLabel": "Frame Color",
+    "framePositionLabel": "Caption Position",
+    "framePositionTop": "Top",
+    "framePositionBottom": "Bottom"
   },
   "preview": {
     "sectionLabel": "Live Preview",
