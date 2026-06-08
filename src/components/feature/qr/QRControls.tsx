@@ -6,6 +6,7 @@ import { Tooltip } from '../../common/Tooltip'
 import { WiFiForm } from './WiFiForm'
 import { VCardForm } from './VCardForm'
 import { EmailForm } from './EmailForm'
+import { DEFAULT_FRAME_COLOR } from '../../../data/defaults'
 import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig, QREyeFrameShape, QREyeCenterShape, QRPixelPattern, QRFrameStyle, QRFramePosition } from '../../../types/qr'
 
 const FRAME_PATHS: Record<QREyeFrameShape, string> = {
@@ -483,7 +484,7 @@ export function QRControls({
   onFrameStyleChange,
   frameText = '',
   onFrameTextChange,
-  frameColor = '#A04D28',
+  frameColor = DEFAULT_FRAME_COLOR,
   onFrameColorChange,
   framePosition = 'bottom',
   onFramePositionChange,
@@ -876,7 +877,7 @@ export function QRControls({
                 <span className="flex items-center gap-2">
                   {frameLabel}
                   {frameStyle !== 'None' && (
-                    <span className="rounded-full bg-action/15 px-2 py-0.5 text-[11px] font-semibold text-action">
+                    <span className="rounded-full bg-surface-inset px-2 py-0.5 text-[11px] font-semibold text-text-secondary">
                       {frameStyleLabels[frameStyle]}
                     </span>
                   )}
@@ -907,7 +908,7 @@ export function QRControls({
                         }`}
                       >
                         <FramePreviewIcon style={style} size={22} />
-                        <span className="text-[10px] font-medium leading-none">{frameStyleLabels[style]}</span>
+                        <span className="text-[11px] font-medium leading-tight">{frameStyleLabels[style]}</span>
                       </button>
                     ))}
                   </div>
