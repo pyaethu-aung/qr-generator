@@ -136,6 +136,7 @@ export const QRGenerator = () => {
                 onBgColorChange={setInputBgColor}
                 correctionLabel={translate('controls.correctionLabel')}
                 correctionHint={translate('controls.correctionHint')}
+                correctionBelowRecommendedLabel={translate('controls.correctionBelowRecommended')}
                 correctionOptions={[
                   { value: 'L', label: translate('controls.correctionLow') },
                   { value: 'M', label: translate('controls.correctionMedium') },

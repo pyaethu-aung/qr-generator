@@ -47,6 +47,7 @@ export interface ControlStrings {
   contentPlaceholder: string
   correctionLabel: string
   correctionHint: string
+  correctionBelowRecommended: string
   foregroundLabel: string
   backgroundLabel: string
   eyeFrameLabel: string
@@ -206,6 +207,7 @@ export type TranslationKey =
   | 'controls.contentPlaceholder'
   | 'controls.correctionLabel'
   | 'controls.correctionHint'
+  | 'controls.correctionBelowRecommended'
   | 'controls.foregroundLabel'
   | 'controls.backgroundLabel'
   | 'controls.eyeFrameLabel'
