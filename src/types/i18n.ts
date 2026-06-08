@@ -125,7 +125,9 @@ export interface ControlStrings {
   frameTextLabel: string
   frameTextPlaceholder: string
   frameTextHint: string
+  frameTextLimitReached: string
   frameColorLabel: string
+  frameColorLowContrast: string
   framePositionLabel: string
   framePositionTop: string
   framePositionBottom: string
@@ -270,7 +272,9 @@ export type TranslationKey =
   | 'controls.frameTextLabel'
   | 'controls.frameTextPlaceholder'
   | 'controls.frameTextHint'
+  | 'controls.frameTextLimitReached'
   | 'controls.frameColorLabel'
+  | 'controls.frameColorLowContrast'
   | 'controls.framePositionLabel'
   | 'controls.framePositionTop'
   | 'controls.framePositionBottom'

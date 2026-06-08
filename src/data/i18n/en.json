@@ -131,7 +131,9 @@
     "frameTextLabel": "Caption",
     "frameTextPlaceholder": "SCAN ME",
     "frameTextHint": "Shown on the frame. Leave empty for no caption.",
+    "frameTextLimitReached": "Caption at maximum {max} characters.",
     "frameColorLabel": "Frame Color",
+    "frameColorLowContrast": "This frame color blends into the background. Pick a more contrasting color so the frame stays visible.",
     "framePositionLabel": "Caption Position",
     "framePositionTop": "Top",
     "framePositionBottom": "Bottom"
