@@ -115,6 +115,8 @@ export interface ControlStrings {
   emailToError: string
   emailPayloadWarning: string
   frameLabel: string
+  frameHint: string
+  frameStyleHeading: string
   frameStyleNone: string
   frameStyleBanner: string
   frameStyleCard: string
@@ -262,6 +264,8 @@ export type TranslationKey =
   | 'controls.emailToError'
   | 'controls.emailPayloadWarning'
   | 'controls.frameLabel'
+  | 'controls.frameHint'
+  | 'controls.frameStyleHeading'
   | 'controls.frameStyleNone'
   | 'controls.frameStyleBanner'
   | 'controls.frameStyleCard'

@@ -346,6 +346,8 @@ export interface QRControlsProps {
   onFramePositionChange?: (position: QRFramePosition) => void
   frameTextLimit?: number
   frameLabel?: string
+  frameHintLabel?: string
+  frameStyleHeadingLabel?: string
   frameTextLabel?: string
   frameTextPlaceholder?: string
   frameTextHint?: string
@@ -490,6 +492,8 @@ export function QRControls({
   onFramePositionChange,
   frameTextLimit = 24,
   frameLabel = 'Frame',
+  frameHintLabel = 'Wrap your code with a label like SCAN ME so people know to scan it.',
+  frameStyleHeadingLabel = 'Style',
   frameTextLabel = 'Caption',
   frameTextPlaceholder = 'SCAN ME',
   frameTextHint = 'Shown on the frame. Leave empty for no caption.',
@@ -891,26 +895,29 @@ export function QRControls({
 
               {isFrameOpen && (
                 <div className="flex flex-col gap-4">
-                  <div role="group" aria-labelledby={frameStyleLabelId} className="grid grid-cols-4 gap-1">
-                    <span id={frameStyleLabelId} className="sr-only">{frameLabel}</span>
-                    {(['None', 'Banner', 'Card', 'Ticket', 'Label', 'Bubble', 'Ticks'] as QRFrameStyle[]).map((style) => (
-                      <button
-                        key={style}
-                        type="button"
-                        title={frameStyleLabels[style]}
-                        aria-label={frameStyleLabels[style]}
-                        aria-pressed={frameStyle === style}
-                        onClick={() => onFrameStyleChange(style)}
-                        className={`flex h-16 flex-col items-center justify-center gap-1 rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
-                          frameStyle === style
-                            ? 'border-action bg-surface-raised text-text-primary'
-                            : 'border-transparent bg-surface-inset text-text-secondary hover:bg-surface-raised hover:text-text-primary'
-                        }`}
-                      >
-                        <FramePreviewIcon style={style} size={22} />
-                        <span className="text-[11px] font-medium leading-tight">{frameStyleLabels[style]}</span>
-                      </button>
-                    ))}
+                  <p className="text-xs text-text-secondary">{frameHintLabel}</p>
+                  <div className="flex flex-col gap-1">
+                    <span id={frameStyleLabelId} className="text-sm font-medium text-text-primary">{frameStyleHeadingLabel}</span>
+                    <div role="group" aria-labelledby={frameStyleLabelId} className="grid grid-cols-4 gap-1">
+                      {(['None', 'Banner', 'Card', 'Ticket', 'Label', 'Bubble', 'Ticks'] as QRFrameStyle[]).map((style) => (
+                        <button
+                          key={style}
+                          type="button"
+                          title={frameStyleLabels[style]}
+                          aria-label={frameStyleLabels[style]}
+                          aria-pressed={frameStyle === style}
+                          onClick={() => onFrameStyleChange(style)}
+                          className={`flex h-16 flex-col items-center justify-center gap-1 rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
+                            frameStyle === style
+                              ? 'border-action bg-surface-raised text-text-primary'
+                              : 'border-transparent bg-surface-inset text-text-secondary hover:bg-surface-raised hover:text-text-primary'
+                          }`}
+                        >
+                          <FramePreviewIcon style={style} size={22} />
+                          <span className="text-[11px] font-medium leading-tight">{frameStyleLabels[style]}</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
                   {frameStyle !== 'None' && (
