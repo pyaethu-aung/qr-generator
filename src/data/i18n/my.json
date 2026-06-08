@@ -121,6 +121,8 @@
     "emailToError": "မှန်ကန်သော အီးမေးလ်လိပ်စာ ထည့်ပါ",
     "emailPayloadWarning": "မက်ဆေ့ချ် အကြောင်းအရာ ရှည်လျှင် QR ကုဒ် စကင်န်ဖတ်ရ ခက်ခဲသည်။ တိုတိုရေးပါ။",
     "frameLabel": "ဘောင်",
+    "frameHint": "သင့်ကုဒ်ကို SCAN ME ကဲ့သို့ စာတန်းဖြင့် ဝိုင်းပါ၊ လူများ စကင်န်ဖတ်ရန် သိစေသည်။",
+    "frameStyleHeading": "ပုံစံ",
     "frameStyleNone": "မရှိ",
     "frameStyleBanner": "ဘန်နာ",
     "frameStyleCard": "ကတ်",

@@ -202,6 +202,8 @@ export const QRGenerator = () => {
                 onFramePositionChange={setFramePosition}
                 frameTextLimit={frameTextLimit}
                 frameLabel={translate('controls.frameLabel')}
+                frameHintLabel={translate('controls.frameHint')}
+                frameStyleHeadingLabel={translate('controls.frameStyleHeading')}
                 frameTextLabel={translate('controls.frameTextLabel')}
                 frameTextPlaceholder={translate('controls.frameTextPlaceholder')}
                 frameTextHint={translate('controls.frameTextHint')}

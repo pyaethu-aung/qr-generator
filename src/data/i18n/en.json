@@ -121,6 +121,8 @@
     "emailToError": "Enter a valid email address",
     "emailPayloadWarning": "Long message body makes the QR harder to scan reliably. Keep it concise.",
     "frameLabel": "Frame",
+    "frameHint": "Wrap your code with a label like SCAN ME so people know to scan it.",
+    "frameStyleHeading": "Style",
     "frameStyleNone": "None",
     "frameStyleBanner": "Banner",
     "frameStyleCard": "Card",
