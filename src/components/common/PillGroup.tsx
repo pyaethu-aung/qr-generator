@@ -12,6 +12,13 @@ export interface PillGroupProps<T extends string = string> {
   onChange: (value: T) => void
   /** h-9 (36px) for mode switchers with icons; h-11 (44px) default */
   size?: 'sm' | 'md'
+  /**
+   * Container layout classes. Default `flex flex-wrap gap-2` lets pills grow to fill
+   * each row, which is right for a single row. Pass a grid layout (e.g.
+   * `grid grid-cols-2 lg:grid-cols-3 gap-2`) when the option count wraps, so every
+   * pill stays an equal-width cell instead of the last row's lone pill stretching full-width.
+   */
+  containerClassName?: string
   'aria-label'?: string
   'aria-labelledby'?: string
 }
@@ -21,6 +28,7 @@ export function PillGroup<T extends string>({
   value,
   onChange,
   size = 'md',
+  containerClassName = 'flex flex-wrap gap-2',
   'aria-label': ariaLabel,
   'aria-labelledby': ariaLabelledBy,
 }: PillGroupProps<T>) {
@@ -28,7 +36,7 @@ export function PillGroup<T extends string>({
 
   return (
     <div
-      className="flex flex-wrap gap-2"
+      className={containerClassName}
       role="group"
       aria-label={ariaLabel}
       aria-labelledby={ariaLabelledBy}

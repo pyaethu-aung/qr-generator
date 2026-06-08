@@ -9,6 +9,7 @@ import { useQRShare } from '../../../hooks/useQRShare'
 import { useWiFiConfig } from '../../../hooks/useWiFiConfig'
 import { useVCardConfig } from '../../../hooks/useVCardConfig'
 import { useEmailConfig } from '../../../hooks/useEmailConfig'
+import { useSmsConfig } from '../../../hooks/useSmsConfig'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import type { QRContentMode } from '../../../types/qr'
 
@@ -17,6 +18,7 @@ export const QRGenerator = () => {
   const { wifiConfig, wifiString, setSsid, setPassword, setSecurity, setHidden } = useWiFiConfig()
   const { vcardConfig, vcardString, setFirstName, setLastName, setPhone, setEmail, setCompany, setJobTitle, setWebsite } = useVCardConfig()
   const { emailConfig, emailString, setTo, setSubject, setBody } = useEmailConfig()
+  const { smsConfig, smsString, setNumber, setMessage } = useSmsConfig()
 
   const {
     liveValue,
@@ -34,7 +36,7 @@ export const QRGenerator = () => {
     canDownload,
     recentDownload,
     isPending,
-  } = useQRGenerator(contentMode === 'wifi' ? wifiString : contentMode === 'vcard' ? vcardString : contentMode === 'email' ? emailString : undefined)
+  } = useQRGenerator(contentMode === 'wifi' ? wifiString : contentMode === 'vcard' ? vcardString : contentMode === 'email' ? emailString : contentMode === 'sms' ? smsString : undefined)
 
   const {
     designConfig,
@@ -62,7 +64,7 @@ export const QRGenerator = () => {
 
   // Printed/dense modes need maximum damage tolerance
   useEffect(() => {
-    if (contentMode === 'wifi' || contentMode === 'vcard' || contentMode === 'email') setInputEcLevel('H')
+    if (contentMode === 'wifi' || contentMode === 'vcard' || contentMode === 'email' || contentMode === 'sms') setInputEcLevel('H')
   }, [contentMode, setInputEcLevel])
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -192,6 +194,11 @@ export const QRGenerator = () => {
                 onEmailSubjectChange={setSubject}
                 onEmailBodyChange={setBody}
                 emailCorrectionHint={translate('controls.emailCorrectionHint')}
+                contentModeSmsLabel={translate('controls.contentModeSms')}
+                smsConfig={smsConfig}
+                onSmsNumberChange={setNumber}
+                onSmsMessageChange={setMessage}
+                smsCorrectionHint={translate('controls.smsCorrectionHint')}
                 frameStyle={frameConfig.style}
                 onFrameStyleChange={setFrameStyle}
                 frameText={frameConfig.text}

@@ -1,13 +1,14 @@
 import { useRef, useState, useId } from 'react'
-import { Download, Check, ChevronDown, ChevronUp, Upload, X, Wifi, Link, User, Mail } from 'lucide-react'
+import { Download, Check, ChevronDown, ChevronUp, Upload, X, Wifi, Link, User, Mail, MessageSquare } from 'lucide-react'
 import { Input } from '../../common/Input'
 import { PillGroup } from '../../common/PillGroup'
 import { Tooltip } from '../../common/Tooltip'
 import { WiFiForm } from './WiFiForm'
 import { VCardForm } from './VCardForm'
 import { EmailForm } from './EmailForm'
+import { SmsForm } from './SmsForm'
 import { DEFAULT_FRAME_COLOR } from '../../../data/defaults'
-import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig, QREyeFrameShape, QREyeCenterShape, QRPixelPattern, QRFrameStyle, QRFramePosition } from '../../../types/qr'
+import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig, SmsConfig, QREyeFrameShape, QREyeCenterShape, QRPixelPattern, QRFrameStyle, QRFramePosition } from '../../../types/qr'
 
 const FRAME_PATHS: Record<QREyeFrameShape, string> = {
   Square:      'M0,0 h28 v28 h-28 Z M4,4 h20 v20 h-20 Z',
@@ -329,6 +330,12 @@ export interface QRControlsProps {
   onEmailSubjectChange?: (v: string) => void
   onEmailBodyChange?: (v: string) => void
   emailCorrectionHint?: string
+  // SMS mode props
+  contentModeSmsLabel?: string
+  smsConfig?: SmsConfig
+  onSmsNumberChange?: (v: string) => void
+  onSmsMessageChange?: (v: string) => void
+  smsCorrectionHint?: string
   logoLabel?: string
   logoSizeLabel?: string
   logoUploadHint?: string
@@ -476,6 +483,11 @@ export function QRControls({
   onEmailSubjectChange,
   onEmailBodyChange,
   emailCorrectionHint = 'Highest reliability recommended for email codes.',
+  contentModeSmsLabel = 'SMS',
+  smsConfig,
+  onSmsNumberChange,
+  onSmsMessageChange,
+  smsCorrectionHint = 'Highest reliability recommended for SMS codes.',
   logoLabel = 'Logo',
   logoSizeLabel = 'Logo Size',
   logoUploadHint = 'Click or drop image',
@@ -626,9 +638,11 @@ export function QRControls({
               { value: 'wifi', label: contentModeWifiLabel, icon: <Wifi size={13} aria-hidden /> },
               { value: 'vcard', label: contentModeVCardLabel, icon: <User size={13} aria-hidden /> },
               { value: 'email', label: contentModeEmailLabel, icon: <Mail size={13} aria-hidden /> },
+              { value: 'sms', label: contentModeSmsLabel, icon: <MessageSquare size={13} aria-hidden /> },
             ]}
             value={contentMode}
             onChange={onContentModeChange}
+            containerClassName="grid grid-cols-2 lg:grid-cols-3 gap-2"
             aria-label={contentTypeLabel}
           />
         )}
@@ -659,6 +673,12 @@ export function QRControls({
             onSubjectChange={onEmailSubjectChange}
             onBodyChange={onEmailBodyChange}
           />
+        ) : contentMode === 'sms' && smsConfig && onSmsNumberChange && onSmsMessageChange ? (
+          <SmsForm
+            config={smsConfig}
+            onNumberChange={onSmsNumberChange}
+            onMessageChange={onSmsMessageChange}
+          />
         ) : (
           <Input
             label={contentModeTextLabel}
@@ -686,7 +706,7 @@ export function QRControls({
               aria-label={correctionLabel}
             />
             <p className="text-xs text-text-secondary">
-              {contentMode === 'wifi' ? wifiCorrectionHint : contentMode === 'vcard' ? vcardCorrectionHint : contentMode === 'email' ? emailCorrectionHint : correctionHint}
+              {contentMode === 'wifi' ? wifiCorrectionHint : contentMode === 'vcard' ? vcardCorrectionHint : contentMode === 'email' ? emailCorrectionHint : contentMode === 'sms' ? smsCorrectionHint : correctionHint}
             </p>
           </div>
 
