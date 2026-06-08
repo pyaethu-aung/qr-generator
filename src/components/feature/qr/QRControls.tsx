@@ -687,7 +687,7 @@ export function QRControls({
               setIsStyleOpen(next)
               try { localStorage.setItem('qr-generator-style-open', String(next)) } catch { /* storage unavailable */ }
             }}
-            className="flex items-center justify-between w-full text-sm font-medium text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
+            className="flex min-h-[44px] items-center justify-between w-full text-sm font-medium text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
             aria-expanded={isStyleOpen}
           >
             <span>{appearanceLabel}</span>
@@ -871,7 +871,7 @@ export function QRControls({
                   setIsFrameOpen(next)
                   try { localStorage.setItem('qr-generator-frame-open', String(next)) } catch { /* storage unavailable */ }
                 }}
-                className="flex items-center justify-between w-full text-sm font-medium text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
+                className="flex min-h-[44px] items-center justify-between w-full text-sm font-medium text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
                 aria-expanded={isFrameOpen}
               >
                 <span className="flex items-center gap-2">
@@ -990,7 +990,7 @@ export function QRControls({
               <button
                 type="button"
                 onClick={() => setIsLogoOpen(prev => !prev)}
-                className="flex items-center justify-between w-full text-sm font-medium text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
+                className="flex min-h-[44px] items-center justify-between w-full text-sm font-medium text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
                 aria-expanded={isLogoOpen || !!logoDataUrl}
               >
                 <span>{logoLabel}</span>
