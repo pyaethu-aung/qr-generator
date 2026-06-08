@@ -32,8 +32,13 @@ describe('buildSmsString', () => {
     expect(buildSmsString({ ...base, number: '  +15551234567  ' })).toBe('SMSTO:+15551234567')
   })
 
-  it('preserves spaces and formatting inside the number', () => {
-    expect(buildSmsString({ ...base, number: '+1 555 123 4567' })).toBe('SMSTO:+1 555 123 4567')
+  it('strips spaces from the number in the payload', () => {
+    expect(buildSmsString({ ...base, number: '+1 555 123 4567' })).toBe('SMSTO:+15551234567')
+  })
+
+  it('strips parens, dots, and hyphens from the number in the payload', () => {
+    expect(buildSmsString({ ...base, number: '+1 (555) 123-4567' })).toBe('SMSTO:+15551234567')
+    expect(buildSmsString({ ...base, number: '09.123.456.789' })).toBe('SMSTO:09123456789')
   })
 
   it('includes the message when provided', () => {
