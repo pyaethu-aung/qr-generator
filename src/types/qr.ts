@@ -72,7 +72,7 @@ export interface QRDesignConfig {
  * are drawn from code (SVG primitives), never from licensed/raster artwork. `None`
  * is the default and renders the bare QR exactly as before.
  */
-export type QRFrameStyle = 'None' | 'Banner' | 'Card' | 'Ticket' | 'Label' | 'Bubble' | 'Ticks'
+export type QRFrameStyle = 'None' | 'Banner' | 'Card' | 'Ticket' | 'Label' | 'Bubble' | 'Ticks' | 'Photo'
 
 /** Which edge the caption sits on, for caption-bearing frames. */
 export type QRFramePosition = 'top' | 'bottom'

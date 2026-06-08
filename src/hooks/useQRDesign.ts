@@ -18,7 +18,7 @@ const EC_LOGO_MAX: Record<QRErrorCorrectionLevel, number> = { L: 7, M: 15, Q: 25
 const DESIGN_STORAGE_KEY = 'qr-generator-design-config'
 const FRAME_STORAGE_KEY = 'qr-generator-frame-config'
 
-const FRAME_STYLES: QRFrameStyle[] = ['None', 'Banner', 'Card', 'Ticket', 'Label', 'Bubble', 'Ticks']
+const FRAME_STYLES: QRFrameStyle[] = ['None', 'Banner', 'Card', 'Ticket', 'Label', 'Bubble', 'Ticks', 'Photo']
 const FRAME_TEXT_LIMIT = 24
 
 const DEFAULT_FRAME_CONFIG: QRFrameConfig = {
