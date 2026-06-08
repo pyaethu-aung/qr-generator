@@ -571,7 +571,7 @@ export function QRControls({
             onClick={() => {
               const next = !isStyleOpen
               setIsStyleOpen(next)
-              try { localStorage.setItem('qr-generator-style-open', String(next)) } catch {}
+              try { localStorage.setItem('qr-generator-style-open', String(next)) } catch { /* storage unavailable */ }
             }}
             className="flex items-center justify-between w-full text-sm font-medium text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
             aria-expanded={isStyleOpen}
