@@ -1,11 +1,16 @@
 export type QRErrorCorrectionLevel = 'L' | 'M' | 'Q' | 'H'
 
-export type QRContentMode = 'text' | 'wifi' | 'vcard' | 'email'
+export type QRContentMode = 'text' | 'wifi' | 'vcard' | 'email' | 'sms'
 
 export interface EmailConfig {
   to: string
   subject: string
   body: string
+}
+
+export interface SmsConfig {
+  number: string
+  message: string
 }
 
 export type WiFiSecurity = 'WPA' | 'WEP' | 'nopass'
