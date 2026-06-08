@@ -11,6 +11,7 @@ import type {
   QRFramePosition,
 } from '../types/qr'
 import { getMatrixSize } from '../utils/qrShapeRenderer'
+import { DEFAULT_FRAME_COLOR } from '../data/defaults'
 
 const EC_LOGO_MAX: Record<QRErrorCorrectionLevel, number> = { L: 7, M: 15, Q: 25, H: 30 }
 
@@ -23,7 +24,7 @@ const FRAME_TEXT_LIMIT = 24
 const DEFAULT_FRAME_CONFIG: QRFrameConfig = {
   style: 'None',
   text: 'SCAN ME',
-  color: '#A04D28',
+  color: DEFAULT_FRAME_COLOR,
   position: 'bottom',
 }
 
