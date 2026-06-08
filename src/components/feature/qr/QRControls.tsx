@@ -298,6 +298,7 @@ export interface QRControlsProps {
   correctionTooltipAriaLabel?: string
   dismissWarningAriaLabel?: string
   correctionHint?: string
+  correctionBelowRecommendedLabel?: string
   downloadStatus?: 'png' | 'svg' | null
   downloadStatusMessage?: string
   // Content mode (text vs wifi)
@@ -454,6 +455,7 @@ export function QRControls({
   correctionTooltipAriaLabel = 'About error correction',
   dismissWarningAriaLabel = 'Dismiss warning',
   correctionHint = 'Higher = survives damage and supports logos.',
+  correctionBelowRecommendedLabel = 'Lower reliability can make this code harder to scan. Highest is recommended.',
   downloadStatus,
   downloadStatusMessage = 'Downloaded',
   contentMode = 'text',
@@ -642,7 +644,8 @@ export function QRControls({
             ]}
             value={contentMode}
             onChange={onContentModeChange}
-            containerClassName="grid grid-cols-2 lg:grid-cols-3 gap-2"
+            containerClassName="flex flex-wrap justify-center gap-2"
+            itemClassName="grow-0 basis-[calc(50%-0.25rem)] lg:basis-[calc(33.333%-0.34rem)]"
             aria-label={contentTypeLabel}
           />
         )}
@@ -705,8 +708,17 @@ export function QRControls({
               onChange={onEcLevelChange}
               aria-label={correctionLabel}
             />
-            <p className="text-xs text-text-secondary">
-              {contentMode === 'wifi' ? wifiCorrectionHint : contentMode === 'vcard' ? vcardCorrectionHint : contentMode === 'email' ? emailCorrectionHint : contentMode === 'sms' ? smsCorrectionHint : correctionHint}
+            {/* Non-text modes force Highest on entry. If the user then lowers it, the
+                static "Highest recommended" line would contradict the active choice, so
+                surface a caution instead. aria-live (without role=status, which already
+                belongs to the share/download region) announces the auto-set and later changes. */}
+            <p
+              aria-live="polite"
+              className={`text-xs ${contentMode !== 'text' && ecLevel !== 'H' ? 'text-warning' : 'text-text-secondary'}`}
+            >
+              {contentMode !== 'text' && ecLevel !== 'H'
+                ? correctionBelowRecommendedLabel
+                : contentMode === 'wifi' ? wifiCorrectionHint : contentMode === 'vcard' ? vcardCorrectionHint : contentMode === 'email' ? emailCorrectionHint : contentMode === 'sms' ? smsCorrectionHint : correctionHint}
             </p>
           </div>
 
