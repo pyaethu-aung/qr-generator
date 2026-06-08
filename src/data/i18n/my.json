@@ -131,7 +131,9 @@
     "frameTextLabel": "စာသား",
     "frameTextPlaceholder": "SCAN ME",
     "frameTextHint": "ဘောင်ပေါ်တွင် ပြသမည်။ စာသားမလိုလျှင် ကွက်လပ်ထားပါ။",
+    "frameTextLimitReached": "စာသား အများဆုံး {max} လုံး ပြည့်ပါပြီ။",
     "frameColorLabel": "ဘောင်အရောင်",
+    "frameColorLowContrast": "ဤဘောင်အရောင်သည် နောက်ခံနှင့် ရောနေသည်။ ဘောင်မြင်သာစေရန် ကွဲပြားသော အရောင်ရွေးပါ။",
     "framePositionLabel": "စာသားနေရာ",
     "framePositionTop": "အပေါ်",
     "framePositionBottom": "အောက်"

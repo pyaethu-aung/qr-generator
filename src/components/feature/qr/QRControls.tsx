@@ -348,7 +348,9 @@ export interface QRControlsProps {
   frameTextLabel?: string
   frameTextPlaceholder?: string
   frameTextHint?: string
+  frameTextLimitReachedLabel?: string
   frameColorLabel?: string
+  frameColorLowContrastLabel?: string
   framePositionLabel?: string
   framePositionTopLabel?: string
   framePositionBottomLabel?: string
@@ -490,7 +492,9 @@ export function QRControls({
   frameTextLabel = 'Caption',
   frameTextPlaceholder = 'SCAN ME',
   frameTextHint = 'Shown on the frame. Leave empty for no caption.',
+  frameTextLimitReachedLabel = 'Caption at maximum {max} characters.',
   frameColorLabel = 'Frame Color',
+  frameColorLowContrastLabel = 'This frame color blends into the background. Pick a more contrasting color so the frame stays visible.',
   framePositionLabel = 'Caption Position',
   framePositionTopLabel = 'Top',
   framePositionBottomLabel = 'Bottom',
@@ -537,6 +541,11 @@ export function QRControls({
   const isContrastDismissed = dismissedColors !== null && dismissedColors.fg === fgColor && dismissedColors.bg === bgColor
   const showContrastWarning = !isContrastDismissed && (isLowContrast || isInvertedColors)
   const contrastRatioLabel = colorContrast !== null ? `${colorContrast.toFixed(1)}:1` : null
+
+  // The caption auto-contrasts against the frame fill; this guards the other pairing —
+  // a frame color too close to the QR background renders an invisible frame.
+  const frameBgContrast = wcagContrastRatio(frameColor, bgColor)
+  const isFrameLowContrast = frameStyle !== 'None' && frameBgContrast !== null && frameBgContrast < 1.5
 
   const processFile = (file: File) => {
     if (!file.type.startsWith('image/')) {
@@ -914,7 +923,16 @@ export function QRControls({
                             onChange={(e) => onFrameTextChange(e.target.value)}
                             maxLength={frameTextLimit}
                           />
-                          <p className="text-xs text-text-secondary">{frameTextHint}</p>
+                          <div className="flex items-baseline justify-between gap-2">
+                            <p className="text-xs text-text-secondary">{frameTextHint}</p>
+                            <span className={`shrink-0 text-xs tabular-nums ${frameText.length >= frameTextLimit ? 'text-warning' : 'text-text-secondary'}`}>
+                              {frameText.length}/{frameTextLimit}
+                            </span>
+                          </div>
+                          {/* Announce only on reaching the cap — a per-keystroke live counter would spam */}
+                          <span className="sr-only" role="status" aria-live="polite">
+                            {frameText.length >= frameTextLimit ? frameTextLimitReachedLabel.replace('{max}', String(frameTextLimit)) : ''}
+                          </span>
                         </div>
                       )}
 
@@ -951,6 +969,12 @@ export function QRControls({
                           </div>
                         )}
                       </div>
+
+                      {isFrameLowContrast && (
+                        <p role="status" className="text-xs text-warning">
+                          {frameColorLowContrastLabel}
+                        </p>
+                      )}
                     </>
                   )}
                 </div>
