@@ -877,7 +877,7 @@ export function QRControls({
                 <span className="flex items-center gap-2">
                   {frameLabel}
                   {frameStyle !== 'None' && (
-                    <span className="rounded-full bg-surface-inset px-2 py-0.5 text-[11px] font-semibold text-text-secondary">
+                    <span className="rounded-full bg-surface-inset px-2 py-0.5 text-[11px] font-semibold text-text-primary">
                       {frameStyleLabels[frameStyle]}
                     </span>
                   )}
