@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { renderFrame } from '../frameRenderer'
 import type { QRFrameStyle } from '../../types/qr'
 
-const STYLES: Exclude<QRFrameStyle, 'None'>[] = ['Banner', 'Card', 'Ticket', 'Label', 'Bubble', 'Ticks']
+const STYLES: Exclude<QRFrameStyle, 'None'>[] = ['Banner', 'Card', 'Ticket', 'Label', 'Bubble', 'Ticks', 'Photo']
 const Q = 250
 const COLOR = '#A04D28'
 const BG = '#FFFFFF'

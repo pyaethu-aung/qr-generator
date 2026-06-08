@@ -130,6 +130,7 @@
     "frameStyleLabel": "Label",
     "frameStyleBubble": "Bubble",
     "frameStyleTicks": "Corners",
+    "frameStylePhoto": "Photo",
     "frameTextLabel": "Caption",
     "frameTextPlaceholder": "SCAN ME",
     "frameTextHint": "Shown on the frame. Leave empty for no caption.",

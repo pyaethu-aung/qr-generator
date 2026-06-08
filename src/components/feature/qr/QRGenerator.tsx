@@ -221,6 +221,7 @@ export const QRGenerator = () => {
                   Label: translate('controls.frameStyleLabel'),
                   Bubble: translate('controls.frameStyleBubble'),
                   Ticks: translate('controls.frameStyleTicks'),
+                  Photo: translate('controls.frameStylePhoto'),
                 }}
               />
             </div>

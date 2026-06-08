@@ -129,6 +129,12 @@ function FramePreviewIcon({ style, size = 20 }: { style: QRFrameStyle; size?: nu
           {proxy}
           <path d="M5 9 V5 H9 M23 5 H27 V9 M27 23 V27 H23 M9 27 H5 V23" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" />
         </>
+      case 'Photo':
+        return <>
+          <rect x="4" y="4" width="24" height="24" rx="2.5" fill="none" stroke="currentColor" strokeWidth="2" />
+          <rect x="9" y="8" width="14" height="11" rx="1" opacity="0.32" />
+          <rect x="11" y="23" width="10" height="2.4" rx="1.2" />
+        </>
       case 'None':
       default:
         return proxy
@@ -511,6 +517,7 @@ export function QRControls({
     Label: 'Label',
     Bubble: 'Bubble',
     Ticks: 'Corners',
+    Photo: 'Photo',
   },
 }: QRControlsProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -899,7 +906,7 @@ export function QRControls({
                   <div className="flex flex-col gap-1">
                     <span id={frameStyleLabelId} className="text-sm font-medium text-text-primary">{frameStyleHeadingLabel}</span>
                     <div role="group" aria-labelledby={frameStyleLabelId} className="grid grid-cols-4 gap-1">
-                      {(['None', 'Banner', 'Card', 'Ticket', 'Label', 'Bubble', 'Ticks'] as QRFrameStyle[]).map((style) => (
+                      {(['None', 'Banner', 'Card', 'Ticket', 'Label', 'Bubble', 'Ticks', 'Photo'] as QRFrameStyle[]).map((style) => (
                         <button
                           key={style}
                           type="button"

@@ -215,5 +215,27 @@ export function renderFrame(
       const cap = caption(text, viewBox / 2, capCy, ch * 0.5, frameColor, Q * 0.8)
       return { viewBox, qrBox: { x: qx, y: qy, size: Q }, decoration: brackets + cap }
     }
+
+    case 'Photo': {
+      // A solid mat fills the tile; a white window holds the QR (its quiet zone),
+      // and the caption sits in a wide margin on the position side, like an instant print.
+      const om = Q * 0.04
+      const pad = Q * 0.06 // white quiet zone around the QR inside the window
+      const win = Q + 2 * pad
+      const matSide = Q * 0.09 // mat thickness on the three thin sides
+      const capMargin = Q * 0.24 // wide caption margin on the caption side
+      const matW = win + 2 * matSide
+      const matH = matSide + win + capMargin
+      const viewBox = n(Math.max(matW, matH) + 2 * om)
+      const matX = (viewBox - matW) / 2
+      const matY = (viewBox - matH) / 2
+      const winX = matX + matSide
+      const winY = atBottom ? matY + matSide : matY + capMargin
+      const capCy = atBottom ? winY + win + capMargin / 2 : matY + capMargin / 2
+      const mat = `<path d="${rrect(matX, matY, matW, matH, Q * 0.04)}" fill="${frameColor}"/>`
+      const windowRect = `<path d="${rrect(winX, winY, win, win, Q * 0.02)}" fill="${bgColor}"/>`
+      const cap = caption(text, viewBox / 2, capCy, capMargin * 0.34, onBand, win * 0.9)
+      return { viewBox, qrBox: { x: winX + pad, y: winY + pad, size: Q }, decoration: mat + windowRect + cap }
+    }
   }
 }
