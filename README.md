@@ -20,6 +20,12 @@ QR codes can be styled before download:
   Diamond, Vertical, Horizontal, Classy, and Fluid. Classy and Fluid are
   neighbor-aware: adjacent dark modules merge into a continuous connected form
   rather than rendering as isolated shapes.
+- **Frames** — wrap the code in a decorative, code-drawn frame with a
+  call-to-action caption. Six styles (Banner, Card, Ticket, Label, Bubble,
+  Corners) plus None (the default). The caption text, frame color, and caption
+  position (top/bottom) are configurable; the caption auto-contrasts against the
+  frame fill. Frames are built from SVG primitives (no raster/licensed image
+  assets) and render identically in the live preview and every export (PNG/SVG).
 - **Colors, error correction & logo** — foreground/background colors, EC level,
   and an optional centered logo overlay.
 - **Contrast warnings** — a dismissible alert appears when the foreground/background
@@ -28,8 +34,10 @@ QR codes can be styled before download:
 
 The white separator gap and dark center are always preserved, so any eye
 combination stays scannable. Path rendering lives in
-`src/utils/qrShapeRenderer.ts`; styling state is owned by `useQRDesign` and
-persisted to `localStorage`.
+`src/utils/qrShapeRenderer.ts`, frame artwork in `src/utils/frameRenderer.ts`,
+and `src/utils/qrSvgComposer.ts` is the single source that composes the
+QR + frame SVG for the preview and all exports. Styling and frame state are
+owned by `useQRDesign` and persisted to `localStorage`.
 
 ## Stack
 
