@@ -114,6 +114,15 @@ export interface ControlStrings {
   emailModeHint: string
   emailToError: string
   emailPayloadWarning: string
+  contentModeSms: string
+  smsNumberLabel: string
+  smsNumberPlaceholder: string
+  smsNumberError: string
+  smsMessageLabel: string
+  smsMessagePlaceholder: string
+  smsModeHint: string
+  smsCorrectionHint: string
+  smsPayloadWarning: string
   frameLabel: string
   frameHint: string
   frameStyleHeading: string
@@ -264,6 +273,15 @@ export type TranslationKey =
   | 'controls.emailModeHint'
   | 'controls.emailToError'
   | 'controls.emailPayloadWarning'
+  | 'controls.contentModeSms'
+  | 'controls.smsNumberLabel'
+  | 'controls.smsNumberPlaceholder'
+  | 'controls.smsNumberError'
+  | 'controls.smsMessageLabel'
+  | 'controls.smsMessagePlaceholder'
+  | 'controls.smsModeHint'
+  | 'controls.smsCorrectionHint'
+  | 'controls.smsPayloadWarning'
   | 'controls.frameLabel'
   | 'controls.frameHint'
   | 'controls.frameStyleHeading'
