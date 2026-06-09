@@ -20,6 +20,7 @@ export function SmsForm({ config, onNumberChange, onMessageChange }: SmsFormProp
   const messageRegionId = useId()
   const [messageOpen, setMessageOpen] = useState(false)
   const [numberError, setNumberError] = useState<string | undefined>()
+  const [touched, setTouched] = useState(false)
 
   const hasMessage = !!config.message
 
@@ -40,8 +41,15 @@ export function SmsForm({ config, onNumberChange, onMessageChange }: SmsFormProp
         label={translate('controls.smsNumberLabel')}
         placeholder={translate('controls.smsNumberPlaceholder')}
         value={config.number}
-        onChange={(e) => { onNumberChange(e.target.value); if (numberError) setNumberError(undefined) }}
-        onBlur={(e) => validateNumber(e.target.value)}
+        onChange={(e) => {
+          const v = e.target.value
+          onNumberChange(v)
+          // Once the field has been blurred at least once, keep validating live so the
+          // error clears the instant the number becomes valid (and returns if broken again).
+          if (touched) validateNumber(v)
+          else if (numberError) setNumberError(undefined)
+        }}
+        onBlur={(e) => { setTouched(true); validateNumber(e.target.value) }}
         error={numberError}
         type="tel"
         inputMode="tel"
