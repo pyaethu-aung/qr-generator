@@ -26,6 +26,13 @@ export interface PillGroupProps<T extends string = string> {
    * centers under `justify-center` instead of stretching or leaving an empty grid cell.
    */
   itemClassName?: string
+  /**
+   * Active-pill treatment. Defaults to the brand approval color. Override with a warning
+   * treatment when the selected option is one the system advises against (e.g. an
+   * error-correction level below the recommended one), so the active color agrees with the
+   * accompanying caption instead of signalling approval for a cautioned choice.
+   */
+  activeClassName?: string
   'aria-label'?: string
   'aria-labelledby'?: string
 }
@@ -37,6 +44,7 @@ export function PillGroup<T extends string>({
   size = 'md',
   containerClassName = 'flex flex-wrap gap-2',
   itemClassName = 'flex-1',
+  activeClassName = 'bg-action text-action-fg font-semibold',
   'aria-label': ariaLabel,
   'aria-labelledby': ariaLabelledBy,
 }: PillGroupProps<T>) {
@@ -62,7 +70,7 @@ export function PillGroup<T extends string>({
             size === 'sm' ? 'h-9' : 'h-11',
             hasIcons ? 'gap-1.5' : '',
             value === option.value
-              ? 'bg-action text-action-fg font-semibold'
+              ? activeClassName
               : 'bg-surface-inset text-text-primary hover:bg-surface-raised',
           ].filter(Boolean).join(' ')}
         >
