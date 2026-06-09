@@ -128,7 +128,7 @@
     "smsMessageLabel": "Message",
     "smsMessagePlaceholder": "Message text (optional)",
     "smsModeHint": "Scan to open a text message with the number and message ready to send.",
-    "smsCorrectionHint": "Highest reliability recommended for SMS codes.",
+    "smsCorrectionHint": "Set to Highest for the most reliable SMS scanning.",
     "smsPayloadWarning": "Long message makes the QR harder to scan reliably. Keep it concise.",
     "frameLabel": "Frame",
     "frameHint": "Wrap your code with a label like SCAN ME so people know to scan it.",

@@ -489,7 +489,7 @@ export function QRControls({
   smsConfig,
   onSmsNumberChange,
   onSmsMessageChange,
-  smsCorrectionHint = 'Highest reliability recommended for SMS codes.',
+  smsCorrectionHint = 'Set to Highest for the most reliable SMS scanning.',
   logoLabel = 'Logo',
   logoSizeLabel = 'Logo Size',
   logoUploadHint = 'Click or drop image',
@@ -557,6 +557,10 @@ export function QRControls({
   const frameStyleLabelId = useId()
   const logoSizeId = useId()
   const logoFileId = useId()
+
+  // Non-text modes force Highest on entry; if the user drops below it, the choice is
+  // advised against. Drives both the amber caption and the amber active-pill treatment.
+  const reliabilityBelowRecommended = contentMode !== 'text' && ecLevel !== 'H'
 
   const [dismissedColors, setDismissedColors] = useState<{ fg: string; bg: string } | null>(null)
   const fgLum = relativeLuminance(fgColor)
@@ -706,6 +710,7 @@ export function QRControls({
               options={correctionOptions}
               value={ecLevel}
               onChange={onEcLevelChange}
+              activeClassName={reliabilityBelowRecommended ? 'bg-warning text-action-fg font-semibold' : undefined}
               aria-label={correctionLabel}
             />
             {/* Non-text modes force Highest on entry. If the user then lowers it, the
@@ -714,9 +719,9 @@ export function QRControls({
                 belongs to the share/download region) announces the auto-set and later changes. */}
             <p
               aria-live="polite"
-              className={`text-xs ${contentMode !== 'text' && ecLevel !== 'H' ? 'text-warning' : 'text-text-secondary'}`}
+              className={`text-xs ${reliabilityBelowRecommended ? 'text-warning' : 'text-text-secondary'}`}
             >
-              {contentMode !== 'text' && ecLevel !== 'H'
+              {reliabilityBelowRecommended
                 ? correctionBelowRecommendedLabel
                 : contentMode === 'wifi' ? wifiCorrectionHint : contentMode === 'vcard' ? vcardCorrectionHint : contentMode === 'email' ? emailCorrectionHint : contentMode === 'sms' ? smsCorrectionHint : correctionHint}
             </p>
