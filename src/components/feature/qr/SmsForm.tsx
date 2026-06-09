@@ -55,7 +55,7 @@ export function SmsForm({ config, onNumberChange, onMessageChange }: SmsFormProp
           type="button"
           id={messageToggleId}
           onClick={() => setMessageOpen(prev => !prev)}
-          className="flex items-center justify-between w-full text-sm font-medium text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
+          className="flex min-h-[44px] items-center justify-between w-full text-sm font-medium text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
           aria-expanded={messageOpen || hasMessage}
           aria-controls={messageRegionId}
         >
