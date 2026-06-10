@@ -128,28 +128,30 @@ export function PhoneNumberField({
               noResultsLabel={translate('controls.phoneCountryNoResults')}
               triggerPlaceholder={translate('controls.phoneCountryTriggerEmpty')}
             />
-            <Input
-              id={inputId}
-              placeholder={iso ? translate('controls.phoneNumberLocalPlaceholder') : placeholder}
-              aria-describedby={describedBy}
-              aria-invalid={numberError ? true : undefined}
-              value={local}
-              onChange={(e) => handleLocalChange(e.target.value)}
-              onKeyDown={handleLocalKeyDown}
-              onBlur={() => {
-                setTouched(true)
-                validate(combined)
-              }}
-              className={
-                numberError
-                  ? 'rounded-l-none border-l-0 border-error focus:border-error focus:ring-error'
-                  : 'rounded-l-none border-l-0'
-              }
-              type="tel"
-              inputMode="tel"
-              autoComplete="tel"
-              required
-            />
+            <div className="relative z-[1] min-w-0 flex-1 focus-within:z-10">
+              <Input
+                id={inputId}
+                placeholder={iso ? translate('controls.phoneNumberLocalPlaceholder') : placeholder}
+                aria-describedby={describedBy}
+                aria-invalid={numberError ? true : undefined}
+                value={local}
+                onChange={(e) => handleLocalChange(e.target.value)}
+                onKeyDown={handleLocalKeyDown}
+                onBlur={() => {
+                  setTouched(true)
+                  validate(combined)
+                }}
+                className={
+                  numberError
+                    ? 'rounded-l-none border-l-0 border-error focus:border-error focus:ring-error'
+                    : 'rounded-l-none border-l-0'
+                }
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                required
+              />
+            </div>
           </div>
           {numberError && (
             <span id={errorId} role="alert" className="text-sm text-error">{numberError}</span>
