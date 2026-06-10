@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useId } from 'react'
 import { Input } from '../../common/Input'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import { TEL_PHONE_REGEX } from '../../../utils/tel'
@@ -11,6 +11,7 @@ interface TelFormProps {
 
 export function TelForm({ config, onNumberChange }: TelFormProps) {
   const { translate } = useLocaleContext()
+  const hintId = useId()
   const [numberError, setNumberError] = useState<string | undefined>()
   const [touched, setTouched] = useState(false)
 
@@ -23,10 +24,11 @@ export function TelForm({ config, onNumberChange }: TelFormProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-xs text-text-secondary">{translate('controls.telModeHint')}</p>
+      <p id={hintId} className="text-xs text-text-secondary">{translate('controls.telModeHint')}</p>
       <Input
         label={translate('controls.telNumberLabel')}
         placeholder={translate('controls.telNumberPlaceholder')}
+        aria-describedby={hintId}
         value={config.number}
         onChange={(e) => {
           const v = e.target.value

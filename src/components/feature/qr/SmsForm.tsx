@@ -18,6 +18,7 @@ export function SmsForm({ config, onNumberChange, onMessageChange }: SmsFormProp
   const messageId = useId()
   const messageToggleId = useId()
   const messageRegionId = useId()
+  const hintId = useId()
   const [messageOpen, setMessageOpen] = useState(false)
   const [numberError, setNumberError] = useState<string | undefined>()
   const [touched, setTouched] = useState(false)
@@ -36,10 +37,11 @@ export function SmsForm({ config, onNumberChange, onMessageChange }: SmsFormProp
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-xs text-text-secondary">{translate('controls.smsModeHint')}</p>
+      <p id={hintId} className="text-xs text-text-secondary">{translate('controls.smsModeHint')}</p>
       <Input
         label={translate('controls.smsNumberLabel')}
         placeholder={translate('controls.smsNumberPlaceholder')}
+        aria-describedby={hintId}
         value={config.number}
         onChange={(e) => {
           const v = e.target.value
