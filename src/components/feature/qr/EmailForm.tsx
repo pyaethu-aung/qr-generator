@@ -19,6 +19,7 @@ export function EmailForm({ config, onToChange, onSubjectChange, onBodyChange }:
   const bodyId = useId()
   const bodyToggleId = useId()
   const bodyRegionId = useId()
+  const hintId = useId()
   const [bodyOpen, setBodyOpen] = useState(false)
   const [toError, setToError] = useState<string | undefined>()
 
@@ -36,10 +37,11 @@ export function EmailForm({ config, onToChange, onSubjectChange, onBodyChange }:
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-xs text-text-secondary">{translate('controls.emailModeHint')}</p>
+      <p id={hintId} className="text-xs text-text-secondary">{translate('controls.emailModeHint')}</p>
       <Input
         label={translate('controls.emailToLabel')}
         placeholder={translate('controls.emailToPlaceholder')}
+        aria-describedby={hintId}
         value={config.to}
         onChange={(e) => { onToChange(e.target.value); if (toError) setToError(undefined) }}
         onBlur={(e) => validateEmail(e.target.value)}

@@ -11,10 +11,14 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, helperText, error, fullWidth = true, className, id, disabled, ...props }, ref) => {
+  ({ label, helperText, error, fullWidth = true, className, id, disabled, 'aria-describedby': ariaDescribedBy, ...props }, ref) => {
     const generatedId = useId()
     const inputId = id || props.name || generatedId
     const errorId = useId()
+
+    // Merge any caller-supplied describedby (e.g. a field hint) with the internal error id,
+    // so neither clobbers the other.
+    const describedBy = [ariaDescribedBy, error ? errorId : undefined].filter(Boolean).join(' ') || undefined
 
     const inputClass = twMerge(
       clsx(
@@ -40,7 +44,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           className={inputClass}
           disabled={disabled}
-          aria-describedby={error ? errorId : undefined}
+          aria-describedby={describedBy}
           aria-invalid={error ? true : undefined}
           {...props}
         />
