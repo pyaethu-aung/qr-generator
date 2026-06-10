@@ -49,6 +49,7 @@ export function PhoneNumberField({
 }: PhoneNumberFieldProps) {
   const { locale, translate } = useLocaleContext()
   const hintId = useId()
+  const groupLabelId = useId()
   const previewId = useId()
   const errorId = useId()
   const inputId = useId()
@@ -111,9 +112,9 @@ export function PhoneNumberField({
   return (
     <div className="flex flex-col gap-4">
       <p id={hintId} className="text-xs text-text-secondary">{hint}</p>
-      <div className="flex flex-col gap-1.5">
+      <div role="group" aria-labelledby={groupLabelId} className="flex flex-col gap-1.5">
         <div className="flex w-full flex-col gap-1">
-          <label htmlFor={inputId} className="text-sm font-medium text-text-primary">
+          <label id={groupLabelId} htmlFor={inputId} className="text-sm font-medium text-text-primary">
             {label}
             <span className="ml-0.5 text-error" aria-hidden="true">*</span>
             <span className="sr-only">required</span>
