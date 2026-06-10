@@ -1,7 +1,7 @@
 import { useState, useId, useMemo } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
-import { Input } from '../../common/Input'
 import { Callout } from '../../common/Callout'
+import { PhoneNumberField } from './PhoneNumberField'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import { buildSmsString, SMS_PHONE_REGEX } from '../../../utils/sms'
 import type { SmsConfig } from '../../../types/qr'
@@ -19,45 +19,24 @@ export function SmsForm({ config, onNumberChange, onMessageChange }: SmsFormProp
   const messageId = useId()
   const messageToggleId = useId()
   const messageRegionId = useId()
-  const hintId = useId()
   const [messageOpen, setMessageOpen] = useState(false)
-  const [numberError, setNumberError] = useState<string | undefined>()
-  const [touched, setTouched] = useState(false)
 
   const hasMessage = !!config.message
 
   const payloadLength = useMemo(() => buildSmsString(config).length, [config])
   const isPayloadLong = payloadLength > SMS_PAYLOAD_WARN
 
-  const validateNumber = (value: string) => {
-    const trimmed = value.trim()
-    if (!trimmed) { setNumberError(undefined); return }
-    const valid = SMS_PHONE_REGEX.test(trimmed)
-    setNumberError(valid ? undefined : translate('controls.smsNumberError'))
-  }
-
   return (
     <div className="flex flex-col gap-4">
-      <p id={hintId} className="text-xs text-text-secondary">{translate('controls.smsModeHint')}</p>
-      <Input
+      <PhoneNumberField
+        value={config.number}
+        onChange={onNumberChange}
+        numberRegex={SMS_PHONE_REGEX}
         label={translate('controls.smsNumberLabel')}
         placeholder={translate('controls.smsNumberPlaceholder')}
-        aria-describedby={hintId}
-        value={config.number}
-        onChange={(e) => {
-          const v = e.target.value
-          onNumberChange(v)
-          // Once the field has been blurred at least once, keep validating live so the
-          // error clears the instant the number becomes valid (and returns if broken again).
-          if (touched) validateNumber(v)
-          else if (numberError) setNumberError(undefined)
-        }}
-        onBlur={(e) => { setTouched(true); validateNumber(e.target.value) }}
-        error={numberError}
-        type="tel"
-        inputMode="tel"
-        autoComplete="tel"
-        required
+        errorMessage={translate('controls.smsNumberError')}
+        hint={translate('controls.smsModeHint')}
+        previewLabel={translate('controls.smsTextPreview')}
       />
 
       {/* Message — collapsible, optional */}

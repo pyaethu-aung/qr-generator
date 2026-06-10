@@ -124,6 +124,7 @@ export interface ControlStrings {
   smsModeHint: string
   smsCorrectionHint: string
   smsPayloadWarning: string
+  smsTextPreview: string
   contentModeTel: string
   telNumberLabel: string
   telNumberPlaceholder: string
@@ -131,7 +132,12 @@ export interface ControlStrings {
   telModeHint: string
   telCorrectionHint: string
   telDialPreview: string
-  telNoCountryCodeCaution: string
+  phoneNoCountryCodeCaution: string
+  phoneCountryLabel: string
+  phoneCountryTriggerEmpty: string
+  phoneCountrySearchPlaceholder: string
+  phoneCountryNoResults: string
+  phoneNumberLocalPlaceholder: string
   frameLabel: string
   frameHint: string
   frameStyleHeading: string
@@ -292,6 +298,7 @@ export type TranslationKey =
   | 'controls.smsModeHint'
   | 'controls.smsCorrectionHint'
   | 'controls.smsPayloadWarning'
+  | 'controls.smsTextPreview'
   | 'controls.contentModeTel'
   | 'controls.telNumberLabel'
   | 'controls.telNumberPlaceholder'
@@ -299,7 +306,12 @@ export type TranslationKey =
   | 'controls.telModeHint'
   | 'controls.telCorrectionHint'
   | 'controls.telDialPreview'
-  | 'controls.telNoCountryCodeCaution'
+  | 'controls.phoneNoCountryCodeCaution'
+  | 'controls.phoneCountryLabel'
+  | 'controls.phoneCountryTriggerEmpty'
+  | 'controls.phoneCountrySearchPlaceholder'
+  | 'controls.phoneCountryNoResults'
+  | 'controls.phoneNumberLocalPlaceholder'
   | 'controls.frameLabel'
   | 'controls.frameHint'
   | 'controls.frameStyleHeading'

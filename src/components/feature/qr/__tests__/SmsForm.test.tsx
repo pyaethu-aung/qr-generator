@@ -35,10 +35,10 @@ describe('SmsForm', () => {
     expect(screen.getByRole('button', { name: /message/i })).toBeInTheDocument()
   })
 
-  it('calls onNumberChange when the number is typed', () => {
+  it('calls onNumberChange with the dial code absorbed into the selector', () => {
     const { onNumberChange } = setup()
     fireEvent.change(screen.getByRole('textbox', { name: /phone number/i }), { target: { value: '+15551234567' } })
-    expect(onNumberChange).toHaveBeenCalledWith('+15551234567')
+    expect(onNumberChange).toHaveBeenCalledWith('+1 5551234567')
   })
 
   it('calls onMessageChange when the Message is typed', () => {
@@ -50,7 +50,9 @@ describe('SmsForm', () => {
 
   it('reflects config values in inputs', () => {
     setup({ number: '+15551234567', message: 'Hi' })
-    expect(screen.getByRole('textbox', { name: /phone number/i })).toHaveValue('+15551234567')
+    // The dial code moves into the selector; the input keeps the local part.
+    expect(screen.getByRole('button', { name: /country code/i })).toHaveTextContent('+1')
+    expect(screen.getByRole('textbox', { name: /phone number/i })).toHaveValue('5551234567')
     // message='Hi' → hasMessage=true → textarea auto-expands
     expect(screen.getByLabelText(/message/i)).toHaveValue('Hi')
   })
@@ -84,5 +86,15 @@ describe('SmsForm', () => {
   it('warns when the message makes the payload long', () => {
     setup({ number: '+15551234567', message: 'x'.repeat(220) })
     expect(screen.getByRole('alert')).toBeInTheDocument()
+  })
+
+  it('previews the normalized number that will be texted', () => {
+    setup({ number: '+1 (555) 123-4567', message: '' })
+    expect(screen.getByText(/will text: \+15551234567/i)).toBeInTheDocument()
+  })
+
+  it('cautions when a valid number has no country code', () => {
+    setup({ number: '09 123 456 789', message: '' })
+    expect(screen.getByText(/no country code/i)).toBeInTheDocument()
   })
 })
