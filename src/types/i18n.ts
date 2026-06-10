@@ -124,6 +124,12 @@ export interface ControlStrings {
   smsModeHint: string
   smsCorrectionHint: string
   smsPayloadWarning: string
+  contentModeTel: string
+  telNumberLabel: string
+  telNumberPlaceholder: string
+  telNumberError: string
+  telModeHint: string
+  telCorrectionHint: string
   frameLabel: string
   frameHint: string
   frameStyleHeading: string
@@ -284,6 +290,12 @@ export type TranslationKey =
   | 'controls.smsModeHint'
   | 'controls.smsCorrectionHint'
   | 'controls.smsPayloadWarning'
+  | 'controls.contentModeTel'
+  | 'controls.telNumberLabel'
+  | 'controls.telNumberPlaceholder'
+  | 'controls.telNumberError'
+  | 'controls.telModeHint'
+  | 'controls.telCorrectionHint'
   | 'controls.frameLabel'
   | 'controls.frameHint'
   | 'controls.frameStyleHeading'
