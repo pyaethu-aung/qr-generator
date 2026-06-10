@@ -1,4 +1,4 @@
-import type { KeyboardEvent } from 'react'
+import type { FocusEvent, KeyboardEvent } from 'react'
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { Check, ChevronDown, Search } from 'lucide-react'
 import clsx from 'clsx'
@@ -74,6 +74,11 @@ export function CountryCodeSelect({
   const select = (iso: string) => {
     onChange(iso)
     close(true)
+  }
+
+  // Close when focus leaves the component entirely (e.g. Tab to the next field).
+  const onSearchBlur = (event: FocusEvent<HTMLInputElement>) => {
+    if (!containerRef.current?.contains(event.relatedTarget)) close()
   }
 
   // The search field is the keyboard surface while the popover is open.
@@ -201,6 +206,7 @@ export function CountryCodeSelect({
                   setActiveIndex(0)
                 }}
                 onKeyDown={onSearchKeyDown}
+                onBlur={onSearchBlur}
                 className="h-9 w-full rounded-lg border border-border-strong bg-surface-inset pl-8 pr-3 text-sm text-text-primary placeholder:text-text-disabled focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring"
               />
             </div>
@@ -220,7 +226,7 @@ export function CountryCodeSelect({
                   onClick={() => select(country.iso)}
                   className={clsx(
                     'flex cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-text-primary',
-                    index === activeIndex && 'bg-surface-inset',
+                    (index === activeIndex || country.iso === value) && 'bg-surface-inset',
                   )}
                 >
                   <span aria-hidden className="text-base leading-none">{countryFlag(country.iso)}</span>

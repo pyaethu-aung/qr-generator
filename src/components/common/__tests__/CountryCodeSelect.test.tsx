@@ -139,6 +139,20 @@ describe('CountryCodeSelect', () => {
     }
   })
 
+  it('closes when the search input loses focus to an outside element', async () => {
+    vi.useFakeTimers()
+    try {
+      setup(null)
+      fireEvent.click(trigger())
+      expect(screen.getByRole('listbox')).toBeInTheDocument()
+      fireEvent.blur(search())
+      await act(() => vi.advanceTimersByTime(150))
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it('closes when clicking outside', async () => {
     vi.useFakeTimers()
     try {
