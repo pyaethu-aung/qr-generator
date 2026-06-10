@@ -30,15 +30,16 @@ describe('TelForm', () => {
     expect(screen.getByRole('textbox', { name: /phone number/i })).toBeInTheDocument()
   })
 
-  it('calls onNumberChange when the number is typed', () => {
+  it('calls onNumberChange with the dial code absorbed into the selector', () => {
     const { onNumberChange } = setup()
     fireEvent.change(screen.getByRole('textbox', { name: /phone number/i }), { target: { value: '+15551234567' } })
-    expect(onNumberChange).toHaveBeenCalledWith('+15551234567')
+    expect(onNumberChange).toHaveBeenCalledWith('+1 5551234567')
   })
 
-  it('reflects the config value in the input', () => {
+  it('splits the config value between selector and input', () => {
     setup({ number: '+15551234567' })
-    expect(screen.getByRole('textbox', { name: /phone number/i })).toHaveValue('+15551234567')
+    expect(screen.getByRole('button', { name: /country code/i })).toHaveTextContent('+1')
+    expect(screen.getByRole('textbox', { name: /phone number/i })).toHaveValue('5551234567')
   })
 
   it('phone number field has type tel', () => {
