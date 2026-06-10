@@ -140,7 +140,7 @@
     "telDialPreview": "ခေါ်ဆိုမည်: {number}",
     "phoneNoCountryCodeCaution": "နိုင်ငံကုဒ် မပါသေးပါ။ (ဥပမာ +95) ထည့်ပါ၊ နေရာတိုင်းတွင် စိတ်ချစွာ အသုံးပြုနိုင်ရန်။",
     "phoneCountryLabel": "နိုင်ငံကုဒ်",
-    "phoneCountryTriggerEmpty": "+ ကုဒ်",
+    "phoneCountryTriggerEmpty": "နိုင်ငံ",
     "phoneCountrySearchPlaceholder": "နိုင်ငံအမည် သို့မဟုတ် ကုဒ်ဖြင့် ရှာပါ",
     "phoneCountryNoResults": "ကိုက်ညီသော နိုင်ငံ မတွေ့ပါ",
     "phoneNumberLocalPlaceholder": "9 123 456 789",

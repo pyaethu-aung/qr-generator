@@ -140,7 +140,7 @@
     "telDialPreview": "Will dial: {number}",
     "phoneNoCountryCodeCaution": "No country code yet. Add one (like +95) so it works reliably everywhere.",
     "phoneCountryLabel": "Country code",
-    "phoneCountryTriggerEmpty": "+ Code",
+    "phoneCountryTriggerEmpty": "Country",
     "phoneCountrySearchPlaceholder": "Search country or code",
     "phoneCountryNoResults": "No countries match",
     "phoneNumberLocalPlaceholder": "9 123 456 789",
