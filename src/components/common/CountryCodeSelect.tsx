@@ -40,29 +40,36 @@ export function CountryCodeSelect({
   const listboxId = `${baseId}-listbox`
 
   const [open, setOpen] = useState(false)
+  const [visible, setVisible] = useState(false)
   const [query, setQuery] = useState('')
   const [activeIndex, setActiveIndex] = useState(0)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
   const searchRef = useRef<HTMLInputElement>(null)
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout>>()
 
   const selected = value ? findCountry(value) : undefined
   const results = useMemo(() => filterCountries(query, locale), [query, locale])
   const optionId = (iso: string) => `${baseId}-option-${iso}`
 
   const openPopover = () => {
+    clearTimeout(closeTimerRef.current)
     setQuery('')
     const all = filterCountries('', locale)
     const selectedIndex = value ? all.findIndex((c) => c.iso === value) : -1
     setActiveIndex(selectedIndex >= 0 ? selectedIndex : 0)
+    setVisible(true)
     setOpen(true)
   }
 
   const close = (refocusTrigger = false) => {
     setOpen(false)
+    closeTimerRef.current = setTimeout(() => setVisible(false), 150)
     if (refocusTrigger) triggerRef.current?.focus()
   }
+
+  useEffect(() => () => clearTimeout(closeTimerRef.current), [])
 
   const select = (iso: string) => {
     onChange(iso)
@@ -107,7 +114,10 @@ export function CountryCodeSelect({
   useEffect(() => {
     if (!open) return
     const onPointerDown = (event: MouseEvent | TouchEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) setOpen(false)
+      if (!containerRef.current?.contains(event.target as Node)) {
+        setOpen(false)
+        closeTimerRef.current = setTimeout(() => setVisible(false), 150)
+      }
     }
     document.addEventListener('mousedown', onPointerDown)
     document.addEventListener('touchstart', onPointerDown)
@@ -154,7 +164,7 @@ export function CountryCodeSelect({
             <span className="font-medium">{selected.dialCode}</span>
           </>
         ) : (
-          <span className="text-text-disabled">{triggerPlaceholder}</span>
+          <span className="text-text-secondary">{triggerPlaceholder}</span>
         )}
         <ChevronDown
           size={15}
@@ -166,8 +176,12 @@ export function CountryCodeSelect({
         />
       </button>
 
-      {open && (
-        <div className="absolute left-0 top-full z-20 mt-1.5 w-72 max-w-[calc(100vw-3rem)] overflow-hidden rounded-xl border border-border-subtle bg-surface-raised shadow-md transition-opacity duration-150 starting:opacity-0 motion-reduce:transition-none">
+      {visible && (
+        <div className={clsx(
+          'absolute left-0 top-full z-20 mt-1.5 w-72 max-w-[calc(100vw-3rem)] overflow-hidden rounded-xl border border-border-subtle bg-surface-raised shadow-md',
+          'transition-opacity duration-150 starting:opacity-0 motion-reduce:transition-none',
+          !open && 'opacity-0 pointer-events-none',
+        )}>
           <div className="border-b border-border-subtle p-2">
             <div className="relative">
               <Search size={14} aria-hidden className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-text-secondary" />

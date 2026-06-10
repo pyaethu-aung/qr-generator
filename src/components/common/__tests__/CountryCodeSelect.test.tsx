@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, act } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { LocaleProvider } from '../../../hooks/LocaleProvider'
 import { CountryCodeSelect } from '../CountryCodeSelect'
@@ -68,14 +68,20 @@ describe('CountryCodeSelect', () => {
     expect(screen.getByText('No countries match')).toBeInTheDocument()
   })
 
-  it('selects a country on click, closes, and refocuses the trigger', () => {
-    const { onChange } = setup(null)
-    fireEvent.click(trigger())
-    fireEvent.change(search(), { target: { value: 'myanmar' } })
-    fireEvent.click(screen.getByRole('option'))
-    expect(onChange).toHaveBeenCalledWith('MM')
-    expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
-    expect(trigger()).toHaveFocus()
+  it('selects a country on click, closes, and refocuses the trigger', async () => {
+    vi.useFakeTimers()
+    try {
+      const { onChange } = setup(null)
+      fireEvent.click(trigger())
+      fireEvent.change(search(), { target: { value: 'myanmar' } })
+      fireEvent.click(screen.getByRole('option'))
+      expect(onChange).toHaveBeenCalledWith('MM')
+      await act(() => vi.advanceTimersByTime(150))
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
+      expect(trigger()).toHaveFocus()
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('supports keyboard navigation and Enter to select', () => {
@@ -119,19 +125,31 @@ describe('CountryCodeSelect', () => {
     expect(screen.getByRole('option')).toHaveAttribute('aria-selected', 'true')
   })
 
-  it('closes on Escape and refocuses the trigger', () => {
-    setup(null)
-    fireEvent.click(trigger())
-    fireEvent.keyDown(search(), { key: 'Escape' })
-    expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
-    expect(trigger()).toHaveFocus()
+  it('closes on Escape and refocuses the trigger', async () => {
+    vi.useFakeTimers()
+    try {
+      setup(null)
+      fireEvent.click(trigger())
+      fireEvent.keyDown(search(), { key: 'Escape' })
+      await act(() => vi.advanceTimersByTime(150))
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
+      expect(trigger()).toHaveFocus()
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
-  it('closes when clicking outside', () => {
-    setup(null)
-    fireEvent.click(trigger())
-    expect(screen.getByRole('listbox')).toBeInTheDocument()
-    fireEvent.mouseDown(document.body)
-    expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
+  it('closes when clicking outside', async () => {
+    vi.useFakeTimers()
+    try {
+      setup(null)
+      fireEvent.click(trigger())
+      expect(screen.getByRole('listbox')).toBeInTheDocument()
+      fireEvent.mouseDown(document.body)
+      await act(() => vi.advanceTimersByTime(150))
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })
