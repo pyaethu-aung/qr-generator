@@ -130,6 +130,8 @@ export interface ControlStrings {
   telNumberError: string
   telModeHint: string
   telCorrectionHint: string
+  telDialPreview: string
+  telNoCountryCodeCaution: string
   frameLabel: string
   frameHint: string
   frameStyleHeading: string
@@ -296,6 +298,8 @@ export type TranslationKey =
   | 'controls.telNumberError'
   | 'controls.telModeHint'
   | 'controls.telCorrectionHint'
+  | 'controls.telDialPreview'
+  | 'controls.telNoCountryCodeCaution'
   | 'controls.frameLabel'
   | 'controls.frameHint'
   | 'controls.frameStyleHeading'

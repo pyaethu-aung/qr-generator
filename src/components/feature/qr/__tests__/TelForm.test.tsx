@@ -60,4 +60,30 @@ describe('TelForm', () => {
     fireEvent.change(numberInput, { target: { value: '+15551234567' } })
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
+
+  it('previews the normalized number that will be dialed', () => {
+    setup({ number: '+1 (555) 123-4567' })
+    expect(screen.getByText(/will dial: \+15551234567/i)).toBeInTheDocument()
+  })
+
+  it('shows no dial preview when the number is empty or invalid', () => {
+    const { rerender } = setup({ number: '' })
+    expect(screen.queryByText(/will dial:/i)).not.toBeInTheDocument()
+    rerender(
+      <LocaleProvider>
+        <TelForm config={{ number: 'call me' }} onNumberChange={vi.fn()} />
+      </LocaleProvider>
+    )
+    expect(screen.queryByText(/will dial:/i)).not.toBeInTheDocument()
+  })
+
+  it('cautions when a valid number has no country code', () => {
+    setup({ number: '09 123 456 789' })
+    expect(screen.getByText(/no country code/i)).toBeInTheDocument()
+  })
+
+  it('does not caution when the number has a country code', () => {
+    setup({ number: '+95 9 123 456 789' })
+    expect(screen.queryByText(/no country code/i)).not.toBeInTheDocument()
+  })
 })
