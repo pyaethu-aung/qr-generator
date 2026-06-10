@@ -143,7 +143,7 @@ export function PhoneNumberField({
                 }}
                 className={
                   numberError
-                    ? 'rounded-l-none border-l-0 border-error focus:border-error focus:ring-error'
+                    ? 'rounded-l-none border-l-0 border-error focus-visible:border-error focus-visible:ring-error'
                     : 'rounded-l-none border-l-0'
                 }
                 type="tel"
