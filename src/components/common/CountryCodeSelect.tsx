@@ -211,7 +211,7 @@ export function CountryCodeSelect({
               />
             </div>
           </div>
-          <div id={listboxId} role="listbox" aria-label={label} className="max-h-64 overflow-y-auto p-1">
+          <div id={listboxId} role="listbox" aria-label={label} aria-live="polite" className="max-h-64 overflow-y-auto p-1">
             {results.length === 0 ? (
               <p className="px-3 py-6 text-center text-sm text-text-secondary">{noResultsLabel}</p>
             ) : (
