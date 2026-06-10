@@ -31,7 +31,7 @@ beforeEach(() => {
 describe('PhoneNumberField', () => {
   it('starts with no country selected in the English locale', () => {
     setup('')
-    expect(screen.getByRole('button', { name: /country code/i })).toHaveTextContent('+ Code')
+    expect(screen.getByRole('button', { name: /country code/i })).toHaveTextContent('Country')
     expect(numberInput()).toHaveAttribute('placeholder', '+95 9 123 456 789')
   })
 
@@ -74,7 +74,7 @@ describe('PhoneNumberField', () => {
 
   it('keeps a value without a country code entirely in the input', () => {
     setup('09 123 456 789')
-    expect(screen.getByRole('button', { name: /country code/i })).toHaveTextContent('+ Code')
+    expect(screen.getByRole('button', { name: /country code/i })).toHaveTextContent('Country')
     expect(numberInput()).toHaveValue('09 123 456 789')
   })
 
@@ -82,7 +82,7 @@ describe('PhoneNumberField', () => {
     const { onChange } = setup('+95 9123456')
     fireEvent.change(numberInput(), { target: { value: '' } })
     fireEvent.keyDown(numberInput(), { key: 'Backspace' })
-    expect(screen.getByRole('button', { name: /country code/i })).toHaveTextContent('+ Code')
+    expect(screen.getByRole('button', { name: /country code/i })).toHaveTextContent('Country')
     expect(onChange).toHaveBeenLastCalledWith('')
   })
 
