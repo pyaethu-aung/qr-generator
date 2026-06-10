@@ -1,5 +1,5 @@
 import { useRef, useState, useId } from 'react'
-import { Download, Check, ChevronDown, ChevronUp, Upload, X, Wifi, Link, User, Mail, MessageSquare } from 'lucide-react'
+import { Download, Check, ChevronDown, ChevronUp, Upload, X, Wifi, Link, User, Mail, MessageSquare, Phone } from 'lucide-react'
 import { Input } from '../../common/Input'
 import { PillGroup } from '../../common/PillGroup'
 import { Tooltip } from '../../common/Tooltip'
@@ -7,8 +7,9 @@ import { WiFiForm } from './WiFiForm'
 import { VCardForm } from './VCardForm'
 import { EmailForm } from './EmailForm'
 import { SmsForm } from './SmsForm'
+import { TelForm } from './TelForm'
 import { DEFAULT_FRAME_COLOR } from '../../../data/defaults'
-import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig, SmsConfig, QREyeFrameShape, QREyeCenterShape, QRPixelPattern, QRFrameStyle, QRFramePosition } from '../../../types/qr'
+import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig, SmsConfig, TelConfig, QREyeFrameShape, QREyeCenterShape, QRPixelPattern, QRFrameStyle, QRFramePosition } from '../../../types/qr'
 
 const FRAME_PATHS: Record<QREyeFrameShape, string> = {
   Square:      'M0,0 h28 v28 h-28 Z M4,4 h20 v20 h-20 Z',
@@ -337,6 +338,11 @@ export interface QRControlsProps {
   onSmsNumberChange?: (v: string) => void
   onSmsMessageChange?: (v: string) => void
   smsCorrectionHint?: string
+  // Tel mode props
+  contentModeTelLabel?: string
+  telConfig?: TelConfig
+  onTelNumberChange?: (v: string) => void
+  telCorrectionHint?: string
   logoLabel?: string
   logoSizeLabel?: string
   logoUploadHint?: string
@@ -490,6 +496,10 @@ export function QRControls({
   onSmsNumberChange,
   onSmsMessageChange,
   smsCorrectionHint = 'Set to Highest for the most reliable SMS scanning.',
+  contentModeTelLabel = 'Phone',
+  telConfig,
+  onTelNumberChange,
+  telCorrectionHint = 'Set to Highest for the most reliable scanning.',
   logoLabel = 'Logo',
   logoSizeLabel = 'Logo Size',
   logoUploadHint = 'Click or drop image',
@@ -645,6 +655,7 @@ export function QRControls({
               { value: 'vcard', label: contentModeVCardLabel, icon: <User size={13} aria-hidden /> },
               { value: 'email', label: contentModeEmailLabel, icon: <Mail size={13} aria-hidden /> },
               { value: 'sms', label: contentModeSmsLabel, icon: <MessageSquare size={13} aria-hidden /> },
+              { value: 'tel', label: contentModeTelLabel, icon: <Phone size={13} aria-hidden /> },
             ]}
             value={contentMode}
             onChange={onContentModeChange}
@@ -686,6 +697,11 @@ export function QRControls({
             onNumberChange={onSmsNumberChange}
             onMessageChange={onSmsMessageChange}
           />
+        ) : contentMode === 'tel' && telConfig && onTelNumberChange ? (
+          <TelForm
+            config={telConfig}
+            onNumberChange={onTelNumberChange}
+          />
         ) : (
           <Input
             label={contentModeTextLabel}
@@ -723,7 +739,7 @@ export function QRControls({
             >
               {reliabilityBelowRecommended
                 ? correctionBelowRecommendedLabel
-                : contentMode === 'wifi' ? wifiCorrectionHint : contentMode === 'vcard' ? vcardCorrectionHint : contentMode === 'email' ? emailCorrectionHint : contentMode === 'sms' ? smsCorrectionHint : correctionHint}
+                : contentMode === 'wifi' ? wifiCorrectionHint : contentMode === 'vcard' ? vcardCorrectionHint : contentMode === 'email' ? emailCorrectionHint : contentMode === 'sms' ? smsCorrectionHint : contentMode === 'tel' ? telCorrectionHint : correctionHint}
             </p>
           </div>
 

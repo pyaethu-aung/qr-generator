@@ -10,6 +10,7 @@ import { useWiFiConfig } from '../../../hooks/useWiFiConfig'
 import { useVCardConfig } from '../../../hooks/useVCardConfig'
 import { useEmailConfig } from '../../../hooks/useEmailConfig'
 import { useSmsConfig } from '../../../hooks/useSmsConfig'
+import { useTelConfig } from '../../../hooks/useTelConfig'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import type { QRContentMode } from '../../../types/qr'
 
@@ -19,6 +20,7 @@ export const QRGenerator = () => {
   const { vcardConfig, vcardString, setFirstName, setLastName, setPhone, setEmail, setCompany, setJobTitle, setWebsite } = useVCardConfig()
   const { emailConfig, emailString, setTo, setSubject, setBody } = useEmailConfig()
   const { smsConfig, smsString, setNumber, setMessage } = useSmsConfig()
+  const { telConfig, telString, setNumber: setTelNumber } = useTelConfig()
 
   const {
     liveValue,
@@ -36,7 +38,7 @@ export const QRGenerator = () => {
     canDownload,
     recentDownload,
     isPending,
-  } = useQRGenerator(contentMode === 'wifi' ? wifiString : contentMode === 'vcard' ? vcardString : contentMode === 'email' ? emailString : contentMode === 'sms' ? smsString : undefined)
+  } = useQRGenerator(contentMode === 'wifi' ? wifiString : contentMode === 'vcard' ? vcardString : contentMode === 'email' ? emailString : contentMode === 'sms' ? smsString : contentMode === 'tel' ? telString : undefined)
 
   const {
     designConfig,
@@ -64,7 +66,7 @@ export const QRGenerator = () => {
 
   // Printed/dense modes need maximum damage tolerance
   useEffect(() => {
-    if (contentMode === 'wifi' || contentMode === 'vcard' || contentMode === 'email' || contentMode === 'sms') setInputEcLevel('H')
+    if (contentMode === 'wifi' || contentMode === 'vcard' || contentMode === 'email' || contentMode === 'sms' || contentMode === 'tel') setInputEcLevel('H')
   }, [contentMode, setInputEcLevel])
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -200,6 +202,10 @@ export const QRGenerator = () => {
                 onSmsNumberChange={setNumber}
                 onSmsMessageChange={setMessage}
                 smsCorrectionHint={translate('controls.smsCorrectionHint')}
+                contentModeTelLabel={translate('controls.contentModeTel')}
+                telConfig={telConfig}
+                onTelNumberChange={setTelNumber}
+                telCorrectionHint={translate('controls.telCorrectionHint')}
                 frameStyle={frameConfig.style}
                 onFrameStyleChange={setFrameStyle}
                 frameText={frameConfig.text}
