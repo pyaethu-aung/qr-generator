@@ -12,6 +12,7 @@ import { useEmailConfig } from '../../../hooks/useEmailConfig'
 import { useSmsConfig } from '../../../hooks/useSmsConfig'
 import { useTelConfig } from '../../../hooks/useTelConfig'
 import { useGeoConfig } from '../../../hooks/useGeoConfig'
+import { useVEventConfig } from '../../../hooks/useVEventConfig'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import type { QRContentMode } from '../../../types/qr'
 
@@ -23,6 +24,7 @@ export const QRGenerator = () => {
   const { smsConfig, smsString, setNumber, setMessage } = useSmsConfig()
   const { telConfig, telString, setNumber: setTelNumber } = useTelConfig()
   const { geoConfig, geoString, setLatitude: setGeoLatitude, setLongitude: setGeoLongitude } = useGeoConfig()
+  const { veventConfig, veventString, setSummary: setVEventSummary, setStart: setVEventStart, setEnd: setVEventEnd, setAllDay: setVEventAllDay, setLocation: setVEventLocation, setDescription: setVEventDescription } = useVEventConfig()
 
   const {
     liveValue,
@@ -40,7 +42,7 @@ export const QRGenerator = () => {
     canDownload,
     recentDownload,
     isPending,
-  } = useQRGenerator(contentMode === 'wifi' ? wifiString : contentMode === 'vcard' ? vcardString : contentMode === 'email' ? emailString : contentMode === 'sms' ? smsString : contentMode === 'tel' ? telString : contentMode === 'geo' ? geoString : undefined)
+  } = useQRGenerator(contentMode === 'wifi' ? wifiString : contentMode === 'vcard' ? vcardString : contentMode === 'email' ? emailString : contentMode === 'sms' ? smsString : contentMode === 'tel' ? telString : contentMode === 'geo' ? geoString : contentMode === 'vevent' ? veventString : undefined)
 
   const {
     designConfig,
@@ -68,7 +70,7 @@ export const QRGenerator = () => {
 
   // Printed/dense modes need maximum damage tolerance
   useEffect(() => {
-    if (contentMode === 'wifi' || contentMode === 'vcard' || contentMode === 'email' || contentMode === 'sms' || contentMode === 'tel' || contentMode === 'geo') setInputEcLevel('H')
+    if (contentMode !== 'text') setInputEcLevel('H')
   }, [contentMode, setInputEcLevel])
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -213,6 +215,15 @@ export const QRGenerator = () => {
                 onGeoLatitudeChange={setGeoLatitude}
                 onGeoLongitudeChange={setGeoLongitude}
                 geoCorrectionHint={translate('controls.geoCorrectionHint')}
+                contentModeVEventLabel={translate('controls.contentModeVEvent')}
+                veventConfig={veventConfig}
+                onVEventSummaryChange={setVEventSummary}
+                onVEventStartChange={setVEventStart}
+                onVEventEndChange={setVEventEnd}
+                onVEventAllDayChange={setVEventAllDay}
+                onVEventLocationChange={setVEventLocation}
+                onVEventDescriptionChange={setVEventDescription}
+                veventCorrectionHint={translate('controls.veventCorrectionHint')}
                 frameStyle={frameConfig.style}
                 onFrameStyleChange={setFrameStyle}
                 frameText={frameConfig.text}
