@@ -1,0 +1,109 @@
+import { render, screen, fireEvent } from '@testing-library/react'
+import { describe, it, expect, vi, afterEach } from 'vitest'
+import { LocaleProvider } from '../../../../hooks/LocaleProvider'
+import { GeoForm } from '../GeoForm'
+import type { GeoConfig } from '../../../../types/qr'
+
+const defaultConfig: GeoConfig = {
+  latitude: '',
+  longitude: '',
+}
+
+const setup = (config: GeoConfig = defaultConfig, overrides: Partial<{
+  onLatitudeChange: (v: string) => void
+  onLongitudeChange: (v: string) => void
+}> = {}) => {
+  const handlers = {
+    onLatitudeChange: overrides.onLatitudeChange ?? vi.fn(),
+    onLongitudeChange: overrides.onLongitudeChange ?? vi.fn(),
+  }
+  const utils = render(
+    <LocaleProvider>
+      <GeoForm config={config} {...handlers} />
+    </LocaleProvider>
+  )
+  return { ...utils, ...handlers }
+}
+
+const latInput = () => screen.getByRole('textbox', { name: /latitude/i })
+const lngInput = () => screen.getByRole('textbox', { name: /longitude/i })
+const locateButton = () => screen.getByRole('button', { name: /use my location/i })
+
+afterEach(() => {
+  vi.unstubAllGlobals()
+})
+
+describe('GeoForm', () => {
+  it('renders latitude and longitude fields', () => {
+    setup()
+    expect(latInput()).toBeInTheDocument()
+    expect(lngInput()).toBeInTheDocument()
+  })
+
+  it('reports coordinate edits upward', () => {
+    const { onLatitudeChange, onLongitudeChange } = setup()
+    fireEvent.change(latInput(), { target: { value: '37.787' } })
+    fireEvent.change(lngInput(), { target: { value: '-122.3997' } })
+    expect(onLatitudeChange).toHaveBeenCalledWith('37.787')
+    expect(onLongitudeChange).toHaveBeenCalledWith('-122.3997')
+  })
+
+  it('uses decimal input mode for coordinate fields', () => {
+    setup()
+    expect(latInput()).toHaveAttribute('inputmode', 'decimal')
+    expect(lngInput()).toHaveAttribute('inputmode', 'decimal')
+  })
+
+  it('shows an error for an out-of-range latitude', () => {
+    setup({ latitude: '91', longitude: '0' })
+    expect(screen.getByRole('alert')).toHaveTextContent(/between -90 and 90/i)
+  })
+
+  it('shows an error for an out-of-range longitude', () => {
+    setup({ latitude: '0', longitude: '200' })
+    expect(screen.getByRole('alert')).toHaveTextContent(/between -180 and 180/i)
+  })
+
+  it('shows no error while a coordinate field is empty', () => {
+    setup({ latitude: '', longitude: '' })
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('previews the map target once both coordinates are valid', () => {
+    setup({ latitude: '37.787', longitude: '-122.3997' })
+    expect(screen.getByText(/opens maps at 37\.787, -122\.3997/i)).toBeInTheDocument()
+  })
+
+  it('shows no preview when the location is incomplete', () => {
+    setup({ latitude: '37.787', longitude: '' })
+    expect(screen.queryByText(/opens maps at/i)).not.toBeInTheDocument()
+  })
+
+  it('fills both fields from the Geolocation API on success', () => {
+    const getCurrentPosition = vi.fn((success: PositionCallback) =>
+      success({ coords: { latitude: 51.5074123, longitude: -0.1278456 } } as GeolocationPosition),
+    )
+    vi.stubGlobal('navigator', { geolocation: { getCurrentPosition } })
+    const { onLatitudeChange, onLongitudeChange } = setup()
+    fireEvent.click(locateButton())
+    expect(onLatitudeChange).toHaveBeenCalledWith('51.507412')
+    expect(onLongitudeChange).toHaveBeenCalledWith('-0.127846')
+  })
+
+  it('surfaces an error when the location request fails', () => {
+    const getCurrentPosition = vi.fn((_success: PositionCallback, error: PositionErrorCallback) =>
+      error({ code: 1, message: 'denied' } as GeolocationPositionError),
+    )
+    vi.stubGlobal('navigator', { geolocation: { getCurrentPosition } })
+    setup()
+    fireEvent.click(locateButton())
+    expect(screen.getByRole('alert')).toHaveTextContent(/couldn't get your location/i)
+  })
+
+  it('explains when the browser has no geolocation support', () => {
+    vi.stubGlobal('navigator', {})
+    setup()
+    fireEvent.click(locateButton())
+    expect(screen.getByRole('alert')).toHaveTextContent(/doesn't support location/i)
+  })
+})

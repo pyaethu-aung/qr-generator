@@ -1,6 +1,6 @@
 export type QRErrorCorrectionLevel = 'L' | 'M' | 'Q' | 'H'
 
-export type QRContentMode = 'text' | 'wifi' | 'vcard' | 'email' | 'sms' | 'tel'
+export type QRContentMode = 'text' | 'wifi' | 'vcard' | 'email' | 'sms' | 'tel' | 'geo'
 
 export interface EmailConfig {
   to: string
@@ -15,6 +15,13 @@ export interface SmsConfig {
 
 export interface TelConfig {
   number: string
+}
+
+export interface GeoConfig {
+  /** Decimal-degree latitude as the user typed it (validated/parsed at the edges). */
+  latitude: string
+  /** Decimal-degree longitude as the user typed it (validated/parsed at the edges). */
+  longitude: string
 }
 
 export type WiFiSecurity = 'WPA' | 'WEP' | 'nopass'
