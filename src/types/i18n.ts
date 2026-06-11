@@ -154,6 +154,20 @@ export interface ControlStrings {
   geoLongitudeError: string
   geoMapPreview: string
   geoCorrectionHint: string
+  contentModeVEvent: string
+  veventModeHint: string
+  veventSummaryLabel: string
+  veventSummaryPlaceholder: string
+  veventStartLabel: string
+  veventEndLabel: string
+  veventEndError: string
+  veventAllDayLabel: string
+  veventLocationLabel: string
+  veventLocationPlaceholder: string
+  veventDescriptionLabel: string
+  veventDescriptionPlaceholder: string
+  veventPayloadWarning: string
+  veventCorrectionHint: string
   frameLabel: string
   frameHint: string
   frameStyleHeading: string
@@ -344,6 +358,20 @@ export type TranslationKey =
   | 'controls.geoLongitudeError'
   | 'controls.geoMapPreview'
   | 'controls.geoCorrectionHint'
+  | 'controls.contentModeVEvent'
+  | 'controls.veventModeHint'
+  | 'controls.veventSummaryLabel'
+  | 'controls.veventSummaryPlaceholder'
+  | 'controls.veventStartLabel'
+  | 'controls.veventEndLabel'
+  | 'controls.veventEndError'
+  | 'controls.veventAllDayLabel'
+  | 'controls.veventLocationLabel'
+  | 'controls.veventLocationPlaceholder'
+  | 'controls.veventDescriptionLabel'
+  | 'controls.veventDescriptionPlaceholder'
+  | 'controls.veventPayloadWarning'
+  | 'controls.veventCorrectionHint'
   | 'controls.frameLabel'
   | 'controls.frameHint'
   | 'controls.frameStyleHeading'

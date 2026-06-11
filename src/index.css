@@ -31,12 +31,18 @@
     --color-warning-surface: #FAF3E6;
     --color-warning-border: #D4A850;
 
+    /* Follows the app's theme class (not the OS), so native control chrome
+       (date picker indicators, scrollbars) matches the active theme. */
+    color-scheme: light;
+
     background-color: var(--color-surface);
     color: var(--color-text-primary);
     @apply font-sans antialiased;
   }
 
   :root.dark {
+    color-scheme: dark;
+
     /* Surface */
     --color-surface: #1A1612;
     --color-surface-raised: #2A2420;
