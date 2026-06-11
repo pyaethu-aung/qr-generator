@@ -148,6 +148,7 @@
     "geoModeHint": "Scan to open this spot in a map app.",
     "geoUseMyLocation": "Use my location",
     "geoLocating": "Finding your location…",
+    "geoLocationFound": "Location found.",
     "geoCoordinateHelp": "Don't know them? In Google Maps, right-click your spot and copy the coordinates.",
     "geoLocationError": "Couldn't get your location. Enter coordinates manually, or check your browser's location permission.",
     "geoLocationUnsupported": "Your browser doesn't support location. Enter coordinates manually.",

@@ -142,6 +142,7 @@ export interface ControlStrings {
   geoModeHint: string
   geoUseMyLocation: string
   geoLocating: string
+  geoLocationFound: string
   geoCoordinateHelp: string
   geoLocationError: string
   geoLocationUnsupported: string
@@ -331,6 +332,7 @@ export type TranslationKey =
   | 'controls.geoModeHint'
   | 'controls.geoUseMyLocation'
   | 'controls.geoLocating'
+  | 'controls.geoLocationFound'
   | 'controls.geoCoordinateHelp'
   | 'controls.geoLocationError'
   | 'controls.geoLocationUnsupported'

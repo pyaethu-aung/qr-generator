@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { LocateFixed } from 'lucide-react'
 import { Input } from '../../common/Input'
 import { Callout } from '../../common/Callout'
@@ -19,13 +19,21 @@ const roundCoord = (n: number): string => String(Math.round(n * 1e6) / 1e6)
  * Location (geo:) form: a latitude/longitude pair that encodes an RFC 5870 geo URI, plus a
  * one-tap "use my location" that fills both fields from the Geolocation API. Coordinates are
  * the source of truth; geolocation is a convenience, not a requirement, so a denied permission
- * or an unsupported browser degrades to manual entry rather than a dead end. The live preview
- * mirrors the phone field's confirmation line so people see exactly where the code will open.
+ * or an unsupported browser degrades to manual entry rather than a dead end. When neither path
+ * is available the field help points people at the coordinates they already have in a map app.
+ * The live preview mirrors the phone field's confirmation line so people see exactly where the
+ * code will open.
  */
 export function GeoForm({ config, onLatitudeChange, onLongitudeChange }: GeoFormProps) {
   const { translate } = useLocaleContext()
   const [locating, setLocating] = useState(false)
   const [locationError, setLocationError] = useState<string | undefined>()
+  // Single polite live-region message: the in-flight "finding…" then a transient "found",
+  // so a non-sighted user hears that the silent field fill actually succeeded.
+  const [srStatus, setSrStatus] = useState('')
+  const foundTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+
+  useEffect(() => () => clearTimeout(foundTimerRef.current), [])
 
   // A non-empty field that fails to parse is an explicit error; a blank field is merely
   // incomplete and stays quiet until the user commits to a value.
@@ -37,6 +45,13 @@ export function GeoForm({ config, onLatitudeChange, onLongitudeChange }: GeoForm
   const showPreview = lat !== null && lng !== null
   const previewCoords = showPreview ? `${lat}, ${lng}` : ''
 
+  // Typing a coordinate is the user moving on from a failed locate attempt; a stale
+  // "couldn't get your location" banner hovering over a valid number reads as broken.
+  const editCoordinate = (apply: (v: string) => void) => (value: string) => {
+    apply(value)
+    if (locationError) setLocationError(undefined)
+  }
+
   const handleUseMyLocation = () => {
     if (typeof navigator === 'undefined' || !('geolocation' in navigator)) {
       setLocationError(translate('controls.geoLocationUnsupported'))
@@ -44,15 +59,20 @@ export function GeoForm({ config, onLatitudeChange, onLongitudeChange }: GeoForm
     }
     setLocating(true)
     setLocationError(undefined)
+    setSrStatus(translate('controls.geoLocating'))
     navigator.geolocation.getCurrentPosition(
       (position) => {
         onLatitudeChange(roundCoord(position.coords.latitude))
         onLongitudeChange(roundCoord(position.coords.longitude))
         setLocating(false)
+        setSrStatus(translate('controls.geoLocationFound'))
+        clearTimeout(foundTimerRef.current)
+        foundTimerRef.current = setTimeout(() => setSrStatus(''), 3000)
       },
       () => {
-        setLocationError(translate('controls.geoLocationError'))
         setLocating(false)
+        setSrStatus('')
+        setLocationError(translate('controls.geoLocationError'))
       },
       { enableHighAccuracy: true, timeout: 10000 },
     )
@@ -77,10 +97,9 @@ export function GeoForm({ config, onLatitudeChange, onLongitudeChange }: GeoForm
         {locating ? translate('controls.geoLocating') : translate('controls.geoUseMyLocation')}
       </button>
 
-      {/* Announce the in-flight state for screen readers without relying on the visual spinner. */}
-      <span className="sr-only" role="status" aria-live="polite">
-        {locating ? translate('controls.geoLocating') : ''}
-      </span>
+      {/* Announce in-flight and success states for screen readers without relying on the
+          visual spinner or the silently-populated fields. */}
+      <span className="sr-only" role="status" aria-live="polite">{srStatus}</span>
 
       {locationError && <Callout>{locationError}</Callout>}
 
@@ -90,7 +109,7 @@ export function GeoForm({ config, onLatitudeChange, onLongitudeChange }: GeoForm
             label={translate('controls.geoLatitudeLabel')}
             placeholder={translate('controls.geoLatitudePlaceholder')}
             value={config.latitude}
-            onChange={(e) => onLatitudeChange(e.target.value)}
+            onChange={(e) => editCoordinate(onLatitudeChange)(e.target.value)}
             error={latError ? translate('controls.geoLatitudeError') : undefined}
             inputMode="decimal"
             autoComplete="off"
@@ -102,7 +121,7 @@ export function GeoForm({ config, onLatitudeChange, onLongitudeChange }: GeoForm
             label={translate('controls.geoLongitudeLabel')}
             placeholder={translate('controls.geoLongitudePlaceholder')}
             value={config.longitude}
-            onChange={(e) => onLongitudeChange(e.target.value)}
+            onChange={(e) => editCoordinate(onLongitudeChange)(e.target.value)}
             error={lngError ? translate('controls.geoLongitudeError') : undefined}
             inputMode="decimal"
             autoComplete="off"

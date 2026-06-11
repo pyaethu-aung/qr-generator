@@ -101,6 +101,16 @@ describe('GeoForm', () => {
     expect(onLongitudeChange).toHaveBeenCalledWith('-0.127846')
   })
 
+  it('announces a found location to assistive tech', () => {
+    const getCurrentPosition = vi.fn((success: PositionCallback) =>
+      success({ coords: { latitude: 51.5074, longitude: -0.1278 } } as GeolocationPosition),
+    )
+    vi.stubGlobal('navigator', { geolocation: { getCurrentPosition } })
+    setup()
+    fireEvent.click(locateButton())
+    expect(screen.getByRole('status')).toHaveTextContent(/location found/i)
+  })
+
   it('surfaces an error when the location request fails', () => {
     const getCurrentPosition = vi.fn((_success: PositionCallback, error: PositionErrorCallback) =>
       error({ code: 1, message: 'denied' } as GeolocationPositionError),
@@ -109,6 +119,18 @@ describe('GeoForm', () => {
     setup()
     fireEvent.click(locateButton())
     expect(screen.getByRole('alert')).toHaveTextContent(/couldn't get your location/i)
+  })
+
+  it('clears a location error once the user edits a coordinate', () => {
+    const getCurrentPosition = vi.fn((_success: PositionCallback, error: PositionErrorCallback) =>
+      error({ code: 1, message: 'denied' } as GeolocationPositionError),
+    )
+    vi.stubGlobal('navigator', { geolocation: { getCurrentPosition } })
+    setup()
+    fireEvent.click(locateButton())
+    expect(screen.getByRole('alert')).toBeInTheDocument()
+    fireEvent.change(latInput(), { target: { value: '37.787' } })
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
   it('explains when the browser has no geolocation support', () => {
