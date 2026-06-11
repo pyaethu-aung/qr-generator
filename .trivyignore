@@ -15,3 +15,10 @@
 # Trivy CI uses: --ignore-unfixed --severity CRITICAL,HIGH --trivyignores .trivyignore
 # =============================================================================
 
+# nginx:alpine-slim — OpenSSL heap use-after-free in PKCS7_verify() (HIGH).
+# Fix openssl 3.5.7-r0 is not yet in the Alpine 3.23 branch; the Dockerfile's
+# `apk upgrade` already pulls the latest available (3.5.6-r0) and will pick up
+# 3.5.7-r0 automatically once backported. Low risk: the image serves static
+# assets via nginx and does not exercise PKCS7_verify. Assessed 2026-06-11.
+# Remove when 3.5.7-r0 lands in Alpine 3.23. Review by 2026-07-11.
+CVE-2026-45447
