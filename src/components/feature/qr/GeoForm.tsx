@@ -111,10 +111,14 @@ export function GeoForm({ config, onLatitudeChange, onLongitudeChange }: GeoForm
         </div>
       </div>
 
-      {showPreview && (
+      {/* One slot, two jobs: confirm the encoded target once valid, otherwise teach people
+          where to find coordinates so a declined permission isn't a dead end. */}
+      {showPreview ? (
         <p className="text-xs text-text-secondary">
           {translate('controls.geoMapPreview').replace('{coords}', previewCoords)}
         </p>
+      ) : (
+        <p className="text-xs text-text-secondary">{translate('controls.geoCoordinateHelp')}</p>
       )}
     </div>
   )

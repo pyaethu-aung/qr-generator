@@ -79,6 +79,17 @@ describe('GeoForm', () => {
     expect(screen.queryByText(/opens maps at/i)).not.toBeInTheDocument()
   })
 
+  it('offers coordinate help while the location is incomplete', () => {
+    setup({ latitude: '', longitude: '' })
+    expect(screen.getByText(/right-click your spot/i)).toBeInTheDocument()
+  })
+
+  it('replaces the help with the preview once the location is valid', () => {
+    setup({ latitude: '37.787', longitude: '-122.3997' })
+    expect(screen.queryByText(/right-click your spot/i)).not.toBeInTheDocument()
+    expect(screen.getByText(/opens maps at/i)).toBeInTheDocument()
+  })
+
   it('fills both fields from the Geolocation API on success', () => {
     const getCurrentPosition = vi.fn((success: PositionCallback) =>
       success({ coords: { latitude: 51.5074123, longitude: -0.1278456 } } as GeolocationPosition),
