@@ -50,11 +50,11 @@ describe('VEventForm', () => {
     fireEvent.change(titleInput(), { target: { value: 'Team dinner' } })
     fireEvent.change(startInput(), { target: { value: '2026-07-01T19:00' } })
     fireEvent.change(endInput(), { target: { value: '2026-07-01T21:30' } })
-    fireEvent.change(screen.getByLabelText(/location/i), { target: { value: 'Yoma Central' } })
+    fireEvent.change(screen.getByLabelText(/location/i), { target: { value: 'City Hall' } })
     expect(onSummaryChange).toHaveBeenCalledWith('Team dinner')
     expect(onStartChange).toHaveBeenCalledWith('2026-07-01T19:00')
     expect(onEndChange).toHaveBeenCalledWith('2026-07-01T21:30')
-    expect(onLocationChange).toHaveBeenCalledWith('Yoma Central')
+    expect(onLocationChange).toHaveBeenCalledWith('City Hall')
   })
 
   it('uses datetime pickers for timed events and date pickers for all-day', () => {
