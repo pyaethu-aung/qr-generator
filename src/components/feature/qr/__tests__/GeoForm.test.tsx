@@ -84,6 +84,15 @@ describe('GeoForm', () => {
     expect(screen.getByText(/right-click your spot/i)).toBeInTheDocument()
   })
 
+  it('describes the coordinate fields with the on-screen guidance', () => {
+    setup({ latitude: '', longitude: '' })
+    const describedBy = latInput().getAttribute('aria-describedby') ?? ''
+    const help = screen.getByText(/right-click your spot/i)
+    const hint = screen.getByText(/open this spot in a map app/i)
+    expect(describedBy).toContain(help.id)
+    expect(describedBy).toContain(hint.id)
+  })
+
   it('replaces the help with the preview once the location is valid', () => {
     setup({ latitude: '37.787', longitude: '-122.3997' })
     expect(screen.queryByText(/right-click your spot/i)).not.toBeInTheDocument()

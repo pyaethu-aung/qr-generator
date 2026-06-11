@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { LocateFixed } from 'lucide-react'
 import { Input } from '../../common/Input'
 import { Callout } from '../../common/Callout'
@@ -26,6 +26,10 @@ const roundCoord = (n: number): string => String(Math.round(n * 1e6) / 1e6)
  */
 export function GeoForm({ config, onLatitudeChange, onLongitudeChange }: GeoFormProps) {
   const { translate } = useLocaleContext()
+  // Tie both inputs to the on-screen guidance: the mode hint and the help/preview slot,
+  // so a screen-reader user hears where to find coordinates, not just the bare label.
+  const hintId = useId()
+  const guidanceId = useId()
   const [locating, setLocating] = useState(false)
   const [locationError, setLocationError] = useState<string | undefined>()
   // Single polite live-region message: the in-flight "finding…" then a transient "found",
@@ -80,7 +84,7 @@ export function GeoForm({ config, onLatitudeChange, onLongitudeChange }: GeoForm
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-xs text-text-secondary">{translate('controls.geoModeHint')}</p>
+      <p id={hintId} className="text-xs text-text-secondary">{translate('controls.geoModeHint')}</p>
 
       <button
         type="button"
@@ -111,6 +115,7 @@ export function GeoForm({ config, onLatitudeChange, onLongitudeChange }: GeoForm
             value={config.latitude}
             onChange={(e) => editCoordinate(onLatitudeChange)(e.target.value)}
             error={latError ? translate('controls.geoLatitudeError') : undefined}
+            aria-describedby={`${hintId} ${guidanceId}`}
             inputMode="decimal"
             autoComplete="off"
             required
@@ -123,6 +128,7 @@ export function GeoForm({ config, onLatitudeChange, onLongitudeChange }: GeoForm
             value={config.longitude}
             onChange={(e) => editCoordinate(onLongitudeChange)(e.target.value)}
             error={lngError ? translate('controls.geoLongitudeError') : undefined}
+            aria-describedby={`${hintId} ${guidanceId}`}
             inputMode="decimal"
             autoComplete="off"
             required
@@ -133,11 +139,11 @@ export function GeoForm({ config, onLatitudeChange, onLongitudeChange }: GeoForm
       {/* One slot, two jobs: confirm the encoded target once valid, otherwise teach people
           where to find coordinates so a declined permission isn't a dead end. */}
       {showPreview ? (
-        <p className="text-xs text-text-secondary">
+        <p id={guidanceId} className="text-xs text-text-secondary">
           {translate('controls.geoMapPreview').replace('{coords}', previewCoords)}
         </p>
       ) : (
-        <p className="text-xs text-text-secondary">{translate('controls.geoCoordinateHelp')}</p>
+        <p id={guidanceId} className="text-xs text-text-secondary">{translate('controls.geoCoordinateHelp')}</p>
       )}
     </div>
   )
