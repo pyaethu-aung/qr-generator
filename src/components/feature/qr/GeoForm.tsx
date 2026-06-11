@@ -87,7 +87,7 @@ export function GeoForm({ config, onLatitudeChange, onLongitudeChange }: GeoForm
         onClick={handleUseMyLocation}
         disabled={locating}
         aria-busy={locating}
-        className="flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-border-subtle bg-surface-raised px-4 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring disabled:cursor-wait disabled:opacity-60"
+        className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-border-subtle bg-surface-raised px-4 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring disabled:cursor-wait disabled:opacity-60"
       >
         {locating ? (
           <span className="h-4 w-4 motion-safe:animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden />
