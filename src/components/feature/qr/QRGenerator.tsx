@@ -11,6 +11,7 @@ import { useVCardConfig } from '../../../hooks/useVCardConfig'
 import { useEmailConfig } from '../../../hooks/useEmailConfig'
 import { useSmsConfig } from '../../../hooks/useSmsConfig'
 import { useTelConfig } from '../../../hooks/useTelConfig'
+import { useGeoConfig } from '../../../hooks/useGeoConfig'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import type { QRContentMode } from '../../../types/qr'
 
@@ -21,6 +22,7 @@ export const QRGenerator = () => {
   const { emailConfig, emailString, setTo, setSubject, setBody } = useEmailConfig()
   const { smsConfig, smsString, setNumber, setMessage } = useSmsConfig()
   const { telConfig, telString, setNumber: setTelNumber } = useTelConfig()
+  const { geoConfig, geoString, setLatitude: setGeoLatitude, setLongitude: setGeoLongitude } = useGeoConfig()
 
   const {
     liveValue,
@@ -38,7 +40,7 @@ export const QRGenerator = () => {
     canDownload,
     recentDownload,
     isPending,
-  } = useQRGenerator(contentMode === 'wifi' ? wifiString : contentMode === 'vcard' ? vcardString : contentMode === 'email' ? emailString : contentMode === 'sms' ? smsString : contentMode === 'tel' ? telString : undefined)
+  } = useQRGenerator(contentMode === 'wifi' ? wifiString : contentMode === 'vcard' ? vcardString : contentMode === 'email' ? emailString : contentMode === 'sms' ? smsString : contentMode === 'tel' ? telString : contentMode === 'geo' ? geoString : undefined)
 
   const {
     designConfig,
@@ -66,7 +68,7 @@ export const QRGenerator = () => {
 
   // Printed/dense modes need maximum damage tolerance
   useEffect(() => {
-    if (contentMode === 'wifi' || contentMode === 'vcard' || contentMode === 'email' || contentMode === 'sms' || contentMode === 'tel') setInputEcLevel('H')
+    if (contentMode === 'wifi' || contentMode === 'vcard' || contentMode === 'email' || contentMode === 'sms' || contentMode === 'tel' || contentMode === 'geo') setInputEcLevel('H')
   }, [contentMode, setInputEcLevel])
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -206,6 +208,11 @@ export const QRGenerator = () => {
                 telConfig={telConfig}
                 onTelNumberChange={setTelNumber}
                 telCorrectionHint={translate('controls.telCorrectionHint')}
+                contentModeGeoLabel={translate('controls.contentModeGeo')}
+                geoConfig={geoConfig}
+                onGeoLatitudeChange={setGeoLatitude}
+                onGeoLongitudeChange={setGeoLongitude}
+                geoCorrectionHint={translate('controls.geoCorrectionHint')}
                 frameStyle={frameConfig.style}
                 onFrameStyleChange={setFrameStyle}
                 frameText={frameConfig.text}

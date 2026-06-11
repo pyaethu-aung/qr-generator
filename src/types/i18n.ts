@@ -138,6 +138,20 @@ export interface ControlStrings {
   phoneCountrySearchPlaceholder: string
   phoneCountryNoResults: string
   phoneNumberLocalPlaceholder: string
+  contentModeGeo: string
+  geoModeHint: string
+  geoUseMyLocation: string
+  geoLocating: string
+  geoLocationError: string
+  geoLocationUnsupported: string
+  geoLatitudeLabel: string
+  geoLatitudePlaceholder: string
+  geoLatitudeError: string
+  geoLongitudeLabel: string
+  geoLongitudePlaceholder: string
+  geoLongitudeError: string
+  geoMapPreview: string
+  geoCorrectionHint: string
   frameLabel: string
   frameHint: string
   frameStyleHeading: string
@@ -312,6 +326,20 @@ export type TranslationKey =
   | 'controls.phoneCountrySearchPlaceholder'
   | 'controls.phoneCountryNoResults'
   | 'controls.phoneNumberLocalPlaceholder'
+  | 'controls.contentModeGeo'
+  | 'controls.geoModeHint'
+  | 'controls.geoUseMyLocation'
+  | 'controls.geoLocating'
+  | 'controls.geoLocationError'
+  | 'controls.geoLocationUnsupported'
+  | 'controls.geoLatitudeLabel'
+  | 'controls.geoLatitudePlaceholder'
+  | 'controls.geoLatitudeError'
+  | 'controls.geoLongitudeLabel'
+  | 'controls.geoLongitudePlaceholder'
+  | 'controls.geoLongitudeError'
+  | 'controls.geoMapPreview'
+  | 'controls.geoCorrectionHint'
   | 'controls.frameLabel'
   | 'controls.frameHint'
   | 'controls.frameStyleHeading'
