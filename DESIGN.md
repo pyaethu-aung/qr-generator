@@ -17,6 +17,7 @@ colors:
   error-surface: "#FEF2F2"
   warning: "#7C4A18"
   warning-surface: "#FAF3E6"
+  warning-border: "#D4A850"
   focus-ring: "#A04D28"
 typography:
   display:
@@ -146,8 +147,8 @@ A restrained palette built on warm neutrals with a single terracotta accent. Eve
 
 ### Tertiary
 
-- **Clay Red** (#C53030, dark: #F87171): Error states only — field borders, error messages, destructive feedback.
-- **Ember** (#7C4A18, dark: #D4A850): Warning states — readability risk alerts, caution notices.
+- **Clay Red** (#C53030, dark: #F87171): Error states only — field borders, error messages, destructive feedback. Paired with Error Surface (#FEF2F2) for background fills.
+- **Ember** (#7C4A18, dark: #D4A850): Warning text and icons. Paired with Warning Surface (#FAF3E6, dark: rgba(180,120,30,0.15)) for background fills and Warning Border (#D4A850, dark: rgba(180,120,30,0.35)) for the Callout component's full-perimeter stroke.
 
 ### Named Rules
 
@@ -242,6 +243,33 @@ Depth is conveyed primarily through tonal layering: `surface` (page) → `surfac
 ### Color Picker (Signature Component)
 
 An inline control: a 44px inset box containing a 20px color circle and a Geist Mono hex label. The native `<input type="color">` sits full-coverage at 0 opacity as the interactive layer; the visual is entirely custom. Used for foreground and background color selection.
+
+### Callout (Warning Block)
+
+A framed caution block for non-blocking warnings: payload-too-long, weak Wi-Fi security, missing country code, and similar soft alerts. Tone is fixed to warning — no info/success variants. If new tones are ever needed, add a variant prop; never a second component.
+
+- **Structure:** Horizontal flex, 8px radius, 12px padding, 8px gap. Leading `TriangleAlert` icon (16–18px, aria-hidden). Optional bold title above the body text. Optional dismiss button at the trailing edge.
+- **Color:** `warning-surface` (#FAF3E6) background, `warning-border` (#D4A850) full-perimeter border (1px), `warning` (#7C4A18) text and icon.
+- **Dismiss button:** 8px radius, 10px padding, `hover:bg-warning-border/20`, `focus-visible:ring-2 focus-visible:ring-focus-ring`.
+- **Semantics:** `role="alert"` (assertive) by default; pass `role="status"` for non-urgent updates.
+
+### Fused Input Group (Phone Number Field)
+
+A country dial-code selector and text input joined at their shared border into a single visual unit. The selector has a flat right edge and no right border; the input has a flat left edge and no left border. A z-index wrapper (`z-[1]`, `focus-within:z-10`) on the input ensures its focus ring renders above the selector when focused.
+
+- **Grouping:** `role="group"` on the outer wrapper, `aria-labelledby` pointing at the shared visible label. The label keeps `htmlFor` for the text input so click-to-focus still works, while the AT group announcement covers both controls.
+- **Sizing:** Both elements are 44px tall, matching all other inputs in the system.
+
+### CountryCodeSelect (Signature Component)
+
+A searchable country dial-code picker following the ARIA combobox pattern. Designed to fuse to the left edge of a phone input but reusable standalone via the `className` prop.
+
+- **Trigger:** Surface-inset fill, `border-strong` stroke (1px), rounded left corners only (8px), 44px tall, 12px horizontal padding. Shows the selected country's emoji flag + dial code when populated; "Country" placeholder in `text-secondary` when empty. ChevronDown icon (15px) rotates 180° when open. `focus-visible:ring-2`.
+- **Popover:** 288px wide (`w-72`), left-aligned below the trigger (`top-full mt-1.5`), `z-20`. Surface-raised fill, `border-subtle` full-perimeter stroke (1px), 12px radius, `shadow-md`. Entry and exit both fade at 150ms opacity via `@starting-style`; the DOM element persists for 150ms after close to complete the exit fade before unmounting (`visible`/`open` dual-state pattern).
+- **Search:** Surface-inset input with `border-strong` stroke, 8px radius, 36px tall. 14px `Search` icon absolutely positioned at the leading edge. `focus-visible:` ring convention.
+- **List:** `max-h-64`, scrollable, 4px padding. Each row: emoji flag + localized country name + trailing dial code, 32px tall (`py-2`). Selected country shows a 15px `Check` icon in `text-action`. The keyboard-highlighted row and the selected row share `bg-surface-inset` — both states visible simultaneously.
+- **Keyboard:** Arrow keys navigate; `Enter` selects and closes; `Escape` closes and refocuses the trigger; `Tab` away closes without refocus (preserves natural document order).
+- **`aria-live="polite"`** on the listbox announces the empty-results message to screen readers when the filter returns no matches.
 
 ## 6. Do's and Don'ts
 
