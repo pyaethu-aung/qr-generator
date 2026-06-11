@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-05-29T08:00:00.000Z",
+  "generatedAt": "2026-06-10T20:00:00.000Z",
   "title": "Design System: QR Generator",
   "extensions": {
     "colorMeta": {
@@ -153,6 +153,36 @@
           "oklch(80% 0.08 52)",
           "oklch(93% 0.05 52)"
         ]
+      },
+      "warning-surface": {
+        "role": "tertiary",
+        "displayName": "Amber Wash",
+        "canonical": "oklch(96% 0.025 75)",
+        "tonalRamp": [
+          "oklch(14% 0.020 75)",
+          "oklch(25% 0.022 75)",
+          "oklch(40% 0.024 75)",
+          "oklch(55% 0.025 75)",
+          "oklch(70% 0.024 75)",
+          "oklch(82% 0.022 75)",
+          "oklch(91% 0.020 75)",
+          "oklch(97% 0.015 75)"
+        ]
+      },
+      "warning-border": {
+        "role": "tertiary",
+        "displayName": "Spiced Amber",
+        "canonical": "oklch(74% 0.12 72)",
+        "tonalRamp": [
+          "oklch(18% 0.09 72)",
+          "oklch(28% 0.10 72)",
+          "oklch(40% 0.11 72)",
+          "oklch(52% 0.12 72)",
+          "oklch(62% 0.12 72)",
+          "oklch(72% 0.12 72)",
+          "oklch(84% 0.09 72)",
+          "oklch(94% 0.05 72)"
+        ]
       }
     },
     "typographyMeta": {
@@ -282,6 +312,30 @@
       "description": "Main two-column layout container. Surface-overlay background, border-strong stroke, card-ambient shadow. 12px radius, 32px padding, 40px column gap.",
       "html": "<div class=\"ds-card\"><div class=\"ds-card-col\">Configuration</div><div class=\"ds-card-col\">Preview</div></div>",
       "css": ".ds-card { display: flex; gap: 40px; padding: 32px; border-radius: 12px; border: 1px solid var(--color-border-strong); background-color: var(--color-surface-raised); box-shadow: 0 2px 4px rgba(0,0,0,0.031), 0 12px 32px rgba(0,0,0,0.059); } .ds-card-col { flex: 1; display: flex; flex-direction: column; gap: 20px; font-family: 'Inter', system-ui, sans-serif; font-size: 14px; color: var(--color-text-secondary); }"
+    },
+    {
+      "name": "Callout",
+      "kind": "custom",
+      "refersTo": "callout",
+      "description": "Warning callout block. Fixed to the warning tone — no info/success variants. role=alert by default; pass role=status for non-urgent updates.",
+      "html": "<div class=\"ds-callout\" role=\"alert\"><div class=\"ds-callout-body\"><svg class=\"ds-callout-icon\" xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z\"/><line x1=\"12\" y1=\"9\" x2=\"12\" y2=\"13\"/><line x1=\"12\" y1=\"17\" x2=\"12.01\" y2=\"17\"/></svg><div class=\"ds-callout-content\"><strong class=\"ds-callout-title\">Missing country code</strong><span>Your QR code may not work internationally without a dial prefix.</span></div></div><button class=\"ds-callout-dismiss\" type=\"button\" aria-label=\"Dismiss\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><line x1=\"18\" y1=\"6\" x2=\"6\" y2=\"18\"/><line x1=\"6\" y1=\"6\" x2=\"18\" y2=\"18\"/></svg></button></div>",
+      "css": ".ds-callout { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; border-radius: 8px; border: 1px solid var(--color-warning-border); background-color: var(--color-warning-surface); padding: 12px; font-family: 'Inter', system-ui, sans-serif; font-size: 14px; color: var(--color-warning); } .ds-callout-body { display: flex; align-items: flex-start; gap: 8px; } .ds-callout-icon { flex-shrink: 0; margin-top: 2px; } .ds-callout-content { display: flex; flex-direction: column; gap: 2px; } .ds-callout-title { font-weight: 600; } .ds-callout-dismiss { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: -4px; margin-left: 8px; border: none; border-radius: 8px; background: transparent; padding: 10px; color: var(--color-warning); cursor: pointer; transition: background-color 150ms ease; } .ds-callout-dismiss:hover { background-color: color-mix(in srgb, var(--color-warning-border) 20%, transparent); } .ds-callout-dismiss:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-focus-ring); }"
+    },
+    {
+      "name": "Fused Input Group",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Country selector fused to a phone number input. role=group with shared label. z-index wrapper on the text input keeps its focus ring above the selector.",
+      "html": "<div class=\"ds-fused-group\" role=\"group\" aria-labelledby=\"ds-fused-label\"><label class=\"ds-fused-label\" id=\"ds-fused-label\" for=\"ds-fused-input\">Phone number<span aria-hidden=\"true\" style=\"margin-left:2px;color:var(--color-error)\">*</span><span style=\"position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)\">required</span></label><div class=\"ds-fused-row\"><button class=\"ds-fused-trigger\" type=\"button\" aria-haspopup=\"listbox\" aria-expanded=\"false\"><span style=\"position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)\">Country code</span><span style=\"color:var(--color-text-secondary);font-size:14px\">Country</span><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" style=\"color:var(--color-text-secondary)\"><polyline points=\"6 9 12 15 18 9\"/></svg></button><input class=\"ds-fused-input\" id=\"ds-fused-input\" type=\"tel\" inputmode=\"tel\" placeholder=\"+95 9 123 456 789\" /></div></div>",
+      "css": ".ds-fused-group { display: flex; flex-direction: column; gap: 6px; width: 100%; font-family: 'Inter', system-ui, sans-serif; } .ds-fused-label { font-size: 13px; font-weight: 600; color: var(--color-text-primary); } .ds-fused-row { display: flex; width: 100%; } .ds-fused-trigger { display: inline-flex; flex-shrink: 0; align-items: center; gap: 6px; height: 44px; padding: 0 12px; white-space: nowrap; border-radius: 8px 0 0 8px; border: 1px solid var(--color-border-strong); border-right: none; background-color: var(--color-surface-inset); font-size: 14px; font-weight: 500; color: var(--color-text-primary); cursor: pointer; transition: background-color 150ms ease; } .ds-fused-trigger:hover { background-color: var(--color-surface-raised); } .ds-fused-trigger:focus-visible { outline: none; z-index: 10; box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-focus-ring); } .ds-fused-input { flex: 1; min-width: 0; height: 44px; border-radius: 0 8px 8px 0; border: 1px solid var(--color-border-strong); background-color: var(--color-surface-inset); padding: 0 12px; font-family: 'Inter', system-ui, sans-serif; font-size: 14px; color: var(--color-text-primary); outline: none; } .ds-fused-input::placeholder { color: var(--color-text-disabled); } .ds-fused-input:focus-visible { border-color: var(--color-focus-ring); box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-focus-ring) 25%, transparent); position: relative; z-index: 10; }"
+    },
+    {
+      "name": "CountryCodeSelect",
+      "kind": "custom",
+      "refersTo": "country-code-select",
+      "description": "Searchable country dial-code picker. Trigger fuses to the left edge of a phone input. ARIA combobox pattern: trigger opens a popover with a filter input driving a listbox via aria-activedescendant.",
+      "html": "<div class=\"ds-ccs\" style=\"position:relative;display:inline-block\"><button class=\"ds-ccs-trigger\" type=\"button\" aria-haspopup=\"listbox\" aria-expanded=\"true\"><span style=\"position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)\">Country code</span><span style=\"font-size:16px;line-height:1\">🇲🇲</span><span style=\"font-weight:500\">+95</span><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" style=\"color:var(--color-text-secondary);transform:rotate(180deg);transition:transform 150ms ease\"><polyline points=\"6 9 12 15 18 9\"/></svg></button><div class=\"ds-ccs-popover\"><div class=\"ds-ccs-search-wrap\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" style=\"position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--color-text-secondary);pointer-events:none\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><line x1=\"21\" y1=\"21\" x2=\"16.65\" y2=\"16.65\"/></svg><input class=\"ds-ccs-search\" type=\"text\" role=\"combobox\" aria-expanded=\"true\" aria-autocomplete=\"list\" aria-label=\"Search country or code\" placeholder=\"Search country or code\" /></div><div class=\"ds-ccs-list\" role=\"listbox\" aria-label=\"Country code\"><div class=\"ds-ccs-option ds-ccs-option--active\" role=\"option\" aria-selected=\"true\"><span style=\"font-size:16px;line-height:1\" aria-hidden=\"true\">🇲🇲</span><span style=\"flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap\">Myanmar</span><span style=\"color:var(--color-text-secondary)\">+95</span><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" style=\"color:var(--color-action)\"><polyline points=\"20 6 9 17 4 12\"/></svg></div><div class=\"ds-ccs-option\" role=\"option\" aria-selected=\"false\"><span style=\"font-size:16px;line-height:1\" aria-hidden=\"true\">🇺🇸</span><span style=\"flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap\">United States</span><span style=\"color:var(--color-text-secondary)\">+1</span></div><div class=\"ds-ccs-option\" role=\"option\" aria-selected=\"false\"><span style=\"font-size:16px;line-height:1\" aria-hidden=\"true\">🇬🇧</span><span style=\"flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap\">United Kingdom</span><span style=\"color:var(--color-text-secondary)\">+44</span></div></div></div></div>",
+      "css": ".ds-ccs { position: relative; } .ds-ccs-trigger { display: inline-flex; flex-shrink: 0; align-items: center; gap: 6px; height: 44px; padding: 0 12px; white-space: nowrap; border-radius: 8px 0 0 8px; border: 1px solid var(--color-border-strong); background-color: var(--color-surface-inset); font-family: 'Inter', system-ui, sans-serif; font-size: 14px; color: var(--color-text-primary); cursor: pointer; transition: background-color 150ms ease; } .ds-ccs-trigger:hover { background-color: var(--color-surface-raised); } .ds-ccs-trigger:focus-visible { outline: none; z-index: 10; box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-focus-ring); } .ds-ccs-popover { position: absolute; left: 0; top: calc(100% + 6px); z-index: 20; width: 288px; max-width: calc(100vw - 3rem); border-radius: 12px; border: 1px solid var(--color-border-subtle); background-color: var(--color-surface-raised); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.10), 0 2px 4px -2px rgba(0,0,0,0.10); overflow: hidden; } .ds-ccs-search-wrap { position: relative; padding: 8px; border-bottom: 1px solid var(--color-border-subtle); } .ds-ccs-search { height: 36px; width: 100%; border-radius: 8px; border: 1px solid var(--color-border-strong); background-color: var(--color-surface-inset); padding: 0 12px 0 32px; font-family: 'Inter', system-ui, sans-serif; font-size: 14px; color: var(--color-text-primary); outline: none; box-sizing: border-box; } .ds-ccs-search::placeholder { color: var(--color-text-disabled); } .ds-ccs-search:focus-visible { border-color: var(--color-focus-ring); box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-focus-ring) 25%, transparent); } .ds-ccs-list { max-height: 256px; overflow-y: auto; padding: 4px; } .ds-ccs-option { display: flex; align-items: center; gap: 10px; border-radius: 8px; padding: 8px 10px; font-family: 'Inter', system-ui, sans-serif; font-size: 14px; color: var(--color-text-primary); cursor: pointer; } .ds-ccs-option:hover, .ds-ccs-option--active { background-color: var(--color-surface-inset); }"
     }
   ],
   "narrative": {
@@ -324,7 +378,9 @@
       "Do keep every neutral warm — hue 48–68 in OKLCH. #F3EBE2 is not white. #1A1612 is not black.",
       "Do use full pill radius (9999px) for nav icon buttons, the Generate button, and segmented controls. Use 12px for inputs, cards, and download buttons.",
       "Do apply 150ms ease to all state transitions — faster feels abrupt, slower feels sluggish.",
-      "Do maintain WCAG AA contrast across both light and dark themes on all text and interactive states."
+      "Do maintain WCAG AA contrast across both light and dark themes on all text and interactive states.",
+      "Do use the Callout component (warning-surface background, warning-border stroke, warning text) as the single source of truth for all warning surfaces. Never invent a second warning pattern.",
+      "Do use role=group with aria-labelledby on any composite field that pairs two or more inputs under a single visible label."
     ],
     "donts": [
       "Don't use blue, purple, or cool-gray. Every neutral must sit on the warm side of neutral (hue 48–68 in OKLCH).",
