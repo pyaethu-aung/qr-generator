@@ -78,7 +78,9 @@ export function GeoForm({ config, onLatitudeChange, onLongitudeChange }: GeoForm
         setSrStatus('')
         setLocationError(translate('controls.geoLocationError'))
       },
-      { enableHighAccuracy: true, timeout: 10000 },
+      // A map pin doesn't need sub-meter GPS; a coarse cell/wifi fix is faster and lighter
+      // on battery, and a recent cached position (up to a minute old) is fine to reuse.
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 },
     )
   }
 
