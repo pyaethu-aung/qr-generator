@@ -40,9 +40,10 @@ export function VEventForm({
   const descriptionId = useId()
   const descriptionToggleId = useId()
   const descriptionRegionId = useId()
-  const [descriptionOpen, setDescriptionOpen] = useState(false)
+  // Starts open when a description already exists, but the user can still
+  // collapse it afterwards — the content is kept in state, only hidden.
+  const [descriptionOpen, setDescriptionOpen] = useState(!!config.description)
 
-  const hasDescription = !!config.description
   const endError = isEndBeforeStart(config)
 
   const payloadLength = useMemo(() => buildVEventString(config).length, [config])
@@ -92,7 +93,7 @@ export function VEventForm({
         />
         <label
           htmlFor={allDayCheckboxId}
-          className="text-sm text-text-primary cursor-pointer select-none"
+          className="flex min-h-[44px] items-center text-sm text-text-primary cursor-pointer select-none"
         >
           {translate('controls.veventAllDayLabel')}
         </label>
@@ -113,17 +114,17 @@ export function VEventForm({
           id={descriptionToggleId}
           onClick={() => setDescriptionOpen((prev) => !prev)}
           className="flex min-h-[44px] items-center justify-between w-full text-sm font-medium text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
-          aria-expanded={descriptionOpen || hasDescription}
+          aria-expanded={descriptionOpen}
           aria-controls={descriptionRegionId}
         >
           <span>{translate('controls.veventDescriptionLabel')}</span>
-          {descriptionOpen || hasDescription ? (
+          {descriptionOpen ? (
             <ChevronUp size={15} aria-hidden className="text-action" />
           ) : (
             <ChevronDown size={15} aria-hidden className="text-action" />
           )}
         </button>
-        {(descriptionOpen || hasDescription) && (
+        {descriptionOpen && (
           <div id={descriptionRegionId}>
             <textarea
               id={descriptionId}

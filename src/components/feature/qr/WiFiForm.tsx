@@ -93,7 +93,7 @@ export function WiFiForm({ config, onSsidChange, onPasswordChange, onSecurityCha
           onChange={(e) => onHiddenChange(e.target.checked)}
           className="h-4 w-4 rounded border-border-strong accent-action cursor-pointer"
         />
-        <label htmlFor={hiddenCheckboxId} className="text-sm text-text-primary cursor-pointer select-none">
+        <label htmlFor={hiddenCheckboxId} className="flex min-h-[44px] items-center text-sm text-text-primary cursor-pointer select-none">
           {translate('controls.wifiHiddenLabel')}
         </label>
         <Tooltip
