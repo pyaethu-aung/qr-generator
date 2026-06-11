@@ -47,7 +47,7 @@ export function CountryCodeSelect({
   const containerRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
   const searchRef = useRef<HTMLInputElement>(null)
-  const closeTimerRef = useRef<ReturnType<typeof setTimeout>>()
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   const selected = value ? findCountry(value) : undefined
   const results = useMemo(() => filterCountries(query, locale), [query, locale])
