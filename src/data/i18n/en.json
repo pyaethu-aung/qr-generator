@@ -169,7 +169,7 @@
     "veventEndError": "The end can't be before the start.",
     "veventAllDayLabel": "All-day",
     "veventLocationLabel": "Location",
-    "veventLocationPlaceholder": "Yoma Central, Yangon",
+    "veventLocationPlaceholder": "City Hall, Main Street",
     "veventDescriptionLabel": "Description",
     "veventDescriptionPlaceholder": "Agenda, parking, what to bring…",
     "veventPayloadWarning": "A long description makes the QR harder to scan reliably. Keep it concise.",

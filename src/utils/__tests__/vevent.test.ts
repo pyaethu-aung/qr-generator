@@ -70,10 +70,10 @@ describe('buildVEventString', () => {
   it('includes location and description only when present', () => {
     const payload = buildVEventString({
       ...base,
-      location: 'Yoma Central',
+      location: 'City Hall',
       description: 'Bring the deck',
     })
-    expect(payload).toContain('LOCATION:Yoma Central')
+    expect(payload).toContain('LOCATION:City Hall')
     expect(payload).toContain('DESCRIPTION:Bring the deck')
     expect(buildVEventString(base)).not.toContain('LOCATION')
     expect(buildVEventString(base)).not.toContain('DESCRIPTION')
