@@ -79,6 +79,12 @@ export function isEndBeforeStart(config: VEventConfig): boolean {
   return end < start
 }
 
+/** Extracts the `HH:mm` portion of a timed value, or null for date-only/empty input. */
+export function timePartOf(raw: string): string | null {
+  const trimmed = raw.trim()
+  return DATETIME_RE.test(trimmed) ? trimmed.slice(11) : null
+}
+
 /** Drops the time portion when switching to all-day, keeping the chosen day. */
 export function toAllDayValue(raw: string): string {
   const trimmed = raw.trim()

@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import {
   buildVEventString,
   isEndBeforeStart,
+  timePartOf,
   toAllDayValue,
   toICalDate,
   toICalDateTime,
@@ -171,5 +172,11 @@ describe('all-day toggle conversions', () => {
     expect(toTimedValue('2026-07-01', '09:00')).toBe('2026-07-01T09:00')
     expect(toTimedValue('2026-07-01T19:00', '09:00')).toBe('2026-07-01T19:00')
     expect(toTimedValue('', '09:00')).toBe('')
+  })
+
+  it('extracts the time part of timed values only', () => {
+    expect(timePartOf('2026-07-01T19:00')).toBe('19:00')
+    expect(timePartOf('2026-07-01')).toBeNull()
+    expect(timePartOf('')).toBeNull()
   })
 })
