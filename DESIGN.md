@@ -217,7 +217,7 @@ Depth is conveyed primarily through tonal layering: `surface` (page) → `surfac
 - **Active:** Terracotta fill, action-fg text, 600 weight.
 - **Inactive:** Surface-inset fill, text-primary, 400–500 weight.
 - **Transition:** 150ms ease on `background-color` and `color`.
-- **Used for:** Error Correction Level (4 pills), Pixel Pattern (2 pills), Content Mode (4 pills).
+- **Used for:** Error Correction Level (4 pills), Pixel Pattern (8 pills), Content Mode (8 pills).
 
 ### Cards / Containers
 

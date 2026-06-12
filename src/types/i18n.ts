@@ -158,6 +158,8 @@ export interface ControlStrings {
   veventModeHint: string
   veventSummaryLabel: string
   veventSummaryPlaceholder: string
+  veventNeedTitleHint: string
+  veventNeedStartHint: string
   veventStartLabel: string
   veventEndLabel: string
   veventEndError: string
@@ -168,6 +170,7 @@ export interface ControlStrings {
   veventDescriptionPlaceholder: string
   veventPayloadWarning: string
   veventCorrectionHint: string
+  optionalSuffix: string
   frameLabel: string
   frameHint: string
   frameStyleHeading: string
@@ -362,6 +365,8 @@ export type TranslationKey =
   | 'controls.veventModeHint'
   | 'controls.veventSummaryLabel'
   | 'controls.veventSummaryPlaceholder'
+  | 'controls.veventNeedTitleHint'
+  | 'controls.veventNeedStartHint'
   | 'controls.veventStartLabel'
   | 'controls.veventEndLabel'
   | 'controls.veventEndError'
@@ -372,6 +377,7 @@ export type TranslationKey =
   | 'controls.veventDescriptionPlaceholder'
   | 'controls.veventPayloadWarning'
   | 'controls.veventCorrectionHint'
+  | 'controls.optionalSuffix'
   | 'controls.frameLabel'
   | 'controls.frameHint'
   | 'controls.frameStyleHeading'

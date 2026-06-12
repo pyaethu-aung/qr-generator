@@ -46,7 +46,18 @@ export function VEventForm({
 
   const endError = isEndBeforeStart(config)
 
+  // The QR only exists once both required fields are filled. When the user has
+  // started one but not the other, say what's missing — a dead preview with no
+  // words is where first-timers stall.
+  const summaryFilled = !!config.summary.trim()
+  const startFilled = !!config.start.trim()
+  const summaryHint =
+    !summaryFilled && startFilled ? translate('controls.veventNeedTitleHint') : undefined
+  const startHint =
+    summaryFilled && !startFilled ? translate('controls.veventNeedStartHint') : undefined
+
   const payloadLength = useMemo(() => buildVEventString(config).length, [config])
+
   const isPayloadLong = payloadLength > VEVENT_PAYLOAD_WARN
 
   return (
@@ -61,6 +72,7 @@ export function VEventForm({
         aria-describedby={hintId}
         value={config.summary}
         onChange={(e) => onSummaryChange(e.target.value)}
+        helperText={summaryHint}
         autoComplete="off"
         required
       />
@@ -71,6 +83,7 @@ export function VEventForm({
           type={config.allDay ? 'date' : 'datetime-local'}
           value={config.start}
           onChange={(e) => onStartChange(e.target.value)}
+          helperText={startHint}
           required
         />
         <Input
@@ -117,11 +130,16 @@ export function VEventForm({
           aria-expanded={descriptionOpen}
           aria-controls={descriptionRegionId}
         >
-          <span>{translate('controls.veventDescriptionLabel')}</span>
+          <span>
+            {translate('controls.veventDescriptionLabel')}{' '}
+            <span className="font-normal text-text-secondary">
+              {translate('controls.optionalSuffix')}
+            </span>
+          </span>
           {descriptionOpen ? (
-            <ChevronUp size={15} aria-hidden className="text-action" />
+            <ChevronUp size={15} aria-hidden className="text-text-secondary" />
           ) : (
-            <ChevronDown size={15} aria-hidden className="text-action" />
+            <ChevronDown size={15} aria-hidden className="text-text-secondary" />
           )}
         </button>
         {descriptionOpen && (
@@ -139,7 +157,9 @@ export function VEventForm({
         )}
       </div>
 
-      {isPayloadLong && <Callout>{translate('controls.veventPayloadWarning')}</Callout>}
+      {isPayloadLong && (
+        <Callout role="status">{translate('controls.veventPayloadWarning')}</Callout>
+      )}
     </div>
   )
 }
