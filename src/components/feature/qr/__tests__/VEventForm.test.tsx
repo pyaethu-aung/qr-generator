@@ -111,17 +111,36 @@ describe('VEventForm', () => {
       start: '2026-07-01T09:00',
       description: 'x'.repeat(400),
     })
-    expect(screen.getByRole('alert')).toHaveTextContent(/harder to scan/i)
+    expect(screen.getByRole('status')).toHaveTextContent(/easier to scan/i)
   })
 
   it('does not warn for a typical event', () => {
     setup({ ...defaultConfig, summary: 'Team dinner', start: '2026-07-01T19:00' })
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
   it('describes the title field with the on-screen mode hint', () => {
     setup()
-    const hint = screen.getByText(/add this event to the calendar/i)
+    const hint = screen.getByText(/add your event to their calendar/i)
     expect(titleInput().getAttribute('aria-describedby')).toContain(hint.id)
+  })
+
+  it('prompts for the missing start once a title exists', () => {
+    setup({ ...defaultConfig, summary: 'Team dinner' })
+    expect(screen.getByText(/add a start date to finish/i)).toBeInTheDocument()
+  })
+
+  it('prompts for the missing title once a start exists', () => {
+    setup({ ...defaultConfig, start: '2026-07-01T19:00' })
+    expect(screen.getByText(/add an event title to finish/i)).toBeInTheDocument()
+  })
+
+  it('shows no completion prompts while the form is pristine or complete', () => {
+    const { unmount } = setup()
+    expect(screen.queryByText(/to finish your qr code/i)).not.toBeInTheDocument()
+    unmount()
+    setup({ ...defaultConfig, summary: 'Team dinner', start: '2026-07-01T19:00' })
+    expect(screen.queryByText(/to finish your qr code/i)).not.toBeInTheDocument()
   })
 })

@@ -27,6 +27,7 @@ export function EmailForm({ config, onToChange, onSubjectChange, onBodyChange }:
   const [toError, setToError] = useState<string | undefined>()
 
   const payloadLength = useMemo(() => buildEmailString(config).length, [config])
+
   const isPayloadLong = payloadLength > EMAIL_PAYLOAD_WARN
 
   const validateEmail = (value: string) => {
@@ -69,11 +70,16 @@ export function EmailForm({ config, onToChange, onSubjectChange, onBodyChange }:
           aria-expanded={bodyOpen}
           aria-controls={bodyRegionId}
         >
-          <span>{translate('controls.emailBodyLabel')}</span>
+          <span>
+            {translate('controls.emailBodyLabel')}{' '}
+            <span className="font-normal text-text-secondary">
+              {translate('controls.optionalSuffix')}
+            </span>
+          </span>
           {bodyOpen ? (
-            <ChevronUp size={15} aria-hidden className="text-action" />
+            <ChevronUp size={15} aria-hidden className="text-text-secondary" />
           ) : (
-            <ChevronDown size={15} aria-hidden className="text-action" />
+            <ChevronDown size={15} aria-hidden className="text-text-secondary" />
           )}
         </button>
         {bodyOpen && (
@@ -92,7 +98,7 @@ export function EmailForm({ config, onToChange, onSubjectChange, onBodyChange }:
       </div>
 
       {isPayloadLong && (
-        <Callout>{translate('controls.emailPayloadWarning')}</Callout>
+        <Callout role="status">{translate('controls.emailPayloadWarning')}</Callout>
       )}
     </div>
   )
