@@ -13,10 +13,14 @@ export interface QRPreviewProps extends QRConfig {
   logoDataUrl?: string | null
   logoSize?: number
   isPending?: boolean
+  /** Why the QR is absent, when the active form knows (e.g. a missing required
+   *  field). Replaces the generic placeholder copy so the empty state explains
+   *  itself instead of leaving a wordless dashed box. */
+  placeholderHint?: string
 }
 
 export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
-  ({ value, ecLevel, fgColor, bgColor, size = 220, designConfig = { eyeFrameShape: 'Square', eyeCenterShape: 'Square', eyeFrameColor: null, eyeCenterColor: null, pixelPattern: 'Square' }, frameConfig, className, style, logoDataUrl, logoSize, isPending }, forwardedRef) => {
+  ({ value, ecLevel, fgColor, bgColor, size = 220, designConfig = { eyeFrameShape: 'Square', eyeCenterShape: 'Square', eyeFrameColor: null, eyeCenterColor: null, pixelPattern: 'Square' }, frameConfig, className, style, logoDataUrl, logoSize, isPending, placeholderHint }, forwardedRef) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
     const wrapperRef = useRef<HTMLDivElement | null>(null)
     const canFlashRef = useRef(false)
@@ -175,10 +179,12 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
               className="flex items-center justify-center w-full bg-surface-inset text-text-disabled rounded-lg border-2 border-dashed border-border-subtle aspect-square"
               style={{ maxWidth: size }}
               role="img"
-              aria-label={ariaPlaceholder}
+              aria-label={placeholderHint ?? ariaPlaceholder}
             >
               {isPending ? (
                 <span className="h-5 w-5 motion-safe:animate-spin rounded-full border-2 border-border-strong border-t-text-secondary" aria-hidden />
+              ) : placeholderHint ? (
+                <span className="px-6 text-center text-sm text-text-secondary">{placeholderHint}</span>
               ) : (
                 <span className="text-sm">{placeholderCopy}</span>
               )}
