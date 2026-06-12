@@ -14,6 +14,7 @@ import { useTelConfig } from '../../../hooks/useTelConfig'
 import { useGeoConfig } from '../../../hooks/useGeoConfig'
 import { useVEventConfig } from '../../../hooks/useVEventConfig'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
+import { isEndBeforeStart } from '../../../utils/vevent'
 import type { QRContentMode } from '../../../types/qr'
 
 export const QRGenerator = () => {
@@ -105,6 +106,19 @@ export const QRGenerator = () => {
   })()
 
   const actionStatusMessage = shareStatusMessage ?? (recentDownload ? translate('controls.downloadSuccess') : undefined)
+
+  // When the event form knows exactly why no QR exists, the preview's empty
+  // state says so — on phones the form and preview are a screen apart, so a
+  // wordless dashed box would leave the cause and the effect disconnected.
+  const previewPlaceholderHint = (() => {
+    if (contentMode !== 'vevent' || veventString) return undefined
+    if (isEndBeforeStart(veventConfig)) return translate('controls.veventEndError')
+    const hasSummary = !!veventConfig.summary.trim()
+    const hasStart = !!veventConfig.start.trim()
+    if (hasSummary && !hasStart) return translate('controls.veventNeedStartHint')
+    if (!hasSummary && hasStart) return translate('controls.veventNeedTitleHint')
+    return undefined
+  })()
 
   return (
     <section className="relative isolate overflow-x-hidden px-2 pb-12 sm:px-6 lg:px-8">
@@ -279,6 +293,7 @@ export const QRGenerator = () => {
                 logoSize={logoSize}
                 size={300}
                 isPending={isPending}
+                placeholderHint={previewPlaceholderHint}
               />
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <button
