@@ -15,10 +15,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const generatedId = useId()
     const inputId = id || props.name || generatedId
     const errorId = useId()
+    const helperId = useId()
 
-    // Merge any caller-supplied describedby (e.g. a field hint) with the internal error id,
-    // so neither clobbers the other.
-    const describedBy = [ariaDescribedBy, error ? errorId : undefined].filter(Boolean).join(' ') || undefined
+    // Merge any caller-supplied describedby (e.g. a field hint) with the internal error
+    // and helper ids, so none clobbers the others.
+    const describedBy = [ariaDescribedBy, error ? errorId : undefined, !error && helperText ? helperId : undefined].filter(Boolean).join(' ') || undefined
 
     const inputClass = twMerge(
       clsx(
@@ -51,7 +52,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {error ? (
           <span id={errorId} role="alert" className="text-sm text-error">{error}</span>
         ) : (
-          helperText && <span className="text-sm text-text-secondary">{helperText}</span>
+          // Always-mounted live region so a helper hint that appears later (e.g. the
+          // "add a start date" completion prompts) is announced, not just rendered.
+          <span id={helperId} aria-live="polite" className={helperText ? 'text-sm text-text-secondary' : 'sr-only'}>
+            {helperText}
+          </span>
         )}
       </div>
     )
