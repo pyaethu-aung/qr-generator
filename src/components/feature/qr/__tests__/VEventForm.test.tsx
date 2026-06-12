@@ -114,6 +114,18 @@ describe('VEventForm', () => {
     expect(screen.getByRole('status')).toHaveTextContent(/easier to scan/i)
   })
 
+  it('warns about a long description even before the title exists', () => {
+    setup({ ...defaultConfig, description: 'x'.repeat(400) })
+    expect(screen.getByRole('status')).toHaveTextContent(/easier to scan/i)
+  })
+
+  it('describes the date fields with the on-screen mode hint', () => {
+    setup()
+    const hint = screen.getByText(/add your event to their calendar/i)
+    expect(startInput().getAttribute('aria-describedby')).toContain(hint.id)
+    expect(endInput().getAttribute('aria-describedby')).toContain(hint.id)
+  })
+
   it('does not warn for a typical event', () => {
     setup({ ...defaultConfig, summary: 'Team dinner', start: '2026-07-01T19:00' })
     expect(screen.queryByRole('status')).not.toBeInTheDocument()
