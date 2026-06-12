@@ -70,12 +70,7 @@ export function EmailForm({ config, onToChange, onSubjectChange, onBodyChange }:
           aria-expanded={bodyOpen}
           aria-controls={bodyRegionId}
         >
-          <span>
-            {translate('controls.emailBodyLabel')}{' '}
-            <span className="font-normal text-text-secondary">
-              {translate('controls.optionalSuffix')}
-            </span>
-          </span>
+          <span>{translate('controls.emailBodyLabel')}</span>
           {bodyOpen ? (
             <ChevronUp size={15} aria-hidden className="text-text-secondary" />
           ) : (

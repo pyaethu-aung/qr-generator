@@ -170,7 +170,6 @@ export interface ControlStrings {
   veventDescriptionPlaceholder: string
   veventPayloadWarning: string
   veventCorrectionHint: string
-  optionalSuffix: string
   frameLabel: string
   frameHint: string
   frameStyleHeading: string
@@ -377,7 +376,6 @@ export type TranslationKey =
   | 'controls.veventDescriptionPlaceholder'
   | 'controls.veventPayloadWarning'
   | 'controls.veventCorrectionHint'
-  | 'controls.optionalSuffix'
   | 'controls.frameLabel'
   | 'controls.frameHint'
   | 'controls.frameStyleHeading'

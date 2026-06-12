@@ -7,6 +7,8 @@ import {
   toICalDate,
   toICalDateTime,
   toTimedValue,
+  veventDraftLength,
+  VEVENT_PAYLOAD_WARN,
 } from '../vevent'
 import type { VEventConfig } from '../../types/qr'
 
@@ -178,5 +180,22 @@ describe('all-day toggle conversions', () => {
     expect(timePartOf('2026-07-01T19:00')).toBe('19:00')
     expect(timePartOf('2026-07-01')).toBeNull()
     expect(timePartOf('')).toBeNull()
+  })
+})
+
+describe('veventDraftLength', () => {
+  it('matches the real payload length once the payload is coherent', () => {
+    expect(veventDraftLength(base)).toBe(buildVEventString(base).length)
+  })
+
+  it('reports a long draft even before required fields exist', () => {
+    const draft = { ...base, summary: '', start: '', description: 'x'.repeat(400) }
+    expect(buildVEventString(draft)).toBe('')
+    expect(veventDraftLength(draft)).toBeGreaterThan(VEVENT_PAYLOAD_WARN)
+  })
+
+  it('stays short for a near-empty draft', () => {
+    const draft = { ...base, summary: '', start: '', end: '' }
+    expect(veventDraftLength(draft)).toBeLessThan(VEVENT_PAYLOAD_WARN)
   })
 })

@@ -3,7 +3,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 import { Input } from '../../common/Input'
 import { Callout } from '../../common/Callout'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
-import { buildVEventString, isEndBeforeStart, VEVENT_PAYLOAD_WARN } from '../../../utils/vevent'
+import { isEndBeforeStart, veventDraftLength, VEVENT_PAYLOAD_WARN } from '../../../utils/vevent'
 import type { VEventConfig } from '../../../types/qr'
 
 interface VEventFormProps {
@@ -56,7 +56,7 @@ export function VEventForm({
   const startHint =
     summaryFilled && !startFilled ? translate('controls.veventNeedStartHint') : undefined
 
-  const payloadLength = useMemo(() => buildVEventString(config).length, [config])
+  const payloadLength = useMemo(() => veventDraftLength(config), [config])
 
   const isPayloadLong = payloadLength > VEVENT_PAYLOAD_WARN
 
@@ -77,25 +77,8 @@ export function VEventForm({
         required
       />
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Input
-          label={translate('controls.veventStartLabel')}
-          type={config.allDay ? 'date' : 'datetime-local'}
-          value={config.start}
-          onChange={(e) => onStartChange(e.target.value)}
-          helperText={startHint}
-          required
-        />
-        <Input
-          label={translate('controls.veventEndLabel')}
-          type={config.allDay ? 'date' : 'datetime-local'}
-          value={config.end}
-          onChange={(e) => onEndChange(e.target.value)}
-          min={config.start || undefined}
-          error={endError ? translate('controls.veventEndError') : undefined}
-        />
-      </div>
-
+      {/* All-day sits above the pickers it reshapes, so the date-shape decision
+          comes before time entry instead of after both times are typed. */}
       <div className="flex items-center gap-2.5">
         <input
           id={allDayCheckboxId}
@@ -110,6 +93,27 @@ export function VEventForm({
         >
           {translate('controls.veventAllDayLabel')}
         </label>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Input
+          label={translate('controls.veventStartLabel')}
+          type={config.allDay ? 'date' : 'datetime-local'}
+          aria-describedby={hintId}
+          value={config.start}
+          onChange={(e) => onStartChange(e.target.value)}
+          helperText={startHint}
+          required
+        />
+        <Input
+          label={translate('controls.veventEndLabel')}
+          type={config.allDay ? 'date' : 'datetime-local'}
+          aria-describedby={hintId}
+          value={config.end}
+          onChange={(e) => onEndChange(e.target.value)}
+          min={config.start || undefined}
+          error={endError ? translate('controls.veventEndError') : undefined}
+        />
       </div>
 
       <Input
@@ -130,12 +134,7 @@ export function VEventForm({
           aria-expanded={descriptionOpen}
           aria-controls={descriptionRegionId}
         >
-          <span>
-            {translate('controls.veventDescriptionLabel')}{' '}
-            <span className="font-normal text-text-secondary">
-              {translate('controls.optionalSuffix')}
-            </span>
-          </span>
+          <span>{translate('controls.veventDescriptionLabel')}</span>
           {descriptionOpen ? (
             <ChevronUp size={15} aria-hidden className="text-text-secondary" />
           ) : (

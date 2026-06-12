@@ -79,6 +79,25 @@ export function isEndBeforeStart(config: VEventConfig): boolean {
   return end < start
 }
 
+/**
+ * Length the payload will have once the form is complete, usable while it is
+ * still incomplete: a long description typed before the title should trigger
+ * the size warning immediately, not the moment the title lands. Falls back to
+ * placeholder required fields (same encoded length) when the real payload is
+ * incoherent; the optional end is dropped in the fallback, a small
+ * underestimate that never hides a genuinely long payload.
+ */
+export function veventDraftLength(config: VEventConfig): number {
+  const real = buildVEventString(config)
+  if (real) return real.length
+  return buildVEventString({
+    ...config,
+    summary: config.summary.trim() || 'x',
+    start: config.allDay ? '2000-01-01' : '2000-01-01T00:00',
+    end: '',
+  }).length
+}
+
 /** Extracts the `HH:mm` portion of a timed value, or null for date-only/empty input. */
 export function timePartOf(raw: string): string | null {
   const trimmed = raw.trim()
