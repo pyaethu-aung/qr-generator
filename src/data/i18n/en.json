@@ -166,6 +166,7 @@
     "veventSummaryPlaceholder": "Team dinner",
     "veventNeedTitleHint": "Add an event title to finish your QR code.",
     "veventNeedStartHint": "Add a start date to finish your QR code.",
+    "veventNeedBothHint": "Add an event title and start date to finish your QR code.",
     "veventStartLabel": "Starts",
     "veventEndLabel": "Ends",
     "veventEndError": "The end can't be before the start.",

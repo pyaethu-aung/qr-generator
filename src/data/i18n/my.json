@@ -166,6 +166,7 @@
     "veventSummaryPlaceholder": "အသင်း ညစာစားပွဲ",
     "veventNeedTitleHint": "QR ကုဒ် ပြီးမြောက်ရန် ပွဲအမည် ထည့်ပါ။",
     "veventNeedStartHint": "QR ကုဒ် ပြီးမြောက်ရန် စတင်ရက် ထည့်ပါ။",
+    "veventNeedBothHint": "QR ကုဒ် ပြီးမြောက်ရန် ပွဲအမည်နှင့် စတင်ရက် ထည့်ပါ။",
     "veventStartLabel": "စတင်ချိန်",
     "veventEndLabel": "ပြီးဆုံးချိန်",
     "veventEndError": "ပြီးဆုံးချိန်သည် စတင်ချိန်ထက် မစောရပါ။",
