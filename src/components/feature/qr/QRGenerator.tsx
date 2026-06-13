@@ -12,17 +12,32 @@ import { useEmailConfig } from '../../../hooks/useEmailConfig'
 import { useSmsConfig } from '../../../hooks/useSmsConfig'
 import { useTelConfig } from '../../../hooks/useTelConfig'
 import { useGeoConfig } from '../../../hooks/useGeoConfig'
+import { useVEventConfig } from '../../../hooks/useVEventConfig'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
+import { isEndBeforeStart } from '../../../utils/vevent'
 import type { QRContentMode } from '../../../types/qr'
 
+const CONTENT_MODE_KEY = 'qr-generator:draft:content-mode'
+const CONTENT_MODES: readonly QRContentMode[] = ['text', 'wifi', 'vcard', 'email', 'sms', 'tel', 'geo', 'vevent']
+
+function loadContentMode(): QRContentMode {
+  try {
+    const stored = localStorage.getItem(CONTENT_MODE_KEY) as QRContentMode | null
+    return stored && CONTENT_MODES.includes(stored) ? stored : 'text'
+  } catch {
+    return 'text'
+  }
+}
+
 export const QRGenerator = () => {
-  const [contentMode, setContentMode] = useState<QRContentMode>('text')
+  const [contentMode, setContentMode] = useState<QRContentMode>(loadContentMode)
   const { wifiConfig, wifiString, setSsid, setPassword, setSecurity, setHidden } = useWiFiConfig()
   const { vcardConfig, vcardString, setFirstName, setLastName, setPhone, setEmail, setCompany, setJobTitle, setWebsite } = useVCardConfig()
   const { emailConfig, emailString, setTo, setSubject, setBody } = useEmailConfig()
   const { smsConfig, smsString, setNumber, setMessage } = useSmsConfig()
   const { telConfig, telString, setNumber: setTelNumber } = useTelConfig()
   const { geoConfig, geoString, setLatitude: setGeoLatitude, setLongitude: setGeoLongitude } = useGeoConfig()
+  const { veventConfig, veventString, setSummary: setVEventSummary, setStart: setVEventStart, setEnd: setVEventEnd, setAllDay: setVEventAllDay, setLocation: setVEventLocation, setDescription: setVEventDescription } = useVEventConfig()
 
   const {
     liveValue,
@@ -40,7 +55,7 @@ export const QRGenerator = () => {
     canDownload,
     recentDownload,
     isPending,
-  } = useQRGenerator(contentMode === 'wifi' ? wifiString : contentMode === 'vcard' ? vcardString : contentMode === 'email' ? emailString : contentMode === 'sms' ? smsString : contentMode === 'tel' ? telString : contentMode === 'geo' ? geoString : undefined)
+  } = useQRGenerator(contentMode === 'wifi' ? wifiString : contentMode === 'vcard' ? vcardString : contentMode === 'email' ? emailString : contentMode === 'sms' ? smsString : contentMode === 'tel' ? telString : contentMode === 'geo' ? geoString : contentMode === 'vevent' ? veventString : undefined)
 
   const {
     designConfig,
@@ -68,8 +83,17 @@ export const QRGenerator = () => {
 
   // Printed/dense modes need maximum damage tolerance
   useEffect(() => {
-    if (contentMode === 'wifi' || contentMode === 'vcard' || contentMode === 'email' || contentMode === 'sms' || contentMode === 'tel' || contentMode === 'geo') setInputEcLevel('H')
+    if (contentMode !== 'text') setInputEcLevel('H')
   }, [contentMode, setInputEcLevel])
+
+  // Return the user to the mode they last used.
+  useEffect(() => {
+    try {
+      localStorage.setItem(CONTENT_MODE_KEY, contentMode)
+    } catch {
+      // Ignore if localStorage is unavailable
+    }
+  }, [contentMode])
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const { share, isSharing, shareRequest } = useQRShare()
@@ -103,6 +127,21 @@ export const QRGenerator = () => {
   })()
 
   const actionStatusMessage = shareStatusMessage ?? (recentDownload ? translate('controls.downloadSuccess') : undefined)
+
+  // When the event form knows exactly why no QR exists, the preview's empty
+  // state says so — on phones the form and preview are a screen apart, so a
+  // wordless dashed box would leave the cause and the effect disconnected.
+  const previewPlaceholderHint = (() => {
+    if (contentMode !== 'vevent' || veventString) return undefined
+    if (isEndBeforeStart(veventConfig)) return translate('controls.veventEndError')
+    const hasSummary = !!veventConfig.summary.trim()
+    const hasStart = !!veventConfig.start.trim()
+    if (hasSummary && !hasStart) return translate('controls.veventNeedStartHint')
+    if (!hasSummary && hasStart) return translate('controls.veventNeedTitleHint')
+    const hasOptional = !!veventConfig.location.trim() || !!veventConfig.description.trim()
+    if (!hasSummary && !hasStart && hasOptional) return translate('controls.veventNeedBothHint')
+    return undefined
+  })()
 
   return (
     <section className="relative isolate overflow-x-hidden px-2 pb-12 sm:px-6 lg:px-8">
@@ -213,6 +252,15 @@ export const QRGenerator = () => {
                 onGeoLatitudeChange={setGeoLatitude}
                 onGeoLongitudeChange={setGeoLongitude}
                 geoCorrectionHint={translate('controls.geoCorrectionHint')}
+                contentModeVEventLabel={translate('controls.contentModeVEvent')}
+                veventConfig={veventConfig}
+                onVEventSummaryChange={setVEventSummary}
+                onVEventStartChange={setVEventStart}
+                onVEventEndChange={setVEventEnd}
+                onVEventAllDayChange={setVEventAllDay}
+                onVEventLocationChange={setVEventLocation}
+                onVEventDescriptionChange={setVEventDescription}
+                veventCorrectionHint={translate('controls.veventCorrectionHint')}
                 frameStyle={frameConfig.style}
                 onFrameStyleChange={setFrameStyle}
                 frameText={frameConfig.text}
@@ -268,6 +316,7 @@ export const QRGenerator = () => {
                 logoSize={logoSize}
                 size={300}
                 isPending={isPending}
+                placeholderHint={previewPlaceholderHint}
               />
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <button

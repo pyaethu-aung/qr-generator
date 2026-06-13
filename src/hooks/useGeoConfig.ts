@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import type { GeoConfig } from '../types/qr'
 import { buildGeoString } from '../utils/geo'
+import { usePersistedConfig } from './usePersistedConfig'
 
 const DEFAULT_GEO_CONFIG: GeoConfig = {
   latitude: '',
@@ -15,7 +16,10 @@ export interface UseGeoConfigReturn {
 }
 
 export function useGeoConfig(): UseGeoConfigReturn {
-  const [geoConfig, setGeoConfig] = useState<GeoConfig>(DEFAULT_GEO_CONFIG)
+  const [geoConfig, setGeoConfig] = usePersistedConfig<GeoConfig>(
+    'qr-generator:draft:geo',
+    DEFAULT_GEO_CONFIG,
+  )
 
   const setLatitude = (latitude: string) => setGeoConfig(prev => ({ ...prev, latitude }))
   const setLongitude = (longitude: string) => setGeoConfig(prev => ({ ...prev, longitude }))

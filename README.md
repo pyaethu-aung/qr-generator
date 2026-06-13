@@ -6,6 +6,25 @@
 
 Single-page app for generating QR codes with real-time preview and download.
 
+## Content types
+
+The generator encodes eight kinds of content, selectable from the pill bar
+above the form:
+
+- **Text / URL** — free-form text or a link (the default).
+- **Wi-Fi** — network credentials; scanning joins the network.
+- **Contact (vCard)** — name, phone, email, and address as a vCard.
+- **Email** — a `mailto:` link with optional subject and body.
+- **SMS** — a phone number with an optional pre-filled message.
+- **Phone** — a `tel:` link that starts a call on scan.
+- **Location** — geographic coordinates as a `geo:` URI, with a
+  "use my location" helper.
+- **Event** — a calendar event (RFC 5545 `VCALENDAR`/`VEVENT`): title,
+  start/end, an all-day toggle, location, and an optional description.
+  Times are encoded as floating local time so the event lands at the
+  wall-clock time the scanner's device is set to; all-day events use
+  `VALUE=DATE` with the exclusive end date handled automatically.
+
 ## Customization
 
 QR codes can be styled before download:

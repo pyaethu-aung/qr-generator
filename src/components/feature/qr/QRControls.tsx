@@ -1,5 +1,5 @@
 import { useRef, useState, useId } from 'react'
-import { Download, Check, ChevronDown, ChevronUp, Upload, X, Wifi, Link, User, Mail, MessageSquare, Phone, MapPin } from 'lucide-react'
+import { Download, Check, ChevronDown, ChevronUp, Upload, X, Wifi, Link, User, Mail, MessageSquare, Phone, MapPin, Calendar } from 'lucide-react'
 import { Input } from '../../common/Input'
 import { Callout } from '../../common/Callout'
 import { PillGroup } from '../../common/PillGroup'
@@ -10,8 +10,9 @@ import { EmailForm } from './EmailForm'
 import { SmsForm } from './SmsForm'
 import { TelForm } from './TelForm'
 import { GeoForm } from './GeoForm'
+import { VEventForm } from './VEventForm'
 import { DEFAULT_FRAME_COLOR } from '../../../data/defaults'
-import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig, SmsConfig, TelConfig, GeoConfig, QREyeFrameShape, QREyeCenterShape, QRPixelPattern, QRFrameStyle, QRFramePosition } from '../../../types/qr'
+import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig, SmsConfig, TelConfig, GeoConfig, VEventConfig, QREyeFrameShape, QREyeCenterShape, QRPixelPattern, QRFrameStyle, QRFramePosition } from '../../../types/qr'
 
 const FRAME_PATHS: Record<QREyeFrameShape, string> = {
   Square:      'M0,0 h28 v28 h-28 Z M4,4 h20 v20 h-20 Z',
@@ -351,6 +352,16 @@ export interface QRControlsProps {
   onGeoLatitudeChange?: (v: string) => void
   onGeoLongitudeChange?: (v: string) => void
   geoCorrectionHint?: string
+  // Calendar event (vEvent) mode props
+  contentModeVEventLabel?: string
+  veventConfig?: VEventConfig
+  onVEventSummaryChange?: (v: string) => void
+  onVEventStartChange?: (v: string) => void
+  onVEventEndChange?: (v: string) => void
+  onVEventAllDayChange?: (v: boolean) => void
+  onVEventLocationChange?: (v: string) => void
+  onVEventDescriptionChange?: (v: string) => void
+  veventCorrectionHint?: string
   logoLabel?: string
   logoSizeLabel?: string
   logoUploadHint?: string
@@ -513,6 +524,15 @@ export function QRControls({
   onGeoLatitudeChange,
   onGeoLongitudeChange,
   geoCorrectionHint = 'Set to Highest for the most reliable scanning.',
+  contentModeVEventLabel = 'Event',
+  veventConfig,
+  onVEventSummaryChange,
+  onVEventStartChange,
+  onVEventEndChange,
+  onVEventAllDayChange,
+  onVEventLocationChange,
+  onVEventDescriptionChange,
+  veventCorrectionHint = 'Set to Highest for the most reliable scanning.',
   logoLabel = 'Logo',
   logoSizeLabel = 'Logo Size',
   logoUploadHint = 'Click or drop image',
@@ -670,6 +690,7 @@ export function QRControls({
               { value: 'sms', label: contentModeSmsLabel, icon: <MessageSquare size={13} aria-hidden /> },
               { value: 'tel', label: contentModeTelLabel, icon: <Phone size={13} aria-hidden /> },
               { value: 'geo', label: contentModeGeoLabel, icon: <MapPin size={13} aria-hidden /> },
+              { value: 'vevent', label: contentModeVEventLabel, icon: <Calendar size={13} aria-hidden /> },
             ]}
             value={contentMode}
             onChange={onContentModeChange}
@@ -722,6 +743,16 @@ export function QRControls({
             onLatitudeChange={onGeoLatitudeChange}
             onLongitudeChange={onGeoLongitudeChange}
           />
+        ) : contentMode === 'vevent' && veventConfig && onVEventSummaryChange && onVEventStartChange && onVEventEndChange && onVEventAllDayChange && onVEventLocationChange && onVEventDescriptionChange ? (
+          <VEventForm
+            config={veventConfig}
+            onSummaryChange={onVEventSummaryChange}
+            onStartChange={onVEventStartChange}
+            onEndChange={onVEventEndChange}
+            onAllDayChange={onVEventAllDayChange}
+            onLocationChange={onVEventLocationChange}
+            onDescriptionChange={onVEventDescriptionChange}
+          />
         ) : (
           <Input
             label={contentModeTextLabel}
@@ -759,7 +790,7 @@ export function QRControls({
             >
               {reliabilityBelowRecommended
                 ? correctionBelowRecommendedLabel
-                : contentMode === 'wifi' ? wifiCorrectionHint : contentMode === 'vcard' ? vcardCorrectionHint : contentMode === 'email' ? emailCorrectionHint : contentMode === 'sms' ? smsCorrectionHint : contentMode === 'tel' ? telCorrectionHint : contentMode === 'geo' ? geoCorrectionHint : correctionHint}
+                : contentMode === 'wifi' ? wifiCorrectionHint : contentMode === 'vcard' ? vcardCorrectionHint : contentMode === 'email' ? emailCorrectionHint : contentMode === 'sms' ? smsCorrectionHint : contentMode === 'tel' ? telCorrectionHint : contentMode === 'geo' ? geoCorrectionHint : contentMode === 'vevent' ? veventCorrectionHint : correctionHint}
             </p>
           </div>
 

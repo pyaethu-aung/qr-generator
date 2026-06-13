@@ -1,6 +1,6 @@
 export type QRErrorCorrectionLevel = 'L' | 'M' | 'Q' | 'H'
 
-export type QRContentMode = 'text' | 'wifi' | 'vcard' | 'email' | 'sms' | 'tel' | 'geo'
+export type QRContentMode = 'text' | 'wifi' | 'vcard' | 'email' | 'sms' | 'tel' | 'geo' | 'vevent'
 
 export interface EmailConfig {
   to: string
@@ -22,6 +22,18 @@ export interface GeoConfig {
   latitude: string
   /** Decimal-degree longitude as the user typed it (validated/parsed at the edges). */
   longitude: string
+}
+
+export interface VEventConfig {
+  /** Event title (iCalendar SUMMARY). Required for a non-empty payload. */
+  summary: string
+  /** Native input value: `YYYY-MM-DDTHH:mm`, or `YYYY-MM-DD` when allDay. */
+  start: string
+  /** Same format as `start`. Empty means "no explicit end". */
+  end: string
+  allDay: boolean
+  location: string
+  description: string
 }
 
 export type WiFiSecurity = 'WPA' | 'WEP' | 'nopass'

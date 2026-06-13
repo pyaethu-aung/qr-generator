@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import type { EmailConfig } from '../types/qr'
 import { buildEmailString } from '../utils/email'
+import { usePersistedConfig } from './usePersistedConfig'
 
 const DEFAULT_EMAIL_CONFIG: EmailConfig = {
   to: '',
@@ -17,7 +18,10 @@ export interface UseEmailConfigReturn {
 }
 
 export function useEmailConfig(): UseEmailConfigReturn {
-  const [emailConfig, setEmailConfig] = useState<EmailConfig>(DEFAULT_EMAIL_CONFIG)
+  const [emailConfig, setEmailConfig] = usePersistedConfig<EmailConfig>(
+    'qr-generator:draft:email',
+    DEFAULT_EMAIL_CONFIG,
+  )
 
   const setTo = (to: string) => setEmailConfig(prev => ({ ...prev, to }))
   const setSubject = (subject: string) => setEmailConfig(prev => ({ ...prev, subject }))

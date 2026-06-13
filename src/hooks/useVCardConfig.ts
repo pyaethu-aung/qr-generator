@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import type { VCardConfig } from '../types/qr'
 import { buildVCardString } from '../utils/vcard'
+import { usePersistedConfig } from './usePersistedConfig'
 
 const DEFAULT_VCARD_CONFIG: VCardConfig = {
   firstName: '',
@@ -25,7 +26,10 @@ export interface UseVCardConfigReturn {
 }
 
 export function useVCardConfig(): UseVCardConfigReturn {
-  const [vcardConfig, setVCardConfig] = useState<VCardConfig>(DEFAULT_VCARD_CONFIG)
+  const [vcardConfig, setVCardConfig] = usePersistedConfig<VCardConfig>(
+    'qr-generator:draft:vcard',
+    DEFAULT_VCARD_CONFIG,
+  )
 
   const setFirstName = (firstName: string) => setVCardConfig(prev => ({ ...prev, firstName }))
   const setLastName = (lastName: string) => setVCardConfig(prev => ({ ...prev, lastName }))

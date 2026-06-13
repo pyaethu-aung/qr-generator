@@ -29,6 +29,19 @@ describe('QRPreview', () => {
     expect(screen.getByRole('img', { name: 'QR Code Placeholder' })).toBeInTheDocument()
   })
 
+  it('explains the empty state when a blocked reason is supplied', () => {
+    render(
+      <LocaleProvider>
+        <QRPreview {...defaultProps} value="" placeholderHint="Add a start date to finish your QR code." />
+      </LocaleProvider>,
+    )
+
+    expect(screen.queryByText('QR preview')).not.toBeInTheDocument()
+    expect(
+      screen.getByRole('img', { name: 'Add a start date to finish your QR code.' }),
+    ).toBeInTheDocument()
+  })
+
   it('does not render a download button inside the preview', () => {
     render(
       <LocaleProvider>

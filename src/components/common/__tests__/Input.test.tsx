@@ -21,4 +21,18 @@ describe('Input', () => {
     expect(input).toBeDisabled()
     expect(input).toHaveClass('cursor-not-allowed')
   })
+
+  it('associates helper text with the input and announces it politely', () => {
+    render(<Input label="Name" helperText="Enter your name" />)
+    const helper = screen.getByText('Enter your name')
+    expect(helper).toHaveAttribute('aria-live', 'polite')
+    expect(screen.getByLabelText('Name').getAttribute('aria-describedby')).toContain(helper.id)
+  })
+
+  it('merges helper id with a caller-supplied describedby', () => {
+    render(<Input label="Name" helperText="Enter your name" aria-describedby="outer-hint" />)
+    const describedBy = screen.getByLabelText('Name').getAttribute('aria-describedby')
+    expect(describedBy).toContain('outer-hint')
+    expect(describedBy).toContain(screen.getByText('Enter your name').id)
+  })
 })

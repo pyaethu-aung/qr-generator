@@ -21,12 +21,13 @@ export function EmailForm({ config, onToChange, onSubjectChange, onBodyChange }:
   const bodyToggleId = useId()
   const bodyRegionId = useId()
   const hintId = useId()
-  const [bodyOpen, setBodyOpen] = useState(false)
+  // Starts open when a message already exists, but the user can still
+  // collapse it afterwards — the content is kept in state, only hidden.
+  const [bodyOpen, setBodyOpen] = useState(!!config.body)
   const [toError, setToError] = useState<string | undefined>()
 
-  const hasBody = !!config.body
-
   const payloadLength = useMemo(() => buildEmailString(config).length, [config])
+
   const isPayloadLong = payloadLength > EMAIL_PAYLOAD_WARN
 
   const validateEmail = (value: string) => {
@@ -66,17 +67,17 @@ export function EmailForm({ config, onToChange, onSubjectChange, onBodyChange }:
           id={bodyToggleId}
           onClick={() => setBodyOpen(prev => !prev)}
           className="flex min-h-[44px] items-center justify-between w-full text-sm font-medium text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
-          aria-expanded={bodyOpen || hasBody}
+          aria-expanded={bodyOpen}
           aria-controls={bodyRegionId}
         >
           <span>{translate('controls.emailBodyLabel')}</span>
-          {bodyOpen || hasBody ? (
-            <ChevronUp size={15} aria-hidden className="text-action" />
+          {bodyOpen ? (
+            <ChevronUp size={15} aria-hidden className="text-text-secondary" />
           ) : (
-            <ChevronDown size={15} aria-hidden className="text-action" />
+            <ChevronDown size={15} aria-hidden className="text-text-secondary" />
           )}
         </button>
-        {(bodyOpen || hasBody) && (
+        {bodyOpen && (
           <div id={bodyRegionId}>
             <textarea
               id={bodyId}
@@ -92,7 +93,7 @@ export function EmailForm({ config, onToChange, onSubjectChange, onBodyChange }:
       </div>
 
       {isPayloadLong && (
-        <Callout>{translate('controls.emailPayloadWarning')}</Callout>
+        <Callout role="status">{translate('controls.emailPayloadWarning')}</Callout>
       )}
     </div>
   )
