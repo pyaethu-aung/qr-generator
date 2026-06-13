@@ -171,6 +171,28 @@ export interface ControlStrings {
   veventDescriptionPlaceholder: string
   veventPayloadWarning: string
   veventCorrectionHint: string
+  contentModeCrypto: string
+  cryptoModeHint: string
+  cryptoCorrectionHint: string
+  cryptoNetworkLabel: string
+  cryptoNetworkBitcoin: string
+  cryptoNetworkEthereum: string
+  cryptoAddressLabel: string
+  cryptoAddressPlaceholderBitcoin: string
+  cryptoAddressPlaceholderEthereum: string
+  cryptoAddressErrorBitcoin: string
+  cryptoAddressErrorEthereum: string
+  cryptoAddressNeededHint: string
+  cryptoAmountLabel: string
+  cryptoAmountPlaceholderBitcoin: string
+  cryptoAmountPlaceholderEthereum: string
+  cryptoAmountError: string
+  cryptoLabelLabel: string
+  cryptoLabelPlaceholder: string
+  cryptoIrreversibleCaution: string
+  cryptoPayloadWarning: string
+  cryptoPreviewWithAmount: string
+  cryptoPreviewNoAmount: string
   frameLabel: string
   frameHint: string
   frameStyleHeading: string
@@ -378,6 +400,28 @@ export type TranslationKey =
   | 'controls.veventDescriptionPlaceholder'
   | 'controls.veventPayloadWarning'
   | 'controls.veventCorrectionHint'
+  | 'controls.contentModeCrypto'
+  | 'controls.cryptoModeHint'
+  | 'controls.cryptoCorrectionHint'
+  | 'controls.cryptoNetworkLabel'
+  | 'controls.cryptoNetworkBitcoin'
+  | 'controls.cryptoNetworkEthereum'
+  | 'controls.cryptoAddressLabel'
+  | 'controls.cryptoAddressPlaceholderBitcoin'
+  | 'controls.cryptoAddressPlaceholderEthereum'
+  | 'controls.cryptoAddressErrorBitcoin'
+  | 'controls.cryptoAddressErrorEthereum'
+  | 'controls.cryptoAddressNeededHint'
+  | 'controls.cryptoAmountLabel'
+  | 'controls.cryptoAmountPlaceholderBitcoin'
+  | 'controls.cryptoAmountPlaceholderEthereum'
+  | 'controls.cryptoAmountError'
+  | 'controls.cryptoLabelLabel'
+  | 'controls.cryptoLabelPlaceholder'
+  | 'controls.cryptoIrreversibleCaution'
+  | 'controls.cryptoPayloadWarning'
+  | 'controls.cryptoPreviewWithAmount'
+  | 'controls.cryptoPreviewNoAmount'
   | 'controls.frameLabel'
   | 'controls.frameHint'
   | 'controls.frameStyleHeading'

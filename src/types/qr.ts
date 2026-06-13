@@ -1,6 +1,19 @@
 export type QRErrorCorrectionLevel = 'L' | 'M' | 'Q' | 'H'
 
-export type QRContentMode = 'text' | 'wifi' | 'vcard' | 'email' | 'sms' | 'tel' | 'geo' | 'vevent'
+export type QRContentMode = 'text' | 'wifi' | 'vcard' | 'email' | 'sms' | 'tel' | 'geo' | 'vevent' | 'crypto'
+
+/** Supported cryptocurrency networks. Bitcoin uses BIP-21, Ethereum uses EIP-681. */
+export type CryptoNetwork = 'bitcoin' | 'ethereum'
+
+export interface CryptoConfig {
+  network: CryptoNetwork
+  /** Wallet address. Validated per-network at the edges. */
+  address: string
+  /** Optional amount, as a decimal in the network's main unit (BTC / ETH). */
+  amount: string
+  /** Optional human label (BIP-21 `label`); Bitcoin only. */
+  label: string
+}
 
 export interface EmailConfig {
   to: string

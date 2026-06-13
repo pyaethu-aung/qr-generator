@@ -13,12 +13,14 @@ import { useSmsConfig } from '../../../hooks/useSmsConfig'
 import { useTelConfig } from '../../../hooks/useTelConfig'
 import { useGeoConfig } from '../../../hooks/useGeoConfig'
 import { useVEventConfig } from '../../../hooks/useVEventConfig'
+import { useCryptoConfig } from '../../../hooks/useCryptoConfig'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import { isEndBeforeStart } from '../../../utils/vevent'
+import { isValidCryptoAddress } from '../../../utils/crypto'
 import type { QRContentMode } from '../../../types/qr'
 
 const CONTENT_MODE_KEY = 'qr-generator:draft:content-mode'
-const CONTENT_MODES: readonly QRContentMode[] = ['text', 'wifi', 'vcard', 'email', 'sms', 'tel', 'geo', 'vevent']
+const CONTENT_MODES: readonly QRContentMode[] = ['text', 'wifi', 'vcard', 'email', 'sms', 'tel', 'geo', 'vevent', 'crypto']
 
 function loadContentMode(): QRContentMode {
   try {
@@ -38,6 +40,7 @@ export const QRGenerator = () => {
   const { telConfig, telString, setNumber: setTelNumber } = useTelConfig()
   const { geoConfig, geoString, setLatitude: setGeoLatitude, setLongitude: setGeoLongitude } = useGeoConfig()
   const { veventConfig, veventString, setSummary: setVEventSummary, setStart: setVEventStart, setEnd: setVEventEnd, setAllDay: setVEventAllDay, setLocation: setVEventLocation, setDescription: setVEventDescription } = useVEventConfig()
+  const { cryptoConfig, cryptoString, setField: setCryptoField } = useCryptoConfig()
 
   const {
     liveValue,
@@ -55,7 +58,7 @@ export const QRGenerator = () => {
     canDownload,
     recentDownload,
     isPending,
-  } = useQRGenerator(contentMode === 'wifi' ? wifiString : contentMode === 'vcard' ? vcardString : contentMode === 'email' ? emailString : contentMode === 'sms' ? smsString : contentMode === 'tel' ? telString : contentMode === 'geo' ? geoString : contentMode === 'vevent' ? veventString : undefined)
+  } = useQRGenerator(contentMode === 'wifi' ? wifiString : contentMode === 'vcard' ? vcardString : contentMode === 'email' ? emailString : contentMode === 'sms' ? smsString : contentMode === 'tel' ? telString : contentMode === 'geo' ? geoString : contentMode === 'vevent' ? veventString : contentMode === 'crypto' ? cryptoString : undefined)
 
   const {
     designConfig,
@@ -132,14 +135,27 @@ export const QRGenerator = () => {
   // state says so — on phones the form and preview are a screen apart, so a
   // wordless dashed box would leave the cause and the effect disconnected.
   const previewPlaceholderHint = (() => {
-    if (contentMode !== 'vevent' || veventString) return undefined
-    if (isEndBeforeStart(veventConfig)) return translate('controls.veventEndError')
-    const hasSummary = !!veventConfig.summary.trim()
-    const hasStart = !!veventConfig.start.trim()
-    if (hasSummary && !hasStart) return translate('controls.veventNeedStartHint')
-    if (!hasSummary && hasStart) return translate('controls.veventNeedTitleHint')
-    const hasOptional = !!veventConfig.location.trim() || !!veventConfig.description.trim()
-    if (!hasSummary && !hasStart && hasOptional) return translate('controls.veventNeedBothHint')
+    if (contentMode === 'vevent' && !veventString) {
+      if (isEndBeforeStart(veventConfig)) return translate('controls.veventEndError')
+      const hasSummary = !!veventConfig.summary.trim()
+      const hasStart = !!veventConfig.start.trim()
+      if (hasSummary && !hasStart) return translate('controls.veventNeedStartHint')
+      if (!hasSummary && hasStart) return translate('controls.veventNeedTitleHint')
+      const hasOptional = !!veventConfig.location.trim() || !!veventConfig.description.trim()
+      if (!hasSummary && !hasStart && hasOptional) return translate('controls.veventNeedBothHint')
+      return undefined
+    }
+    if (contentMode === 'crypto' && !cryptoString) {
+      const addressFilled = !!cryptoConfig.address.trim()
+      if (addressFilled && !isValidCryptoAddress(cryptoConfig.network, cryptoConfig.address)) {
+        return cryptoConfig.network === 'bitcoin'
+          ? translate('controls.cryptoAddressErrorBitcoin')
+          : translate('controls.cryptoAddressErrorEthereum')
+      }
+      const hasOptional = !!cryptoConfig.amount.trim() || !!cryptoConfig.label.trim()
+      if (!addressFilled && hasOptional) return translate('controls.cryptoAddressNeededHint')
+      return undefined
+    }
     return undefined
   })()
 
@@ -261,6 +277,10 @@ export const QRGenerator = () => {
                 onVEventLocationChange={setVEventLocation}
                 onVEventDescriptionChange={setVEventDescription}
                 veventCorrectionHint={translate('controls.veventCorrectionHint')}
+                contentModeCryptoLabel={translate('controls.contentModeCrypto')}
+                cryptoConfig={cryptoConfig}
+                onCryptoChange={setCryptoField}
+                cryptoCorrectionHint={translate('controls.cryptoCorrectionHint')}
                 frameStyle={frameConfig.style}
                 onFrameStyleChange={setFrameStyle}
                 frameText={frameConfig.text}

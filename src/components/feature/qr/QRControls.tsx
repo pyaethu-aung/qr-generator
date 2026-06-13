@@ -1,5 +1,5 @@
 import { useRef, useState, useId } from 'react'
-import { Download, Check, ChevronDown, ChevronUp, Upload, X, Wifi, Link, User, Mail, MessageSquare, Phone, MapPin, Calendar } from 'lucide-react'
+import { Download, Check, ChevronDown, ChevronUp, Upload, X, Wifi, Link, User, Mail, MessageSquare, Phone, MapPin, Calendar, Bitcoin } from 'lucide-react'
 import { Input } from '../../common/Input'
 import { Callout } from '../../common/Callout'
 import { PillGroup } from '../../common/PillGroup'
@@ -11,8 +11,9 @@ import { SmsForm } from './SmsForm'
 import { TelForm } from './TelForm'
 import { GeoForm } from './GeoForm'
 import { VEventForm } from './VEventForm'
+import { CryptoForm } from './CryptoForm'
 import { DEFAULT_FRAME_COLOR } from '../../../data/defaults'
-import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig, SmsConfig, TelConfig, GeoConfig, VEventConfig, QREyeFrameShape, QREyeCenterShape, QRPixelPattern, QRFrameStyle, QRFramePosition } from '../../../types/qr'
+import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig, SmsConfig, TelConfig, GeoConfig, VEventConfig, CryptoConfig, QREyeFrameShape, QREyeCenterShape, QRPixelPattern, QRFrameStyle, QRFramePosition } from '../../../types/qr'
 
 const FRAME_PATHS: Record<QREyeFrameShape, string> = {
   Square:      'M0,0 h28 v28 h-28 Z M4,4 h20 v20 h-20 Z',
@@ -362,6 +363,11 @@ export interface QRControlsProps {
   onVEventLocationChange?: (v: string) => void
   onVEventDescriptionChange?: (v: string) => void
   veventCorrectionHint?: string
+  // Crypto (Bitcoin / Ethereum) mode props
+  contentModeCryptoLabel?: string
+  cryptoConfig?: CryptoConfig
+  onCryptoChange?: <K extends keyof CryptoConfig>(key: K, value: CryptoConfig[K]) => void
+  cryptoCorrectionHint?: string
   logoLabel?: string
   logoSizeLabel?: string
   logoUploadHint?: string
@@ -533,6 +539,10 @@ export function QRControls({
   onVEventLocationChange,
   onVEventDescriptionChange,
   veventCorrectionHint = 'Set to Highest for the most reliable scanning.',
+  contentModeCryptoLabel = 'Crypto',
+  cryptoConfig,
+  onCryptoChange,
+  cryptoCorrectionHint = 'Set to Highest for the most reliable scanning.',
   logoLabel = 'Logo',
   logoSizeLabel = 'Logo Size',
   logoUploadHint = 'Click or drop image',
@@ -691,6 +701,7 @@ export function QRControls({
               { value: 'tel', label: contentModeTelLabel, icon: <Phone size={13} aria-hidden /> },
               { value: 'geo', label: contentModeGeoLabel, icon: <MapPin size={13} aria-hidden /> },
               { value: 'vevent', label: contentModeVEventLabel, icon: <Calendar size={13} aria-hidden /> },
+              { value: 'crypto', label: contentModeCryptoLabel, icon: <Bitcoin size={13} aria-hidden /> },
             ]}
             value={contentMode}
             onChange={onContentModeChange}
@@ -753,6 +764,11 @@ export function QRControls({
             onLocationChange={onVEventLocationChange}
             onDescriptionChange={onVEventDescriptionChange}
           />
+        ) : contentMode === 'crypto' && cryptoConfig && onCryptoChange ? (
+          <CryptoForm
+            config={cryptoConfig}
+            onChange={onCryptoChange}
+          />
         ) : (
           <Input
             label={contentModeTextLabel}
@@ -790,7 +806,7 @@ export function QRControls({
             >
               {reliabilityBelowRecommended
                 ? correctionBelowRecommendedLabel
-                : contentMode === 'wifi' ? wifiCorrectionHint : contentMode === 'vcard' ? vcardCorrectionHint : contentMode === 'email' ? emailCorrectionHint : contentMode === 'sms' ? smsCorrectionHint : contentMode === 'tel' ? telCorrectionHint : contentMode === 'geo' ? geoCorrectionHint : contentMode === 'vevent' ? veventCorrectionHint : correctionHint}
+                : contentMode === 'wifi' ? wifiCorrectionHint : contentMode === 'vcard' ? vcardCorrectionHint : contentMode === 'email' ? emailCorrectionHint : contentMode === 'sms' ? smsCorrectionHint : contentMode === 'tel' ? telCorrectionHint : contentMode === 'geo' ? geoCorrectionHint : contentMode === 'vevent' ? veventCorrectionHint : contentMode === 'crypto' ? cryptoCorrectionHint : correctionHint}
             </p>
           </div>
 
