@@ -8,6 +8,23 @@ import { compositeLogoOnCanvas } from '../utils/logoCompositor'
 
 export const INPUT_LENGTH_LIMIT = 2000
 
+const TEXT_DRAFT_KEY = 'qr-generator:draft:text'
+
+function loadTextDraft(): string {
+  try {
+    return localStorage.getItem(TEXT_DRAFT_KEY) ?? ''
+  } catch {
+    return ''
+  }
+}
+
+function getValidationErrorStatic(value: string): string | undefined {
+  if (value.length > INPUT_LENGTH_LIMIT) {
+    return `Input too long (max ${INPUT_LENGTH_LIMIT} characters)`
+  }
+  return undefined
+}
+
 export interface UseQRGeneratorReturn {
   liveValue: string
   inputValue: string
@@ -27,8 +44,10 @@ export interface UseQRGeneratorReturn {
 }
 
 export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => {
-  const [inputValue, setInputValueState] = useState<string>('')
-  const [inputError, setInputError] = useState<string | undefined>()
+  const [inputValue, setInputValueState] = useState<string>(loadTextDraft)
+  const [inputError, setInputError] = useState<string | undefined>(() =>
+    getValidationErrorStatic(inputValue),
+  )
   const [liveValue, setLiveValue] = useState<string>('')
 
   const [inputEcLevel, setInputEcLevel] = useState<QRErrorCorrectionLevel>(
@@ -49,20 +68,22 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
     }
   }, [])
 
-  const getValidationError = useCallback((value: string) => {
-    if (value.length > INPUT_LENGTH_LIMIT) {
-      return `Input too long (max ${INPUT_LENGTH_LIMIT} characters)`
-    }
-    return undefined
+  const setInputValue = useCallback((value: string) => {
+    setInputValueState(value)
+    setInputError(getValidationErrorStatic(value))
   }, [])
 
-  const setInputValue = useCallback(
-    (value: string) => {
-      setInputValueState(value)
-      setInputError(getValidationError(value))
-    },
-    [getValidationError],
-  )
+  // Persist the text draft so a refresh or tab discard doesn't lose it.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      try {
+        localStorage.setItem(TEXT_DRAFT_KEY, inputValue)
+      } catch {
+        // Ignore if localStorage is unavailable
+      }
+    }, 400)
+    return () => clearTimeout(timer)
+  }, [inputValue])
 
   // Debounce the text field — 300 ms for valid input, 0 ms to clear on invalid/empty
   useEffect(() => {

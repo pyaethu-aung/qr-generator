@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import type { SmsConfig } from '../types/qr'
 import { buildSmsString } from '../utils/sms'
+import { usePersistedConfig } from './usePersistedConfig'
 
 const DEFAULT_SMS_CONFIG: SmsConfig = {
   number: '',
@@ -15,7 +16,10 @@ export interface UseSmsConfigReturn {
 }
 
 export function useSmsConfig(): UseSmsConfigReturn {
-  const [smsConfig, setSmsConfig] = useState<SmsConfig>(DEFAULT_SMS_CONFIG)
+  const [smsConfig, setSmsConfig] = usePersistedConfig<SmsConfig>(
+    'qr-generator:draft:sms',
+    DEFAULT_SMS_CONFIG,
+  )
 
   const setNumber = (number: string) => setSmsConfig(prev => ({ ...prev, number }))
   const setMessage = (message: string) => setSmsConfig(prev => ({ ...prev, message }))

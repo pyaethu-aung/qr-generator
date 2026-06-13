@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import type { WiFiConfig, WiFiSecurity } from '../types/qr'
 import { buildWifiString } from '../utils/wifi'
+import { usePersistedConfig } from './usePersistedConfig'
 
 const DEFAULT_WIFI_CONFIG: WiFiConfig = {
   ssid: '',
@@ -8,6 +9,9 @@ const DEFAULT_WIFI_CONFIG: WiFiConfig = {
   security: 'WPA',
   hidden: false,
 }
+
+// The password is a credential; it never touches localStorage.
+const WIFI_DRAFT_OMIT = ['password'] as const
 
 export interface UseWiFiConfigReturn {
   wifiConfig: WiFiConfig
@@ -19,7 +23,11 @@ export interface UseWiFiConfigReturn {
 }
 
 export function useWiFiConfig(): UseWiFiConfigReturn {
-  const [wifiConfig, setWifiConfig] = useState<WiFiConfig>(DEFAULT_WIFI_CONFIG)
+  const [wifiConfig, setWifiConfig] = usePersistedConfig<WiFiConfig>(
+    'qr-generator:draft:wifi',
+    DEFAULT_WIFI_CONFIG,
+    WIFI_DRAFT_OMIT,
+  )
 
   const setSsid = (ssid: string) => setWifiConfig(prev => ({ ...prev, ssid }))
   const setPassword = (password: string) => setWifiConfig(prev => ({ ...prev, password }))
