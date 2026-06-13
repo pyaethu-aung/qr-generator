@@ -160,6 +160,7 @@ export interface ControlStrings {
   veventSummaryPlaceholder: string
   veventNeedTitleHint: string
   veventNeedStartHint: string
+  veventNeedBothHint: string
   veventStartLabel: string
   veventEndLabel: string
   veventEndError: string
@@ -366,6 +367,7 @@ export type TranslationKey =
   | 'controls.veventSummaryPlaceholder'
   | 'controls.veventNeedTitleHint'
   | 'controls.veventNeedStartHint'
+  | 'controls.veventNeedBothHint'
   | 'controls.veventStartLabel'
   | 'controls.veventEndLabel'
   | 'controls.veventEndError'

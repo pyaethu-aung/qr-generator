@@ -47,12 +47,19 @@ export function VEventForm({
   const endError = isEndBeforeStart(config)
 
   // The QR only exists once both required fields are filled. When the user has
-  // started one but not the other, say what's missing — a dead preview with no
-  // words is where first-timers stall.
+  // started elsewhere (the other required field, or an optional one like the
+  // description), say what's missing — a dead preview with no words is where
+  // first-timers stall.
   const summaryFilled = !!config.summary.trim()
   const startFilled = !!config.start.trim()
-  const summaryHint =
-    !summaryFilled && startFilled ? translate('controls.veventNeedTitleHint') : undefined
+  const hasOptionalContent = !!config.location.trim() || !!config.description.trim()
+  const summaryHint = !summaryFilled
+    ? startFilled
+      ? translate('controls.veventNeedTitleHint')
+      : hasOptionalContent
+        ? translate('controls.veventNeedBothHint')
+        : undefined
+    : undefined
   const startHint =
     summaryFilled && !startFilled ? translate('controls.veventNeedStartHint') : undefined
 

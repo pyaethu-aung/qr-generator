@@ -148,6 +148,11 @@ describe('VEventForm', () => {
     expect(screen.getByText(/add an event title to finish/i)).toBeInTheDocument()
   })
 
+  it('prompts for both required fields when only an optional one is filled', () => {
+    setup({ ...defaultConfig, description: 'Bring the deck' })
+    expect(screen.getByText(/add an event title and start date to finish/i)).toBeInTheDocument()
+  })
+
   it('shows no completion prompts while the form is pristine or complete', () => {
     const { unmount } = setup()
     expect(screen.queryByText(/to finish your qr code/i)).not.toBeInTheDocument()
