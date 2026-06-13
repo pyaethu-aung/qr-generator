@@ -1,6 +1,7 @@
-import { useState, useMemo, useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import type { VEventConfig } from '../types/qr'
 import { buildVEventString, timePartOf, toAllDayValue, toTimedValue } from '../utils/vevent'
+import { usePersistedConfig } from './usePersistedConfig'
 
 const DEFAULT_VEVENT_CONFIG: VEventConfig = {
   summary: '',
@@ -23,7 +24,10 @@ export interface UseVEventConfigReturn {
 }
 
 export function useVEventConfig(): UseVEventConfigReturn {
-  const [veventConfig, setVEventConfig] = useState<VEventConfig>(DEFAULT_VEVENT_CONFIG)
+  const [veventConfig, setVEventConfig] = usePersistedConfig<VEventConfig>(
+    'qr-generator:draft:vevent',
+    DEFAULT_VEVENT_CONFIG,
+  )
 
   // Times the user had chosen before switching to all-day, so switching back
   // restores them instead of silently replacing them with the defaults — a

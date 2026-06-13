@@ -17,8 +17,20 @@ import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import { isEndBeforeStart } from '../../../utils/vevent'
 import type { QRContentMode } from '../../../types/qr'
 
+const CONTENT_MODE_KEY = 'qr-generator:draft:content-mode'
+const CONTENT_MODES: readonly QRContentMode[] = ['text', 'wifi', 'vcard', 'email', 'sms', 'tel', 'geo', 'vevent']
+
+function loadContentMode(): QRContentMode {
+  try {
+    const stored = localStorage.getItem(CONTENT_MODE_KEY) as QRContentMode | null
+    return stored && CONTENT_MODES.includes(stored) ? stored : 'text'
+  } catch {
+    return 'text'
+  }
+}
+
 export const QRGenerator = () => {
-  const [contentMode, setContentMode] = useState<QRContentMode>('text')
+  const [contentMode, setContentMode] = useState<QRContentMode>(loadContentMode)
   const { wifiConfig, wifiString, setSsid, setPassword, setSecurity, setHidden } = useWiFiConfig()
   const { vcardConfig, vcardString, setFirstName, setLastName, setPhone, setEmail, setCompany, setJobTitle, setWebsite } = useVCardConfig()
   const { emailConfig, emailString, setTo, setSubject, setBody } = useEmailConfig()
@@ -74,6 +86,15 @@ export const QRGenerator = () => {
     if (contentMode !== 'text') setInputEcLevel('H')
   }, [contentMode, setInputEcLevel])
 
+  // Return the user to the mode they last used.
+  useEffect(() => {
+    try {
+      localStorage.setItem(CONTENT_MODE_KEY, contentMode)
+    } catch {
+      // Ignore if localStorage is unavailable
+    }
+  }, [contentMode])
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const { share, isSharing, shareRequest } = useQRShare()
   const shareStatusId = useId()
@@ -117,6 +138,8 @@ export const QRGenerator = () => {
     const hasStart = !!veventConfig.start.trim()
     if (hasSummary && !hasStart) return translate('controls.veventNeedStartHint')
     if (!hasSummary && hasStart) return translate('controls.veventNeedTitleHint')
+    const hasOptional = !!veventConfig.location.trim() || !!veventConfig.description.trim()
+    if (!hasSummary && !hasStart && hasOptional) return translate('controls.veventNeedBothHint')
     return undefined
   })()
 
