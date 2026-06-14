@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import type { WiFiConfig, WiFiSecurity } from '../types/qr'
 import { buildWifiString } from '../utils/wifi'
+import { getHydratedSecrets } from '../utils/shareConfig'
 import { usePersistedConfig } from './usePersistedConfig'
 
 const DEFAULT_WIFI_CONFIG: WiFiConfig = {
@@ -23,10 +24,12 @@ export interface UseWiFiConfigReturn {
 }
 
 export function useWiFiConfig(): UseWiFiConfigReturn {
+  // A shared link carries the password in memory only — seed it without persisting it.
   const [wifiConfig, setWifiConfig] = usePersistedConfig<WiFiConfig>(
     'qr-generator:draft:wifi',
     DEFAULT_WIFI_CONFIG,
     WIFI_DRAFT_OMIT,
+    { password: getHydratedSecrets()?.wifiPassword },
   )
 
   const setSsid = (ssid: string) => setWifiConfig(prev => ({ ...prev, ssid }))

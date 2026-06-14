@@ -5,6 +5,7 @@ import {
   buildShareUrl,
   hydrateShareConfig,
   getHydratedAppearance,
+  getHydratedSecrets,
   type ShareConfigInput,
 } from '../shareConfig'
 import type { QRDesignConfig, QRFrameConfig } from '../../types/qr'
@@ -196,6 +197,30 @@ describe('hydrateShareConfig', () => {
     expect(store.get('qr-generator:draft:content-mode')).toBe('sms')
     expect(JSON.parse(store.get('qr-generator:draft:sms')!)).toEqual({ number: '+1', message: 'hi' })
     expect(store.has('qr-generator:draft:text')).toBe(false)
+  })
+
+  it('keeps the Wi-Fi password out of localStorage and caches it in memory', () => {
+    const input: ShareConfigInput = {
+      ...baseInput,
+      mode: 'wifi',
+      content: { ssid: 'Cafe', password: 'hunter2', security: 'WPA', hidden: false },
+    }
+    hydrateShareConfig(storage, `#c=${encodeShareConfig(input)}`)
+    const raw = store.get('qr-generator:draft:wifi')!
+    expect(JSON.parse(raw)).toEqual({ ssid: 'Cafe', password: '', security: 'WPA', hidden: false })
+    expect(raw).not.toContain('hunter2')
+    expect(getHydratedSecrets()?.wifiPassword).toBe('hunter2')
+  })
+
+  it('keeps geo coordinates out of localStorage and caches them in memory', () => {
+    const input: ShareConfigInput = {
+      ...baseInput,
+      mode: 'geo',
+      content: { latitude: '16.8409', longitude: '96.1735' },
+    }
+    hydrateShareConfig(storage, `#c=${encodeShareConfig(input)}`)
+    expect(JSON.parse(store.get('qr-generator:draft:geo')!)).toEqual({ latitude: '', longitude: '' })
+    expect(getHydratedSecrets()).toEqual({ geoLatitude: '16.8409', geoLongitude: '96.1735' })
   })
 
   it('returns null and writes nothing for a broken token but still consumes the hash', () => {
