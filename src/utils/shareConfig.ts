@@ -270,6 +270,52 @@ export function getHydratedAppearance(): ShareAppearance | null {
 }
 
 /**
+ * Sensitive fields from a shared link — the Wi-Fi password (a credential the app never
+ * persists) and geo coordinates (location data). These are cached in memory and seeded
+ * straight into their hooks' initial state; they are deliberately NOT written to
+ * localStorage by hydration, so a shared secret never lands on disk via this path.
+ */
+export interface HydratedSecrets {
+  wifiPassword?: string
+  geoLatitude?: string
+  geoLongitude?: string
+}
+let hydratedSecrets: HydratedSecrets | null = null
+
+/** Sensitive fields seeded from a shared link this session, or null. */
+export function getHydratedSecrets(): HydratedSecrets | null {
+  return hydratedSecrets
+}
+
+/**
+ * Reads the sensitive fields for in-memory seeding. The values it returns are only ever
+ * assigned to the module cache, never to a storage sink — kept separate from the write
+ * path below so no credential read flows into localStorage.
+ */
+function extractSecrets(mode: QRContentMode, content: ShareContentData): HydratedSecrets | null {
+  if (mode === 'wifi') return { wifiPassword: (content as WiFiConfig).password }
+  if (mode === 'geo') {
+    const c = content as GeoConfig
+    return { geoLatitude: c.latitude, geoLongitude: c.longitude }
+  }
+  return null
+}
+
+/**
+ * Serializes a structured draft for persistence with sensitive fields blanked. It never
+ * reads the password / coordinates, so those values can't reach the localStorage write.
+ * Non-sensitive modes (vcard, email, sms, tel, vevent, crypto) carry no such fields.
+ */
+function persistableDraft(mode: QRContentMode, content: ShareContentData): string {
+  if (mode === 'wifi') {
+    const c = content as WiFiConfig
+    return JSON.stringify({ ssid: c.ssid, password: '', security: c.security, hidden: c.hidden })
+  }
+  if (mode === 'geo') return JSON.stringify({ latitude: '', longitude: '' })
+  return JSON.stringify(content)
+}
+
+/**
  * Run once before render. If the URL carries a valid `#c=` config, write the active
  * mode's draft, content-mode, design, and frame into their existing localStorage keys
  * (other modes' drafts are left untouched), cache the appearance, then strip the hash.
@@ -284,19 +330,22 @@ export function hydrateShareConfig(
 
   const decoded = decodeShareConfig(token)
   if (decoded) {
+    // Cache appearance + secrets for in-memory seeding. extractSecrets reads the
+    // sensitive fields here and routes them ONLY to memory; the write path below uses
+    // persistableDraft, which never reads them — so no credential reaches localStorage.
+    hydratedAppearance = decoded.appearance
+    hydratedSecrets = extractSecrets(decoded.mode, decoded.content)
     try {
       storage.setItem(STORAGE_KEYS.contentMode, decoded.mode)
       if (decoded.mode === 'text') {
         storage.setItem(STORAGE_KEYS.text, decoded.content as string)
       } else {
-        storage.setItem(STORAGE_KEYS[decoded.mode], JSON.stringify(decoded.content))
+        storage.setItem(STORAGE_KEYS[decoded.mode], persistableDraft(decoded.mode, decoded.content))
       }
       storage.setItem(STORAGE_KEYS.design, JSON.stringify(decoded.design))
       storage.setItem(STORAGE_KEYS.frame, JSON.stringify(decoded.frame))
-      hydratedAppearance = decoded.appearance
     } catch {
-      // localStorage unavailable — appearance still applies; drafts fall back to default.
-      hydratedAppearance = decoded.appearance
+      // localStorage unavailable — cached appearance/secrets still apply.
     }
   }
 

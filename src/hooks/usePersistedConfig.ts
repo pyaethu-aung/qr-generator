@@ -33,13 +33,27 @@ function restoreConfig<T extends object>(storageKey: string, defaults: T): T {
  *
  * `defaults` and `omit` must be module-level constants (stable identity);
  * passing fresh literals re-arms the write timer on every render.
+ *
+ * `seed` overlays its defined values onto the restored initial state only (it is read
+ * once, in the initializer, never persisted). It lets a caller inject an in-memory value
+ * — e.g. a secret from a shared link — into initial state without writing it to storage.
  */
 export function usePersistedConfig<T extends object>(
   storageKey: string,
   defaults: T,
   omit: readonly (keyof T)[] = [],
+  seed?: Partial<T>,
 ): [T, Dispatch<SetStateAction<T>>] {
-  const [value, setValue] = useState<T>(() => restoreConfig(storageKey, defaults))
+  const [value, setValue] = useState<T>(() => {
+    const restored = restoreConfig(storageKey, defaults)
+    if (!seed) return restored
+    const next = { ...restored }
+    for (const key of Object.keys(seed) as (keyof T)[]) {
+      const candidate = seed[key]
+      if (candidate !== undefined) next[key] = candidate
+    }
+    return next
+  })
 
   useEffect(() => {
     const timer = setTimeout(() => {
