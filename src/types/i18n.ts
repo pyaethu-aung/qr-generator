@@ -241,6 +241,49 @@ export interface CommonStrings {
   comingSoon: string
 }
 
+export interface ScanStrings {
+  tabsLabel: string
+  tabGenerate: string
+  tabScan: string
+  sectionLabel: string
+  title: string
+  subtitle: string
+  inputMethodLabel: string
+  inputUpload: string
+  inputCamera: string
+  dropzoneTitle: string
+  dropzoneHint: string
+  dropzoneActive: string
+  decoding: string
+  cameraStart: string
+  cameraStop: string
+  cameraHint: string
+  cameraScanning: string
+  resultTitle: string
+  resultValueLabel: string
+  copy: string
+  copied: string
+  copyError: string
+  open: string
+  editInGenerator: string
+  scanAnother: string
+  errorNoCode: string
+  errorUnsupportedFile: string
+  errorCameraDenied: string
+  errorCameraUnsupported: string
+  errorDecodeFailed: string
+  typeUrl: string
+  typeWifi: string
+  typeVcard: string
+  typeEmail: string
+  typeSms: string
+  typeTel: string
+  typeGeo: string
+  typeVevent: string
+  typeCrypto: string
+  typeText: string
+}
+
 export interface LocaleConfig {
   locale: LocaleMetadata
   common: CommonStrings
@@ -250,6 +293,7 @@ export interface LocaleConfig {
   config: ConfigStrings
   controls: ControlStrings
   preview: PreviewStrings
+  scan: ScanStrings
 }
 
 export type TranslationKey =
@@ -466,3 +510,43 @@ export type TranslationKey =
   | 'preview.ariaPlaceholder'
   | 'preview.qrUpdated'
   | 'preview.shareButtonLabel'
+  | 'scan.tabsLabel'
+  | 'scan.tabGenerate'
+  | 'scan.tabScan'
+  | 'scan.sectionLabel'
+  | 'scan.title'
+  | 'scan.subtitle'
+  | 'scan.inputMethodLabel'
+  | 'scan.inputUpload'
+  | 'scan.inputCamera'
+  | 'scan.dropzoneTitle'
+  | 'scan.dropzoneHint'
+  | 'scan.dropzoneActive'
+  | 'scan.decoding'
+  | 'scan.cameraStart'
+  | 'scan.cameraStop'
+  | 'scan.cameraHint'
+  | 'scan.cameraScanning'
+  | 'scan.resultTitle'
+  | 'scan.resultValueLabel'
+  | 'scan.copy'
+  | 'scan.copied'
+  | 'scan.copyError'
+  | 'scan.open'
+  | 'scan.editInGenerator'
+  | 'scan.scanAnother'
+  | 'scan.errorNoCode'
+  | 'scan.errorUnsupportedFile'
+  | 'scan.errorCameraDenied'
+  | 'scan.errorCameraUnsupported'
+  | 'scan.errorDecodeFailed'
+  | 'scan.typeUrl'
+  | 'scan.typeWifi'
+  | 'scan.typeVcard'
+  | 'scan.typeEmail'
+  | 'scan.typeSms'
+  | 'scan.typeTel'
+  | 'scan.typeGeo'
+  | 'scan.typeVevent'
+  | 'scan.typeCrypto'
+  | 'scan.typeText'

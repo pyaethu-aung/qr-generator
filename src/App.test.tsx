@@ -98,6 +98,28 @@ describe('App integration', () => {
     expect(duration).toBeLessThanOrEqual(1000)
   })
 
+  it('switches between the Generate and Scan views via the toggle', async () => {
+    const user = userEvent.setup()
+    render(
+      <ThemeProvider>
+        <HelmetProvider>
+          <LocaleProvider>
+            <App />
+          </LocaleProvider>
+        </HelmetProvider>
+      </ThemeProvider>,
+    )
+
+    expect(screen.getByRole('heading', { name: /sculpt standout qr codes/i })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /^scan$/i }))
+    expect(screen.getByRole('heading', { name: /scan a qr code/i })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /^generate$/i }))
+    expect(screen.queryByRole('heading', { name: /scan a qr code/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /sculpt standout qr codes/i })).toBeInTheDocument()
+  })
+
   it('derives initial locale from localStorage on load', () => {
     window.localStorage.setItem('qr-generator:locale-preference', 'my')
 

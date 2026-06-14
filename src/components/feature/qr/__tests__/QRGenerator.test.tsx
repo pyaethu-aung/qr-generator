@@ -21,6 +21,11 @@ describe('QRGenerator Integration', () => {
     expect(screen.getByText('Preview')).toBeInTheDocument()
   })
 
+  it('seeds Text mode from a scanner round-trip', () => {
+    renderWithProviders(<QRGenerator seed={{ value: 'seeded text', token: 1 }} />)
+    expect(screen.getByLabelText(/Link \/ Text/i)).toHaveValue('seeded text')
+  })
+
   it('should show placeholder initially', () => {
     renderWithProviders(<QRGenerator />)
     expect(screen.getByRole('img', { name: /qr code placeholder/i })).toBeInTheDocument()

@@ -32,7 +32,15 @@ function loadContentMode(): QRContentMode {
   }
 }
 
-export const QRGenerator = () => {
+export interface QRGeneratorProps {
+  /**
+   * A value round-tripped from the scanner. Each scan bumps `token`; the effect below
+   * applies the seed once per token by switching to Text mode and loading the raw string.
+   */
+  seed?: { value: string; token: number }
+}
+
+export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
   const [contentMode, setContentMode] = useState<QRContentMode>(loadContentMode)
   const { wifiConfig, wifiString, setSsid, setPassword, setSecurity, setHidden } = useWiFiConfig()
   const { vcardConfig, vcardString, setFirstName, setLastName, setPhone, setEmail, setCompany, setJobTitle, setWebsite } = useVCardConfig()
@@ -84,6 +92,15 @@ export const QRGenerator = () => {
   } = useQRDesign(inputValue, inputEcLevel)
 
   const { translate } = useLocaleContext()
+
+  // Apply a scanner round-trip once per token: load the raw decoded string into Text mode.
+  const lastSeedToken = useRef(0)
+  useEffect(() => {
+    if (!seed || seed.token === lastSeedToken.current) return
+    lastSeedToken.current = seed.token
+    setContentMode('text')
+    setInputValue(seed.value)
+  }, [seed, setInputValue])
 
   // Printed/dense modes need maximum damage tolerance
   useEffect(() => {
