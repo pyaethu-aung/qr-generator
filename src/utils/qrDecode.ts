@@ -13,6 +13,29 @@ export function decodeImageData(image: ImageData): string | null {
   return result?.data ?? null
 }
 
+/**
+ * Longest-edge pixel sizes the jsQR fallback is attempted at, largest first. jsQR's locator
+ * fails on oversized inputs — a multi-megapixel photo of a QR reads nothing at full size but
+ * decodes once scaled down (an iPhone HEIC at 4032px finds no code; the same shot at ~640px
+ * decodes) — so the upload/camera glue retries at progressively smaller sizes until one reads.
+ */
+export const JSQR_DECODE_EDGES = [1024, 800, 640, 512, 400, 300]
+
+/**
+ * The distinct longest-edge targets to try for a source whose longest edge is `longest`, in
+ * descending order. Targets larger than the source are clamped to its size (jsQR is never
+ * asked to upscale) and the resulting duplicates removed — so a small, clean upload decodes
+ * once at native size while a large photo fans out across scales.
+ */
+export function getDecodeEdges(longest: number): number[] {
+  const edges: number[] = []
+  for (const target of JSQR_DECODE_EDGES) {
+    const edge = Math.min(target, longest)
+    if (edge > 0 && !edges.includes(edge)) edges.push(edge)
+  }
+  return edges
+}
+
 /** Minimal shape of a `BarcodeDetector` detection result (only the field we read). */
 interface DetectedBarcodeLike {
   rawValue: string

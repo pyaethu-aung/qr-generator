@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import jsQR from 'jsqr'
 import {
   decodeImageData,
+  getDecodeEdges,
   isBarcodeDetectorSupported,
   decodeWithBarcodeDetector,
 } from '../qrDecode'
@@ -41,6 +42,24 @@ describe('decodeImageData', () => {
       1,
       { inversionAttempts: 'attemptBoth' },
     )
+  })
+})
+
+describe('getDecodeEdges', () => {
+  it('fans a large photo out across descending scales', () => {
+    expect(getDecodeEdges(4032)).toEqual([1024, 800, 640, 512, 400, 300])
+  })
+
+  it('never upscales: a small source decodes once at its native size', () => {
+    expect(getDecodeEdges(256)).toEqual([256])
+  })
+
+  it('clamps the largest targets to the source and dedupes', () => {
+    expect(getDecodeEdges(900)).toEqual([900, 800, 640, 512, 400, 300])
+  })
+
+  it('returns nothing for a zero-sized (unloaded) source', () => {
+    expect(getDecodeEdges(0)).toEqual([])
   })
 })
 
