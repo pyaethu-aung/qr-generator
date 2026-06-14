@@ -3,7 +3,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { useQrScanner } from '../useQrScanner'
 import * as qrDecode from '../../utils/qrDecode'
 
-vi.mock('../../utils/qrDecode', () => ({
+vi.mock('../../utils/qrDecode', async (importActual) => ({
+  // Keep the pure scale-target helper real; only the impure decoders are stubbed.
+  ...(await importActual<typeof import('../../utils/qrDecode')>()),
   isBarcodeDetectorSupported: vi.fn(() => true),
   decodeWithBarcodeDetector: vi.fn(),
   decodeImageData: vi.fn(),
@@ -13,14 +15,29 @@ const mockedDecode = vi.mocked(qrDecode)
 
 // Controllable fake <img>: src setter resolves onload (or onerror) on a microtask.
 let imageShouldFail = false
+let imageWidth = 0
+let imageHeight = 0
 class FakeImage {
   onload: (() => void) | null = null
   onerror: (() => void) | null = null
-  naturalWidth = 0
-  naturalHeight = 0
+  naturalWidth = imageWidth
+  naturalHeight = imageHeight
   set src(_value: string) {
     queueMicrotask(() => (imageShouldFail ? this.onerror?.() : this.onload?.()))
   }
+}
+
+/** Stubs the canvas 2D context so sourceToImageData can extract pixels under jsdom. */
+function stubCanvas() {
+  vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({
+    drawImage: vi.fn(),
+    getImageData: (_x: number, _y: number, w: number, h: number) => ({
+      data: new Uint8ClampedArray(w * h * 4),
+      width: w,
+      height: h,
+      colorSpace: 'srgb' as const,
+    }),
+  } as unknown as CanvasRenderingContext2D)
 }
 
 function imageFile(type = 'image/png'): File {
@@ -29,6 +46,8 @@ function imageFile(type = 'image/png'): File {
 
 beforeEach(() => {
   imageShouldFail = false
+  imageWidth = 0
+  imageHeight = 0
   mockedDecode.isBarcodeDetectorSupported.mockReturnValue(true)
   mockedDecode.decodeWithBarcodeDetector.mockReset()
   mockedDecode.decodeImageData.mockReset()
@@ -72,6 +91,27 @@ describe('useQrScanner — file upload', () => {
       await result.current.scanFile(imageFile())
     })
     expect(result.current.error).toBe('no-code')
+  })
+
+  it('retries jsQR at smaller scales for an oversized image', async () => {
+    // No BarcodeDetector → jsQR fallback; a 4032px photo only reads once downscaled.
+    mockedDecode.isBarcodeDetectorSupported.mockReturnValue(false)
+    imageWidth = 4032
+    imageHeight = 3024
+    stubCanvas()
+    // Fail the first two scales (1024, 800), decode on the third (640).
+    mockedDecode.decodeImageData
+      .mockReturnValueOnce(null)
+      .mockReturnValueOnce(null)
+      .mockReturnValueOnce('scaled-value')
+
+    const { result } = renderHook(() => useQrScanner())
+    await act(async () => {
+      await result.current.scanFile(imageFile())
+    })
+
+    expect(result.current.decoded).toBe('scaled-value')
+    expect(mockedDecode.decodeImageData).toHaveBeenCalledTimes(3)
   })
 
   it('reports decode-failed when the image cannot load', async () => {

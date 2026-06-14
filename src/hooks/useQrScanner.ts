@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   decodeImageData,
   decodeWithBarcodeDetector,
+  getDecodeEdges,
   isBarcodeDetectorSupported,
 } from '../utils/qrDecode'
 
@@ -41,15 +42,29 @@ export interface UseQrScannerReturn {
   reset: () => void
 }
 
-/** Draws an image/video source onto a canvas and returns its ImageData, or null. */
+/** Intrinsic [width, height] of a source, or [0, 0] before it has loaded. */
+function sourceDimensions(source: HTMLImageElement | HTMLVideoElement): [number, number] {
+  return source instanceof HTMLVideoElement
+    ? [source.videoWidth, source.videoHeight]
+    : [source.naturalWidth, source.naturalHeight]
+}
+
+/**
+ * Draws a source onto a canvas scaled so its longest edge is `maxEdge` (never upscaling),
+ * and returns the resulting ImageData, or null when the source has no size yet or the 2D
+ * context is unavailable.
+ */
 function sourceToImageData(
   source: HTMLImageElement | HTMLVideoElement,
   canvas: HTMLCanvasElement,
+  maxEdge: number,
 ): ImageData | null {
-  const width = source instanceof HTMLVideoElement ? source.videoWidth : source.naturalWidth
-  const height = source instanceof HTMLVideoElement ? source.videoHeight : source.naturalHeight
-  if (!width || !height) return null
+  const [sw, sh] = sourceDimensions(source)
+  if (!sw || !sh) return null
 
+  const scale = Math.min(1, maxEdge / Math.max(sw, sh))
+  const width = Math.max(1, Math.round(sw * scale))
+  const height = Math.max(1, Math.round(sh * scale))
   canvas.width = width
   canvas.height = height
   const ctx = canvas.getContext('2d', { willReadFrequently: true })
@@ -60,8 +75,10 @@ function sourceToImageData(
 
 /**
  * Decodes a QR from an image/video source. Prefers the native BarcodeDetector (passing the
- * element straight through), falling back to jsQR over canvas-extracted ImageData. Returns
- * the decoded string or null.
+ * element straight through, which handles full-resolution input), then falls back to jsQR
+ * over canvas-extracted ImageData, retrying at progressively smaller sizes — jsQR fails to
+ * locate a code in oversized photos, so a downscaled pass is what actually reads them.
+ * Returns the decoded string or null.
  */
 async function decodeFromSource(
   source: HTMLImageElement | HTMLVideoElement,
@@ -71,8 +88,14 @@ async function decodeFromSource(
     const value = await decodeWithBarcodeDetector(source)
     if (value) return value
   }
-  const imageData = sourceToImageData(source, canvas)
-  return imageData ? decodeImageData(imageData) : null
+  const [sw, sh] = sourceDimensions(source)
+  for (const edge of getDecodeEdges(Math.max(sw, sh))) {
+    const imageData = sourceToImageData(source, canvas, edge)
+    if (!imageData) return null
+    const value = decodeImageData(imageData)
+    if (value) return value
+  }
+  return null
 }
 
 /** Loads a File into an HTMLImageElement via an object URL, revoking it when done. */
