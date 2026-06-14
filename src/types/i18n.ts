@@ -213,6 +213,7 @@ export interface ControlStrings {
   framePositionLabel: string
   framePositionTop: string
   framePositionBottom: string
+  customized: string
   copyLink: string
   copyLinkSuccess: string
   copyLinkError: string
@@ -446,6 +447,7 @@ export type TranslationKey =
   | 'controls.framePositionLabel'
   | 'controls.framePositionTop'
   | 'controls.framePositionBottom'
+  | 'controls.customized'
   | 'controls.copyLink'
   | 'controls.copyLinkSuccess'
   | 'controls.copyLinkError'

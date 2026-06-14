@@ -259,6 +259,7 @@ export const QRGenerator = () => {
                 pixelPattern={designConfig.pixelPattern}
                 onPixelPatternChange={setPixelPattern}
                 pixelPatternLabel={translate('controls.pixelPatternLabel')}
+                customizedLabel={translate('controls.customized')}
                 isRiskyPattern={isRiskyPattern}
                 onDismissWarning={dismissWarning}
                 dismissWarningAriaLabel={translate('controls.dismissWarningAriaLabel')}

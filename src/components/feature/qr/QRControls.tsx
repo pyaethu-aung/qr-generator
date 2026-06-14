@@ -380,6 +380,7 @@ export interface QRControlsProps {
   logoTransparencyHint?: string
   logoSizeCapHint?: string
   appearanceLabel?: string
+  customizedLabel?: string
   // Frame
   frameStyle?: QRFrameStyle
   onFrameStyleChange?: (style: QRFrameStyle) => void
@@ -555,6 +556,7 @@ export function QRControls({
   logoTransparencyHint = 'PNG or SVG works best for transparent logos',
   logoSizeCapHint = 'Size capped at {max}% for this error correction level — switch to Highest for up to 30%',
   appearanceLabel = 'Appearance',
+  customizedLabel = 'Customized',
   frameStyle = 'None',
   onFrameStyleChange,
   frameText = '',
@@ -614,6 +616,18 @@ export function QRControls({
   // Non-text modes force Highest on entry; if the user drops below it, the choice is
   // advised against. Drives both the amber caption and the amber active-pill treatment.
   const reliabilityBelowRecommended = contentMode !== 'text' && ecLevel !== 'H'
+
+  // Surfaces a dot on the collapsed Appearance header when anything inside it differs
+  // from the defaults — so a shared link's styling (or your own edits) is visible at a
+  // glance without opening the panel. Frame self-indicates via its named-style pill.
+  const appearanceCustomized =
+    fgColor.toLowerCase() !== '#000000' ||
+    bgColor.toLowerCase() !== '#ffffff' ||
+    eyeFrameShape !== 'Square' ||
+    eyeCenterShape !== 'Square' ||
+    eyeFrameColor !== null ||
+    eyeCenterColor !== null ||
+    pixelPattern !== 'Square'
 
   const [dismissedColors, setDismissedColors] = useState<{ fg: string; bg: string } | null>(null)
   const fgLum = relativeLuminance(fgColor)
@@ -821,7 +835,12 @@ export function QRControls({
             className="flex min-h-[44px] items-center justify-between w-full text-sm font-medium text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
             aria-expanded={isStyleOpen}
           >
-            <span>{appearanceLabel}</span>
+            <span className="flex items-center gap-2">
+              {appearanceLabel}
+              {appearanceCustomized && (
+                <span className="inline-flex h-1.5 w-1.5 rounded-full bg-action" role="img" aria-label={customizedLabel} />
+              )}
+            </span>
             {isStyleOpen ? (
               <ChevronUp size={12} aria-hidden className="text-text-secondary" />
             ) : (

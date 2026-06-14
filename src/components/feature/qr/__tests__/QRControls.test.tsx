@@ -60,7 +60,7 @@ const setup = (overrides: Partial<QRControlsProps> = {}) => {
 }
 
 function openAppearance() {
-  const btn = screen.getByRole('button', { name: 'Appearance' })
+  const btn = screen.getByRole('button', { name: /Appearance/ })
   if (btn.getAttribute('aria-expanded') === 'false') fireEvent.click(btn)
 }
 
@@ -292,5 +292,27 @@ describe('color contrast warning', () => {
     )
 
     expect(screen.getByRole('alert')).toBeInTheDocument()
+  })
+
+  describe('Appearance customized badge', () => {
+    it('hides the badge when appearance is all default', () => {
+      setup()
+      expect(screen.queryByRole('img', { name: /customized/i })).not.toBeInTheDocument()
+    })
+
+    it('shows the badge when the pixel pattern is non-default', () => {
+      setup({ pixelPattern: 'Dots' })
+      expect(screen.getByRole('img', { name: /customized/i })).toBeInTheDocument()
+    })
+
+    it('shows the badge when a color is non-default', () => {
+      setup({ fgColor: '#ff0000' })
+      expect(screen.getByRole('img', { name: /customized/i })).toBeInTheDocument()
+    })
+
+    it('shows the badge when an eye color is set', () => {
+      setup({ eyeCenterColor: '#00ff00' })
+      expect(screen.getByRole('img', { name: /customized/i })).toBeInTheDocument()
+    })
   })
 })

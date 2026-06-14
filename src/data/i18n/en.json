@@ -219,6 +219,7 @@
     "framePositionLabel": "Caption Position",
     "framePositionTop": "Top",
     "framePositionBottom": "Bottom",
+    "customized": "Customized",
     "copyLink": "Copy link",
     "copyLinkSuccess": "Link copied",
     "copyLinkError": "Couldn't copy the link",
