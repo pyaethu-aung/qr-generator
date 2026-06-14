@@ -302,17 +302,53 @@ function extractSecrets(mode: QRContentMode, content: ShareContentData): Hydrate
 }
 
 /**
- * Serializes a structured draft for persistence with sensitive fields blanked. It never
- * reads the password / coordinates, so those values can't reach the localStorage write.
- * Non-sensitive modes (vcard, email, sms, tel, vevent, crypto) carry no such fields.
+ * Serializes a structured draft for persistence with sensitive fields blanked. Every mode
+ * rebuilds the stored object field-by-field rather than serializing `content` directly, so
+ * the `password` / `latitude` / `longitude` properties are simply never read on this path —
+ * there is no dataflow from a credential to `localStorage`. Their real values reach the
+ * in-memory seed via `extractSecrets`, and only there.
  */
 function persistableDraft(mode: QRContentMode, content: ShareContentData): string {
-  if (mode === 'wifi') {
-    const c = content as WiFiConfig
-    return JSON.stringify({ ssid: c.ssid, password: '', security: c.security, hidden: c.hidden })
+  switch (mode) {
+    case 'wifi': {
+      const c = content as WiFiConfig
+      return JSON.stringify({ ssid: c.ssid, password: '', security: c.security, hidden: c.hidden })
+    }
+    case 'geo':
+      return JSON.stringify({ latitude: '', longitude: '' })
+    case 'vcard': {
+      const c = content as VCardConfig
+      return JSON.stringify({
+        firstName: c.firstName, lastName: c.lastName, phone: c.phone, email: c.email,
+        company: c.company, jobTitle: c.jobTitle, website: c.website,
+      })
+    }
+    case 'email': {
+      const c = content as EmailConfig
+      return JSON.stringify({ to: c.to, subject: c.subject, body: c.body })
+    }
+    case 'sms': {
+      const c = content as SmsConfig
+      return JSON.stringify({ number: c.number, message: c.message })
+    }
+    case 'tel': {
+      const c = content as TelConfig
+      return JSON.stringify({ number: c.number })
+    }
+    case 'vevent': {
+      const c = content as VEventConfig
+      return JSON.stringify({
+        summary: c.summary, start: c.start, end: c.end,
+        allDay: c.allDay, location: c.location, description: c.description,
+      })
+    }
+    case 'crypto': {
+      const c = content as CryptoConfig
+      return JSON.stringify({ network: c.network, address: c.address, amount: c.amount, label: c.label })
+    }
+    default:
+      return ''
   }
-  if (mode === 'geo') return JSON.stringify({ latitude: '', longitude: '' })
-  return JSON.stringify(content)
 }
 
 /**
