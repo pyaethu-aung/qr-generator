@@ -1,5 +1,5 @@
 import { useRef, useCallback, useId, useState, useEffect } from 'react'
-import { Share2, Download, Check } from 'lucide-react'
+import { Share2, Download, Check, Link2 } from 'lucide-react'
 
 import { QRControls } from './QRControls'
 import { QRPreview } from './QRPreview'
@@ -17,6 +17,7 @@ import { useCryptoConfig } from '../../../hooks/useCryptoConfig'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import { isEndBeforeStart } from '../../../utils/vevent'
 import { isValidCryptoAddress } from '../../../utils/crypto'
+import { buildShareUrl, type ShareContentData } from '../../../utils/shareConfig'
 import type { QRContentMode } from '../../../types/qr'
 
 const CONTENT_MODE_KEY = 'qr-generator:draft:content-mode'
@@ -113,6 +114,42 @@ export const QRGenerator = () => {
     void share(canvasRef.current)
   }, [share])
 
+  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'error'>('idle')
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => () => {
+    if (copyTimerRef.current) clearTimeout(copyTimerRef.current)
+  }, [])
+
+  const handleCopyLink = useCallback(async () => {
+    const content: ShareContentData =
+      contentMode === 'wifi' ? wifiConfig
+        : contentMode === 'vcard' ? vcardConfig
+          : contentMode === 'email' ? emailConfig
+            : contentMode === 'sms' ? smsConfig
+              : contentMode === 'tel' ? telConfig
+                : contentMode === 'geo' ? geoConfig
+                  : contentMode === 'vevent' ? veventConfig
+                    : contentMode === 'crypto' ? cryptoConfig
+                      : inputValue
+    const url = buildShareUrl({
+      mode: contentMode,
+      content,
+      ecLevel: inputEcLevel,
+      fgColor: inputFgColor,
+      bgColor: inputBgColor,
+      design: designConfig,
+      frame: frameConfig,
+    })
+    if (copyTimerRef.current) clearTimeout(copyTimerRef.current)
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopyState('copied')
+    } catch {
+      setCopyState('error')
+    }
+    copyTimerRef.current = setTimeout(() => setCopyState('idle'), 2000)
+  }, [contentMode, wifiConfig, vcardConfig, emailConfig, smsConfig, telConfig, geoConfig, veventConfig, cryptoConfig, inputValue, inputEcLevel, inputFgColor, inputBgColor, designConfig, frameConfig])
+
   const isShareDisabled = !liveValue || isSharing
 
   const shareStatusMessage = (() => {
@@ -129,7 +166,11 @@ export const QRGenerator = () => {
     }
   })()
 
-  const actionStatusMessage = shareStatusMessage ?? (recentDownload ? translate('controls.downloadSuccess') : undefined)
+  const actionStatusMessage =
+    shareStatusMessage
+    ?? (recentDownload ? translate('controls.downloadSuccess') : undefined)
+    ?? (copyState === 'copied' ? translate('controls.copyLinkSuccess') : undefined)
+    ?? (copyState === 'error' ? translate('controls.copyLinkError') : undefined)
 
   // When the event form knows exactly why no QR exists, the preview's empty
   // state says so — on phones the form and preview are a screen apart, so a
@@ -374,6 +415,20 @@ export const QRGenerator = () => {
                   <Share2 size={15} aria-hidden className="shrink-0" />
                   <span className="truncate">{translate('preview.shareButtonLabel')}</span>
                 </button>
+              </div>
+              <div className="space-y-1.5">
+                <button
+                  type="button"
+                  onClick={() => void handleCopyLink()}
+                  disabled={!canDownload}
+                  className="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-border-subtle bg-surface-raised px-3 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {copyState === 'copied' ? <Check size={15} aria-hidden className="text-action shrink-0" /> : <Link2 size={15} aria-hidden className="shrink-0" />}
+                  <span className="truncate">{copyState === 'copied' ? translate('controls.copyLinkSuccess') : translate('controls.copyLink')}</span>
+                </button>
+                <p className="text-xs text-text-secondary text-center">
+                  {translate('controls.copyLinkHint')}
+                </p>
               </div>
               {actionStatusMessage && (
                 <p
