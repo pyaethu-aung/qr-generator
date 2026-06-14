@@ -41,13 +41,16 @@ export function decodeImageData(image: ImageData): string | null {
 }
 
 /**
- * Longest-edge pixel sizes the library fallback is attempted at, largest first. The decoder's
- * locator fails on oversized inputs — a multi-megapixel photo of a QR reads nothing at full
- * size but decodes once scaled down (an iPhone HEIC at 4032px finds no code; the same shot at
- * ~640px decodes) — so the upload/camera glue retries at progressively smaller sizes until one
- * reads.
+ * Longest-edge pixel sizes the library fallback is attempted at, largest first. There is no
+ * single right size: the decoder's locator fails on oversized inputs (a 24MP photo reads
+ * nothing at full scale), yet a QR that is small within a large frame — a code on a screen
+ * photographed from across a room — needs a *high* working resolution or it shrinks below the
+ * locator's reach. A close-up that fills the frame decodes around 512-1024px; a small, distant
+ * code only reads at 1280-2560px. The glue fans across the whole band so whichever scale fits
+ * a given photo gets a pass. 2560 is the ceiling: 2560x1920 (~4.9M px) stays well under iOS
+ * Safari's ~16.7M-px canvas limit, and the full frame is never drawn to a canvas.
  */
-export const DECODE_EDGES = [1024, 800, 640, 512, 400, 300]
+export const DECODE_EDGES = [2560, 1600, 1280, 1024, 800, 640, 512, 400, 300]
 
 /**
  * The distinct longest-edge targets to try for a source whose longest edge is `longest`, in

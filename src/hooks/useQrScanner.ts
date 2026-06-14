@@ -69,6 +69,8 @@ function sourceToImageData(
   canvas.height = height
   const ctx = canvas.getContext('2d', { willReadFrequently: true })
   if (!ctx) return null
+  ctx.imageSmoothingEnabled = true
+  ctx.imageSmoothingQuality = 'high'
   ctx.drawImage(source, 0, 0, width, height)
   return ctx.getImageData(0, 0, width, height)
 }
@@ -122,6 +124,8 @@ function bitmapToImageData(bitmap: ImageBitmap, canvas: HTMLCanvasElement): Imag
   canvas.height = bitmap.height
   const ctx = canvas.getContext('2d', { willReadFrequently: true })
   if (!ctx) return null
+  ctx.imageSmoothingEnabled = true
+  ctx.imageSmoothingQuality = 'high'
   ctx.drawImage(bitmap, 0, 0)
   return ctx.getImageData(0, 0, bitmap.width, bitmap.height)
 }
@@ -169,16 +173,20 @@ async function decodeImageBitmap(file: File, canvas: HTMLCanvasElement): Promise
 }
 
 /**
- * Decodes a still image File. Uses the createImageBitmap pipeline where available (needed
- * for reliable iOS Safari uploads), falling back to the <img> + canvas path for browsers
- * that lack it or when bitmap decoding throws (e.g. an unsupported format).
+ * Decodes a still image File. Tries the createImageBitmap pipeline first (high-quality
+ * resampling), then always falls back to the <img> + canvas path. The fallback runs not only
+ * when bitmap decoding throws (an unsupported format) but also when it simply finds no code:
+ * some iOS Safari versions silently ignore createImageBitmap's resize options, leaving the
+ * frame too large to read, whereas the <img> path's drawImage downscale always honors the
+ * target size. Browsers without createImageBitmap use the <img> path directly.
  */
 async function decodeFile(file: File, canvas: HTMLCanvasElement): Promise<string | null> {
   if (typeof createImageBitmap === 'function') {
     try {
-      return await decodeImageBitmap(file, canvas)
+      const value = await decodeImageBitmap(file, canvas)
+      if (value) return value
     } catch {
-      // Fall through to the <img> path below.
+      // Unsupported format or decode failure; fall through to the <img> path below.
     }
   }
   const img = await loadImageFromFile(file)
