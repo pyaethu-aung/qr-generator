@@ -218,7 +218,11 @@
     "frameColorLowContrast": "This frame color blends into the background. Pick a more contrasting color so the frame stays visible.",
     "framePositionLabel": "Caption Position",
     "framePositionTop": "Top",
-    "framePositionBottom": "Bottom"
+    "framePositionBottom": "Bottom",
+    "copyLink": "Copy link",
+    "copyLinkSuccess": "Link copied",
+    "copyLinkError": "Couldn't copy the link",
+    "copyLinkHint": "Anyone with the link sees your text and design (not your logo)."
   },
   "preview": {
     "sectionLabel": "Live Preview",

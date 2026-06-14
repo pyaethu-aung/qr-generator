@@ -86,4 +86,51 @@ describe('QRGenerator Integration', () => {
 
     expect(screen.getByTestId('qr-code-canvas')).toBeInTheDocument()
   })
+
+  it('disables the copy-link button until there is content', () => {
+    renderWithProviders(<QRGenerator />)
+    expect(screen.getByRole('button', { name: /copy link/i })).toBeDisabled()
+  })
+
+  it('copies a shareable #c= link and confirms success', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
+
+    renderWithProviders(<QRGenerator />)
+    const input = screen.getByLabelText(/Link \/ Text/i)
+    fireEvent.change(input, { target: { value: 'https://example.com' } })
+    act(() => {
+      vi.advanceTimersByTime(300)
+    })
+
+    const copyButton = screen.getByRole('button', { name: /copy link/i })
+    expect(copyButton).toBeEnabled()
+
+    await act(async () => {
+      fireEvent.click(copyButton)
+      await Promise.resolve()
+    })
+
+    expect(writeText).toHaveBeenCalledWith(expect.stringContaining('#c='))
+    expect(screen.getByRole('button', { name: /link copied/i })).toBeInTheDocument()
+  })
+
+  it('surfaces an error when the clipboard write fails', async () => {
+    const writeText = vi.fn().mockRejectedValue(new Error('denied'))
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
+
+    renderWithProviders(<QRGenerator />)
+    const input = screen.getByLabelText(/Link \/ Text/i)
+    fireEvent.change(input, { target: { value: 'https://example.com' } })
+    act(() => {
+      vi.advanceTimersByTime(300)
+    })
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /copy link/i }))
+      await Promise.resolve()
+    })
+
+    expect(screen.getByText(/couldn't copy the link/i)).toBeInTheDocument()
+  })
 })

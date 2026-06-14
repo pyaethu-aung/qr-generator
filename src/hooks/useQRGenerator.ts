@@ -5,6 +5,7 @@ import { downloadBlob } from '../utils/download'
 import { composeQrSvg } from '../utils/qrSvgComposer'
 import { exportSvg } from '../utils/export/svgExporter'
 import { compositeLogoOnCanvas } from '../utils/logoCompositor'
+import { getHydratedAppearance } from '../utils/shareConfig'
 
 export const INPUT_LENGTH_LIMIT = 2000
 
@@ -50,11 +51,13 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
   )
   const [liveValue, setLiveValue] = useState<string>('')
 
+  // A shared `#c=` link seeds the initial appearance (these three aren't localStorage-backed).
+  const sharedAppearance = getHydratedAppearance()
   const [inputEcLevel, setInputEcLevel] = useState<QRErrorCorrectionLevel>(
-    DEFAULT_QR_CONFIG.ecLevel,
+    sharedAppearance?.ecLevel ?? DEFAULT_QR_CONFIG.ecLevel,
   )
-  const [inputFgColor, setInputFgColor] = useState<string>(DEFAULT_QR_CONFIG.fgColor)
-  const [inputBgColor, setInputBgColor] = useState<string>(DEFAULT_QR_CONFIG.bgColor)
+  const [inputFgColor, setInputFgColor] = useState<string>(sharedAppearance?.fgColor ?? DEFAULT_QR_CONFIG.fgColor)
+  const [inputBgColor, setInputBgColor] = useState<string>(sharedAppearance?.bgColor ?? DEFAULT_QR_CONFIG.bgColor)
   const [recentDownload, setRecentDownload] = useState<'png' | 'svg' | null>(null)
   const downloadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 

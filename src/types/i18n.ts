@@ -213,6 +213,10 @@ export interface ControlStrings {
   framePositionLabel: string
   framePositionTop: string
   framePositionBottom: string
+  copyLink: string
+  copyLinkSuccess: string
+  copyLinkError: string
+  copyLinkHint: string
 }
 
 export interface PreviewStrings {
@@ -442,6 +446,10 @@ export type TranslationKey =
   | 'controls.framePositionLabel'
   | 'controls.framePositionTop'
   | 'controls.framePositionBottom'
+  | 'controls.copyLink'
+  | 'controls.copyLinkSuccess'
+  | 'controls.copyLinkError'
+  | 'controls.copyLinkHint'
   | 'preview.sectionLabel'
   | 'preview.shareStatusSharing'
   | 'preview.shareStatusShared'
