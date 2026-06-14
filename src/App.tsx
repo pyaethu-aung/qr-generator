@@ -1,7 +1,9 @@
-import { useEffect } from 'react'
-import { ExternalLink } from 'lucide-react'
+import { useEffect, useState, useCallback } from 'react'
+import { ExternalLink, QrCode, ScanLine } from 'lucide-react'
 
 import { QRGenerator } from './components/feature/qr/QRGenerator'
+import { QRScanner } from './components/feature/qr/QRScanner'
+import { PillGroup } from './components/common/PillGroup'
 import './App.css'
 import { useLocaleContext } from './hooks/LocaleProvider'
 import { applySeoMetadata } from './utils/metadata'
@@ -9,12 +11,22 @@ import { Navbar } from './components/Navigation/Navbar'
 import { Layout } from './components/Layout/Layout'
 import SEOHead from './components/common/SEOHead'
 
+type AppView = 'generate' | 'scan'
+
 function App() {
   const { translate, seo } = useLocaleContext()
+  const [view, setView] = useState<AppView>('generate')
+  // Bumping `token` re-applies the same value if the user scans it twice.
+  const [seed, setSeed] = useState<{ value: string; token: number }>()
 
   useEffect(() => {
     applySeoMetadata(seo)
   }, [seo])
+
+  const handleEditInGenerator = useCallback((value: string) => {
+    setSeed((prev) => ({ value, token: (prev?.token ?? 0) + 1 }))
+    setView('generate')
+  }, [])
 
   return (
     <Layout>
@@ -29,7 +41,24 @@ function App() {
 
       <main id="main-content" className="relative z-10">
         <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8">
-          <QRGenerator />
+          <div className="flex justify-center pt-6">
+            <PillGroup<AppView>
+              aria-label={translate('scan.tabsLabel')}
+              value={view}
+              onChange={setView}
+              containerClassName="inline-flex gap-1 rounded-full bg-surface-inset p-1"
+              itemClassName="grow-0"
+              size="sm"
+              options={[
+                { value: 'generate', label: translate('scan.tabGenerate'), icon: <QrCode size={15} aria-hidden /> },
+                { value: 'scan', label: translate('scan.tabScan'), icon: <ScanLine size={15} aria-hidden /> },
+              ]}
+            />
+          </div>
+          <div hidden={view !== 'generate'}>
+            <QRGenerator seed={seed} />
+          </div>
+          {view === 'scan' && <QRScanner onEditInGenerator={handleEditInGenerator} />}
         </div>
       </main>
 
