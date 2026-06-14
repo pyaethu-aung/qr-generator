@@ -51,7 +51,7 @@ describe('decodeImageData', () => {
 
 describe('getDecodeEdges', () => {
   it('fans a large photo out across descending scales', () => {
-    expect(getDecodeEdges(4032)).toEqual([1024, 800, 640, 512, 400, 300])
+    expect(getDecodeEdges(4032)).toEqual([2560, 1600, 1280, 1024, 800, 640, 512, 400, 300])
   })
 
   it('never upscales: a small source decodes once at its native size', () => {

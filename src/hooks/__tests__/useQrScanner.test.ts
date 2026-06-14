@@ -17,6 +17,7 @@ const mockedDecode = vi.mocked(qrDecode)
 let imageShouldFail = false
 let imageWidth = 0
 let imageHeight = 0
+let createObjectURL = vi.fn(() => 'blob:fake')
 class FakeImage {
   onload: (() => void) | null = null
   onerror: (() => void) | null = null
@@ -51,9 +52,10 @@ beforeEach(() => {
   mockedDecode.isBarcodeDetectorSupported.mockReturnValue(true)
   mockedDecode.decodeWithBarcodeDetector.mockReset()
   mockedDecode.decodeImageData.mockReset()
+  createObjectURL = vi.fn(() => 'blob:fake')
   vi.stubGlobal('Image', FakeImage)
   vi.stubGlobal('URL', {
-    createObjectURL: vi.fn(() => 'blob:fake'),
+    createObjectURL,
     revokeObjectURL: vi.fn(),
   })
 })
@@ -145,6 +147,31 @@ describe('useQrScanner — file upload', () => {
       expect.any(File),
       expect.objectContaining({ resizeQuality: 'high', imageOrientation: 'from-image' }),
     )
+  })
+
+  it('falls back to the <img> path when createImageBitmap finds no code', async () => {
+    // iOS Safari can ignore createImageBitmap resize options, leaving the code unreadable;
+    // the <img> path must still run and decode it via its drawImage downscale.
+    mockedDecode.isBarcodeDetectorSupported.mockReturnValue(false)
+    imageWidth = 1280
+    imageHeight = 960
+    stubCanvas()
+    const close = vi.fn()
+    vi.stubGlobal(
+      'createImageBitmap',
+      vi.fn(() => Promise.resolve({ width: 4032, height: 3024, close })),
+    )
+    // The bitmap path reads nothing; the <img> path then succeeds.
+    mockedDecode.decodeImageData.mockReturnValue(null)
+
+    const { result } = renderHook(() => useQrScanner())
+    await act(async () => {
+      await result.current.scanFile(imageFile())
+    })
+
+    // Reaching the <img> path means an object URL was created for the fallback element.
+    expect(createObjectURL).toHaveBeenCalled()
+    expect(result.current.error).toBe('no-code')
   })
 
   it('falls back to the <img> path when createImageBitmap throws', async () => {
