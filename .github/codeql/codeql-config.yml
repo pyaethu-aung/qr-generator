@@ -1,0 +1,9 @@
+name: "CodeQL config"
+
+# Vendored skill tooling (impeccable, etc.) is third-party automation code that
+# ships under these dirs; it is not part of the application and its alerts are
+# not actionable here. Mirrors the ESLint ignore for the same dirs (a1c9eab).
+paths-ignore:
+  - '.github/skills/**'
+  - '.claude/skills/**'
+  - '.agents/skills/**'
