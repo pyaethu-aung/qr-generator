@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import jsQR from 'jsqr'
+import { describe, it, expect, afterEach } from 'vitest'
+import QRCode from 'qrcode'
 import {
   decodeImageData,
   getDecodeEdges,
@@ -7,41 +7,45 @@ import {
   decodeWithBarcodeDetector,
 } from '../qrDecode'
 
-vi.mock('jsqr', () => ({ default: vi.fn() }))
+/** Builds an ImageData-shaped object (jsdom exposes no `ImageData` constructor). */
+function imageData(data: Uint8ClampedArray, width: number, height: number): ImageData {
+  return { data, width, height, colorSpace: 'srgb' } as ImageData
+}
 
-const mockedJsQR = vi.mocked(jsQR)
-
-function fakeImageData(): ImageData {
-  return {
-    data: new Uint8ClampedArray(4),
-    width: 1,
-    height: 1,
-    colorSpace: 'srgb',
+/**
+ * Renders `text` to a real QR ImageData (scaled modules + quiet zone) so decodeImageData is
+ * exercised end-to-end against the actual decoder rather than a mock.
+ */
+function synthesizeQr(text: string, scale = 6, quiet = 4): ImageData {
+  const qr = QRCode.create(text, { errorCorrectionLevel: 'M' })
+  const size = qr.modules.size
+  const modules = qr.modules.data
+  const dim = (size + quiet * 2) * scale
+  const rgba = new Uint8ClampedArray(dim * dim * 4).fill(255)
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      if (!(modules[r * size + c] & 1)) continue
+      for (let dy = 0; dy < scale; dy++) {
+        for (let dx = 0; dx < scale; dx++) {
+          const o = (((r + quiet) * scale + dy) * dim + ((c + quiet) * scale + dx)) * 4
+          rgba[o] = rgba[o + 1] = rgba[o + 2] = 0
+        }
+      }
+    }
   }
+  return imageData(rgba, dim, dim)
 }
 
 describe('decodeImageData', () => {
-  beforeEach(() => mockedJsQR.mockReset())
-
-  it('returns the decoded string when jsQR finds a code', () => {
-    mockedJsQR.mockReturnValue({ data: 'https://example.com' } as ReturnType<typeof jsQR>)
-    expect(decodeImageData(fakeImageData())).toBe('https://example.com')
-  })
-
-  it('returns null when jsQR finds nothing', () => {
-    mockedJsQR.mockReturnValue(null)
-    expect(decodeImageData(fakeImageData())).toBeNull()
-  })
-
-  it('passes attemptBoth so inverted codes are decoded', () => {
-    mockedJsQR.mockReturnValue(null)
-    decodeImageData(fakeImageData())
-    expect(mockedJsQR).toHaveBeenCalledWith(
-      expect.any(Uint8ClampedArray),
-      1,
-      1,
-      { inversionAttempts: 'attemptBoth' },
+  it('decodes a real QR rendered to ImageData', () => {
+    expect(decodeImageData(synthesizeQr('https://example.com/hello'))).toBe(
+      'https://example.com/hello',
     )
+  })
+
+  it('returns null when the pixels hold no code', () => {
+    const blank = imageData(new Uint8ClampedArray(80 * 80 * 4).fill(255), 80, 80)
+    expect(decodeImageData(blank)).toBeNull()
   })
 })
 

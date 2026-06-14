@@ -1,35 +1,63 @@
-import jsQR from 'jsqr'
+import {
+  BinaryBitmap,
+  DecodeHintType,
+  HybridBinarizer,
+  QRCodeReader,
+  RGBLuminanceSource,
+} from '@zxing/library'
 
 /**
- * Decodes a QR code from raw pixel data using the jsQR library. Pure and synchronous —
- * the camera/upload glue is responsible for turning a frame or file into ImageData via a
- * canvas. `attemptBoth` lets jsQR find both dark-on-light and inverted codes. Returns the
- * decoded string, or null when no QR is found in the frame.
+ * ZXing decode hints. TRY_HARDER trades a little speed for markedly better detection of
+ * rotated, skewed, or low-contrast codes — the conditions in a photographed QR.
  */
-export function decodeImageData(image: ImageData): string | null {
-  const result = jsQR(image.data, image.width, image.height, {
-    inversionAttempts: 'attemptBoth',
-  })
-  return result?.data ?? null
+const DECODE_HINTS = new Map<DecodeHintType, unknown>([[DecodeHintType.TRY_HARDER, true]])
+
+/** Packs an ImageData's RGBA pixels into the 0xAARRGGBB int array ZXing's source expects. */
+function toArgb(image: ImageData): Int32Array {
+  const { data } = image
+  const argb = new Int32Array(image.width * image.height)
+  for (let i = 0; i < argb.length; i++) {
+    const o = i * 4
+    argb[i] = (0xff << 24) | (data[o] << 16) | (data[o + 1] << 8) | data[o + 2]
+  }
+  return argb
 }
 
 /**
- * Longest-edge pixel sizes the jsQR fallback is attempted at, largest first. jsQR's locator
- * fails on oversized inputs — a multi-megapixel photo of a QR reads nothing at full size but
- * decodes once scaled down (an iPhone HEIC at 4032px finds no code; the same shot at ~640px
- * decodes) — so the upload/camera glue retries at progressively smaller sizes until one reads.
+ * Decodes a QR code from raw pixel data using ZXing's QR reader over a hybrid binarizer,
+ * which is robust to the uneven lighting and screen moiré of a photographed code where a
+ * simpler decoder fails. Pure and synchronous — the camera/upload glue turns a frame or
+ * file into ImageData via a canvas. Returns the decoded string, or null when no QR is found.
  */
-export const JSQR_DECODE_EDGES = [1024, 800, 640, 512, 400, 300]
+export function decodeImageData(image: ImageData): string | null {
+  const source = new RGBLuminanceSource(toArgb(image), image.width, image.height)
+  const bitmap = new BinaryBitmap(new HybridBinarizer(source))
+  try {
+    return new QRCodeReader().decode(bitmap, DECODE_HINTS).getText()
+  } catch {
+    // ZXing throws NotFoundException (and friends) when no readable code is present.
+    return null
+  }
+}
+
+/**
+ * Longest-edge pixel sizes the library fallback is attempted at, largest first. The decoder's
+ * locator fails on oversized inputs — a multi-megapixel photo of a QR reads nothing at full
+ * size but decodes once scaled down (an iPhone HEIC at 4032px finds no code; the same shot at
+ * ~640px decodes) — so the upload/camera glue retries at progressively smaller sizes until one
+ * reads.
+ */
+export const DECODE_EDGES = [1024, 800, 640, 512, 400, 300]
 
 /**
  * The distinct longest-edge targets to try for a source whose longest edge is `longest`, in
- * descending order. Targets larger than the source are clamped to its size (jsQR is never
- * asked to upscale) and the resulting duplicates removed — so a small, clean upload decodes
- * once at native size while a large photo fans out across scales.
+ * descending order. Targets larger than the source are clamped to its size (the decoder is
+ * never asked to upscale) and the resulting duplicates removed — so a small, clean upload
+ * decodes once at native size while a large photo fans out across scales.
  */
 export function getDecodeEdges(longest: number): number[] {
   const edges: number[] = []
-  for (const target of JSQR_DECODE_EDGES) {
+  for (const target of DECODE_EDGES) {
     const edge = Math.min(target, longest)
     if (edge > 0 && !edges.includes(edge)) edges.push(edge)
   }
@@ -56,8 +84,8 @@ function getBarcodeDetectorCtor(): BarcodeDetectorConstructor | null {
 
 /**
  * Whether the native `BarcodeDetector` API is present. When true it is the preferred
- * decode path (hardware-accelerated, more robust); jsQR is the fallback for browsers
- * that lack it (notably Safari and Firefox as of writing).
+ * decode path (hardware-accelerated, more robust); the ZXing decoder is the fallback for
+ * browsers that lack it (notably Safari and Firefox as of writing).
  */
 export function isBarcodeDetectorSupported(): boolean {
   return getBarcodeDetectorCtor() !== null

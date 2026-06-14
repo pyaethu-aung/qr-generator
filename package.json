@@ -19,9 +19,9 @@
     "docker:run": "docker run --rm -p 8080:80 --name qr-app --read-only --cap-drop ALL --tmpfs /var/cache/nginx:mode=1777 --tmpfs /tmp:mode=1777 qr-generator:local"
   },
   "dependencies": {
+    "@zxing/library": "^0.23.0",
     "clsx": "^2.1.1",
     "jspdf": "^4.2.1",
-    "jsqr": "^1.4.0",
     "lucide-react": "^1.17.0",
     "qrcode": "^1.5.4",
     "qrcode.react": "^4.2.0",
