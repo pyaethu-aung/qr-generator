@@ -2,6 +2,7 @@ import { renderHook, act, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { useQrScanner } from '../useQrScanner'
 import * as qrDecode from '../../utils/qrDecode'
+import * as imageFormat from '../../utils/imageFormat'
 
 vi.mock('../../utils/qrDecode', async (importActual) => ({
   // Keep the pure scale-target helper real; only the impure decoders are stubbed.
@@ -11,7 +12,21 @@ vi.mock('../../utils/qrDecode', async (importActual) => ({
   decodeImageData: vi.fn(),
 }))
 
+vi.mock('../../utils/imageFormat', async (importActual) => ({
+  // Keep the pure byte-sniffer real; only the codec-loading conversion is stubbed.
+  ...(await importActual<typeof import('../../utils/imageFormat')>()),
+  loadUnsupportedImage: vi.fn(),
+}))
+
 const mockedDecode = vi.mocked(qrDecode)
+const mockedFormat = vi.mocked(imageFormat)
+
+/** A File whose leading bytes carry a HEIC ftyp signature, so the real sniffer routes it. */
+function heicFile(): File {
+  const bytes = new Uint8Array(32)
+  bytes.set([0, 0, 0, 0x18, 0x66, 0x74, 0x79, 0x70, 0x68, 0x65, 0x69, 0x63]) // ....ftypheic
+  return new File([bytes], 'photo.heic', { type: 'image/heic' })
+}
 
 // Controllable fake <img>: src setter resolves onload (or onerror) on a microtask.
 let imageShouldFail = false
@@ -52,6 +67,7 @@ beforeEach(() => {
   mockedDecode.isBarcodeDetectorSupported.mockReturnValue(true)
   mockedDecode.decodeWithBarcodeDetector.mockReset()
   mockedDecode.decodeImageData.mockReset()
+  mockedFormat.loadUnsupportedImage.mockReset()
   createObjectURL = vi.fn(() => 'blob:fake')
   vi.stubGlobal('Image', FakeImage)
   vi.stubGlobal('URL', {
@@ -190,13 +206,36 @@ describe('useQrScanner — file upload', () => {
     expect(result.current.decoded).toBe('img-fallback')
   })
 
-  it('reports decode-failed when the image cannot load', async () => {
+  it('decodes a HEIC upload via the codec fallback when native loading fails', async () => {
+    // Chrome/Firefox/Android cannot load HEIC natively: createImageBitmap rejects and the
+    // <img> errors, so the format-specific codec fallback must take over.
+    mockedDecode.isBarcodeDetectorSupported.mockReturnValue(false)
+    vi.stubGlobal('createImageBitmap', vi.fn().mockRejectedValue(new Error('unsupported')))
+    imageShouldFail = true
+    stubCanvas()
+    const close = vi.fn()
+    mockedFormat.loadUnsupportedImage.mockResolvedValue({ width: 800, height: 600, close })
+    mockedDecode.decodeImageData.mockReturnValue('heic-value')
+
+    const file = heicFile()
+    const { result } = renderHook(() => useQrScanner())
+    await act(async () => {
+      await result.current.scanFile(file)
+    })
+
+    expect(mockedFormat.loadUnsupportedImage).toHaveBeenCalledWith(file, 'heic')
+    expect(result.current.decoded).toBe('heic-value')
+    expect(close).toHaveBeenCalled()
+  })
+
+  it('reports decode-failed when a native image cannot load', async () => {
     imageShouldFail = true
     const { result } = renderHook(() => useQrScanner())
     await act(async () => {
       await result.current.scanFile(imageFile())
     })
     expect(result.current.error).toBe('decode-failed')
+    expect(mockedFormat.loadUnsupportedImage).not.toHaveBeenCalled()
   })
 
   it('clears state on reset', async () => {

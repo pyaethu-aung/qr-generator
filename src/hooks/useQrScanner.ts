@@ -5,6 +5,7 @@ import {
   getDecodeEdges,
   isBarcodeDetectorSupported,
 } from '../utils/qrDecode'
+import { loadUnsupportedImage, sniffImageFormat } from '../utils/imageFormat'
 
 /**
  * Why a decode attempt failed, mapped to a user-facing message by the component:
@@ -50,16 +51,17 @@ function sourceDimensions(source: HTMLImageElement | HTMLVideoElement): [number,
 }
 
 /**
- * Draws a source onto a canvas scaled so its longest edge is `maxEdge` (never upscaling),
- * and returns the resulting ImageData, or null when the source has no size yet or the 2D
- * context is unavailable.
+ * Draws any canvas-drawable source (image, video, or bitmap) of intrinsic size `sw`x`sh` onto
+ * a canvas scaled so its longest edge is `maxEdge` (never upscaling), and returns the resulting
+ * ImageData, or null when the source has no size or the 2D context is unavailable.
  */
-function sourceToImageData(
-  source: HTMLImageElement | HTMLVideoElement,
+function drawScaled(
+  source: CanvasImageSource,
+  sw: number,
+  sh: number,
   canvas: HTMLCanvasElement,
   maxEdge: number,
 ): ImageData | null {
-  const [sw, sh] = sourceDimensions(source)
   if (!sw || !sh) return null
 
   const scale = Math.min(1, maxEdge / Math.max(sw, sh))
@@ -76,28 +78,38 @@ function sourceToImageData(
 }
 
 /**
- * Decodes a QR from an image/video source. Prefers the native BarcodeDetector (passing the
- * element straight through, which handles full-resolution input), then falls back to the
- * ZXing decoder over canvas-extracted ImageData, retrying at progressively smaller sizes —
- * the locator fails on oversized photos, so a downscaled pass is what actually reads them.
- * Returns the decoded string or null.
+ * Decodes a QR from any drawable source of intrinsic size `sw`x`sh`. Prefers the native
+ * BarcodeDetector (passing the source straight through, which handles full-resolution input),
+ * then falls back to the ZXing decoder over canvas-extracted ImageData, retrying at
+ * progressively smaller sizes — the locator fails on oversized photos, so a downscaled pass is
+ * what actually reads them. Returns the decoded string or null.
  */
-async function decodeFromSource(
-  source: HTMLImageElement | HTMLVideoElement,
+async function decodeDrawable(
+  source: CanvasImageSource & ImageBitmapSource,
+  sw: number,
+  sh: number,
   canvas: HTMLCanvasElement,
 ): Promise<string | null> {
   if (isBarcodeDetectorSupported()) {
     const value = await decodeWithBarcodeDetector(source)
     if (value) return value
   }
-  const [sw, sh] = sourceDimensions(source)
   for (const edge of getDecodeEdges(Math.max(sw, sh))) {
-    const imageData = sourceToImageData(source, canvas, edge)
+    const imageData = drawScaled(source, sw, sh, canvas, edge)
     if (!imageData) return null
     const value = decodeImageData(imageData)
     if (value) return value
   }
   return null
+}
+
+/** Decodes a QR from a loaded image/video element. */
+function decodeFromSource(
+  source: HTMLImageElement | HTMLVideoElement,
+  canvas: HTMLCanvasElement,
+): Promise<string | null> {
+  const [sw, sh] = sourceDimensions(source)
+  return decodeDrawable(source, sw, sh, canvas)
 }
 
 /** Loads a File into an HTMLImageElement via an object URL, revoking it when done. */
@@ -173,14 +185,15 @@ async function decodeImageBitmap(file: File, canvas: HTMLCanvasElement): Promise
 }
 
 /**
- * Decodes a still image File. Tries the createImageBitmap pipeline first (high-quality
- * resampling), then always falls back to the <img> + canvas path. The fallback runs not only
- * when bitmap decoding throws (an unsupported format) but also when it simply finds no code:
- * some iOS Safari versions silently ignore createImageBitmap's resize options, leaving the
- * frame too large to read, whereas the <img> path's drawImage downscale always honors the
- * target size. Browsers without createImageBitmap use the <img> path directly.
+ * Decodes a still image File through the browser's native pipeline: the createImageBitmap path
+ * first (high-quality resampling), then the <img> + canvas path. The <img> fallback runs not
+ * only when bitmap decoding throws (an unsupported format) but also when it simply finds no
+ * code: some iOS Safari versions silently ignore createImageBitmap's resize options, leaving
+ * the frame too large to read, whereas the <img> path's drawImage downscale always honors the
+ * target size. Throws when the file cannot be loaded at all. Browsers without createImageBitmap
+ * use the <img> path directly.
  */
-async function decodeFile(file: File, canvas: HTMLCanvasElement): Promise<string | null> {
+async function decodeNativeFile(file: File, canvas: HTMLCanvasElement): Promise<string | null> {
   if (typeof createImageBitmap === 'function') {
     try {
       const value = await decodeImageBitmap(file, canvas)
@@ -191,6 +204,29 @@ async function decodeFile(file: File, canvas: HTMLCanvasElement): Promise<string
   }
   const img = await loadImageFromFile(file)
   return decodeFromSource(img, canvas)
+}
+
+/**
+ * Decodes a still image File. Tries the browser's native pipeline first; if the file cannot be
+ * loaded (Chrome, Firefox, and Android reject HEIC/HEIF and TIFF), sniffs the format and
+ * decodes the two we support ourselves via a lazily loaded codec. A genuinely unreadable file
+ * (a recognized-as-native format that still failed to load) rethrows so the caller reports a
+ * decode failure rather than a missing code.
+ */
+async function decodeFile(file: File, canvas: HTMLCanvasElement): Promise<string | null> {
+  try {
+    return await decodeNativeFile(file, canvas)
+  } catch (err) {
+    const header = new Uint8Array(await file.slice(0, 32).arrayBuffer())
+    const format = sniffImageFormat(header)
+    if (format === 'native') throw err
+    const bitmap = await loadUnsupportedImage(file, format)
+    try {
+      return await decodeDrawable(bitmap, bitmap.width, bitmap.height, canvas)
+    } finally {
+      bitmap.close()
+    }
+  }
 }
 
 /**
