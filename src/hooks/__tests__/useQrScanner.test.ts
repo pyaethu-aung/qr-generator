@@ -93,8 +93,8 @@ describe('useQrScanner — file upload', () => {
     expect(result.current.error).toBe('no-code')
   })
 
-  it('retries jsQR at smaller scales for an oversized image', async () => {
-    // No BarcodeDetector → jsQR fallback; a 4032px photo only reads once downscaled.
+  it('retries the decoder at smaller scales for an oversized image', async () => {
+    // No BarcodeDetector → library fallback; a 4032px photo only reads once downscaled.
     mockedDecode.isBarcodeDetectorSupported.mockReturnValue(false)
     imageWidth = 4032
     imageHeight = 3024
@@ -112,6 +112,55 @@ describe('useQrScanner — file upload', () => {
 
     expect(result.current.decoded).toBe('scaled-value')
     expect(mockedDecode.decodeImageData).toHaveBeenCalledTimes(3)
+  })
+
+  it('decodes an upload via createImageBitmap, downscaling for quality', async () => {
+    mockedDecode.isBarcodeDetectorSupported.mockReturnValue(false)
+    stubCanvas()
+    const close = vi.fn()
+    const createImageBitmap = vi.fn(
+      (_blob: Blob, opts?: { resizeWidth?: number; resizeHeight?: number }) =>
+        Promise.resolve(
+          opts?.resizeWidth
+            ? { width: opts.resizeWidth, height: opts.resizeHeight, close }
+            : { width: 4032, height: 3024, close },
+        ),
+    )
+    vi.stubGlobal('createImageBitmap', createImageBitmap)
+    // Fail the first two scales, decode on the third.
+    mockedDecode.decodeImageData
+      .mockReturnValueOnce(null)
+      .mockReturnValueOnce(null)
+      .mockReturnValueOnce('bitmap-value')
+
+    const { result } = renderHook(() => useQrScanner())
+    await act(async () => {
+      await result.current.scanFile(imageFile())
+    })
+
+    expect(result.current.decoded).toBe('bitmap-value')
+    expect(mockedDecode.decodeImageData).toHaveBeenCalledTimes(3)
+    // Resized decodes request high-quality, EXIF-correct bitmaps.
+    expect(createImageBitmap).toHaveBeenCalledWith(
+      expect.any(File),
+      expect.objectContaining({ resizeQuality: 'high', imageOrientation: 'from-image' }),
+    )
+  })
+
+  it('falls back to the <img> path when createImageBitmap throws', async () => {
+    mockedDecode.isBarcodeDetectorSupported.mockReturnValue(false)
+    imageWidth = 300
+    imageHeight = 300
+    stubCanvas()
+    vi.stubGlobal('createImageBitmap', vi.fn().mockRejectedValue(new Error('bad format')))
+    mockedDecode.decodeImageData.mockReturnValue('img-fallback')
+
+    const { result } = renderHook(() => useQrScanner())
+    await act(async () => {
+      await result.current.scanFile(imageFile())
+    })
+
+    expect(result.current.decoded).toBe('img-fallback')
   })
 
   it('reports decode-failed when the image cannot load', async () => {
