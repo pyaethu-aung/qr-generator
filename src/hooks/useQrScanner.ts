@@ -75,9 +75,9 @@ function sourceToImageData(
 
 /**
  * Decodes a QR from an image/video source. Prefers the native BarcodeDetector (passing the
- * element straight through, which handles full-resolution input), then falls back to jsQR
- * over canvas-extracted ImageData, retrying at progressively smaller sizes — jsQR fails to
- * locate a code in oversized photos, so a downscaled pass is what actually reads them.
+ * element straight through, which handles full-resolution input), then falls back to the
+ * ZXing decoder over canvas-extracted ImageData, retrying at progressively smaller sizes —
+ * the locator fails on oversized photos, so a downscaled pass is what actually reads them.
  * Returns the decoded string or null.
  */
 async function decodeFromSource(
@@ -113,6 +113,76 @@ function loadImageFromFile(file: File): Promise<HTMLImageElement> {
     }
     img.src = url
   })
+}
+
+/** Draws an already-sized bitmap 1:1 onto a canvas and returns its ImageData, or null. */
+function bitmapToImageData(bitmap: ImageBitmap, canvas: HTMLCanvasElement): ImageData | null {
+  if (!bitmap.width || !bitmap.height) return null
+  canvas.width = bitmap.width
+  canvas.height = bitmap.height
+  const ctx = canvas.getContext('2d', { willReadFrequently: true })
+  if (!ctx) return null
+  ctx.drawImage(bitmap, 0, 0)
+  return ctx.getImageData(0, 0, bitmap.width, bitmap.height)
+}
+
+/**
+ * Decodes a still image File using createImageBitmap, which lets the browser decode the
+ * source directly at each target size with high-quality resampling. This matters most on
+ * iOS Safari: decoding a multi-megapixel photo at full size and squashing it with a single
+ * canvas drawImage aliases the QR modules enough to defeat the decoder, whereas a bitmap
+ * decoded straight to ~640px stays crisp. `imageOrientation: 'from-image'` also honors EXIF
+ * rotation so portrait phone shots are not stretched. Prefers BarcodeDetector, then ZXing
+ * per scale.
+ */
+async function decodeImageBitmap(file: File, canvas: HTMLCanvasElement): Promise<string | null> {
+  const full = await createImageBitmap(file, { imageOrientation: 'from-image' })
+  try {
+    if (isBarcodeDetectorSupported()) {
+      const value = await decodeWithBarcodeDetector(full)
+      if (value) return value
+    }
+    const longest = Math.max(full.width, full.height)
+    for (const edge of getDecodeEdges(longest)) {
+      const scale = Math.min(1, edge / longest)
+      let bitmap = full
+      if (scale < 1) {
+        bitmap = await createImageBitmap(file, {
+          resizeWidth: Math.max(1, Math.round(full.width * scale)),
+          resizeHeight: Math.max(1, Math.round(full.height * scale)),
+          resizeQuality: 'high',
+          imageOrientation: 'from-image',
+        })
+      }
+      try {
+        const imageData = bitmapToImageData(bitmap, canvas)
+        const value = imageData ? decodeImageData(imageData) : null
+        if (value) return value
+      } finally {
+        if (bitmap !== full) bitmap.close()
+      }
+    }
+    return null
+  } finally {
+    full.close()
+  }
+}
+
+/**
+ * Decodes a still image File. Uses the createImageBitmap pipeline where available (needed
+ * for reliable iOS Safari uploads), falling back to the <img> + canvas path for browsers
+ * that lack it or when bitmap decoding throws (e.g. an unsupported format).
+ */
+async function decodeFile(file: File, canvas: HTMLCanvasElement): Promise<string | null> {
+  if (typeof createImageBitmap === 'function') {
+    try {
+      return await decodeImageBitmap(file, canvas)
+    } catch {
+      // Fall through to the <img> path below.
+    }
+  }
+  const img = await loadImageFromFile(file)
+  return decodeFromSource(img, canvas)
 }
 
 /**
@@ -158,8 +228,7 @@ export function useQrScanner(): UseQrScannerReturn {
       setDecoded(null)
       setIsDecoding(true)
       try {
-        const img = await loadImageFromFile(file)
-        const value = await decodeFromSource(img, getCanvas())
+        const value = await decodeFile(file, getCanvas())
         if (value) {
           setDecoded(value)
         } else {
