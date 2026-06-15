@@ -49,9 +49,14 @@ QR codes can be styled before download:
   assets) and render identically in the live preview and every export (PNG/SVG).
 - **Colors, error correction & logo** — foreground/background colors, EC level,
   and an optional centered logo overlay.
+- **Foreground fill** — the foreground is a solid color or a two-stop gradient
+  (linear with eight preset directions, or radial). The gradient spans the whole
+  foreground as one continuous field, so data modules and any eye that inherits
+  the foreground flow together; an eye with its own color stays solid.
 - **Contrast warnings** — a dismissible alert appears when the foreground/background
   contrast ratio falls below 3:1 or the colors are inverted (light on dark), both
-  of which can prevent scanners from reading the code.
+  of which can prevent scanners from reading the code. With a gradient, both stops
+  are checked and the worst case is reported.
 
 The white separator gap and dark center are always preserved, so any eye
 combination stays scannable. Path rendering lives in
