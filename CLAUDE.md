@@ -66,6 +66,7 @@ Skills are stored under `.agents/skills/` (source files) with symlinks from `.cl
 | `/commit-message` | Creating or amending any git commit |
 | `/create-pr` | Opening a GitHub pull request |
 | `/update-readme` | After any user-facing change worth documenting |
+| `/develop-web-feature` | Building a new feature end-to-end (shape → build → audit → PR) |
 
 Two `PreToolUse` hooks in `.claude/settings.json` enforce that `git commit` and `gh pr create` go through the relevant skills. Do not bypass them with `--no-verify`.
 
