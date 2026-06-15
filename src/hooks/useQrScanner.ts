@@ -258,6 +258,8 @@ export function useQrScanner(): UseQrScannerReturn {
   const frameRef = useRef<number | null>(null)
   // Bumped to abandon an in-flight decode: a resolved attempt whose token is stale is dropped.
   const scanTokenRef = useRef(0)
+  // Guards against overlapping starts: rapid re-clicks must not stack getUserMedia requests.
+  const startingRef = useRef(false)
 
   function getCanvas(): HTMLCanvasElement {
     canvasRef.current ??= document.createElement('canvas')
@@ -318,8 +320,10 @@ export function useQrScanner(): UseQrScannerReturn {
       setError('camera-unsupported')
       return
     }
-    setError(null)
-    setDecoded(null)
+    // A start is already in flight (or the camera is live); ignore the extra click so we
+    // don't stack getUserMedia requests or flash the error message off and on.
+    if (startingRef.current || streamRef.current) return
+    startingRef.current = true
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment' },
@@ -328,10 +332,15 @@ export function useQrScanner(): UseQrScannerReturn {
       const video = videoRef.current
       if (!video) {
         stream.getTracks().forEach((track) => track.stop())
+        streamRef.current = null
         return
       }
       video.srcObject = stream
       await video.play()
+      // Clear stale state only once the camera is actually live, so a denied retry leaves the
+      // existing error in place rather than blanking and re-showing it (the flicker).
+      setError(null)
+      setDecoded(null)
       setIsCameraActive(true)
 
       const tick = async () => {
@@ -350,6 +359,8 @@ export function useQrScanner(): UseQrScannerReturn {
       const name = (err as Error)?.name
       setError(name === 'NotAllowedError' || name === 'SecurityError' ? 'camera-denied' : 'camera-unsupported')
       stopCamera()
+    } finally {
+      startingRef.current = false
     }
   }, [stopCamera])
 
