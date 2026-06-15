@@ -98,6 +98,25 @@ export type QREyeFrameShape = 'Square' | 'Rounded' | 'Circle' | 'Leaf' | 'Hexago
 export type QREyeCenterShape = 'Square' | 'Rounded' | 'Dot' | 'Diamond' | 'Star' | 'Cross'
 export type QRPixelPattern = 'Square' | 'Dots' | 'Rounded' | 'Diamond' | 'Vertical' | 'Classy' | 'Fluid' | 'Horizontal'
 
+export type QRGradientType = 'linear' | 'radial'
+
+/** The eight preset gradient directions, named for the edge/corner the gradient flows toward. */
+export type QRGradientDirection = 'to-t' | 'to-tr' | 'to-r' | 'to-br' | 'to-b' | 'to-bl' | 'to-l' | 'to-tl'
+
+/**
+ * A two-stop foreground gradient. When set on {@link QRDesignConfig.fgGradient} it
+ * replaces the solid foreground across the data modules and any eye part that inherits
+ * the foreground (its own color is null). `direction` is ignored for radial gradients.
+ */
+export interface QRGradient {
+  type: QRGradientType
+  /** Start color (offset 0), hex. */
+  from: string
+  /** End color (offset 1), hex. */
+  to: string
+  direction: QRGradientDirection
+}
+
 export interface QRDesignConfig {
   eyeFrameShape: QREyeFrameShape
   eyeCenterShape: QREyeCenterShape
@@ -106,6 +125,12 @@ export interface QRDesignConfig {
   /** null = inherit the foreground color */
   eyeCenterColor: string | null
   pixelPattern: QRPixelPattern
+  /**
+   * Solid foreground (fgColor) when absent or null; otherwise the foreground fills with
+   * this gradient. Optional so existing config literals and persisted/shared payloads
+   * predating gradients remain valid.
+   */
+  fgGradient?: QRGradient | null
 }
 
 /**

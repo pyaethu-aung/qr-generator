@@ -8,6 +8,10 @@
 import type { QRDesignConfig, QRErrorCorrectionLevel, QRFrameConfig } from '../types/qr'
 import { generateQRPaths, getDataShapeRendering } from './qrShapeRenderer'
 import { renderFrame } from './frameRenderer'
+import { buildFgGradientDefs } from './gradient'
+
+/** Element id for the foreground gradient. Each composed SVG is standalone, so a fixed id is safe. */
+const FG_GRADIENT_ID = 'qr-fg-gradient'
 
 export interface ComposeQrOptions {
   value: string
@@ -45,14 +49,18 @@ export function composeQrSvg(opts: ComposeQrOptions): ComposedQr {
   )
   const Q = size * cellSize
   const dataShapeRendering = getDataShapeRendering(design.pixelPattern)
-  const eyeFrameFill = design.eyeFrameColor ?? fgColor
-  const eyeCenterFill = design.eyeCenterColor ?? fgColor
+  // A gradient fills the whole foreground; eye parts inherit it the same way they
+  // inherit the solid color (i.e. when their own color is null).
+  const gradientDefs = design.fgGradient ? buildFgGradientDefs(design.fgGradient, FG_GRADIENT_ID, Q) : ''
+  const fgFill = design.fgGradient ? `url(#${FG_GRADIENT_ID})` : fgColor
+  const eyeFrameFill = design.eyeFrameColor ?? fgFill
+  const eyeCenterFill = design.eyeCenterColor ?? fgFill
 
   const qrGroup = (tx: number, ty: number): string => {
     const open = tx || ty ? `<g transform="translate(${n(tx)},${n(ty)})">` : '<g>'
     return (
       open +
-      `<path d="${dataPath}" fill="${fgColor}" shape-rendering="${dataShapeRendering}"/>` +
+      `<path d="${dataPath}" fill="${fgFill}" shape-rendering="${dataShapeRendering}"/>` +
       `<path d="${eyeBgPath}" fill="${bgColor}"/>` +
       `<path d="${eyeFramePath}" fill="${eyeFrameFill}" fill-rule="evenodd"/>` +
       `<path d="${eyeCenterPath}" fill="${eyeCenterFill}"/>` +
@@ -63,7 +71,7 @@ export function composeQrSvg(opts: ComposeQrOptions): ComposedQr {
   // No frame: bare QR, byte-for-byte the same structure as before frames existed.
   if (!frame || frame.style === 'None') {
     return {
-      body: `<rect width="${Q}" height="${Q}" fill="${bgColor}"/>` + qrGroup(0, 0),
+      body: gradientDefs + `<rect width="${Q}" height="${Q}" fill="${bgColor}"/>` + qrGroup(0, 0),
       viewBox: Q,
       logoCenter: { x: Q / 2, y: Q / 2 },
       logoBase: Q,
@@ -73,6 +81,7 @@ export function composeQrSvg(opts: ComposeQrOptions): ComposedQr {
   const { viewBox, qrBox, decoration } = renderFrame(frame.style, Q, frame.color, bgColor, frame.text, frame.position)
   return {
     body:
+      gradientDefs +
       `<rect width="${n(viewBox)}" height="${n(viewBox)}" fill="${bgColor}"/>` +
       decoration +
       qrGroup(qrBox.x, qrBox.y),

@@ -20,7 +20,7 @@ export interface QRPreviewProps extends QRConfig {
 }
 
 export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
-  ({ value, ecLevel, fgColor, bgColor, size = 220, designConfig = { eyeFrameShape: 'Square', eyeCenterShape: 'Square', eyeFrameColor: null, eyeCenterColor: null, pixelPattern: 'Square' }, frameConfig, className, style, logoDataUrl, logoSize, isPending, placeholderHint }, forwardedRef) => {
+  ({ value, ecLevel, fgColor, bgColor, size = 220, designConfig = { eyeFrameShape: 'Square', eyeCenterShape: 'Square', eyeFrameColor: null, eyeCenterColor: null, pixelPattern: 'Square', fgGradient: null }, frameConfig, className, style, logoDataUrl, logoSize, isPending, placeholderHint }, forwardedRef) => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null)
     const wrapperRef = useRef<HTMLDivElement | null>(null)
     const canFlashRef = useRef(false)
