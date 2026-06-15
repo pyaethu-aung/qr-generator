@@ -11,6 +11,9 @@ import type {
   QRFrameConfig,
   QRFramePosition,
   QRFrameStyle,
+  QRGradient,
+  QRGradientDirection,
+  QRGradientType,
   QRPixelPattern,
   SmsConfig,
   TelConfig,
@@ -46,6 +49,8 @@ const EC_LEVELS: readonly QRErrorCorrectionLevel[] = ['L', 'M', 'Q', 'H']
 const EYE_FRAME_SHAPES: readonly QREyeFrameShape[] = ['Square', 'Rounded', 'Circle', 'Leaf', 'Hexagon', 'SquareRound', 'RoundSquare', 'Diamond']
 const EYE_CENTER_SHAPES: readonly QREyeCenterShape[] = ['Square', 'Rounded', 'Dot', 'Diamond', 'Star', 'Cross']
 const PIXEL_PATTERNS: readonly QRPixelPattern[] = ['Square', 'Dots', 'Rounded', 'Diamond', 'Vertical', 'Classy', 'Fluid', 'Horizontal']
+const GRADIENT_TYPES: readonly QRGradientType[] = ['linear', 'radial']
+const GRADIENT_DIRECTIONS: readonly QRGradientDirection[] = ['to-t', 'to-tr', 'to-r', 'to-br', 'to-b', 'to-bl', 'to-l', 'to-tl']
 const FRAME_STYLES: readonly QRFrameStyle[] = ['None', 'Banner', 'Card', 'Ticket', 'Label', 'Bubble', 'Ticks', 'Photo']
 const FRAME_POSITIONS: readonly QRFramePosition[] = ['top', 'bottom']
 const WIFI_SECURITY: readonly WiFiSecurity[] = ['WPA', 'WEP', 'nopass']
@@ -55,7 +60,7 @@ const CRYPTO_NETWORKS: readonly CryptoNetwork[] = ['bitcoin', 'ethereum']
 // local so this module stays self-contained and the hooks need no new exports.
 const DEFAULT_FRAME_COLOR = '#A04D28'
 const DEFAULT_DESIGN: QRDesignConfig = {
-  eyeFrameShape: 'Square', eyeCenterShape: 'Square', eyeFrameColor: null, eyeCenterColor: null, pixelPattern: 'Square',
+  eyeFrameShape: 'Square', eyeCenterShape: 'Square', eyeFrameColor: null, eyeCenterColor: null, pixelPattern: 'Square', fgGradient: null,
 }
 const DEFAULT_FRAME: QRFrameConfig = { style: 'None', text: 'SCAN ME', color: DEFAULT_FRAME_COLOR, position: 'bottom' }
 
@@ -172,6 +177,20 @@ function sanitizeContent(mode: QRContentMode, raw: unknown): ShareContentData {
   }
 }
 
+function sanitizeGradient(raw: unknown): QRGradient | null {
+  if (!raw || typeof raw !== 'object') return null
+  const o = raw as Record<string, unknown>
+  if (!GRADIENT_TYPES.includes(o.type as QRGradientType)) return null
+  if (typeof o.from !== 'string' || !HEX_RE.test(o.from)) return null
+  if (typeof o.to !== 'string' || !HEX_RE.test(o.to)) return null
+  return {
+    type: o.type as QRGradientType,
+    from: o.from,
+    to: o.to,
+    direction: oneOf(o.direction, GRADIENT_DIRECTIONS, 'to-br'),
+  }
+}
+
 function sanitizeDesign(raw: unknown): QRDesignConfig {
   const o = asObject(raw)
   return {
@@ -180,6 +199,7 @@ function sanitizeDesign(raw: unknown): QRDesignConfig {
     eyeFrameColor: hexOrNull(o.eyeFrameColor),
     eyeCenterColor: hexOrNull(o.eyeCenterColor),
     pixelPattern: oneOf(o.pixelPattern, PIXEL_PATTERNS, DEFAULT_DESIGN.pixelPattern),
+    fgGradient: sanitizeGradient(o.fgGradient),
   }
 }
 
