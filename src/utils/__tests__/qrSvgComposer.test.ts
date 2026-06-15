@@ -63,4 +63,50 @@ describe('composeQrSvg', () => {
     const card = composeQrSvg({ ...base, frame: { ...frame, style: 'Card' } })
     expect(banner.viewBox).not.toBe(card.viewBox)
   })
+
+  describe('foreground gradient', () => {
+    const gradientDesign: QRDesignConfig = {
+      ...design,
+      fgGradient: { type: 'linear', from: '#FF0000', to: '#0000FF', direction: 'to-br' },
+    }
+
+    it('emits no gradient defs and a solid fill when fgGradient is null', () => {
+      const result = composeQrSvg(base)
+      expect(result.body).not.toContain('<defs>')
+      expect(result.body).toContain('fill="#000000"')
+    })
+
+    it('emits a gradient def and fills the data path with the gradient url', () => {
+      const result = composeQrSvg({ ...base, design: gradientDesign })
+      expect(result.body).toContain('<linearGradient id="qr-fg-gradient"')
+      expect(result.body).toContain('fill="url(#qr-fg-gradient)"')
+      // With every inherited foreground part using the gradient, the solid color is gone.
+      expect(result.body).not.toContain('fill="#000000"')
+    })
+
+    it('lets inherited eyes use the gradient but keeps explicit eye colors solid', () => {
+      const result = composeQrSvg({
+        ...base,
+        design: { ...gradientDesign, eyeCenterColor: '#00AA00' },
+      })
+      expect(result.body).toContain('fill="url(#qr-fg-gradient)"')
+      expect(result.body).toContain('fill="#00AA00"')
+    })
+
+    it('includes the gradient def alongside a translated QR group when framed', () => {
+      const result = composeQrSvg({ ...base, design: gradientDesign, frame })
+      expect(result.body).toContain('<linearGradient id="qr-fg-gradient"')
+      expect(result.body).toContain('fill="url(#qr-fg-gradient)"')
+      expect(result.body).toContain('transform="translate(')
+    })
+
+    it('supports a radial gradient', () => {
+      const result = composeQrSvg({
+        ...base,
+        design: { ...gradientDesign, fgGradient: { type: 'radial', from: '#FFFFFF', to: '#000000', direction: 'to-br' } },
+      })
+      expect(result.body).toContain('<radialGradient id="qr-fg-gradient"')
+      expect(result.body).toContain('fill="url(#qr-fg-gradient)"')
+    })
+  })
 })

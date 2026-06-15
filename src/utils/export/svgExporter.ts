@@ -23,7 +23,7 @@ export async function exportSvg(
     ecLevel = 'M',
     fgColor = '#000000',
     bgColor = '#FFFFFF',
-    designConfig = { eyeFrameShape: 'Square', eyeCenterShape: 'Square', eyeFrameColor: null, eyeCenterColor: null, pixelPattern: 'Square' },
+    designConfig = { eyeFrameShape: 'Square', eyeCenterShape: 'Square', eyeFrameColor: null, eyeCenterColor: null, pixelPattern: 'Square', fgGradient: null },
     frameConfig,
     logoDataUrl,
     logoSize = 20,
