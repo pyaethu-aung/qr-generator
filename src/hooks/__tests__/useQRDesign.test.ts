@@ -114,6 +114,7 @@ describe('useQRDesign - eye shapes & colors', () => {
       eyeFrameColor: null,
       eyeCenterColor: null,
       pixelPattern: 'Dots',
+      fgGradient: null,
     })
   })
 
@@ -223,5 +224,61 @@ describe('useQRDesign - isRiskyPattern', () => {
 
     act(() => { result.current.setPixelPattern('Fluid') })
     expect(result.current.isRiskyPattern).toBe(false)
+  })
+})
+
+describe('useQRDesign - foreground gradient', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    vi.clearAllMocks()
+  })
+
+  it('defaults fgGradient to null (solid foreground)', () => {
+    const { result } = renderHook(() => useQRDesign('', 'M'))
+    expect(result.current.designConfig.fgGradient).toBeNull()
+  })
+
+  it('sets and persists a gradient via setFgGradient', () => {
+    const { result } = renderHook(() => useQRDesign('', 'M'))
+    act(() => {
+      result.current.setFgGradient({ type: 'linear', from: '#000000', to: '#4F46E5', direction: 'to-r' })
+    })
+    expect(result.current.designConfig.fgGradient).toEqual({ type: 'linear', from: '#000000', to: '#4F46E5', direction: 'to-r' })
+    const stored = JSON.parse(localStorage.getItem('qr-generator-design-config') ?? '{}') as { fgGradient?: unknown }
+    expect(stored.fgGradient).toEqual({ type: 'linear', from: '#000000', to: '#4F46E5', direction: 'to-r' })
+  })
+
+  it('clears the gradient back to solid with null', () => {
+    const { result } = renderHook(() => useQRDesign('', 'M'))
+    act(() => { result.current.setFgGradient({ type: 'radial', from: '#000000', to: '#FFFFFF', direction: 'to-br' }) })
+    act(() => { result.current.setFgGradient(null) })
+    expect(result.current.designConfig.fgGradient).toBeNull()
+  })
+
+  it('restores a valid persisted gradient on load', () => {
+    localStorage.setItem('qr-generator-design-config', JSON.stringify({
+      eyeFrameShape: 'Square', eyeCenterShape: 'Square', eyeFrameColor: null, eyeCenterColor: null,
+      pixelPattern: 'Square', fgGradient: { type: 'linear', from: '#112233', to: '#445566', direction: 'to-b' },
+    }))
+    const { result } = renderHook(() => useQRDesign('', 'M'))
+    expect(result.current.designConfig.fgGradient).toEqual({ type: 'linear', from: '#112233', to: '#445566', direction: 'to-b' })
+  })
+
+  it('rejects a malformed persisted gradient and falls back to solid', () => {
+    localStorage.setItem('qr-generator-design-config', JSON.stringify({
+      eyeFrameShape: 'Square', eyeCenterShape: 'Square', eyeFrameColor: null, eyeCenterColor: null,
+      pixelPattern: 'Square', fgGradient: { type: 'spiral', from: 'not-a-hex', to: '#445566', direction: 'sideways' },
+    }))
+    const { result } = renderHook(() => useQRDesign('', 'M'))
+    expect(result.current.designConfig.fgGradient).toBeNull()
+  })
+
+  it('defaults an unknown direction to to-br while keeping valid colors', () => {
+    localStorage.setItem('qr-generator-design-config', JSON.stringify({
+      eyeFrameShape: 'Square', eyeCenterShape: 'Square', eyeFrameColor: null, eyeCenterColor: null,
+      pixelPattern: 'Square', fgGradient: { type: 'linear', from: '#000000', to: '#FFFFFF', direction: 'nowhere' },
+    }))
+    const { result } = renderHook(() => useQRDesign('', 'M'))
+    expect(result.current.designConfig.fgGradient).toEqual({ type: 'linear', from: '#000000', to: '#FFFFFF', direction: 'to-br' })
   })
 })

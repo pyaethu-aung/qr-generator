@@ -6,6 +6,9 @@ import type {
   QREyeFrameShape,
   QREyeCenterShape,
   QRPixelPattern,
+  QRGradient,
+  QRGradientType,
+  QRGradientDirection,
   QRFrameConfig,
   QRFrameStyle,
   QRFramePosition,
@@ -52,6 +55,26 @@ const DEFAULT_DESIGN_CONFIG: QRDesignConfig = {
   eyeFrameColor: null,
   eyeCenterColor: null,
   pixelPattern: 'Square',
+  fgGradient: null,
+}
+
+const GRADIENT_TYPES: QRGradientType[] = ['linear', 'radial']
+const GRADIENT_DIRECTIONS: QRGradientDirection[] = ['to-t', 'to-tr', 'to-r', 'to-br', 'to-b', 'to-bl', 'to-l', 'to-tl']
+const HEX_COLOR_RE = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/
+
+/** Validates a persisted gradient, returning null (solid foreground) for anything malformed. */
+function loadGradient(raw: unknown): QRGradient | null {
+  if (!raw || typeof raw !== 'object') return null
+  const g = raw as Partial<QRGradient>
+  if (!GRADIENT_TYPES.includes(g.type as QRGradientType)) return null
+  if (typeof g.from !== 'string' || !HEX_COLOR_RE.test(g.from)) return null
+  if (typeof g.to !== 'string' || !HEX_COLOR_RE.test(g.to)) return null
+  return {
+    type: g.type as QRGradientType,
+    from: g.from,
+    to: g.to,
+    direction: GRADIENT_DIRECTIONS.includes(g.direction as QRGradientDirection) ? (g.direction as QRGradientDirection) : 'to-br',
+  }
 }
 
 // Maps the legacy single `eyeShape` to the split frame/center shapes.
@@ -83,6 +106,7 @@ function loadDesignConfig(): QRDesignConfig {
         eyeFrameColor: null,
         eyeCenterColor: null,
         pixelPattern: parsed.pixelPattern ?? 'Square',
+        fgGradient: loadGradient(parsed.fgGradient),
       }
     }
 
@@ -92,6 +116,7 @@ function loadDesignConfig(): QRDesignConfig {
       eyeFrameColor: parsed.eyeFrameColor ?? null,
       eyeCenterColor: parsed.eyeCenterColor ?? null,
       pixelPattern: parsed.pixelPattern ?? DEFAULT_DESIGN_CONFIG.pixelPattern,
+      fgGradient: loadGradient(parsed.fgGradient),
     }
   } catch {
     return DEFAULT_DESIGN_CONFIG
@@ -137,6 +162,10 @@ export function useQRDesign(value: string = '', ecLevel: 'L' | 'M' | 'Q' | 'H' =
 
   const setPixelPattern = useCallback((pixelPattern: QRPixelPattern) => {
     setDesignConfig(prev => ({ ...prev, pixelPattern }))
+  }, [])
+
+  const setFgGradient = useCallback((fgGradient: QRGradient | null) => {
+    setDesignConfig(prev => ({ ...prev, fgGradient }))
   }, [])
 
   const [frameConfig, setFrameConfig] = useState<QRFrameConfig>(loadFrameConfig)
@@ -186,6 +215,7 @@ export function useQRDesign(value: string = '', ecLevel: 'L' | 'M' | 'Q' | 'H' =
     setEyeFrameColor,
     setEyeCenterColor,
     setPixelPattern,
+    setFgGradient,
     isRiskyPattern,
     dismissWarning,
     logoDataUrl,

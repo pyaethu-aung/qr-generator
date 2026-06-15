@@ -16,6 +16,7 @@ const design: QRDesignConfig = {
   eyeFrameColor: '#ff0000',
   eyeCenterColor: null,
   pixelPattern: 'Dots',
+  fgGradient: null,
 }
 
 const frame: QRFrameConfig = {
@@ -63,6 +64,31 @@ describe('encode / decode round trip', () => {
     const decoded = decodeShareConfig(encodeShareConfig(input))
     expect(decoded?.mode).toBe('wifi')
     expect(decoded?.content).toEqual({ ssid: 'ကော်ဖီ', password: 'pä$$ 🔒', security: 'WPA', hidden: true })
+  })
+
+  it('round-trips a foreground gradient', () => {
+    const input: ShareConfigInput = {
+      ...baseInput,
+      design: { ...design, fgGradient: { type: 'linear', from: '#112233', to: '#445566', direction: 'to-r' } },
+    }
+    const decoded = decodeShareConfig(encodeShareConfig(input))
+    expect(decoded?.design.fgGradient).toEqual({ type: 'linear', from: '#112233', to: '#445566', direction: 'to-r' })
+  })
+
+  it('drops a hostile gradient back to solid (null)', () => {
+    const decoded = decodeShareConfig(tokenFor({
+      v: 1, m: 'text', d: 'hi',
+      g: { eyeFrameShape: 'Square', fgGradient: { type: 'evil', from: 'javascript:alert(1)', to: '#000000', direction: 'to-r' } },
+    }))
+    expect(decoded?.design.fgGradient).toBeNull()
+  })
+
+  it('defaults a gradient with an unknown direction to to-br', () => {
+    const decoded = decodeShareConfig(tokenFor({
+      v: 1, m: 'text', d: 'hi',
+      g: { fgGradient: { type: 'radial', from: '#000000', to: '#ffffff', direction: 'diagonal' } },
+    }))
+    expect(decoded?.design.fgGradient).toEqual({ type: 'radial', from: '#000000', to: '#ffffff', direction: 'to-br' })
   })
 
   it('round-trips every structured mode shape', () => {
@@ -124,7 +150,7 @@ describe('decode sanitizes attacker-controlled fields', () => {
       g: { eyeFrameShape: 'Triangle', eyeCenterShape: 'Blob', eyeFrameColor: 'evil', eyeCenterColor: '#00ff00', pixelPattern: 'Spiral' },
     }))
     expect(decoded?.design).toEqual({
-      eyeFrameShape: 'Square', eyeCenterShape: 'Square', eyeFrameColor: null, eyeCenterColor: '#00ff00', pixelPattern: 'Square',
+      eyeFrameShape: 'Square', eyeCenterShape: 'Square', eyeFrameColor: null, eyeCenterColor: '#00ff00', pixelPattern: 'Square', fgGradient: null,
     })
   })
 
