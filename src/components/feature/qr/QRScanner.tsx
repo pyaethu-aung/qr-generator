@@ -177,6 +177,9 @@ export function QRScanner({ onEditInGenerator }: QRScannerProps) {
                 aria-label={translate('scan.inputMethodLabel')}
                 value={method}
                 onChange={setMethod}
+                size="sm"
+                containerClassName="mx-auto flex w-fit gap-1 rounded-full bg-surface-inset p-1"
+                itemClassName="grow-0"
                 options={[
                   { value: 'upload', label: translate('scan.inputUpload'), icon: <Upload size={15} aria-hidden /> },
                   { value: 'camera', label: translate('scan.inputCamera'), icon: <Camera size={15} aria-hidden /> },
