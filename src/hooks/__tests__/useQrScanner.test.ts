@@ -319,6 +319,23 @@ describe('useQrScanner — camera', () => {
     expect(result.current.isCameraActive).toBe(false)
   })
 
+  it('ignores a second start while one is already in flight', async () => {
+    const stop = vi.fn()
+    const stream = { getTracks: () => [{ stop }] } as unknown as MediaStream
+    const getUserMedia = vi.fn().mockResolvedValue(stream)
+    vi.stubGlobal('navigator', { mediaDevices: { getUserMedia } })
+    vi.stubGlobal('requestAnimationFrame', () => 1)
+    vi.stubGlobal('cancelAnimationFrame', vi.fn())
+
+    const { result } = renderHook(() => useQrScanner())
+    attachVideo(result)
+    await act(async () => {
+      // Two rapid clicks: the in-flight guard must collapse them into one request.
+      await Promise.all([result.current.startCamera(), result.current.startCamera()])
+    })
+    expect(getUserMedia).toHaveBeenCalledTimes(1)
+  })
+
   it('starts the stream and decodes a frame, then stops', async () => {
     const stop = vi.fn()
     const stream = { getTracks: () => [{ stop }] } as unknown as MediaStream
