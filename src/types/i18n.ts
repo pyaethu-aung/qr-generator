@@ -56,6 +56,21 @@ export interface ControlStrings {
   eyeCenterColorLabel: string
   eyeColorMatchForeground: string
   pixelPatternLabel: string
+  fillTypeLabel: string
+  fillSolid: string
+  fillLinear: string
+  fillRadial: string
+  gradientStartLabel: string
+  gradientEndLabel: string
+  gradientDirectionLabel: string
+  gradientDirTop: string
+  gradientDirTopRight: string
+  gradientDirRight: string
+  gradientDirBottomRight: string
+  gradientDirBottom: string
+  gradientDirBottomLeft: string
+  gradientDirLeft: string
+  gradientDirTopLeft: string
   generate: string
   downloadsTitle: string
   downloadPng: string
@@ -336,6 +351,21 @@ export type TranslationKey =
   | 'controls.eyeCenterColorLabel'
   | 'controls.eyeColorMatchForeground'
   | 'controls.pixelPatternLabel'
+  | 'controls.fillTypeLabel'
+  | 'controls.fillSolid'
+  | 'controls.fillLinear'
+  | 'controls.fillRadial'
+  | 'controls.gradientStartLabel'
+  | 'controls.gradientEndLabel'
+  | 'controls.gradientDirectionLabel'
+  | 'controls.gradientDirTop'
+  | 'controls.gradientDirTopRight'
+  | 'controls.gradientDirRight'
+  | 'controls.gradientDirBottomRight'
+  | 'controls.gradientDirBottom'
+  | 'controls.gradientDirBottomLeft'
+  | 'controls.gradientDirLeft'
+  | 'controls.gradientDirTopLeft'
   | 'controls.generate'
   | 'controls.downloadsTitle'
   | 'controls.downloadPng'

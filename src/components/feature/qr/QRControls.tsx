@@ -1,5 +1,5 @@
 import { useRef, useState, useId } from 'react'
-import { Download, Check, ChevronDown, ChevronUp, Upload, X, Wifi, Link, User, Mail, MessageSquare, Phone, MapPin, Calendar, Bitcoin } from 'lucide-react'
+import { Download, Check, ChevronDown, ChevronUp, Upload, X, Wifi, Link, User, Mail, MessageSquare, Phone, MapPin, Calendar, Bitcoin, ArrowUp, ArrowUpRight, ArrowRight, ArrowDownRight, ArrowDown, ArrowDownLeft, ArrowLeft, ArrowUpLeft } from 'lucide-react'
 import { Input } from '../../common/Input'
 import { Callout } from '../../common/Callout'
 import { PillGroup } from '../../common/PillGroup'
@@ -13,7 +13,25 @@ import { GeoForm } from './GeoForm'
 import { VEventForm } from './VEventForm'
 import { CryptoForm } from './CryptoForm'
 import { DEFAULT_FRAME_COLOR } from '../../../data/defaults'
-import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig, SmsConfig, TelConfig, GeoConfig, VEventConfig, CryptoConfig, QREyeFrameShape, QREyeCenterShape, QRPixelPattern, QRFrameStyle, QRFramePosition } from '../../../types/qr'
+import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig, SmsConfig, TelConfig, GeoConfig, VEventConfig, CryptoConfig, QREyeFrameShape, QREyeCenterShape, QRPixelPattern, QRFrameStyle, QRFramePosition, QRGradient, QRGradientType, QRGradientDirection } from '../../../types/qr'
+
+/** Seeded end color when a gradient is first enabled (indigo). The start seeds from fgColor. */
+const DEFAULT_GRADIENT_END = '#4F46E5'
+
+/**
+ * The eight preset directions in clockwise order from the top, so the 4-column grid reads
+ * as a continuous rotation (↑ ↗ → ↘ / ↓ ↙ ← ↖) rather than an arbitrary arrangement.
+ */
+const GRADIENT_DIRECTIONS: { value: QRGradientDirection; Icon: typeof ArrowUp }[] = [
+  { value: 'to-t', Icon: ArrowUp },
+  { value: 'to-tr', Icon: ArrowUpRight },
+  { value: 'to-r', Icon: ArrowRight },
+  { value: 'to-br', Icon: ArrowDownRight },
+  { value: 'to-b', Icon: ArrowDown },
+  { value: 'to-bl', Icon: ArrowDownLeft },
+  { value: 'to-l', Icon: ArrowLeft },
+  { value: 'to-tl', Icon: ArrowUpLeft },
+]
 
 const FRAME_PATHS: Record<QREyeFrameShape, string> = {
   Square:      'M0,0 h28 v28 h-28 Z M4,4 h20 v20 h-20 Z',
@@ -297,6 +315,17 @@ export interface QRControlsProps {
   eyeFrameOptions?: { value: QREyeFrameShape; label: string }[]
   eyeCenterOptions?: { value: QREyeCenterShape; label: string }[]
   pixelPatternOptions?: { value: import('../../../types/qr').QRPixelPattern; label: string }[]
+  // Foreground fill — solid color (fgColor) or a two-stop gradient
+  fgGradient?: QRGradient | null
+  onFgGradientChange?: (gradient: QRGradient | null) => void
+  fillTypeLabel?: string
+  fillSolidLabel?: string
+  fillLinearLabel?: string
+  fillRadialLabel?: string
+  gradientStartLabel?: string
+  gradientEndLabel?: string
+  gradientDirectionLabel?: string
+  gradientDirectionLabels?: Record<QRGradientDirection, string>
   isRiskyPattern?: boolean
   onDismissWarning?: () => void
   correctionTooltip?: string
@@ -481,6 +510,25 @@ export function QRControls({
     { value: 'Vertical',   label: 'Vertical' },
     { value: 'Horizontal', label: 'Horizontal' },
   ],
+  fgGradient = null,
+  onFgGradientChange,
+  fillTypeLabel = 'Foreground Fill',
+  fillSolidLabel = 'Solid',
+  fillLinearLabel = 'Linear',
+  fillRadialLabel = 'Radial',
+  gradientStartLabel = 'Start Color',
+  gradientEndLabel = 'End Color',
+  gradientDirectionLabel = 'Direction',
+  gradientDirectionLabels = {
+    'to-t': 'Top',
+    'to-tr': 'Top right',
+    'to-r': 'Right',
+    'to-br': 'Bottom right',
+    'to-b': 'Bottom',
+    'to-bl': 'Bottom left',
+    'to-l': 'Left',
+    'to-tl': 'Top left',
+  },
   isRiskyPattern,
   onDismissWarning,
   correctionTooltip = 'How much of the QR code can be covered or damaged and still scan. Low gives a compact code; Highest lets you overlay a logo at the cost of a denser pattern.',
@@ -606,6 +654,9 @@ export function QRControls({
   const pixelPatternLabelId = useId()
   const fgColorId = useId()
   const bgColorId = useId()
+  const gradientStartId = useId()
+  const gradientEndId = useId()
+  const gradientDirectionLabelId = useId()
   const eyeFrameColorId = useId()
   const eyeCenterColorId = useId()
   const frameColorId = useId()
@@ -627,15 +678,22 @@ export function QRControls({
     eyeCenterShape !== 'Square' ||
     eyeFrameColor !== null ||
     eyeCenterColor !== null ||
-    pixelPattern !== 'Square'
+    pixelPattern !== 'Square' ||
+    fgGradient !== null
 
   const [dismissedColors, setDismissedColors] = useState<{ fg: string; bg: string } | null>(null)
-  const fgLum = relativeLuminance(fgColor)
+  // The effective foreground is one color (solid) or two stops (gradient). Scannability
+  // is gated by the worst stop, so contrast checks use the lowest-contrast / darkest stop.
+  const fgStops = fgGradient ? [fgGradient.from, fgGradient.to] : [fgColor]
+  const stopLums = fgStops.map(relativeLuminance).filter((v): v is number => v !== null)
+  const fgLum = stopLums.length ? Math.min(...stopLums) : null
   const bgLum = relativeLuminance(bgColor)
-  const colorContrast = wcagContrastRatio(fgColor, bgColor)
+  const stopContrasts = fgStops.map((c) => wcagContrastRatio(c, bgColor)).filter((v): v is number => v !== null)
+  const colorContrast = stopContrasts.length ? Math.min(...stopContrasts) : null
   const isLowContrast = colorContrast !== null && colorContrast < 3
   const isInvertedColors = !isLowContrast && fgLum !== null && bgLum !== null && fgLum > bgLum
-  const isContrastDismissed = dismissedColors !== null && dismissedColors.fg === fgColor && dismissedColors.bg === bgColor
+  const fgContrastKey = fgStops.join(',')
+  const isContrastDismissed = dismissedColors !== null && dismissedColors.fg === fgContrastKey && dismissedColors.bg === bgColor
   const showContrastWarning = !isContrastDismissed && (isLowContrast || isInvertedColors)
   const contrastRatioLabel = colorContrast !== null ? `${colorContrast.toFixed(1)}:1` : null
 
@@ -698,6 +756,30 @@ export function QRControls({
     setIsDragOver(false)
     const file = e.dataTransfer.files[0]
     if (file) processFile(file)
+  }
+
+  // Foreground fill: 'solid' uses fgColor; a gradient carries its own stops + direction.
+  const fillType: 'solid' | QRGradientType = fgGradient ? fgGradient.type : 'solid'
+  // Remember the last gradient so toggling to Solid and back restores the user's stops
+  // instead of re-seeding from scratch (keeps the switch reversible, not destructive).
+  // The ref is only ever touched inside the handler, never during render.
+  const lastGradientRef = useRef<QRGradient | null>(null)
+  const handleFillTypeChange = (next: 'solid' | QRGradientType) => {
+    if (!onFgGradientChange) return
+    if (next === 'solid') {
+      if (fgGradient) lastGradientRef.current = fgGradient
+      onFgGradientChange(null)
+      return
+    }
+    // Switching between gradient types preserves the stops; re-enabling from Solid restores
+    // the last gradient, falling back to the current foreground only on the very first use.
+    const seed = fgGradient ?? lastGradientRef.current
+    onFgGradientChange({
+      type: next,
+      from: seed?.from ?? fgColor,
+      to: seed?.to ?? DEFAULT_GRADIENT_END,
+      direction: seed?.direction ?? 'to-br',
+    })
   }
 
   return (
@@ -934,23 +1016,59 @@ export function QRControls({
 
             {/* Color pickers — 44px inset boxes */}
             <div className="flex flex-col gap-4">
-              <div className="flex gap-4">
-                <div className="min-w-[120px] flex-1 flex flex-col gap-1">
-                  <label htmlFor={fgColorId} className="text-sm font-medium text-text-primary">{foregroundLabel}</label>
-                  <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3 focus-within:ring-2 focus-within:ring-focus-ring focus-within:outline-none">
-                    <div className="h-5 w-5 shrink-0 rounded-full border-2 border-border-strong" style={{ backgroundColor: fgColor }} />
-                    <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
-                      {fgColor}
-                    </span>
-                    <input
-                      id={fgColorId}
-                      type="color"
-                      value={fgColor}
-                      onChange={(e) => onFgColorChange(e.target.value)}
-                      className="absolute inset-0 h-full w-full cursor-pointer opacity-0 focus:outline-none"
-                    />
-                  </div>
+              {/* Foreground fill: solid color or a two-stop gradient */}
+              {onFgGradientChange && (
+                <div className="flex flex-col gap-1">
+                  <span className="text-sm font-medium text-text-primary">{fillTypeLabel}</span>
+                  <PillGroup
+                    options={[
+                      { value: 'solid', label: fillSolidLabel },
+                      { value: 'linear', label: fillLinearLabel },
+                      { value: 'radial', label: fillRadialLabel },
+                    ]}
+                    value={fillType}
+                    onChange={handleFillTypeChange}
+                    aria-label={fillTypeLabel}
+                  />
                 </div>
+              )}
+
+              <div className="flex gap-4">
+                {!fgGradient ? (
+                  <div className="min-w-[120px] flex-1 flex flex-col gap-1">
+                    <label htmlFor={fgColorId} className="text-sm font-medium text-text-primary">{foregroundLabel}</label>
+                    <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3 focus-within:ring-2 focus-within:ring-focus-ring focus-within:outline-none">
+                      <div className="h-5 w-5 shrink-0 rounded-full border-2 border-border-strong" style={{ backgroundColor: fgColor }} />
+                      <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
+                        {fgColor}
+                      </span>
+                      <input
+                        id={fgColorId}
+                        type="color"
+                        value={fgColor}
+                        onChange={(e) => onFgColorChange(e.target.value)}
+                        className="absolute inset-0 h-full w-full cursor-pointer opacity-0 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="min-w-[120px] flex-1 flex flex-col gap-1">
+                    <label htmlFor={gradientStartId} className="text-sm font-medium text-text-primary">{gradientStartLabel}</label>
+                    <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3 focus-within:ring-2 focus-within:ring-focus-ring focus-within:outline-none">
+                      <div className="h-5 w-5 shrink-0 rounded-full border-2 border-border-strong" style={{ backgroundColor: fgGradient.from }} />
+                      <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
+                        {fgGradient.from}
+                      </span>
+                      <input
+                        id={gradientStartId}
+                        type="color"
+                        value={fgGradient.from}
+                        onChange={(e) => onFgGradientChange?.({ ...fgGradient, from: e.target.value })}
+                        className="absolute inset-0 h-full w-full cursor-pointer opacity-0 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                )}
 
                 <div className="min-w-[120px] flex-1 flex flex-col gap-1">
                   <label htmlFor={bgColorId} className="text-sm font-medium text-text-primary">{backgroundLabel}</label>
@@ -969,6 +1087,53 @@ export function QRControls({
                   </div>
                 </div>
               </div>
+
+              {/* Gradient end color + direction (linear only) */}
+              {fgGradient && (
+                <div className="flex flex-col gap-4">
+                  <div className="min-w-[120px] flex flex-col gap-1">
+                    <label htmlFor={gradientEndId} className="text-sm font-medium text-text-primary">{gradientEndLabel}</label>
+                    <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3 focus-within:ring-2 focus-within:ring-focus-ring focus-within:outline-none">
+                      <div className="h-5 w-5 shrink-0 rounded-full border-2 border-border-strong" style={{ backgroundColor: fgGradient.to }} />
+                      <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
+                        {fgGradient.to}
+                      </span>
+                      <input
+                        id={gradientEndId}
+                        type="color"
+                        value={fgGradient.to}
+                        onChange={(e) => onFgGradientChange?.({ ...fgGradient, to: e.target.value })}
+                        className="absolute inset-0 h-full w-full cursor-pointer opacity-0 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  {fgGradient.type === 'linear' && (
+                    <div className="flex flex-col gap-1">
+                      <span className="text-sm font-medium text-text-primary" id={gradientDirectionLabelId}>{gradientDirectionLabel}</span>
+                      <div role="group" aria-labelledby={gradientDirectionLabelId} className="grid grid-cols-4 gap-1">
+                        {GRADIENT_DIRECTIONS.map(({ value: dir, Icon }) => (
+                          <button
+                            key={dir}
+                            type="button"
+                            title={gradientDirectionLabels[dir]}
+                            aria-label={gradientDirectionLabels[dir]}
+                            aria-pressed={fgGradient.direction === dir}
+                            onClick={() => onFgGradientChange?.({ ...fgGradient, direction: dir })}
+                            className={`flex h-11 items-center justify-center rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring ${
+                              fgGradient.direction === dir
+                                ? 'border-action bg-surface-raised text-text-primary'
+                                : 'border-transparent bg-surface-inset text-text-secondary hover:bg-surface-raised hover:text-text-primary'
+                            }`}
+                          >
+                            <Icon size={16} aria-hidden />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="flex gap-4">
                 <EyeColorField
@@ -1251,7 +1416,7 @@ export function QRControls({
         {showContrastWarning && (
           <Callout
             title={isLowContrast ? 'Contrast Risk' : 'Inverted Colors'}
-            onDismiss={() => setDismissedColors({ fg: fgColor, bg: bgColor })}
+            onDismiss={() => setDismissedColors({ fg: fgContrastKey, bg: bgColor })}
             dismissLabel="Dismiss contrast warning"
           >
             {isLowContrast
