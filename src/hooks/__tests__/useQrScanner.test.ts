@@ -91,6 +91,40 @@ describe('useQrScanner — file upload', () => {
     expect(result.current.decoded).toBeNull()
   })
 
+  it('rejects an oversized image before decoding it', async () => {
+    const file = imageFile()
+    Object.defineProperty(file, 'size', { value: 26 * 1024 * 1024 })
+    const { result } = renderHook(() => useQrScanner())
+    await act(async () => {
+      await result.current.scanFile(file)
+    })
+    expect(result.current.error).toBe('file-too-large')
+    expect(mockedDecode.decodeWithBarcodeDetector).not.toHaveBeenCalled()
+    expect(mockedFormat.loadUnsupportedImage).not.toHaveBeenCalled()
+  })
+
+  it('discards a decode result once the scan is canceled', async () => {
+    let resolveDecode: (value: string | null) => void = () => {}
+    mockedDecode.decodeWithBarcodeDetector.mockReturnValue(
+      new Promise((resolve) => {
+        resolveDecode = resolve
+      }),
+    )
+    const { result } = renderHook(() => useQrScanner())
+    let scanPromise: Promise<void>
+    act(() => {
+      scanPromise = result.current.scanFile(imageFile())
+    })
+    expect(result.current.isDecoding).toBe(true)
+    act(() => result.current.cancelScan())
+    expect(result.current.isDecoding).toBe(false)
+    await act(async () => {
+      resolveDecode('late-value')
+      await scanPromise
+    })
+    expect(result.current.decoded).toBeNull()
+  })
+
   it('decodes a value from an image file', async () => {
     mockedDecode.decodeWithBarcodeDetector.mockResolvedValue('https://example.com')
     const { result } = renderHook(() => useQrScanner())

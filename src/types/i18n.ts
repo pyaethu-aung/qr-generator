@@ -267,8 +267,10 @@ export interface ScanStrings {
   open: string
   editInGenerator: string
   scanAnother: string
+  cancel: string
   errorNoCode: string
   errorUnsupportedFile: string
+  errorFileTooLarge: string
   errorCameraDenied: string
   errorCameraUnsupported: string
   errorDecodeFailed: string
@@ -535,8 +537,10 @@ export type TranslationKey =
   | 'scan.open'
   | 'scan.editInGenerator'
   | 'scan.scanAnother'
+  | 'scan.cancel'
   | 'scan.errorNoCode'
   | 'scan.errorUnsupportedFile'
+  | 'scan.errorFileTooLarge'
   | 'scan.errorCameraDenied'
   | 'scan.errorCameraUnsupported'
   | 'scan.errorDecodeFailed'

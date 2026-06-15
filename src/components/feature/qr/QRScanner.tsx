@@ -1,5 +1,5 @@
 import { useCallback, useId, useRef, useState, type DragEvent } from 'react'
-import { Upload, Camera, Copy, Check, ExternalLink, PencilLine, RotateCcw } from 'lucide-react'
+import { Upload, Camera, Copy, Check, ExternalLink, PencilLine, RotateCcw, X } from 'lucide-react'
 
 import { PillGroup } from '../../common/PillGroup'
 import { Callout } from '../../common/Callout'
@@ -18,6 +18,7 @@ type InputMethod = 'upload' | 'camera'
 const ERROR_KEY: Record<ScanErrorCode, TranslationKey> = {
   'no-code': 'scan.errorNoCode',
   'unsupported-file': 'scan.errorUnsupportedFile',
+  'file-too-large': 'scan.errorFileTooLarge',
   'camera-denied': 'scan.errorCameraDenied',
   'camera-unsupported': 'scan.errorCameraUnsupported',
   'decode-failed': 'scan.errorDecodeFailed',
@@ -41,7 +42,7 @@ const ACTION_BUTTON =
 
 export function QRScanner({ onEditInGenerator }: QRScannerProps) {
   const { translate } = useLocaleContext()
-  const { decoded, error, isDecoding, isCameraActive, videoRef, scanFile, startCamera, stopCamera, reset } =
+  const { decoded, error, isDecoding, isCameraActive, videoRef, scanFile, cancelScan, startCamera, stopCamera, reset } =
     useQrScanner()
 
   const [method, setMethodState] = useState<InputMethod>('upload')
@@ -228,7 +229,14 @@ export function QRScanner({ onEditInGenerator }: QRScannerProps) {
                       muted
                       className="aspect-square w-full object-cover"
                     />
-                    {!isCameraActive && (
+                    {isCameraActive ? (
+                      <div
+                        aria-hidden
+                        className="pointer-events-none absolute inset-0 flex items-center justify-center"
+                      >
+                        <div className="aspect-square w-3/5 rounded-2xl border-2 border-white/90 shadow-[0_0_0_9999px_rgba(0,0,0,0.35)]" />
+                      </div>
+                    ) : (
                       <div className="absolute inset-0 flex items-center justify-center">
                         <span className="text-sm text-text-secondary">{translate('scan.cameraHint')}</span>
                       </div>
@@ -253,9 +261,15 @@ export function QRScanner({ onEditInGenerator }: QRScannerProps) {
               )}
 
               {isDecoding && (
-                <p role="status" aria-live="polite" className="text-center text-sm text-text-secondary">
-                  {translate('scan.decoding')}
-                </p>
+                <div className="space-y-2">
+                  <p role="status" aria-live="polite" className="text-center text-sm text-text-secondary">
+                    {translate('scan.decoding')}
+                  </p>
+                  <button type="button" onClick={cancelScan} className={`${ACTION_BUTTON} w-full`}>
+                    <X size={15} aria-hidden className="shrink-0" />
+                    <span className="truncate">{translate('scan.cancel')}</span>
+                  </button>
+                </div>
               )}
               {error && (
                 <Callout role="status">{translate(ERROR_KEY[error])}</Callout>
