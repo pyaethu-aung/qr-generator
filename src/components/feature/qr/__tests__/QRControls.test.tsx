@@ -314,5 +314,135 @@ describe('color contrast warning', () => {
       setup({ eyeCenterColor: '#00ff00' })
       expect(screen.getByRole('img', { name: /customized/i })).toBeInTheDocument()
     })
+
+    it('shows the badge when a foreground gradient is set', () => {
+      setup({ fgGradient: { type: 'linear', from: '#000000', to: '#4F46E5', direction: 'to-br' } })
+      expect(screen.getByRole('img', { name: /customized/i })).toBeInTheDocument()
+    })
+  })
+
+  describe('foreground gradient', () => {
+    it('only shows the fill-type control when onFgGradientChange is provided', () => {
+      setup()
+      openAppearance()
+      expect(screen.queryByRole('group', { name: 'Foreground Fill' })).not.toBeInTheDocument()
+    })
+
+    it('enabling Linear seeds a gradient from the current foreground color', () => {
+      const onFgGradientChange = vi.fn()
+      setup({ fgColor: '#123456', onFgGradientChange })
+      openAppearance()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Linear' }))
+
+      expect(onFgGradientChange).toHaveBeenCalledWith({
+        type: 'linear',
+        from: '#123456',
+        to: '#4F46E5',
+        direction: 'to-br',
+      })
+    })
+
+    it('switching to Solid clears the gradient', () => {
+      const onFgGradientChange = vi.fn()
+      setup({ fgGradient: { type: 'radial', from: '#000000', to: '#ffffff', direction: 'to-br' }, onFgGradientChange })
+      openAppearance()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Solid' }))
+
+      expect(onFgGradientChange).toHaveBeenCalledWith(null)
+    })
+
+    it('shows Start and End color fields when a gradient is active', () => {
+      setup({ fgGradient: { type: 'linear', from: '#000000', to: '#4F46E5', direction: 'to-r' }, onFgGradientChange: vi.fn() })
+      openAppearance()
+
+      expect(screen.getByLabelText('Start Color')).toBeInTheDocument()
+      expect(screen.getByLabelText('End Color')).toBeInTheDocument()
+      expect(screen.queryByLabelText('Foreground')).not.toBeInTheDocument()
+    })
+
+    it('updates the end color via the End picker', () => {
+      const onFgGradientChange = vi.fn()
+      setup({ fgGradient: { type: 'linear', from: '#000000', to: '#4F46E5', direction: 'to-r' }, onFgGradientChange })
+      openAppearance()
+
+      fireEvent.change(screen.getByLabelText('End Color'), { target: { value: '#abcdef' } })
+
+      expect(onFgGradientChange).toHaveBeenCalledWith({ type: 'linear', from: '#000000', to: '#abcdef', direction: 'to-r' })
+    })
+
+    it('shows the 8 direction options for linear and updates on click', () => {
+      const onFgGradientChange = vi.fn()
+      setup({ fgGradient: { type: 'linear', from: '#000000', to: '#4F46E5', direction: 'to-r' }, onFgGradientChange })
+      openAppearance()
+
+      const group = screen.getByRole('group', { name: 'Direction' })
+      expect(group.querySelectorAll('button')).toHaveLength(8)
+
+      fireEvent.click(screen.getByRole('button', { name: 'Top' }))
+      expect(onFgGradientChange).toHaveBeenCalledWith({ type: 'linear', from: '#000000', to: '#4F46E5', direction: 'to-t' })
+    })
+
+    it('restores the previous stops when toggling Solid then back to a gradient', () => {
+      const onFgGradientChange = vi.fn()
+      const props: Partial<QRControlsProps> = {
+        fgColor: '#000000',
+        fgGradient: { type: 'linear', from: '#111111', to: '#222222', direction: 'to-r' },
+        onFgGradientChange,
+      }
+      const { rerender } = setup(props)
+      openAppearance()
+
+      // Switch to Solid (clears the gradient)…
+      fireEvent.click(screen.getByRole('button', { name: 'Solid' }))
+      expect(onFgGradientChange).toHaveBeenLastCalledWith(null)
+
+      // …the parent re-renders with no gradient; switching back restores the old stops.
+      rerender(
+        <LocaleProvider>
+          <QRControls
+            value=""
+            ecLevel="M"
+            eyeFrameShape="Square"
+            eyeCenterShape="Square"
+            eyeFrameColor={null}
+            eyeCenterColor={null}
+            pixelPattern="Square"
+            fgColor="#000000"
+            bgColor="#ffffff"
+            fgGradient={null}
+            onFgGradientChange={onFgGradientChange}
+            onValueChange={vi.fn()}
+            onEcLevelChange={vi.fn()}
+            onEyeFrameShapeChange={vi.fn()}
+            onEyeCenterShapeChange={vi.fn()}
+            onEyeFrameColorChange={vi.fn()}
+            onEyeCenterColorChange={vi.fn()}
+            onPixelPatternChange={vi.fn()}
+            onFgColorChange={vi.fn()}
+            onBgColorChange={vi.fn()}
+          />
+        </LocaleProvider>,
+      )
+      openAppearance()
+      fireEvent.click(screen.getByRole('button', { name: 'Linear' }))
+
+      expect(onFgGradientChange).toHaveBeenLastCalledWith({ type: 'linear', from: '#111111', to: '#222222', direction: 'to-r' })
+    })
+
+    it('hides the direction grid for a radial gradient', () => {
+      setup({ fgGradient: { type: 'radial', from: '#000000', to: '#4F46E5', direction: 'to-r' }, onFgGradientChange: vi.fn() })
+      openAppearance()
+
+      expect(screen.queryByRole('group', { name: 'Direction' })).not.toBeInTheDocument()
+    })
+
+    it('warns on low contrast when a gradient stop blends into the background', () => {
+      // White-ish end stop on a white background → low contrast on at least one stop.
+      setup({ bgColor: '#ffffff', fgGradient: { type: 'linear', from: '#000000', to: '#fefefe', direction: 'to-r' }, onFgGradientChange: vi.fn() })
+
+      expect(screen.getByText(/contrast may prevent scanners/i)).toBeInTheDocument()
+    })
   })
 })

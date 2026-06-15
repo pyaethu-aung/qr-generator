@@ -76,6 +76,7 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
     setEyeFrameColor,
     setEyeCenterColor,
     setPixelPattern,
+    setFgGradient,
     isRiskyPattern,
     dismissWarning,
     logoDataUrl,
@@ -276,6 +277,25 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
                 pixelPattern={designConfig.pixelPattern}
                 onPixelPatternChange={setPixelPattern}
                 pixelPatternLabel={translate('controls.pixelPatternLabel')}
+                fgGradient={designConfig.fgGradient}
+                onFgGradientChange={setFgGradient}
+                fillTypeLabel={translate('controls.fillTypeLabel')}
+                fillSolidLabel={translate('controls.fillSolid')}
+                fillLinearLabel={translate('controls.fillLinear')}
+                fillRadialLabel={translate('controls.fillRadial')}
+                gradientStartLabel={translate('controls.gradientStartLabel')}
+                gradientEndLabel={translate('controls.gradientEndLabel')}
+                gradientDirectionLabel={translate('controls.gradientDirectionLabel')}
+                gradientDirectionLabels={{
+                  'to-t': translate('controls.gradientDirTop'),
+                  'to-tr': translate('controls.gradientDirTopRight'),
+                  'to-r': translate('controls.gradientDirRight'),
+                  'to-br': translate('controls.gradientDirBottomRight'),
+                  'to-b': translate('controls.gradientDirBottom'),
+                  'to-bl': translate('controls.gradientDirBottomLeft'),
+                  'to-l': translate('controls.gradientDirLeft'),
+                  'to-tl': translate('controls.gradientDirTopLeft'),
+                }}
                 customizedLabel={translate('controls.customized')}
                 isRiskyPattern={isRiskyPattern}
                 onDismissWarning={dismissWarning}
