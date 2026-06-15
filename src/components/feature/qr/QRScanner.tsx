@@ -117,7 +117,7 @@ export function QRScanner({ onEditInGenerator }: QRScannerProps) {
                   {translate('scan.resultTitle')}
                 </h3>
                 {contentType && (
-                  <span className="rounded-full bg-surface-inset px-2.5 py-1 text-xs font-medium text-text-secondary">
+                  <span className="rounded-full bg-surface-inset px-2.5 py-1 text-xs font-medium text-text-primary">
                     {translate(TYPE_KEY[contentType])}
                   </span>
                 )}
