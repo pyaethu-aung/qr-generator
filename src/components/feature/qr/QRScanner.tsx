@@ -98,7 +98,7 @@ export function QRScanner({ onEditInGenerator }: QRScannerProps) {
 
   return (
     <section className="relative isolate overflow-x-hidden px-2 pb-12 sm:px-6 lg:px-8">
-      <div className="relative mx-auto max-w-3xl space-y-3">
+      <div className="relative mx-auto max-w-xl space-y-3">
         <div className="text-center pt-10 pb-4 px-6 sm:px-12">
           <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-text-secondary">
             {translate('scan.sectionLabel')}
@@ -218,7 +218,7 @@ export function QRScanner({ onEditInGenerator }: QRScannerProps) {
                 </>
               ) : (
                 <div className="space-y-3">
-                  <div className="relative overflow-hidden rounded-xl border border-border-strong bg-surface-inset">
+                  <div className="relative mx-auto w-full max-w-sm overflow-hidden rounded-xl border border-border-strong bg-surface-inset">
                     <video
                       ref={videoRef}
                       playsInline
