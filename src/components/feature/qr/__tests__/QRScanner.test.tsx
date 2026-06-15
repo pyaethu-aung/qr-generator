@@ -5,6 +5,7 @@ import { QRScanner } from '../QRScanner'
 import type { UseQrScannerReturn } from '../../../../hooks/useQrScanner'
 
 const scanFile = vi.fn()
+const cancelScan = vi.fn()
 const startCamera = vi.fn()
 const stopCamera = vi.fn()
 const reset = vi.fn()
@@ -23,6 +24,7 @@ function makeState(over: Partial<UseQrScannerReturn> = {}): UseQrScannerReturn {
     isCameraActive: false,
     videoRef: { current: null },
     scanFile,
+    cancelScan,
     startCamera,
     stopCamera,
     reset,
@@ -41,6 +43,7 @@ function setup(onEdit = vi.fn()) {
 
 beforeEach(() => {
   scanFile.mockReset()
+  cancelScan.mockReset()
   startCamera.mockReset()
   stopCamera.mockReset()
   reset.mockReset()
@@ -75,10 +78,23 @@ describe('QRScanner — inputs', () => {
     expect(screen.getByText(/reading code/i)).toBeInTheDocument()
   })
 
+  it('cancels an in-flight decode when Cancel is clicked', () => {
+    scannerState = makeState({ isDecoding: true })
+    setup()
+    fireEvent.click(screen.getByRole('button', { name: /cancel/i }))
+    expect(cancelScan).toHaveBeenCalled()
+  })
+
   it('renders an error message from the scanner', () => {
     scannerState = makeState({ error: 'no-code' })
     setup()
     expect(screen.getByText(/no qr code found/i)).toBeInTheDocument()
+  })
+
+  it('renders the file-too-large error message', () => {
+    scannerState = makeState({ error: 'file-too-large' })
+    setup()
+    expect(screen.getByText(/too large/i)).toBeInTheDocument()
   })
 })
 

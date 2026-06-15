@@ -11,6 +11,7 @@ import { loadUnsupportedImage, sniffImageFormat } from '../utils/imageFormat'
  * Why a decode attempt failed, mapped to a user-facing message by the component:
  * - `no-code` — the image or frame held no readable QR code
  * - `unsupported-file` — the dropped file was not an image
+ * - `file-too-large` — the image exceeded the size we are willing to decode
  * - `camera-denied` — the user blocked camera permission
  * - `camera-unsupported` — the browser exposes no usable camera API
  * - `decode-failed` — the file could not be loaded/processed at all
@@ -18,9 +19,18 @@ import { loadUnsupportedImage, sniffImageFormat } from '../utils/imageFormat'
 export type ScanErrorCode =
   | 'no-code'
   | 'unsupported-file'
+  | 'file-too-large'
   | 'camera-denied'
   | 'camera-unsupported'
   | 'decode-failed'
+
+/**
+ * Largest still image we attempt to decode. A file beyond this is almost always a mistake (a
+ * raw high-megapixel capture, a mis-picked video) rather than a QR photo, and pushing it
+ * through the decode ladder — a HEIC/TIFF especially, which runs a WASM codec — can lock the
+ * tab up. 25 MB clears any real phone photo while ruling out the runaway case.
+ */
+const MAX_FILE_BYTES = 25 * 1024 * 1024
 
 export interface UseQrScannerReturn {
   /** The decoded string once a scan succeeds, or null. */
@@ -35,6 +45,8 @@ export interface UseQrScannerReturn {
   videoRef: React.RefObject<HTMLVideoElement | null>
   /** Decode a still image (upload or drop). */
   scanFile: (file: File) => Promise<void>
+  /** Abandon an in-flight still-image decode; its pending result is discarded. */
+  cancelScan: () => void
   /** Request the camera and begin scanning frames. */
   startCamera: () => Promise<void>
   /** Stop the camera and release the stream. */
@@ -244,6 +256,8 @@ export function useQrScanner(): UseQrScannerReturn {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const frameRef = useRef<number | null>(null)
+  // Bumped to abandon an in-flight decode: a resolved attempt whose token is stale is dropped.
+  const scanTokenRef = useRef(0)
 
   function getCanvas(): HTMLCanvasElement {
     canvasRef.current ??= document.createElement('canvas')
@@ -267,25 +281,37 @@ export function useQrScanner(): UseQrScannerReturn {
         setError('unsupported-file')
         return
       }
+      if (file.size > MAX_FILE_BYTES) {
+        setError('file-too-large')
+        return
+      }
       stopCamera()
+      const token = ++scanTokenRef.current
       setError(null)
       setDecoded(null)
       setIsDecoding(true)
       try {
         const value = await decodeFile(file, getCanvas())
+        // A newer scan or a cancel has superseded this one; drop its result.
+        if (scanTokenRef.current !== token) return
         if (value) {
           setDecoded(value)
         } else {
           setError('no-code')
         }
       } catch {
-        setError('decode-failed')
+        if (scanTokenRef.current === token) setError('decode-failed')
       } finally {
-        setIsDecoding(false)
+        if (scanTokenRef.current === token) setIsDecoding(false)
       }
     },
     [stopCamera],
   )
+
+  const cancelScan = useCallback(() => {
+    scanTokenRef.current++
+    setIsDecoding(false)
+  }, [])
 
   const startCamera = useCallback(async () => {
     if (!navigator.mediaDevices?.getUserMedia) {
@@ -342,6 +368,7 @@ export function useQrScanner(): UseQrScannerReturn {
     isCameraActive,
     videoRef,
     scanFile,
+    cancelScan,
     startCamera,
     stopCamera,
     reset,
