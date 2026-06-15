@@ -4,7 +4,9 @@
 [![Lint and Type Check](https://github.com/pyaethu-aung/qr-generator/actions/workflows/lint.yml/badge.svg)](https://github.com/pyaethu-aung/qr-generator/actions/workflows/lint.yml)
 [![Security Scan](https://github.com/pyaethu-aung/qr-generator/actions/workflows/security.yml/badge.svg)](https://github.com/pyaethu-aung/qr-generator/actions/workflows/security.yml)
 
-Single-page app for generating QR codes with real-time preview and download.
+Single-page app for generating QR codes with real-time preview and
+download, plus a built-in scanner for decoding codes from an image or the
+camera.
 
 ## Content types
 
@@ -58,12 +60,41 @@ and `src/utils/qrSvgComposer.ts` is the single source that composes the
 QR + frame SVG for the preview and all exports. Styling and frame state are
 owned by `useQRDesign` and persisted to `localStorage`.
 
+## Scanning
+
+The **Scan** view (toggle at the top of the page) reads a QR code back into
+text. It accepts two inputs:
+
+- **Image** — drag-and-drop or pick a file.
+- **Camera** — a live `getUserMedia` stream, decoded frame by frame.
+
+Decoding prefers the browser's native `BarcodeDetector` (Chrome/Android) and
+falls back to the `@zxing/library` decoder where it is unavailable
+(Safari/Firefox). Because a code that is small or distant in a large photo
+fails to locate at full resolution, the fallback retries each image across a
+descending ladder of sizes until one reads.
+
+HEIC/HEIF and TIFF uploads (an iPhone shoots HEIC by default) decode natively
+only in Safari. On other browsers the scanner sniffs the format from the
+file's leading bytes and decodes it with a codec loaded on demand — `heic-to`
+(libheif) for HEIC, the pure-JS `utif` for TIFF — so the heavy WASM never
+loads until a file actually needs it. AVIF is left to the browser, which
+decodes it natively.
+
+On a successful decode the result shows the text and its detected content
+type, with actions to **Copy**, **Open** (for URLs), and **Edit in
+generator**, which round-trips the value back into the Generate flow. The
+pure decode/sniffing logic lives in `src/utils/qrDecode.ts` and
+`src/utils/imageFormat.ts`; the camera/canvas glue is in
+`src/hooks/useQrScanner.ts`.
+
 ## Stack
 
-- React 19, TypeScript, Vite 7
+- React 19, TypeScript, Vite 8
 - Tailwind CSS v4 (via `@tailwindcss/vite` + `@tailwindcss/postcss`)
 - `react-helmet-async`: For managing document head and SEO metadata
 - `qrcode.react` for preview, `qrcode` for asset generation
+- `@zxing/library` for QR decoding; `heic-to` + `utif` for HEIC/TIFF uploads
 - Testing: Vitest + React Testing Library + jest-dom
 - Linting/formatting: ESLint (type-aware) + Prettier
 
