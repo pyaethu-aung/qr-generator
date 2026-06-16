@@ -1,8 +1,9 @@
 import { useEffect, useState, useCallback } from 'react'
-import { ExternalLink, QrCode, ScanLine } from 'lucide-react'
+import { ExternalLink, QrCode, ScanLine, Layers } from 'lucide-react'
 
 import { QRGenerator } from './components/feature/qr/QRGenerator'
 import { QRScanner } from './components/feature/qr/QRScanner'
+import { BatchGenerator } from './components/feature/qr/BatchGenerator'
 import { PillGroup } from './components/common/PillGroup'
 import './App.css'
 import { useLocaleContext } from './hooks/LocaleProvider'
@@ -11,7 +12,7 @@ import { Navbar } from './components/Navigation/Navbar'
 import { Layout } from './components/Layout/Layout'
 import SEOHead from './components/common/SEOHead'
 
-type AppView = 'generate' | 'scan'
+type AppView = 'generate' | 'batch' | 'scan'
 
 function App() {
   const { translate, seo } = useLocaleContext()
@@ -51,6 +52,7 @@ function App() {
               size="sm"
               options={[
                 { value: 'generate', label: translate('scan.tabGenerate'), icon: <QrCode size={15} aria-hidden /> },
+                { value: 'batch', label: translate('scan.tabBatch'), icon: <Layers size={15} aria-hidden /> },
                 { value: 'scan', label: translate('scan.tabScan'), icon: <ScanLine size={15} aria-hidden /> },
               ]}
             />
@@ -58,6 +60,7 @@ function App() {
           <div hidden={view !== 'generate'}>
             <QRGenerator seed={seed} />
           </div>
+          {view === 'batch' && <BatchGenerator />}
           {view === 'scan' && <QRScanner onEditInGenerator={handleEditInGenerator} />}
         </div>
       </main>

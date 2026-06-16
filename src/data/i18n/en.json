@@ -257,8 +257,9 @@
     "shareStatusPermissionDenied": "Permission denied. Downloading instead..."
   },
   "scan": {
-    "tabsLabel": "Generate or scan",
+    "tabsLabel": "Generate, batch, or scan",
     "tabGenerate": "Generate",
+    "tabBatch": "Batch",
     "tabScan": "Scan",
     "sectionLabel": "Scanner",
     "title": "Scan a QR code",
@@ -299,6 +300,23 @@
     "typeVevent": "Event",
     "typeCrypto": "Crypto",
     "typeText": "Text"
+  },
+  "batch": {
+    "sectionLabel": "Batch",
+    "title": "Generate in bulk",
+    "subtitle": "Paste a list of links or text, one per line, and download every QR code as a single ZIP.",
+    "inputLabel": "Your list",
+    "inputPlaceholder": "https://example.com/menu\nhttps://example.com/wifi\nAny text works too",
+    "countLabel": "{count} of {max} codes",
+    "emptyHint": "Add one link or line of text per row to build a batch.",
+    "truncatedWarning": "That is over the limit. Only the first {max} codes will be generated.",
+    "formatLabel": "File format",
+    "designNote": "Every code uses your current colors, pattern, and frame.",
+    "generateButton": "Generate ZIP",
+    "generatingStatus": "Generating code {completed} of {total}...",
+    "successStatus": "Done. Your ZIP download should start automatically.",
+    "errorEmpty": "Add at least one link or line of text first.",
+    "errorRender": "Something went wrong while generating. Please try again."
   },
   "export": {
     "modalTitle": "Export QR Code",

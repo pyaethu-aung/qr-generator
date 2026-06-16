@@ -259,6 +259,7 @@ export interface CommonStrings {
 export interface ScanStrings {
   tabsLabel: string
   tabGenerate: string
+  tabBatch: string
   tabScan: string
   sectionLabel: string
   title: string
@@ -301,6 +302,24 @@ export interface ScanStrings {
   typeText: string
 }
 
+export interface BatchStrings {
+  sectionLabel: string
+  title: string
+  subtitle: string
+  inputLabel: string
+  inputPlaceholder: string
+  countLabel: string
+  emptyHint: string
+  truncatedWarning: string
+  formatLabel: string
+  designNote: string
+  generateButton: string
+  generatingStatus: string
+  successStatus: string
+  errorEmpty: string
+  errorRender: string
+}
+
 export interface LocaleConfig {
   locale: LocaleMetadata
   common: CommonStrings
@@ -311,6 +330,7 @@ export interface LocaleConfig {
   controls: ControlStrings
   preview: PreviewStrings
   scan: ScanStrings
+  batch: BatchStrings
 }
 
 export type TranslationKey =
@@ -544,6 +564,7 @@ export type TranslationKey =
   | 'preview.shareButtonLabel'
   | 'scan.tabsLabel'
   | 'scan.tabGenerate'
+  | 'scan.tabBatch'
   | 'scan.tabScan'
   | 'scan.sectionLabel'
   | 'scan.title'
@@ -584,3 +605,18 @@ export type TranslationKey =
   | 'scan.typeVevent'
   | 'scan.typeCrypto'
   | 'scan.typeText'
+  | 'batch.sectionLabel'
+  | 'batch.title'
+  | 'batch.subtitle'
+  | 'batch.inputLabel'
+  | 'batch.inputPlaceholder'
+  | 'batch.countLabel'
+  | 'batch.emptyHint'
+  | 'batch.truncatedWarning'
+  | 'batch.formatLabel'
+  | 'batch.designNote'
+  | 'batch.generateButton'
+  | 'batch.generatingStatus'
+  | 'batch.successStatus'
+  | 'batch.errorEmpty'
+  | 'batch.errorRender'
