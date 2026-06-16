@@ -49,9 +49,19 @@ Never push directly to `main`. All changes must go through a pull request. A `pr
 
 Tailwind CSS v4 via `@tailwindcss/vite`. Entry point is `src/index.css`. Use semantic design tokens (CSS custom properties) for all colors — never hard-code hex values in component classes. The `dark` class on `<html>` drives dark-mode variants.
 
+### Views
+
+Three top-level views toggle via a `PillGroup` in `src/App.tsx`: **Generate** (`QRGenerator`), **Batch** (`BatchGenerator`), **Scan** (`QRScanner`). Generate stays mounted (`hidden`); Batch and Scan mount on demand.
+
 ### Share / export
 
 `useQRShare` handles the share button: tries `navigator.share` with files → `ClipboardItem` image write → download fallback. `useExportState` + `src/utils/export/` drive the hi-res export modal (PNG / SVG / PDF via jspdf).
+
+Headless rendering (no DOM preview) is shared: `renderQrPngBlob` (`src/utils/export/pngRenderer.ts`) for PNG, `exportSvg` / `exportPdf` for the rest. The single-QR download path and batch generation both go through these.
+
+### Batch generation
+
+`BatchGenerator` + `useBatchGenerator` render a pasted list (one value per line, deduped, capped at `BATCH_MAX_LINES`) to PNG/SVG/PDF and pack them into one ZIP via `fflate`. The core lives in `src/utils/batch/` (`parseBatchInput`, `batchFilename`, `buildBatchZip`). Each code inherits the user's current design read from `localStorage`: design/frame via `persistedDesign.ts`, foreground/background/EC via `persistedAppearance.ts`. These loaders are the single source of truth, also consumed by `useQRDesign` / `useQRGenerator`, so a batch code matches the live preview. Because the tab mounts on demand it re-reads that design on each open; the pasted list itself is persisted so a tab switch doesn't lose it.
 
 ## Testing
 
