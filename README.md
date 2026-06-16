@@ -5,8 +5,8 @@
 [![Security Scan](https://github.com/pyaethu-aung/qr-generator/actions/workflows/security.yml/badge.svg)](https://github.com/pyaethu-aung/qr-generator/actions/workflows/security.yml)
 
 Single-page app for generating QR codes with real-time preview and
-download, plus a built-in scanner for decoding codes from an image or the
-camera.
+download, plus batch generation (a list of codes as one ZIP) and a built-in
+scanner for decoding codes from an image or the camera.
 
 ## Content types
 
@@ -65,6 +65,23 @@ and `src/utils/qrSvgComposer.ts` is the single source that composes the
 QR + frame SVG for the preview and all exports. Styling and frame state are
 owned by `useQRDesign` and persisted to `localStorage`.
 
+## Batch generation
+
+The **Batch** view (toggle at the top of the page) turns a list into many
+codes at once. Paste one URL or line of text per row (up to 200; blank lines
+and exact duplicates are dropped), choose a format (PNG, SVG, or PDF), and
+**Generate ZIP** renders each code and downloads them as a single archive.
+Files are named by position and a slug of their content
+(`001-example-com.png`), so they sort in the order you pasted them.
+
+Every code inherits the design you last configured in the Generate tab:
+foreground/background colors, error correction, eye shapes, pixel pattern,
+gradient, and frame. Generation is fully client-side and reuses the same
+headless exporters as the single-QR download (`src/utils/export/`); the
+list is rendered and zipped in `src/utils/batch/` (with `fflate`), driven by
+`useBatchGenerator`. The pasted list persists to `localStorage` so switching
+tabs doesn't lose it.
+
 ## Scanning
 
 The **Scan** view (toggle at the top of the page) reads a QR code back into
@@ -99,6 +116,7 @@ pure decode/sniffing logic lives in `src/utils/qrDecode.ts` and
 - Tailwind CSS v4 (via `@tailwindcss/vite` + `@tailwindcss/postcss`)
 - `react-helmet-async`: For managing document head and SEO metadata
 - `qrcode.react` for preview, `qrcode` for asset generation
+- `fflate` for client-side ZIP packing in batch generation
 - `@zxing/library` for QR decoding; `heic-to` + `utif` for HEIC/TIFF uploads
 - Testing: Vitest + React Testing Library + jest-dom
 - Linting/formatting: ESLint (type-aware) + Prettier
