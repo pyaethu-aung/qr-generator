@@ -342,5 +342,9 @@
       "exportFailed": "Export failed. Please try again.",
       "canvasNotFound": "QR code canvas not found"
     }
+  },
+  "history": {
+    "sectionLabel": "Recently generated",
+    "clearAriaLabel": "Clear history"
   }
 }
