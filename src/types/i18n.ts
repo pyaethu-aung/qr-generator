@@ -320,6 +320,11 @@ export interface BatchStrings {
   errorRender: string
 }
 
+export interface HistoryStrings {
+  sectionLabel: string
+  clearAriaLabel: string
+}
+
 export interface LocaleConfig {
   locale: LocaleMetadata
   common: CommonStrings
@@ -331,6 +336,7 @@ export interface LocaleConfig {
   preview: PreviewStrings
   scan: ScanStrings
   batch: BatchStrings
+  history: HistoryStrings
 }
 
 export type TranslationKey =
@@ -620,3 +626,5 @@ export type TranslationKey =
   | 'batch.successStatus'
   | 'batch.errorEmpty'
   | 'batch.errorRender'
+  | 'history.sectionLabel'
+  | 'history.clearAriaLabel'

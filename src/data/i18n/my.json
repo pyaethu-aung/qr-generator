@@ -342,5 +342,9 @@
       "exportFailed": "တင်ပို့မှု မအောင်မြင်ပါ။ ထပ်စမ်းကြည့်ပါ။",
       "canvasNotFound": "QR ကုဒ် canvas မတွေ့ပါ"
     }
+  },
+  "history": {
+    "sectionLabel": "မကြာမီ ထုတ်လုပ်ထားသည်",
+    "clearAriaLabel": "မှတ်တမ်းရှင်းပစ်ပါ"
   }
 }

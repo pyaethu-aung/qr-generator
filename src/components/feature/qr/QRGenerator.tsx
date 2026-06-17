@@ -3,9 +3,14 @@ import { Share2, Download, Check, Link2 } from 'lucide-react'
 
 import { QRControls } from './QRControls'
 import { QRPreview } from './QRPreview'
+import { QRHistory } from './QRHistory'
 import { useQRGenerator } from '../../../hooks/useQRGenerator'
 import { useQRDesign } from '../../../hooks/useQRDesign'
 import { useQRShare } from '../../../hooks/useQRShare'
+import { useQRHistory } from '../../../hooks/useQRHistory'
+import type { HistoryEntry } from '../../../hooks/useQRHistory'
+import { renderQrPngBlob } from '../../../utils/export/pngRenderer'
+import { DEFAULT_DESIGN_CONFIG } from '../../../utils/persistedDesign'
 import { useWiFiConfig } from '../../../hooks/useWiFiConfig'
 import { useVCardConfig } from '../../../hooks/useVCardConfig'
 import { useEmailConfig } from '../../../hooks/useEmailConfig'
@@ -93,6 +98,7 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
   } = useQRDesign(inputValue, inputEcLevel)
 
   const { translate } = useLocaleContext()
+  const { history, addEntry, clear: clearHistory } = useQRHistory()
 
   // Apply a scanner round-trip once per token: load the raw decoded string into Text mode.
   const lastSeedToken = useRef(0)
@@ -167,6 +173,36 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
     }
     copyTimerRef.current = setTimeout(() => setCopyState('idle'), 2000)
   }, [contentMode, wifiConfig, vcardConfig, emailConfig, smsConfig, telConfig, geoConfig, veventConfig, cryptoConfig, inputValue, inputEcLevel, inputFgColor, inputBgColor, designConfig, frameConfig])
+
+  const captureHistoryEntry = useCallback(async () => {
+    if (!liveValue) return
+    try {
+      const blob = await renderQrPngBlob(liveValue, {
+        ecLevel: inputEcLevel,
+        fgColor: inputFgColor,
+        bgColor: inputBgColor,
+        designConfig: DEFAULT_DESIGN_CONFIG,
+        size: 128,
+      })
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result as string)
+        reader.onerror = reject
+        reader.readAsDataURL(blob)
+      })
+      addEntry({ value: liveValue, fgColor: inputFgColor, bgColor: inputBgColor, ecLevel: inputEcLevel, thumbnailDataUrl: dataUrl })
+    } catch {
+      // best-effort — never block the download
+    }
+  }, [liveValue, inputEcLevel, inputFgColor, inputBgColor, addEntry])
+
+  const handleRestore = useCallback((entry: HistoryEntry) => {
+    setContentMode('text')
+    setInputValue(entry.value)
+    setInputFgColor(entry.fgColor)
+    setInputBgColor(entry.bgColor)
+    setInputEcLevel(entry.ecLevel)
+  }, [setInputValue, setInputFgColor, setInputBgColor, setInputEcLevel])
 
   const isShareDisabled = !liveValue || isSharing
 
@@ -420,7 +456,7 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <button
                   type="button"
-                  onClick={() => void downloadPng(designConfig, frameConfig, logoDataUrl, logoSize)}
+                  onClick={() => { void downloadPng(designConfig, frameConfig, logoDataUrl, logoSize); void captureHistoryEntry() }}
                   disabled={!canDownload}
                   className="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-border-subtle bg-surface-raised px-3 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
@@ -429,7 +465,7 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => void downloadSvg(designConfig, frameConfig, logoDataUrl, logoSize)}
+                  onClick={() => { void downloadSvg(designConfig, frameConfig, logoDataUrl, logoSize); void captureHistoryEntry() }}
                   disabled={!canDownload}
                   className="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-border-subtle bg-surface-raised px-3 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
@@ -481,6 +517,13 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
             </div>
           </div>
         </div>
+        <QRHistory
+          history={history}
+          onRestore={handleRestore}
+          onClear={clearHistory}
+          sectionLabel={translate('history.sectionLabel')}
+          clearAriaLabel={translate('history.clearAriaLabel')}
+        />
       </div>
     </section>
   )
