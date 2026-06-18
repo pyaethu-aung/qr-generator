@@ -50,6 +50,7 @@ export interface ControlStrings {
   correctionBelowRecommended: string
   foregroundLabel: string
   backgroundLabel: string
+  bgTransparentLabel: string
   eyeFrameLabel: string
   eyeCenterLabel: string
   eyeFrameColorLabel: string
@@ -371,6 +372,7 @@ export type TranslationKey =
   | 'controls.correctionBelowRecommended'
   | 'controls.foregroundLabel'
   | 'controls.backgroundLabel'
+  | 'controls.bgTransparentLabel'
   | 'controls.eyeFrameLabel'
   | 'controls.eyeCenterLabel'
   | 'controls.eyeFrameColorLabel'

@@ -53,6 +53,7 @@
     "correctionTooltip": "How much of the QR code can be covered or damaged and still scan. Low gives a compact code; Highest lets you overlay a logo at the cost of a denser pattern.",
     "foregroundLabel": "Foreground",
     "backgroundLabel": "Background",
+    "bgTransparentLabel": "Transparent",
     "eyeFrameLabel": "Corner Frame",
     "eyeCenterLabel": "Corner Dot",
     "eyeFrameColorLabel": "Corner Frame Color",
