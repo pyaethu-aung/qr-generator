@@ -13,7 +13,7 @@ describe('persistedAppearance', () => {
   })
 
   it('round-trips a persisted appearance', () => {
-    const appearance = { fgColor: '#112233', bgColor: '#ffeedd', ecLevel: 'H' as const }
+    const appearance = { fgColor: '#112233', bgColor: '#ffeedd', ecLevel: 'H' as const, transparentBg: true }
     persistAppearance(appearance)
     expect(loadPersistedAppearance()).toEqual(appearance)
   })
