@@ -8,6 +8,8 @@ export interface SvgExportConfig extends QRConfig {
   frameConfig?: QRFrameConfig
   logoDataUrl?: string | null
   logoSize?: number
+  /** When true, the SVG is rendered without a background. */
+  transparentBg?: boolean
 }
 
 export async function exportSvg(
@@ -27,6 +29,7 @@ export async function exportSvg(
     frameConfig,
     logoDataUrl,
     logoSize = 20,
+    transparentBg = false,
   } = config
 
   const cellSize = 10
@@ -38,6 +41,7 @@ export async function exportSvg(
     design: designConfig,
     frame: frameConfig,
     cellSize,
+    transparentBg,
   })
 
   // Quiet-zone margin is only added for the bare QR. Framed output carries its own
@@ -59,10 +63,10 @@ export async function exportSvg(
 <image href="${rasterizedDataUrl}" x="${cx - logoRadius}" y="${cy - logoRadius}" width="${logoRenderPx}" height="${logoRenderPx}" clip-path="url(#logo-clip)"/>`
   }
 
+  const bgRectEl = transparentBg ? '' : `<rect width="100%" height="100%" fill="${bgColor}"/>\n`
   const svgString = `<?xml version="1.0" encoding="utf-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${totalSize} ${totalSize}">
-<rect width="100%" height="100%" fill="${bgColor}"/>
-<g transform="translate(${pad}, ${pad})">${body}</g>
+${bgRectEl}<g transform="translate(${pad}, ${pad})">${body}</g>
 ${logoSvgElements}</svg>`
 
   return new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' })

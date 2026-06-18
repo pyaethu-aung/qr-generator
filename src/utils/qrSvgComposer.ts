@@ -21,6 +21,8 @@ export interface ComposeQrOptions {
   design: QRDesignConfig
   frame?: QRFrameConfig
   cellSize?: number
+  /** When true, the background rect is omitted and eye backgrounds use fill="none". */
+  transparentBg?: boolean
 }
 
 export interface ComposedQr {
@@ -37,7 +39,7 @@ export interface ComposedQr {
 const n = (v: number): number => Math.round(v * 1000) / 1000
 
 export function composeQrSvg(opts: ComposeQrOptions): ComposedQr {
-  const { value, ecLevel, fgColor, bgColor, design, frame, cellSize = 10 } = opts
+  const { value, ecLevel, fgColor, bgColor, design, frame, cellSize = 10, transparentBg = false } = opts
 
   const { dataPath, eyeFramePath, eyeCenterPath, eyeBgPath, size } = generateQRPaths(
     value,
@@ -56,12 +58,15 @@ export function composeQrSvg(opts: ComposeQrOptions): ComposedQr {
   const eyeFrameFill = design.eyeFrameColor ?? fgFill
   const eyeCenterFill = design.eyeCenterColor ?? fgFill
 
+  const eyeBgFill = transparentBg ? 'none' : bgColor
+  const bgRect = (w: number) => transparentBg ? '' : `<rect width="${n(w)}" height="${n(w)}" fill="${bgColor}"/>`
+
   const qrGroup = (tx: number, ty: number): string => {
     const open = tx || ty ? `<g transform="translate(${n(tx)},${n(ty)})">` : '<g>'
     return (
       open +
       `<path d="${dataPath}" fill="${fgFill}" shape-rendering="${dataShapeRendering}"/>` +
-      `<path d="${eyeBgPath}" fill="${bgColor}"/>` +
+      `<path d="${eyeBgPath}" fill="${eyeBgFill}"/>` +
       `<path d="${eyeFramePath}" fill="${eyeFrameFill}" fill-rule="evenodd"/>` +
       `<path d="${eyeCenterPath}" fill="${eyeCenterFill}"/>` +
       `</g>`
@@ -71,7 +76,7 @@ export function composeQrSvg(opts: ComposeQrOptions): ComposedQr {
   // No frame: bare QR, byte-for-byte the same structure as before frames existed.
   if (!frame || frame.style === 'None') {
     return {
-      body: gradientDefs + `<rect width="${Q}" height="${Q}" fill="${bgColor}"/>` + qrGroup(0, 0),
+      body: gradientDefs + bgRect(Q) + qrGroup(0, 0),
       viewBox: Q,
       logoCenter: { x: Q / 2, y: Q / 2 },
       logoBase: Q,
@@ -82,7 +87,7 @@ export function composeQrSvg(opts: ComposeQrOptions): ComposedQr {
   return {
     body:
       gradientDefs +
-      `<rect width="${n(viewBox)}" height="${n(viewBox)}" fill="${bgColor}"/>` +
+      bgRect(viewBox) +
       decoration +
       qrGroup(qrBox.x, qrBox.y),
     viewBox,
