@@ -1083,10 +1083,15 @@ export function QRControls({
                     {onTransparentBgChange && (
                       <button
                         type="button"
+                        role="switch"
+                        aria-checked={transparentBg}
                         onClick={() => onTransparentBgChange(!transparentBg)}
-                        className="text-xs text-action hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
+                        className="flex items-center gap-1.5 text-xs text-text-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded transition-colors"
                       >
                         {bgTransparentLabel}
+                        <span className={`relative inline-flex h-4 w-7 shrink-0 items-center rounded-full transition-colors duration-150 ${transparentBg ? 'bg-action' : 'bg-border-strong'}`}>
+                          <span className={`inline-block h-3 w-3 transform rounded-full bg-white shadow-sm transition-transform duration-150 ${transparentBg ? 'translate-x-3.5' : 'translate-x-0.5'}`} />
+                        </span>
                       </button>
                     )}
                   </div>
