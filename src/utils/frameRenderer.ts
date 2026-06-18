@@ -237,5 +237,29 @@ export function renderFrame(
       const cap = caption(text, viewBox / 2, capCy, capMargin * 0.34, onBand, win * 0.9)
       return { viewBox, qrBox: { x: winX + pad, y: winY + pad, size: Q }, decoration: mat + windowRect + cap }
     }
+
+    case 'Circle': {
+      // The QR square is inscribed in a ring (inner radius clears the square's
+      // corners, which sit a half-diagonal from the center), and a "SCAN ME"
+      // pill straddles the ring's edge on the caption side, like a round badge.
+      const om = Q * 0.05
+      const pad = Q * 0.06 // quiet zone between the QR's corners and the ring
+      const t = Q * 0.035 // ring thickness
+      const rIn = Q * Math.SQRT1_2 + pad // half-diagonal of the QR + pad
+      const rMid = rIn + t / 2 // ring stroke centerline
+      const rOut = rIn + t
+      const ph = Q * 0.16 // pill height
+      const pw = Q * 0.5 // pill width
+      const overhang = rMid + ph / 2 // center → far pill edge on the caption side
+      const viewBox = n(2 * om + rOut + overhang)
+      const cx = viewBox / 2
+      const cy = atBottom ? om + rOut : viewBox - om - rOut
+      const pillCy = atBottom ? cy + rMid : cy - rMid
+      const disc = `<circle cx="${n(cx)}" cy="${n(cy)}" r="${n(rIn)}" fill="${bgColor}"/>`
+      const ring = `<circle cx="${n(cx)}" cy="${n(cy)}" r="${n(rMid)}" fill="none" stroke="${frameColor}" stroke-width="${n(t)}"/>`
+      const pill = text.trim() ? `<path d="${rrect(cx - pw / 2, pillCy - ph / 2, pw, ph, ph / 2)}" fill="${frameColor}"/>` : ''
+      const cap = caption(text, cx, pillCy, ph * 0.42, onBand, pw * 0.84)
+      return { viewBox, qrBox: { x: cx - Q / 2, y: cy - Q / 2, size: Q }, decoration: disc + ring + pill + cap }
+    }
   }
 }

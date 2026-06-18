@@ -431,6 +431,7 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
                   Bubble: translate('controls.frameStyleBubble'),
                   Ticks: translate('controls.frameStyleTicks'),
                   Photo: translate('controls.frameStylePhoto'),
+                  Circle: translate('controls.frameStyleCircle'),
                 }}
               />
             </div>

@@ -21,7 +21,7 @@ export const DESIGN_STORAGE_KEY = 'qr-generator-design-config'
 export const FRAME_STORAGE_KEY = 'qr-generator-frame-config'
 export const FRAME_TEXT_LIMIT = 24
 
-const FRAME_STYLES: QRFrameStyle[] = ['None', 'Banner', 'Card', 'Ticket', 'Label', 'Bubble', 'Ticks', 'Photo']
+const FRAME_STYLES: QRFrameStyle[] = ['None', 'Banner', 'Card', 'Ticket', 'Label', 'Bubble', 'Ticks', 'Photo', 'Circle']
 const GRADIENT_TYPES: QRGradientType[] = ['linear', 'radial']
 const GRADIENT_DIRECTIONS: QRGradientDirection[] = ['to-t', 'to-tr', 'to-r', 'to-br', 'to-b', 'to-bl', 'to-l', 'to-tl']
 const HEX_COLOR_RE = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/
