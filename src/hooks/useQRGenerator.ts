@@ -35,6 +35,8 @@ export interface UseQRGeneratorReturn {
   setInputFgColor: (color: string) => void
   inputBgColor: string
   setInputBgColor: (color: string) => void
+  inputTransparentBg: boolean
+  setInputTransparentBg: (v: boolean) => void
   downloadPng: (designConfig: QRDesignConfig, frameConfig?: QRFrameConfig, logoDataUrl?: string | null, logoSize?: number) => Promise<void>
   downloadSvg: (designConfig: QRDesignConfig, frameConfig?: QRFrameConfig, logoDataUrl?: string | null, logoSize?: number) => Promise<void>
   inputError?: string
@@ -59,6 +61,7 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
   )
   const [inputFgColor, setInputFgColor] = useState<string>(sharedAppearance?.fgColor ?? persistedAppearance.fgColor)
   const [inputBgColor, setInputBgColor] = useState<string>(sharedAppearance?.bgColor ?? persistedAppearance.bgColor)
+  const [inputTransparentBg, setInputTransparentBg] = useState<boolean>(persistedAppearance.transparentBg)
   const [recentDownload, setRecentDownload] = useState<'png' | 'svg' | null>(null)
   const downloadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -92,10 +95,10 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
   // Persist the appearance triple (debounced) so the Batch tab inherits the current look.
   useEffect(() => {
     const timer = setTimeout(() => {
-      persistAppearance({ fgColor: inputFgColor, bgColor: inputBgColor, ecLevel: inputEcLevel })
+      persistAppearance({ fgColor: inputFgColor, bgColor: inputBgColor, ecLevel: inputEcLevel, transparentBg: inputTransparentBg })
     }, 400)
     return () => clearTimeout(timer)
-  }, [inputFgColor, inputBgColor, inputEcLevel])
+  }, [inputFgColor, inputBgColor, inputEcLevel, inputTransparentBg])
 
   // Debounce the text field — 300 ms for valid input, 0 ms to clear on invalid/empty
   useEffect(() => {
@@ -129,6 +132,7 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
         frameConfig,
         logoDataUrl,
         logoSize,
+        transparentBg: inputTransparentBg,
       })
 
       downloadBlob(blob, `qr-code-${Date.now()}.png`)
@@ -138,7 +142,7 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
     } catch (err) {
       console.error('Failed to generate PNG', err)
     }
-  }, [effectiveInput, inputEcLevel, inputFgColor, inputBgColor])
+  }, [effectiveInput, inputEcLevel, inputFgColor, inputBgColor, inputTransparentBg])
 
   const downloadSvg = useCallback(async (
     designConfig: QRDesignConfig,
@@ -158,6 +162,7 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
         frameConfig,
         logoDataUrl,
         logoSize,
+        transparentBg: inputTransparentBg,
       })
       downloadBlob(blob, `qr-code-${Date.now()}.svg`)
       if (downloadTimerRef.current) clearTimeout(downloadTimerRef.current)
@@ -166,7 +171,7 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
     } catch (err) {
       console.error('Failed to generate SVG', err)
     }
-  }, [effectiveInput, inputEcLevel, inputFgColor, inputBgColor])
+  }, [effectiveInput, inputEcLevel, inputFgColor, inputBgColor, inputTransparentBg])
 
   return {
     liveValue,
@@ -178,6 +183,8 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
     setInputFgColor,
     inputBgColor,
     setInputBgColor,
+    inputTransparentBg,
+    setInputTransparentBg,
     downloadPng,
     downloadSvg,
     inputError,

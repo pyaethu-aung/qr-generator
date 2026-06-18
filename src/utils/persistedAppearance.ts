@@ -12,6 +12,7 @@ export interface PersistedAppearance {
   fgColor: string
   bgColor: string
   ecLevel: QRErrorCorrectionLevel
+  transparentBg: boolean
 }
 
 const APPEARANCE_STORAGE_KEY = 'qr-generator:appearance'
@@ -23,6 +24,7 @@ export function defaultAppearance(): PersistedAppearance {
     fgColor: DEFAULT_QR_CONFIG.fgColor,
     bgColor: DEFAULT_QR_CONFIG.bgColor,
     ecLevel: DEFAULT_QR_CONFIG.ecLevel,
+    transparentBg: false,
   }
 }
 
@@ -49,6 +51,7 @@ export function loadPersistedAppearance(): PersistedAppearance {
       ecLevel: EC_LEVELS.includes(parsed.ecLevel as QRErrorCorrectionLevel)
         ? (parsed.ecLevel as QRErrorCorrectionLevel)
         : fallback.ecLevel,
+      transparentBg: typeof parsed.transparentBg === 'boolean' ? parsed.transparentBg : fallback.transparentBg,
     }
   } catch {
     return fallback
