@@ -220,6 +220,7 @@ export interface ControlStrings {
   frameStyleBubble: string
   frameStyleTicks: string
   frameStylePhoto: string
+  frameStyleCircle: string
   frameTextLabel: string
   frameTextPlaceholder: string
   frameTextHint: string
@@ -542,6 +543,7 @@ export type TranslationKey =
   | 'controls.frameStyleBubble'
   | 'controls.frameStyleTicks'
   | 'controls.frameStylePhoto'
+  | 'controls.frameStyleCircle'
   | 'controls.frameTextLabel'
   | 'controls.frameTextPlaceholder'
   | 'controls.frameTextHint'
