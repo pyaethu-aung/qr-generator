@@ -66,6 +66,8 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
     setInputFgColor,
     inputBgColor,
     setInputBgColor,
+    inputTransparentBg,
+    setInputTransparentBg,
     downloadPng,
     downloadSvg,
     inputError,
@@ -288,6 +290,9 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
                 onFgColorChange={setInputFgColor}
                 bgColor={inputBgColor}
                 onBgColorChange={setInputBgColor}
+                transparentBg={inputTransparentBg}
+                onTransparentBgChange={setInputTransparentBg}
+                bgTransparentLabel={translate('controls.bgTransparentLabel')}
                 correctionLabel={translate('controls.correctionLabel')}
                 correctionHint={translate('controls.correctionHint')}
                 correctionBelowRecommendedLabel={translate('controls.correctionBelowRecommended')}

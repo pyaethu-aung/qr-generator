@@ -397,6 +397,9 @@ export interface QRControlsProps {
   cryptoConfig?: CryptoConfig
   onCryptoChange?: <K extends keyof CryptoConfig>(key: K, value: CryptoConfig[K]) => void
   cryptoCorrectionHint?: string
+  transparentBg?: boolean
+  onTransparentBgChange?: (v: boolean) => void
+  bgTransparentLabel?: string
   logoLabel?: string
   logoSizeLabel?: string
   logoUploadHint?: string
@@ -603,6 +606,9 @@ export function QRControls({
   logoErrorUrl = 'Could not load image from URL',
   logoTransparencyHint = 'PNG or SVG works best for transparent logos',
   logoSizeCapHint = 'Size capped at {max}% for this error correction level — switch to Highest for up to 30%',
+  transparentBg = false,
+  onTransparentBgChange,
+  bgTransparentLabel = 'Transparent',
   appearanceLabel = 'Appearance',
   customizedLabel = 'Customized',
   frameStyle = 'None',
@@ -674,6 +680,7 @@ export function QRControls({
   const appearanceCustomized =
     fgColor.toLowerCase() !== '#000000' ||
     bgColor.toLowerCase() !== '#ffffff' ||
+    transparentBg ||
     eyeFrameShape !== 'Square' ||
     eyeCenterShape !== 'Square' ||
     eyeFrameColor !== null ||
@@ -1071,18 +1078,37 @@ export function QRControls({
                 )}
 
                 <div className="min-w-[120px] flex-1 flex flex-col gap-1">
-                  <label htmlFor={bgColorId} className="text-sm font-medium text-text-primary">{backgroundLabel}</label>
-                  <div className="relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3 focus-within:ring-2 focus-within:ring-focus-ring focus-within:outline-none">
-                    <div className="h-5 w-5 shrink-0 rounded-full border-2 border-border-strong" style={{ backgroundColor: bgColor }} />
-                    <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
-                      {bgColor}
-                    </span>
+                  <div className="flex items-baseline justify-between gap-2">
+                    <label htmlFor={bgColorId} className="text-sm font-medium text-text-primary">{backgroundLabel}</label>
+                    {onTransparentBgChange && (
+                      <button
+                        type="button"
+                        onClick={() => onTransparentBgChange(!transparentBg)}
+                        className="text-xs text-action hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
+                      >
+                        {bgTransparentLabel}
+                      </button>
+                    )}
+                  </div>
+                  <div className={`relative flex h-11 items-center gap-3 rounded-lg bg-surface-inset px-3 focus-within:ring-2 focus-within:ring-focus-ring focus-within:outline-none ${transparentBg ? 'opacity-50 pointer-events-none' : ''}`}>
+                    <div
+                      className="h-5 w-5 shrink-0 rounded-full border-2 border-border-strong"
+                      style={transparentBg ? undefined : { backgroundColor: bgColor }}
+                    />
+                    {transparentBg ? (
+                      <span className="text-sm italic text-text-secondary truncate">{bgTransparentLabel}</span>
+                    ) : (
+                      <span className="text-sm font-medium uppercase font-['Geist_Mono'] text-text-primary truncate">
+                        {bgColor}
+                      </span>
+                    )}
                     <input
                       id={bgColorId}
                       type="color"
                       value={bgColor}
                       onChange={(e) => onBgColorChange(e.target.value)}
                       className="absolute inset-0 h-full w-full cursor-pointer opacity-0 focus:outline-none"
+                      tabIndex={transparentBg ? -1 : undefined}
                     />
                   </div>
                 </div>
