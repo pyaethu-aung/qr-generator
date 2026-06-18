@@ -6,6 +6,11 @@
 input=$(cat)
 cmd=$(python3 -c "import sys, json; print(json.load(sys.stdin).get('tool_input', {}).get('command', ''))" <<< "$input" 2>/dev/null)
 
+# Not a gh pr create — let it through
+if ! echo "$cmd" | grep -q 'gh pr create'; then
+  exit 0
+fi
+
 if echo "$cmd" | grep -q -- '--title' && echo "$cmd" | grep -q -- '--body'; then
   exit 0
 fi
