@@ -42,11 +42,13 @@ QR codes can be styled before download:
   neighbor-aware: adjacent dark modules merge into a continuous connected form
   rather than rendering as isolated shapes.
 - **Frames** — wrap the code in a decorative, code-drawn frame with a
-  call-to-action caption. Six styles (Banner, Card, Ticket, Label, Bubble,
-  Corners) plus None (the default). The caption text, frame color, and caption
-  position (top/bottom) are configurable; the caption auto-contrasts against the
-  frame fill. Frames are built from SVG primitives (no raster/licensed image
-  assets) and render identically in the live preview and every export (PNG/SVG).
+  call-to-action caption. Eight styles (Banner, Card, Ticket, Label, Bubble,
+  Corners, Photo, Circle) plus None (the default). Circle inscribes the QR in an
+  accent-color ring with a SCAN ME pill straddling the ring edge. The caption
+  text, frame color, and caption position (top/bottom) are configurable; the
+  caption auto-contrasts against the frame fill. Frames are built from SVG
+  primitives (no raster/licensed image assets) and render identically in the live
+  preview and every export (PNG/SVG).
 - **Colors, error correction & logo** — foreground/background colors, EC level,
   and an optional centered logo overlay.
 - **Foreground fill** — the foreground is a solid color or a two-stop gradient
