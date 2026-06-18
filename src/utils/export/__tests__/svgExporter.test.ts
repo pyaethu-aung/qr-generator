@@ -223,5 +223,20 @@ describe('svgExporter', () => {
       expect(text).not.toContain('logo-clip')
       expect(text).not.toContain('<image')
     })
+
+    it('omits background rect when transparentBg is true', async () => {
+      const blob = await exportSvg('Test', { ...mockConfig, transparentBg: true })
+      const text = await blobToText(blob)
+
+      expect(text).not.toContain(`fill="${mockConfig.bgColor}"`)
+      expect(text).not.toContain('fill="#FFFFFF"')
+    })
+
+    it('includes background rect when transparentBg is false', async () => {
+      const blob = await exportSvg('Test', { ...mockConfig, bgColor: '#aabbcc', transparentBg: false })
+      const text = await blobToText(blob)
+
+      expect(text.toLowerCase()).toContain('#aabbcc')
+    })
   })
 })

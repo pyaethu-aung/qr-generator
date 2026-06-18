@@ -65,4 +65,10 @@ describe('renderQrPngBlob', () => {
     await renderQrPngBlob('hello', { ...baseConfig, logoDataUrl: 'data:image/png;base64,AAAA' })
     expect(compositeLogoOnCanvas).toHaveBeenCalledTimes(1)
   })
+
+  it('passes transparentBg to the SVG composer', async () => {
+    const { composeQrSvg } = await import('../../qrSvgComposer')
+    await renderQrPngBlob('hello', { ...baseConfig, transparentBg: true })
+    expect(composeQrSvg).toHaveBeenCalledWith(expect.objectContaining({ transparentBg: true }))
+  })
 })

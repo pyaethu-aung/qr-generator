@@ -20,6 +20,8 @@ export interface PngRenderConfig {
   logoSize?: number
   /** Output edge length in pixels. Defaults to the standard download size. */
   size?: number
+  /** When true, the PNG is rendered with a transparent background. */
+  transparentBg?: boolean
 }
 
 /**
@@ -41,6 +43,7 @@ export async function renderQrPngBlob(value: string, config: PngRenderConfig): P
     logoDataUrl,
     logoSize = 20,
     size = QR_SIZE_DOWNLOAD,
+    transparentBg = false,
   } = config
 
   const { body, viewBox, logoCenter, logoBase } = composeQrSvg({
@@ -50,6 +53,7 @@ export async function renderQrPngBlob(value: string, config: PngRenderConfig): P
     bgColor,
     design: designConfig,
     frame: frameConfig,
+    transparentBg,
   })
   const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${viewBox} ${viewBox}" width="${size}" height="${size}">${body}</svg>`
 
