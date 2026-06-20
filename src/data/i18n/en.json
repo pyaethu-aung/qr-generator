@@ -331,7 +331,12 @@
     "importedFile": "Imported: {filename}",
     "importErrorEmpty": "The file is empty or contains no usable rows.",
     "importErrorRead": "Could not read the file. Please try again.",
-    "importErrorType": "Unsupported file type. Use .txt or .csv."
+    "importErrorType": "Unsupported file type. Use .txt or .csv.",
+    "csvMapTitle": "Map CSV columns",
+    "csvMapValueLabel": "QR value column",
+    "csvMapFilenameLabel": "Filename column",
+    "csvMapFilenameNone": "Auto (from value)",
+    "csvMapHint": "Pick the column to encode. Optionally name each file from another column."
   },
   "export": {
     "modalTitle": "Export QR Code",

@@ -331,7 +331,12 @@
     "importedFile": "တင်သွင်းပြီး: {filename}",
     "importErrorEmpty": "ဖိုင်သည် ဗလာဖြစ်နေသည် သို့မဟုတ် အသုံးဝင်သော အတန်းများ မပါဝင်ပါ။",
     "importErrorRead": "ဖိုင်ကို မဖတ်နိုင်ပါ။ ထပ်စမ်းကြည့်ပါ။",
-    "importErrorType": "မသိဘက် ဖိုင်အမျိုးအစား။ .txt သို့မဟုတ် .csv သုံးပါ။"
+    "importErrorType": "မသိဘက် ဖိုင်အမျိုးအစား။ .txt သို့မဟုတ် .csv သုံးပါ။",
+    "csvMapTitle": "CSV ကော်လံများ သတ်မှတ်ပါ",
+    "csvMapValueLabel": "QR တန်ဖိုး ကော်လံ",
+    "csvMapFilenameLabel": "ဖိုင်အမည် ကော်လံ",
+    "csvMapFilenameNone": "အလိုအလျောက် (တန်ဖိုးမှ)",
+    "csvMapHint": "ကုဒ်ဖွဲ့ရန် ကော်လံကို ရွေးပါ။ ဖိုင်တစ်ခုစီကို အခြားကော်လံမှ အမည်ပေးနိုင်သည်။"
   },
   "export": {
     "modalTitle": "QR ကုဒ် တင်ပို့ရန်",
