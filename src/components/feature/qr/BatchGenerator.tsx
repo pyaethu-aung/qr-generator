@@ -1,5 +1,6 @@
-import { useId } from 'react'
-import { Layers, Package, Check, Palette } from 'lucide-react'
+import { useId, useRef, useState } from 'react'
+import { Layers, Package, Check, Palette, Upload, FileText } from 'lucide-react'
+import { parseBatchFile } from '../../../utils/batch/parseBatchFile'
 
 import { PillGroup } from '../../common/PillGroup'
 import { Callout } from '../../common/Callout'
@@ -44,6 +45,47 @@ export function BatchGenerator() {
     generate,
     maxLines,
   } = useBatchGenerator()
+
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [importedFileName, setImportedFileName] = useState<string | null>(null)
+  const [fileError, setFileError] = useState<string | null>(null)
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    e.target.value = ''
+
+    const name = file.name.toLowerCase()
+    if (!name.endsWith('.txt') && !name.endsWith('.csv')) {
+      setFileError(translate('batch.importErrorType'))
+      setImportedFileName(null)
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      const text = ev.target?.result
+      if (typeof text !== 'string') {
+        setFileError(translate('batch.importErrorRead'))
+        setImportedFileName(null)
+        return
+      }
+      const parsed = parseBatchFile(file.name, text)
+      if (!parsed.trim()) {
+        setFileError(translate('batch.importErrorEmpty'))
+        setImportedFileName(null)
+        return
+      }
+      setInput(parsed)
+      setFileError(null)
+      setImportedFileName(file.name)
+    }
+    reader.onerror = () => {
+      setFileError(translate('batch.importErrorRead'))
+      setImportedFileName(null)
+    }
+    reader.readAsText(file)
+  }
 
   const textareaId = useId()
   const formatLabelId = useId()
@@ -92,13 +134,37 @@ export function BatchGenerator() {
 
         <div className="rounded-xl border border-border-strong bg-surface-overlay p-6 sm:p-8 shadow-lg space-y-5">
           <div className="space-y-1.5">
-            <label htmlFor={textareaId} className="block text-sm font-semibold text-text-primary">
-              {translate('batch.inputLabel')}
-            </label>
+            <div className="flex items-center justify-between gap-2">
+              <label htmlFor={textareaId} className="text-sm font-semibold text-text-primary">
+                {translate('batch.inputLabel')}
+              </label>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isGenerating}
+                className="flex items-center gap-1.5 rounded-md border border-border-subtle bg-surface-raised px-2.5 py-1 text-xs font-semibold text-text-secondary transition-colors hover:bg-surface-inset hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1"
+              >
+                <Upload size={12} aria-hidden className="shrink-0" />
+                {translate('batch.importButton')}
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".txt,.csv"
+                className="sr-only"
+                aria-hidden="true"
+                tabIndex={-1}
+                onChange={handleFileChange}
+              />
+            </div>
             <textarea
               id={textareaId}
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => {
+                setInput(e.target.value)
+                setImportedFileName(null)
+                setFileError(null)
+              }}
               disabled={isGenerating}
               rows={9}
               spellCheck={false}
@@ -107,12 +173,23 @@ export function BatchGenerator() {
               placeholder={translate('batch.inputPlaceholder')}
               className="w-full resize-y rounded-lg border border-border-strong bg-surface-inset p-3 font-['Geist_Mono'] text-sm text-text-primary placeholder:text-text-disabled transition-colors focus-visible:border-focus-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring/25 disabled:opacity-50"
             />
-            <p
-              className={`text-xs ${count > 0 ? 'text-text-secondary' : 'text-text-disabled'}`}
-              aria-live="polite"
-            >
-              {count > 0 ? countLabel : translate('batch.emptyHint')}
-            </p>
+            {fileError ? (
+              <p className="flex items-center gap-1.5 text-xs text-error" role="alert">
+                {fileError}
+              </p>
+            ) : importedFileName ? (
+              <p className="flex items-center gap-1.5 text-xs text-text-secondary" aria-live="polite">
+                <FileText size={12} aria-hidden className="shrink-0 text-action" />
+                {translate('batch.importedFile').replace('{filename}', importedFileName)}
+              </p>
+            ) : (
+              <p
+                className={`text-xs ${count > 0 ? 'text-text-secondary' : 'text-text-disabled'}`}
+                aria-live="polite"
+              >
+                {count > 0 ? countLabel : translate('batch.emptyHint')}
+              </p>
+            )}
           </div>
 
           {truncated && <Callout role="status">{truncatedWarning}</Callout>}

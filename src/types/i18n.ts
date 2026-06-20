@@ -328,6 +328,11 @@ export interface BatchStrings {
   successStatusLabels: string
   errorEmpty: string
   errorRender: string
+  importButton: string
+  importedFile: string
+  importErrorEmpty: string
+  importErrorRead: string
+  importErrorType: string
 }
 
 export interface HistoryStrings {
@@ -646,5 +651,10 @@ export type TranslationKey =
   | 'batch.successStatusLabels'
   | 'batch.errorEmpty'
   | 'batch.errorRender'
+  | 'batch.importButton'
+  | 'batch.importedFile'
+  | 'batch.importErrorEmpty'
+  | 'batch.importErrorRead'
+  | 'batch.importErrorType'
   | 'history.sectionLabel'
   | 'history.clearAriaLabel'
