@@ -77,6 +77,14 @@ entries; blank lines and exact duplicates are dropped). Choose a format
 downloads them as a single archive. Files are named by position and a slug of their content
 (`001-example-com.png`), so they sort in the order you pasted them.
 
+When you import a `.csv` with more than one column, a **column-mapping**
+panel appears (the first row is treated as the header). Pick which column
+holds the QR **value**, and — optionally — which column names each file
+(e.g. an `asset_url` column as the value and a `vehicle_id` column as the
+filename, producing `truck-12.png` instead of `001-…`). The filename
+mapping applies to the ZIP formats only; the single-PDF **Labels** output
+ignores it. Editing the list by hand clears the mapping.
+
 **Labels** produces a single printable PDF arranged in an Avery-style grid
 instead of a ZIP. Three presets are available via a layout picker:
 
