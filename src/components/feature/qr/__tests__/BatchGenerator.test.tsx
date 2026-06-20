@@ -6,6 +6,8 @@ import type { UseBatchGeneratorReturn } from '../../../../hooks/useBatchGenerato
 
 const setInput = vi.fn()
 const setFormat = vi.fn()
+const setLabelPreset = vi.fn()
+const setCaptions = vi.fn()
 const generate = vi.fn()
 
 let state: UseBatchGeneratorReturn
@@ -20,6 +22,10 @@ function makeState(over: Partial<UseBatchGeneratorReturn> = {}): UseBatchGenerat
     setInput,
     format: 'png',
     setFormat,
+    labelPreset: 'a4-3x7',
+    setLabelPreset,
+    captions: true,
+    setCaptions,
     values: [],
     total: 0,
     truncated: false,
@@ -43,6 +49,8 @@ function setup() {
 beforeEach(() => {
   setInput.mockReset()
   setFormat.mockReset()
+  setLabelPreset.mockReset()
+  setCaptions.mockReset()
   generate.mockReset()
   state = makeState()
 })
@@ -79,6 +87,38 @@ describe('BatchGenerator', () => {
     setup()
     fireEvent.click(screen.getByRole('button', { name: 'SVG' }))
     expect(setFormat).toHaveBeenCalledWith('svg')
+  })
+
+  it('hides the label-sheet controls unless the labels format is active', () => {
+    setup()
+    expect(screen.queryByText(/sheet layout/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/captions under each code/i)).not.toBeInTheDocument()
+  })
+
+  it('reveals layout and caption controls and re-labels the button in labels mode', () => {
+    state = makeState({ values: ['VEH-001'], total: 1, format: 'labels' })
+    setup()
+    expect(screen.getByText(/sheet layout/i)).toBeInTheDocument()
+    expect(screen.getByText(/captions under each code/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /generate label sheet/i })).toBeEnabled()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Letter · 3×6' }))
+    expect(setLabelPreset).toHaveBeenCalledWith('letter-3x6')
+    fireEvent.click(screen.getByRole('button', { name: 'Off' }))
+    expect(setCaptions).toHaveBeenCalledWith(false)
+  })
+
+  it('shows the per-page count for the selected layout', () => {
+    state = makeState({ values: ['a'], total: 1, format: 'labels', labelPreset: 'a4-3x7' })
+    setup()
+    // a4-3x7 = 3 columns x 7 rows = 21 codes per page
+    expect(screen.getByText(/21 codes per page/i)).toBeInTheDocument()
+  })
+
+  it('confirms label-sheet success with the PDF wording', () => {
+    state = makeState({ values: ['a'], format: 'labels', status: 'success' })
+    setup()
+    expect(screen.getByText(/label sheet pdf download should start/i)).toBeInTheDocument()
   })
 
   it('warns when the input was truncated', () => {
