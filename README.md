@@ -71,10 +71,24 @@ owned by `useQRDesign` and persisted to `localStorage`.
 
 The **Batch** view (toggle at the top of the page) turns a list into many
 codes at once. Paste one URL or line of text per row (up to 200; blank lines
-and exact duplicates are dropped), choose a format (PNG, SVG, or PDF), and
-**Generate ZIP** renders each code and downloads them as a single archive.
-Files are named by position and a slug of their content
+and exact duplicates are dropped), choose a format (PNG, SVG, PDF, or
+**Labels**), and **Generate ZIP** renders each code and downloads them as a
+single archive. Files are named by position and a slug of their content
 (`001-example-com.png`), so they sort in the order you pasted them.
+
+**Labels** produces a single printable PDF arranged in an Avery-style grid
+instead of a ZIP. Three presets are available via a layout picker:
+
+| Preset | Page | Grid |
+|---|---|---|
+| A4 · 3×7 (default) | A4 | 3 columns × 7 rows (21 per page) |
+| A4 · 2×4 | A4 | 2 columns × 4 rows (8 per page) |
+| Letter · 3×6 | Letter | 3 columns × 6 rows (18 per page) |
+
+A **Captions** toggle controls whether each cell includes the source text
+beneath the code. The page geometry lives in
+`src/utils/batch/labelSheetLayout.ts` and the PDF renderer in
+`src/utils/batch/buildLabelSheetPdf.ts`.
 
 Every code inherits the design you last configured in the Generate tab:
 foreground/background colors, error correction, eye shapes, pixel pattern,
