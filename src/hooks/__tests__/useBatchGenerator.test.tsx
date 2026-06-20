@@ -4,10 +4,16 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 vi.mock('../../utils/batch/buildBatchZip', () => ({
   buildBatchZip: vi.fn(() => Promise.resolve(new Blob(['zip'], { type: 'application/zip' }))),
 }))
+vi.mock('../../utils/batch/buildLabelSheetPdf', () => ({
+  buildLabelSheetPdf: vi.fn(() =>
+    Promise.resolve(new Blob(['pdf'], { type: 'application/pdf' })),
+  ),
+}))
 vi.mock('../../utils/download', () => ({ downloadBlob: vi.fn() }))
 
 import { useBatchGenerator } from '../useBatchGenerator'
 import { buildBatchZip } from '../../utils/batch/buildBatchZip'
+import { buildLabelSheetPdf } from '../../utils/batch/buildLabelSheetPdf'
 import { downloadBlob } from '../../utils/download'
 
 describe('useBatchGenerator', () => {
@@ -64,6 +70,24 @@ describe('useBatchGenerator', () => {
     expect(typeof arg.design.bgColor).toBe('string')
     expect(downloadBlob).toHaveBeenCalledTimes(1)
     expect(vi.mocked(downloadBlob).mock.calls[0][1]).toMatch(/^qr-batch-2-.*\.zip$/)
+    expect(result.current.status).toBe('success')
+  })
+
+  it('builds a label sheet PDF and downloads it when the labels format is chosen', async () => {
+    const { result } = renderHook(() => useBatchGenerator())
+    act(() => result.current.setInput('VEH-001\nVEH-002'))
+    act(() => result.current.setFormat('labels'))
+    act(() => result.current.setLabelPreset('letter-3x6'))
+    act(() => result.current.setCaptions(false))
+    await act(async () => {
+      await result.current.generate()
+    })
+    const arg = vi.mocked(buildLabelSheetPdf).mock.calls[0][0]
+    expect(arg.values).toEqual(['VEH-001', 'VEH-002'])
+    expect(arg.presetId).toBe('letter-3x6')
+    expect(arg.captions).toBe(false)
+    expect(buildBatchZip).not.toHaveBeenCalled()
+    expect(vi.mocked(downloadBlob).mock.calls[0][1]).toMatch(/^qr-labels-2-.*\.pdf$/)
     expect(result.current.status).toBe('success')
   })
 

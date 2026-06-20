@@ -314,10 +314,18 @@ export interface BatchStrings {
   emptyHint: string
   truncatedWarning: string
   formatLabel: string
+  formatLabelsOption: string
+  layoutLabel: string
+  perPageHint: string
+  captionsLabel: string
+  captionsOn: string
+  captionsOff: string
   designNote: string
   generateButton: string
+  generateLabels: string
   generatingStatus: string
   successStatus: string
+  successStatusLabels: string
   errorEmpty: string
   errorRender: string
 }
@@ -624,10 +632,18 @@ export type TranslationKey =
   | 'batch.emptyHint'
   | 'batch.truncatedWarning'
   | 'batch.formatLabel'
+  | 'batch.formatLabelsOption'
+  | 'batch.layoutLabel'
+  | 'batch.perPageHint'
+  | 'batch.captionsLabel'
+  | 'batch.captionsOn'
+  | 'batch.captionsOff'
   | 'batch.designNote'
   | 'batch.generateButton'
+  | 'batch.generateLabels'
   | 'batch.generatingStatus'
   | 'batch.successStatus'
+  | 'batch.successStatusLabels'
   | 'batch.errorEmpty'
   | 'batch.errorRender'
   | 'history.sectionLabel'

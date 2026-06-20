@@ -9,6 +9,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { downloadBlob } from '../utils/download'
 import { parseBatchInput, BATCH_MAX_LINES } from '../utils/batch/parseBatchInput'
 import { buildBatchZip, type BatchFormat, type BatchDesign } from '../utils/batch/buildBatchZip'
+import { buildLabelSheetPdf } from '../utils/batch/buildLabelSheetPdf'
+import {
+  DEFAULT_LABEL_PRESET_ID,
+  type LabelPresetId,
+} from '../utils/batch/labelSheetLayout'
 import { loadPersistedAppearance } from '../utils/persistedAppearance'
 import { loadDesignConfig, loadFrameConfig } from '../utils/persistedDesign'
 
@@ -27,6 +32,9 @@ function loadBatchInput(): string {
 export type BatchStatus = 'idle' | 'generating' | 'success' | 'error'
 export type BatchErrorCode = 'empty' | 'render-failed'
 
+/** The chosen output: a ZIP of files (png/svg/pdf) or a single label-sheet PDF. */
+export type BatchOutput = BatchFormat | 'labels'
+
 export interface BatchProgress {
   completed: number
   total: number
@@ -35,8 +43,14 @@ export interface BatchProgress {
 export interface UseBatchGeneratorReturn {
   input: string
   setInput: (value: string) => void
-  format: BatchFormat
-  setFormat: (format: BatchFormat) => void
+  format: BatchOutput
+  setFormat: (format: BatchOutput) => void
+  /** Label-sheet layout, only meaningful when `format` is `'labels'`. */
+  labelPreset: LabelPresetId
+  setLabelPreset: (preset: LabelPresetId) => void
+  /** Whether label cells print the value caption; only meaningful for `'labels'`. */
+  captions: boolean
+  setCaptions: (captions: boolean) => void
   /** Unique, capped values that will be rendered. */
   values: string[]
   /** Unique non-empty line count before the cap. */
@@ -52,7 +66,9 @@ export interface UseBatchGeneratorReturn {
 
 export function useBatchGenerator(): UseBatchGeneratorReturn {
   const [input, setInputState] = useState(loadBatchInput)
-  const [format, setFormatState] = useState<BatchFormat>('png')
+  const [format, setFormatState] = useState<BatchOutput>('png')
+  const [labelPreset, setLabelPresetState] = useState<LabelPresetId>(DEFAULT_LABEL_PRESET_ID)
+  const [captions, setCaptionsState] = useState(true)
   const [status, setStatus] = useState<BatchStatus>('idle')
   const [progress, setProgress] = useState<BatchProgress>({ completed: 0, total: 0 })
   const [errorCode, setErrorCode] = useState<BatchErrorCode | null>(null)
@@ -78,11 +94,36 @@ export function useBatchGenerator(): UseBatchGeneratorReturn {
     setErrorCode(null)
   }, [])
 
-  const setFormat = useCallback((next: BatchFormat) => {
-    setFormatState(next)
+  // Changing any output option clears a finished run's success/error state, so the button
+  // reads as ready again, mirroring setInput.
+  const clearFinished = useCallback(() => {
     setStatus((prev) => (prev === 'generating' ? prev : 'idle'))
     setErrorCode(null)
   }, [])
+
+  const setFormat = useCallback(
+    (next: BatchOutput) => {
+      setFormatState(next)
+      clearFinished()
+    },
+    [clearFinished],
+  )
+
+  const setLabelPreset = useCallback(
+    (next: LabelPresetId) => {
+      setLabelPresetState(next)
+      clearFinished()
+    },
+    [clearFinished],
+  )
+
+  const setCaptions = useCallback(
+    (next: boolean) => {
+      setCaptionsState(next)
+      clearFinished()
+    },
+    [clearFinished],
+  )
 
   const generate = useCallback(async () => {
     const { values: toRender } = parseBatchInput(input)
@@ -106,28 +147,40 @@ export function useBatchGenerator(): UseBatchGeneratorReturn {
         frameConfig: loadFrameConfig(),
       }
 
-      const blob = await buildBatchZip({
-        values: toRender,
-        format,
-        design,
-        onProgress: (completed, totalCount) => setProgress({ completed, total: totalCount }),
-      })
-
+      const onProgress = (completed: number, totalCount: number) =>
+        setProgress({ completed, total: totalCount })
       const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
-      downloadBlob(blob, `qr-batch-${toRender.length}-${stamp}.zip`)
+
+      if (format === 'labels') {
+        const blob = await buildLabelSheetPdf({
+          values: toRender,
+          design,
+          presetId: labelPreset,
+          captions,
+          onProgress,
+        })
+        downloadBlob(blob, `qr-labels-${toRender.length}-${stamp}.pdf`)
+      } else {
+        const blob = await buildBatchZip({ values: toRender, format, design, onProgress })
+        downloadBlob(blob, `qr-batch-${toRender.length}-${stamp}.zip`)
+      }
       setStatus('success')
     } catch (err) {
       console.error('Batch generation failed', err)
       setStatus('error')
       setErrorCode('render-failed')
     }
-  }, [input, format])
+  }, [input, format, labelPreset, captions])
 
   return {
     input,
     setInput,
     format,
     setFormat,
+    labelPreset,
+    setLabelPreset,
+    captions,
+    setCaptions,
     values,
     total,
     truncated,

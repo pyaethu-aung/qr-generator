@@ -3,16 +3,27 @@ import { Layers, Package, Check, Palette } from 'lucide-react'
 
 import { PillGroup } from '../../common/PillGroup'
 import { Callout } from '../../common/Callout'
-import { useBatchGenerator } from '../../../hooks/useBatchGenerator'
-import type { BatchFormat } from '../../../utils/batch/buildBatchZip'
+import { useBatchGenerator, type BatchOutput } from '../../../hooks/useBatchGenerator'
+import {
+  LABEL_SHEET_PRESETS,
+  getLabelPreset,
+  type LabelPresetId,
+} from '../../../utils/batch/labelSheetLayout'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 
-// QR file formats are proper nouns: identical across locales, so they aren't translated.
-const FORMAT_OPTIONS: { value: BatchFormat; label: string }[] = [
+// File formats are proper nouns: identical across locales, so they aren't translated.
+// "Labels" is a word, so it carries a translation key (filled in per-render below).
+const BASE_FORMAT_OPTIONS: { value: BatchOutput; label: string }[] = [
   { value: 'png', label: 'PNG' },
   { value: 'svg', label: 'SVG' },
   { value: 'pdf', label: 'PDF' },
 ]
+
+// Page name + grid dimensions read the same in every locale, so preset labels aren't
+// translated, matching the format pills.
+const LAYOUT_OPTIONS: { value: LabelPresetId; label: string }[] = LABEL_SHEET_PRESETS.map(
+  (preset) => ({ value: preset.id, label: preset.label }),
+)
 
 export function BatchGenerator() {
   const { translate } = useLocaleContext()
@@ -21,6 +32,10 @@ export function BatchGenerator() {
     setInput,
     format,
     setFormat,
+    labelPreset,
+    setLabelPreset,
+    captions,
+    setCaptions,
     values,
     truncated,
     status,
@@ -32,7 +47,24 @@ export function BatchGenerator() {
 
   const textareaId = useId()
   const formatLabelId = useId()
+  const layoutLabelId = useId()
+  const captionsLabelId = useId()
   const isGenerating = status === 'generating'
+  const isLabels = format === 'labels'
+
+  const formatOptions = [
+    ...BASE_FORMAT_OPTIONS,
+    { value: 'labels' as BatchOutput, label: translate('batch.formatLabelsOption') },
+  ]
+  const captionOptions = [
+    { value: 'on', label: translate('batch.captionsOn') },
+    { value: 'off', label: translate('batch.captionsOff') },
+  ]
+  const selectedPreset = getLabelPreset(labelPreset)
+  const perPageHint = translate('batch.perPageHint').replace(
+    '{count}',
+    String(selectedPreset.columns * selectedPreset.rows),
+  )
   const count = values.length
   const canGenerate = count > 0 && !isGenerating
   const percent = progress.total ? Math.round((progress.completed / progress.total) * 100) : 0
@@ -89,13 +121,44 @@ export function BatchGenerator() {
             <p id={formatLabelId} className="text-sm font-semibold text-text-primary">
               {translate('batch.formatLabel')}
             </p>
-            <PillGroup<BatchFormat>
+            <PillGroup<BatchOutput>
               aria-labelledby={formatLabelId}
               value={format}
               onChange={setFormat}
-              options={FORMAT_OPTIONS}
+              options={formatOptions}
             />
           </div>
+
+          {isLabels && (
+            <div className="space-y-5">
+              <div className="space-y-2">
+                <p id={layoutLabelId} className="text-sm font-semibold text-text-primary">
+                  {translate('batch.layoutLabel')}
+                </p>
+                <PillGroup<LabelPresetId>
+                  aria-labelledby={layoutLabelId}
+                  value={labelPreset}
+                  onChange={setLabelPreset}
+                  options={LAYOUT_OPTIONS}
+                />
+                <p className="text-xs text-text-secondary" aria-live="polite">
+                  {perPageHint}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <p id={captionsLabelId} className="text-sm font-semibold text-text-primary">
+                  {translate('batch.captionsLabel')}
+                </p>
+                <PillGroup
+                  aria-labelledby={captionsLabelId}
+                  value={captions ? 'on' : 'off'}
+                  onChange={(value) => setCaptions(value === 'on')}
+                  options={captionOptions}
+                />
+              </div>
+            </div>
+          )}
 
           <p className="flex items-center gap-2 text-xs text-text-secondary">
             <Palette size={14} aria-hidden className="shrink-0" />
@@ -116,7 +179,9 @@ export function BatchGenerator() {
             ) : (
               <>
                 <Package size={16} aria-hidden className="shrink-0" />
-                <span>{translate('batch.generateButton')}</span>
+                <span>
+                  {translate(isLabels ? 'batch.generateLabels' : 'batch.generateButton')}
+                </span>
               </>
             )}
           </button>
@@ -149,7 +214,9 @@ export function BatchGenerator() {
               className="flex items-center justify-center gap-1.5 text-sm font-medium text-action"
             >
               <Check size={15} aria-hidden className="shrink-0" />
-              <span>{translate('batch.successStatus')}</span>
+              <span>
+                {translate(isLabels ? 'batch.successStatusLabels' : 'batch.successStatus')}
+              </span>
             </p>
           )}
 
