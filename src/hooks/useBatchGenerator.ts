@@ -51,6 +51,12 @@ export interface UseBatchGeneratorReturn {
   /** Whether label cells print the value caption; only meaningful for `'labels'`. */
   captions: boolean
   setCaptions: (captions: boolean) => void
+  /**
+   * Per-value filename overrides from a mapped CSV filename column, or `null` when no
+   * mapping is active. Only applied to the ZIP formats (the Labels output is one file).
+   */
+  filenameOverrides: Record<string, string> | null
+  setFilenameOverrides: (overrides: Record<string, string> | null) => void
   /** Unique, capped values that will be rendered. */
   values: string[]
   /** Unique non-empty line count before the cap. */
@@ -69,6 +75,7 @@ export function useBatchGenerator(): UseBatchGeneratorReturn {
   const [format, setFormatState] = useState<BatchOutput>('png')
   const [labelPreset, setLabelPresetState] = useState<LabelPresetId>(DEFAULT_LABEL_PRESET_ID)
   const [captions, setCaptionsState] = useState(true)
+  const [filenameOverrides, setFilenameOverrides] = useState<Record<string, string> | null>(null)
   const [status, setStatus] = useState<BatchStatus>('idle')
   const [progress, setProgress] = useState<BatchProgress>({ completed: 0, total: 0 })
   const [errorCode, setErrorCode] = useState<BatchErrorCode | null>(null)
@@ -161,7 +168,13 @@ export function useBatchGenerator(): UseBatchGeneratorReturn {
         })
         downloadBlob(blob, `qr-labels-${toRender.length}-${stamp}.pdf`)
       } else {
-        const blob = await buildBatchZip({ values: toRender, format, design, onProgress })
+        const blob = await buildBatchZip({
+          values: toRender,
+          format,
+          design,
+          onProgress,
+          filenameByValue: filenameOverrides ?? undefined,
+        })
         downloadBlob(blob, `qr-batch-${toRender.length}-${stamp}.zip`)
       }
       setStatus('success')
@@ -170,7 +183,7 @@ export function useBatchGenerator(): UseBatchGeneratorReturn {
       setStatus('error')
       setErrorCode('render-failed')
     }
-  }, [input, format, labelPreset, captions])
+  }, [input, format, labelPreset, captions, filenameOverrides])
 
   return {
     input,
@@ -181,6 +194,8 @@ export function useBatchGenerator(): UseBatchGeneratorReturn {
     setLabelPreset,
     captions,
     setCaptions,
+    filenameOverrides,
+    setFilenameOverrides,
     values,
     total,
     truncated,

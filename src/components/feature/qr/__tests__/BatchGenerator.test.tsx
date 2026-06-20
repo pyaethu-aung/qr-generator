@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { LocaleProvider } from '../../../../hooks/LocaleProvider'
 import { BatchGenerator } from '../BatchGenerator'
@@ -8,6 +8,7 @@ const setInput = vi.fn()
 const setFormat = vi.fn()
 const setLabelPreset = vi.fn()
 const setCaptions = vi.fn()
+const setFilenameOverrides = vi.fn()
 const generate = vi.fn()
 
 let state: UseBatchGeneratorReturn
@@ -26,6 +27,8 @@ function makeState(over: Partial<UseBatchGeneratorReturn> = {}): UseBatchGenerat
     setLabelPreset,
     captions: true,
     setCaptions,
+    filenameOverrides: null,
+    setFilenameOverrides,
     values: [],
     total: 0,
     truncated: false,
@@ -51,6 +54,7 @@ beforeEach(() => {
   setFormat.mockReset()
   setLabelPreset.mockReset()
   setCaptions.mockReset()
+  setFilenameOverrides.mockReset()
   generate.mockReset()
   state = makeState()
 })
@@ -151,5 +155,58 @@ describe('BatchGenerator', () => {
     state = makeState({ values: ['a'], status: 'error', errorCode: 'render-failed' })
     setup()
     expect(screen.getByText(/something went wrong while generating/i)).toBeInTheDocument()
+  })
+
+  describe('CSV column mapping', () => {
+    const CSV = 'url,vehicle_id\nhttps://a.com,TRUCK-1\nhttps://b.com,TRUCK-2'
+
+    function uploadCsv(content = CSV) {
+      const input = document.querySelector('input[type="file"]') as HTMLInputElement
+      const file = new File([content], 'fleet.csv', { type: 'text/csv' })
+      fireEvent.change(input, { target: { files: [file] } })
+    }
+
+    it('opens the mapping UI for a multi-column CSV and seeds the first column as the value', async () => {
+      setup()
+      uploadCsv()
+      await waitFor(() => expect(screen.getByText(/map csv columns/i)).toBeInTheDocument())
+      // First column ("url") becomes the value list.
+      expect(setInput).toHaveBeenLastCalledWith('https://a.com\nhttps://b.com')
+    })
+
+    it('builds filename overrides when a filename column is chosen', async () => {
+      setup()
+      uploadCsv()
+      await waitFor(() => expect(screen.getByLabelText(/filename column/i)).toBeInTheDocument())
+      fireEvent.change(screen.getByLabelText(/filename column/i), { target: { value: '1' } })
+      expect(setFilenameOverrides).toHaveBeenLastCalledWith({
+        'https://a.com': 'TRUCK-1',
+        'https://b.com': 'TRUCK-2',
+      })
+    })
+
+    it('re-maps the value list when the value column changes', async () => {
+      setup()
+      uploadCsv()
+      await waitFor(() => expect(screen.getByLabelText(/qr value column/i)).toBeInTheDocument())
+      fireEvent.change(screen.getByLabelText(/qr value column/i), { target: { value: '1' } })
+      expect(setInput).toHaveBeenLastCalledWith('TRUCK-1\nTRUCK-2')
+    })
+
+    it('does not open the mapping UI for a single-column CSV', async () => {
+      setup()
+      uploadCsv('https://a.com\nhttps://b.com')
+      await waitFor(() => expect(setInput).toHaveBeenCalled())
+      expect(screen.queryByText(/map csv columns/i)).not.toBeInTheDocument()
+    })
+
+    it('clears mapping when the textarea is edited manually', async () => {
+      setup()
+      uploadCsv()
+      await waitFor(() => expect(screen.getByText(/map csv columns/i)).toBeInTheDocument())
+      fireEvent.change(screen.getByLabelText(/your list/i), { target: { value: 'manual' } })
+      expect(setFilenameOverrides).toHaveBeenLastCalledWith(null)
+      expect(screen.queryByText(/map csv columns/i)).not.toBeInTheDocument()
+    })
   })
 })
