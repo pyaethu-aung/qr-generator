@@ -73,6 +73,19 @@ describe('buildBatchZip', () => {
     ])
   })
 
+  it('names files from a per-value filename map, falling back to the slug when unmapped', async () => {
+    const blob = await buildBatchZip({
+      values: ['https://a.com', 'https://b.com'],
+      format: 'png',
+      design: DESIGN,
+      filenameByValue: { 'https://a.com': 'TRUCK-1' },
+    })
+    const entries = await entriesOf(blob)
+    // First value uses the mapped name (no ordinal); the unmapped value keeps the default.
+    expect(Object.keys(entries).sort()).toEqual(['002-b-com.png', 'truck-1.png'])
+    expect(entries['truck-1.png']).toBe('png:https://a.com')
+  })
+
   it('routes svg format through the svg exporter', async () => {
     const blob = await buildBatchZip({ values: ['x'], format: 'svg', design: DESIGN })
     const entries = await entriesOf(blob)

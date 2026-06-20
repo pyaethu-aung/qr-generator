@@ -43,4 +43,22 @@ describe('batchFilename', () => {
     expect(used.has('001-qr.pdf')).toBe(true)
     expect(used.has('001-qr-2.pdf')).toBe(true)
   })
+
+  it('names the file from a usable override, dropping the ordinal prefix', () => {
+    const used = new Set<string>()
+    expect(batchFilename('https://example.com/1', 0, 'png', used, 'TRUCK 12')).toBe('truck-12.png')
+    expect(batchFilename('https://example.com/2', 1, 'png', used, 'QR')).toBe('qr.png')
+  })
+
+  it('falls back to the ordinal+value name when the override has no usable characters', () => {
+    const used = new Set<string>()
+    expect(batchFilename('https://example.com', 0, 'png', used, '   ')).toBe('001-example-com.png')
+    expect(batchFilename('https://example.com/x', 1, 'png', used, '!!!')).toBe('002-example-com-x.png')
+  })
+
+  it('disambiguates colliding override names with a numeric suffix', () => {
+    const used = new Set<string>()
+    expect(batchFilename('https://a.com', 0, 'png', used, 'site')).toBe('site.png')
+    expect(batchFilename('https://b.com', 1, 'png', used, 'site')).toBe('site-2.png')
+  })
 })
