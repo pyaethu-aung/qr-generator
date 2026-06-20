@@ -333,6 +333,11 @@ export interface BatchStrings {
   importErrorEmpty: string
   importErrorRead: string
   importErrorType: string
+  csvMapTitle: string
+  csvMapValueLabel: string
+  csvMapFilenameLabel: string
+  csvMapFilenameNone: string
+  csvMapHint: string
 }
 
 export interface HistoryStrings {
@@ -656,5 +661,10 @@ export type TranslationKey =
   | 'batch.importErrorEmpty'
   | 'batch.importErrorRead'
   | 'batch.importErrorType'
+  | 'batch.csvMapTitle'
+  | 'batch.csvMapValueLabel'
+  | 'batch.csvMapFilenameLabel'
+  | 'batch.csvMapFilenameNone'
+  | 'batch.csvMapHint'
   | 'history.sectionLabel'
   | 'history.clearAriaLabel'
