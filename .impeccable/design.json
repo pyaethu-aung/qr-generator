@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-06-10T20:00:00.000Z",
+  "generatedAt": "2026-06-20T12:00:00.000Z",
   "title": "Design System: QR Generator",
   "extensions": {
     "colorMeta": {
@@ -272,6 +272,14 @@
       "description": "Export button for PNG and SVG. Surface-raised background, 12px radius, download icon precedes label.",
       "html": "<button class=\"ds-btn-download\" type=\"button\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"7 10 12 15 17 10\"/><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"/></svg>Download PNG</button>",
       "css": ".ds-btn-download { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 16px; background-color: var(--color-surface-raised); color: var(--color-text-primary); border: 1px solid var(--color-border-subtle); border-radius: 12px; font-family: 'Inter', system-ui, sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: background-color 150ms ease; } .ds-btn-download svg { color: var(--color-text-secondary); } .ds-btn-download:hover { background-color: var(--color-surface-inset); } .ds-btn-download:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-focus-ring); } .ds-btn-download:disabled { opacity: 0.5; cursor: not-allowed; }"
+    },
+    {
+      "name": "Import Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Compact utility button for inline contextual actions. Used for 'Import from file' in the Batch tab. Smaller than the standard secondary button — text-xs (12px), 8px vertical padding — sits inline with a label at the trailing edge.",
+      "html": "<button class=\"ds-btn-import\" type=\"button\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"17 8 12 3 7 8\"/><line x1=\"12\" y1=\"3\" x2=\"12\" y2=\"15\"/></svg>Import from file</button>",
+      "css": ".ds-btn-import { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background-color: var(--color-surface-raised); color: var(--color-text-secondary); border: 1px solid var(--color-border-subtle); border-radius: 8px; font-family: 'Inter', system-ui, sans-serif; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; transition: background-color 150ms ease, color 150ms ease; } .ds-btn-import:hover { background-color: var(--color-surface-inset); color: var(--color-text-primary); } .ds-btn-import:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--color-focus-ring); } .ds-btn-import:disabled { opacity: 0.5; cursor: not-allowed; }"
     },
     {
       "name": "Share Button",
