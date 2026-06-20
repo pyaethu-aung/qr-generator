@@ -73,6 +73,19 @@ describe('useBatchGenerator', () => {
     expect(result.current.status).toBe('success')
   })
 
+  it('defaults filename overrides to null and passes them to buildBatchZip when set', async () => {
+    const { result } = renderHook(() => useBatchGenerator())
+    expect(result.current.filenameOverrides).toBeNull()
+
+    act(() => result.current.setInput('https://a.com'))
+    act(() => result.current.setFilenameOverrides({ 'https://a.com': 'TRUCK-1' }))
+    await act(async () => {
+      await result.current.generate()
+    })
+    const arg = vi.mocked(buildBatchZip).mock.calls[0][0]
+    expect(arg.filenameByValue).toEqual({ 'https://a.com': 'TRUCK-1' })
+  })
+
   it('builds a label sheet PDF and downloads it when the labels format is chosen', async () => {
     const { result } = renderHook(() => useBatchGenerator())
     act(() => result.current.setInput('VEH-001\nVEH-002'))

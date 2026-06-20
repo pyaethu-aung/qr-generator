@@ -1,6 +1,7 @@
 import { useId, useRef, useState } from 'react'
-import { Layers, Package, Check, Palette, Upload, FileText } from 'lucide-react'
+import { Layers, Package, Check, Palette, Upload, FileText, Columns3, ChevronDown } from 'lucide-react'
 import { parseBatchFile } from '../../../utils/batch/parseBatchFile'
+import { parseBatchCsv, type ParsedBatchCsv } from '../../../utils/batch/parseBatchCsv'
 
 import { PillGroup } from '../../common/PillGroup'
 import { Callout } from '../../common/Callout'
@@ -26,6 +27,76 @@ const LAYOUT_OPTIONS: { value: LabelPresetId; label: string }[] = LABEL_SHEET_PR
   (preset) => ({ value: preset.id, label: preset.label }),
 )
 
+/** Sentinel for the "no filename column" choice (files named automatically from the value). */
+const NO_FILENAME_COLUMN = -1
+
+/** Newline-joins the non-empty cells of one CSV column for the values textarea. */
+function columnToText(grid: ParsedBatchCsv, col: number): string {
+  return grid.rows
+    .map((row) => row[col] ?? '')
+    .filter((cell) => cell.length > 0)
+    .join('\n')
+}
+
+/**
+ * Builds the value→filename map for the chosen columns. Keyed by value (matching the
+ * textarea's dedup, where the first occurrence wins), so a row whose value cell is blank,
+ * or whose filename cell is blank, contributes no override. Returns `null` when no
+ * filename column is selected.
+ */
+function buildFilenameOverrides(
+  grid: ParsedBatchCsv,
+  valueCol: number,
+  filenameCol: number,
+): Record<string, string> | null {
+  if (filenameCol === NO_FILENAME_COLUMN) return null
+  const map: Record<string, string> = {}
+  for (const row of grid.rows) {
+    const value = row[valueCol] ?? ''
+    const name = row[filenameCol] ?? ''
+    if (!value || !name || value in map) continue
+    map[value] = name
+  }
+  return map
+}
+
+/** Styled native select for column pickers — accessible by default, no popover machinery. */
+function ColumnSelect({
+  label,
+  value,
+  onChange,
+  children,
+}: {
+  label: string
+  value: number
+  onChange: (value: number) => void
+  children: React.ReactNode
+}) {
+  const id = useId()
+  return (
+    <div className="flex-1 space-y-1.5">
+      <label htmlFor={id} className="block text-xs font-medium text-text-secondary">
+        {label}
+      </label>
+      <div className="relative">
+        <select
+          id={id}
+          value={value}
+          onChange={(e) => onChange(Number(e.target.value))}
+          className="w-full appearance-none rounded-lg border border-border-strong bg-surface-inset py-2 pl-3 pr-9 text-sm text-text-primary transition-colors focus-visible:border-focus-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring/25"
+        >
+          {children}
+        </select>
+        <ChevronDown
+          size={15}
+          aria-hidden
+          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary"
+        />
+      </div>
+    </div>
+  )
+}
+
 export function BatchGenerator() {
   const { translate } = useLocaleContext()
   const {
@@ -37,6 +108,7 @@ export function BatchGenerator() {
     setLabelPreset,
     captions,
     setCaptions,
+    setFilenameOverrides,
     values,
     truncated,
     status,
@@ -49,6 +121,19 @@ export function BatchGenerator() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [importedFileName, setImportedFileName] = useState<string | null>(null)
   const [fileError, setFileError] = useState<string | null>(null)
+  // The parsed CSV grid drives the column-mapping UI; null when no multi-column CSV is active.
+  const [csvGrid, setCsvGrid] = useState<ParsedBatchCsv | null>(null)
+  const [valueCol, setValueCol] = useState(0)
+  const [filenameCol, setFilenameCol] = useState(NO_FILENAME_COLUMN)
+
+  // Leaving mapping mode (manual edit, .txt import, or a single-column CSV) clears the grid
+  // and any filename overrides so stale mappings never apply to edited values.
+  function clearMapping() {
+    setCsvGrid(null)
+    setValueCol(0)
+    setFilenameCol(NO_FILENAME_COLUMN)
+    setFilenameOverrides(null)
+  }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -70,12 +155,36 @@ export function BatchGenerator() {
         setImportedFileName(null)
         return
       }
+
+      // A multi-column CSV opens the mapping UI; everything else (one-column CSV or .txt)
+      // takes the simple first-column / pass-through path with no mapping.
+      if (name.endsWith('.csv')) {
+        const grid = parseBatchCsv(text)
+        if (grid.headers.length >= 2 && grid.rows.length > 0) {
+          const text0 = columnToText(grid, 0)
+          if (!text0.trim()) {
+            setFileError(translate('batch.importErrorEmpty'))
+            setImportedFileName(null)
+            return
+          }
+          setCsvGrid(grid)
+          setValueCol(0)
+          setFilenameCol(NO_FILENAME_COLUMN)
+          setFilenameOverrides(null)
+          setInput(text0)
+          setFileError(null)
+          setImportedFileName(file.name)
+          return
+        }
+      }
+
       const parsed = parseBatchFile(file.name, text)
       if (!parsed.trim()) {
         setFileError(translate('batch.importErrorEmpty'))
         setImportedFileName(null)
         return
       }
+      clearMapping()
       setInput(parsed)
       setFileError(null)
       setImportedFileName(file.name)
@@ -85,6 +194,19 @@ export function BatchGenerator() {
       setImportedFileName(null)
     }
     reader.readAsText(file)
+  }
+
+  function handleValueColChange(col: number) {
+    if (!csvGrid) return
+    setValueCol(col)
+    setInput(columnToText(csvGrid, col))
+    setFilenameOverrides(buildFilenameOverrides(csvGrid, col, filenameCol))
+  }
+
+  function handleFilenameColChange(col: number) {
+    if (!csvGrid) return
+    setFilenameCol(col)
+    setFilenameOverrides(buildFilenameOverrides(csvGrid, valueCol, col))
   }
 
   const textareaId = useId()
@@ -164,6 +286,7 @@ export function BatchGenerator() {
                 setInput(e.target.value)
                 setImportedFileName(null)
                 setFileError(null)
+                clearMapping()
               }}
               disabled={isGenerating}
               rows={9}
@@ -191,6 +314,47 @@ export function BatchGenerator() {
               </p>
             )}
           </div>
+
+          {csvGrid && (
+            <div className="space-y-3 rounded-lg border border-border-subtle bg-surface-raised p-4">
+              <p className="flex items-center gap-1.5 text-sm font-semibold text-text-primary">
+                <Columns3 size={15} aria-hidden className="shrink-0 text-action" />
+                {translate('batch.csvMapTitle')}
+              </p>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <ColumnSelect
+                  label={translate('batch.csvMapValueLabel')}
+                  value={valueCol}
+                  onChange={handleValueColChange}
+                >
+                  {csvGrid.headers.map((header, i) => (
+                    <option key={i} value={i}>
+                      {header || `Column ${i + 1}`}
+                    </option>
+                  ))}
+                </ColumnSelect>
+                {!isLabels && (
+                  <ColumnSelect
+                    label={translate('batch.csvMapFilenameLabel')}
+                    value={filenameCol}
+                    onChange={handleFilenameColChange}
+                  >
+                    <option value={NO_FILENAME_COLUMN}>
+                      {translate('batch.csvMapFilenameNone')}
+                    </option>
+                    {csvGrid.headers.map((header, i) => (
+                      <option key={i} value={i}>
+                        {header || `Column ${i + 1}`}
+                      </option>
+                    ))}
+                  </ColumnSelect>
+                )}
+              </div>
+              {!isLabels && (
+                <p className="text-xs text-text-secondary">{translate('batch.csvMapHint')}</p>
+              )}
+            </div>
+          )}
 
           {truncated && <Callout role="status">{truncatedWarning}</Callout>}
 
