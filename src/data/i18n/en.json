@@ -326,7 +326,12 @@
     "successStatus": "Done. Your ZIP download should start automatically.",
     "successStatusLabels": "Done. Your label sheet PDF download should start automatically.",
     "errorEmpty": "Add at least one link or line of text first.",
-    "errorRender": "Something went wrong while generating. Please try again."
+    "errorRender": "Something went wrong while generating. Please try again.",
+    "importButton": "Import from file",
+    "importedFile": "Imported: {filename}",
+    "importErrorEmpty": "The file is empty or contains no usable rows.",
+    "importErrorRead": "Could not read the file. Please try again.",
+    "importErrorType": "Unsupported file type. Use .txt or .csv."
   },
   "export": {
     "modalTitle": "Export QR Code",
