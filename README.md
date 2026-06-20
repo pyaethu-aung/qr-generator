@@ -70,10 +70,11 @@ owned by `useQRDesign` and persisted to `localStorage`.
 ## Batch generation
 
 The **Batch** view (toggle at the top of the page) turns a list into many
-codes at once. Paste one URL or line of text per row (up to 200; blank lines
-and exact duplicates are dropped), choose a format (PNG, SVG, PDF, or
-**Labels**), and **Generate ZIP** renders each code and downloads them as a
-single archive. Files are named by position and a slug of their content
+codes at once. Paste one URL or line of text per row, or use the **Import
+from file** button to load a `.txt` or `.csv` file directly (up to 200
+entries; blank lines and exact duplicates are dropped). Choose a format
+(PNG, SVG, PDF, or **Labels**), and **Generate ZIP** renders each code and
+downloads them as a single archive. Files are named by position and a slug of their content
 (`001-example-com.png`), so they sort in the order you pasted them.
 
 **Labels** produces a single printable PDF arranged in an Avery-style grid
