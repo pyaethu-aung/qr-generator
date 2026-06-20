@@ -5,6 +5,11 @@
  * order they were pasted and stay unique even when two slugs collide) followed by a
  * short slug derived from the value. A `used` set guards against the rare case where
  * two entries still produce the same name.
+ *
+ * When `nameOverride` is supplied (a mapped CSV filename column), its slug names the
+ * file directly — no ordinal prefix, since the user picked that column expecting clean
+ * id-style names (e.g. `truck-12.png`). The `used` set still appends `-2`, `-3`… on
+ * collision. A blank or all-symbol override falls back to the ordinal+value name.
  */
 
 const MAX_SLUG_LENGTH = 40
@@ -36,9 +41,14 @@ export function batchFilename(
   index: number,
   extension: string,
   used: Set<string>,
+  nameOverride?: string,
 ): string {
   const ordinal = String(index + 1).padStart(3, '0')
-  const base = `${ordinal}-${slugifyValue(value)}`
+  // Use the override only when it has usable characters; otherwise fall back so an
+  // all-symbol cell does not collapse every file onto the "qr" slug.
+  const overrideSlug =
+    nameOverride && /[a-z0-9]/i.test(nameOverride) ? slugifyValue(nameOverride) : ''
+  const base = overrideSlug || `${ordinal}-${slugifyValue(value)}`
 
   let candidate = `${base}.${extension}`
   let suffix = 2

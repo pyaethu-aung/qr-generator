@@ -32,6 +32,12 @@ export interface BuildBatchZipOptions {
   onProgress?: (completed: number, total: number) => void
   /** Edge length in px for the raster formats (PNG, and the image embedded in the PDF). */
   dimension?: number
+  /**
+   * Optional per-value filename overrides from a mapped CSV filename column. A value
+   * present here names its file from the mapped cell; values absent fall back to the
+   * default ordinal+slug name.
+   */
+  filenameByValue?: Record<string, string>
 }
 
 // Match the single-QR download size so a code looks identical whether downloaded alone or in a batch.
@@ -87,7 +93,7 @@ async function renderOne(
  * @throws if `values` is empty, or propagates the first render/zip error.
  */
 export async function buildBatchZip(options: BuildBatchZipOptions): Promise<Blob> {
-  const { values, format, design, onProgress, dimension = DEFAULT_DIMENSION } = options
+  const { values, format, design, onProgress, dimension = DEFAULT_DIMENSION, filenameByValue } = options
 
   if (values.length === 0) {
     throw new Error('Cannot build a batch with no values')
@@ -100,7 +106,7 @@ export async function buildBatchZip(options: BuildBatchZipOptions): Promise<Blob
     const value = values[i]
     const blob = await renderOne(value, format, design, dimension)
     const bytes = new Uint8Array(await blob.arrayBuffer())
-    files[batchFilename(value, i, format, used)] = bytes
+    files[batchFilename(value, i, format, used, filenameByValue?.[value])] = bytes
     onProgress?.(i + 1, values.length)
   }
 
