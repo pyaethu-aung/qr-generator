@@ -111,3 +111,18 @@ export function parseBatchCsv(content: string): ParsedBatchCsv {
 
   return { headers, rows }
 }
+
+/** Quotes a single cell RFC-4180 style: wrap in `"..."` (doubling inner quotes) only when
+ *  the cell contains a comma, quote, or newline, so plain cells stay untouched. */
+function serializeCsvCell(cell: string): string {
+  return /[",\r\n]/.test(cell) ? `"${cell.replace(/"/g, '""')}"` : cell
+}
+
+/**
+ * Serializes a parsed grid's data rows (the header is excluded) back to comma-separated
+ * lines, one row per line. Used to show an uploaded multi-column CSV's content in the batch
+ * textarea as a read-only source view while the column-mapping UI drives generation.
+ */
+export function csvRowsToCommaText(grid: ParsedBatchCsv): string {
+  return grid.rows.map((row) => row.map(serializeCsvCell).join(',')).join('\n')
+}

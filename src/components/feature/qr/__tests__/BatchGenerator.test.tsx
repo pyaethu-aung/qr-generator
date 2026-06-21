@@ -174,12 +174,21 @@ describe('BatchGenerator', () => {
       fireEvent.change(input, { target: { files: [file] } })
     }
 
-    it('opens the mapping UI for a multi-column CSV and seeds the first column as the value', async () => {
+    it('opens the mapping UI for a multi-column CSV and shows the raw rows as a source view', async () => {
       setup()
       uploadCsv()
       await waitFor(() => expect(screen.getByText(/map csv columns/i)).toBeInTheDocument())
-      // First column ("url") becomes the value list.
-      expect(setInput).toHaveBeenLastCalledWith('https://a.com\nhttps://b.com')
+      // The textarea shows the file's data rows, comma-separated, header excluded.
+      expect(setInput).toHaveBeenLastCalledWith('https://a.com,TRUCK-1\nhttps://b.com,TRUCK-2')
+      // The first column ("url") seeds the generated value list.
+      expect(setPreparedValues).toHaveBeenLastCalledWith(['https://a.com', 'https://b.com'])
+    })
+
+    it('makes the textarea read-only while a CSV mapping is active', async () => {
+      setup()
+      uploadCsv()
+      await waitFor(() => expect(screen.getByText(/map csv columns/i)).toBeInTheDocument())
+      expect(screen.getByLabelText(/your list/i)).toBeDisabled()
     })
 
     it('builds filename overrides when a filename column is chosen', async () => {
@@ -193,12 +202,15 @@ describe('BatchGenerator', () => {
       })
     })
 
-    it('re-maps the value list when the value column changes', async () => {
+    it('re-maps the value list when the value column changes, leaving the source view intact', async () => {
       setup()
       uploadCsv()
       await waitFor(() => expect(screen.getByLabelText(/qr value column/i)).toBeInTheDocument())
+      setInput.mockClear()
       fireEvent.change(screen.getByLabelText(/qr value column/i), { target: { value: '1' } })
-      expect(setInput).toHaveBeenLastCalledWith('TRUCK-1\nTRUCK-2')
+      // The generated values follow the new column; the textarea source view is not rewritten.
+      expect(setPreparedValues).toHaveBeenLastCalledWith(['TRUCK-1', 'TRUCK-2'])
+      expect(setInput).not.toHaveBeenCalled()
     })
 
     it('seeds prepared values from the value column on import', async () => {
@@ -238,13 +250,16 @@ describe('BatchGenerator', () => {
       expect(screen.queryByText(/map csv columns/i)).not.toBeInTheDocument()
     })
 
-    it('clears mapping when the textarea is edited manually', async () => {
+    it('clears mapping and re-enables the textarea via the Clear button', async () => {
       setup()
       uploadCsv()
       await waitFor(() => expect(screen.getByText(/map csv columns/i)).toBeInTheDocument())
-      fireEvent.change(screen.getByLabelText(/your list/i), { target: { value: 'manual' } })
+      // The textarea is read-only while mapping is active, so Clear is how you return to entry.
+      fireEvent.click(screen.getByRole('button', { name: /^clear$/i }))
       expect(setFilenameOverrides).toHaveBeenLastCalledWith(null)
+      expect(setPreparedValues).toHaveBeenLastCalledWith(null)
       expect(screen.queryByText(/map csv columns/i)).not.toBeInTheDocument()
+      expect(screen.getByLabelText(/your list/i)).toBeEnabled()
     })
   })
 })

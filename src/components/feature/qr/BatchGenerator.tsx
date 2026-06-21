@@ -1,7 +1,11 @@
 import { useId, useRef, useState } from 'react'
 import { Layers, Package, Check, Palette, Upload, FileText, Columns3, ChevronDown } from 'lucide-react'
 import { parseBatchFile } from '../../../utils/batch/parseBatchFile'
-import { parseBatchCsv, type ParsedBatchCsv } from '../../../utils/batch/parseBatchCsv'
+import {
+  parseBatchCsv,
+  csvRowsToCommaText,
+  type ParsedBatchCsv,
+} from '../../../utils/batch/parseBatchCsv'
 import {
   CSV_CONTENT_TYPES,
   getCsvContentType,
@@ -139,10 +143,10 @@ export function BatchGenerator() {
 
   /**
    * Builds every row's payload for the given mapping and pushes the result into the hook.
-   * Structured (non-text) payloads can contain newlines, so they go through `preparedValues`
-   * and the textarea is left empty; the plain text path mirrors the values into the textarea
-   * so they stay visible and survive a tab switch. Returns the build result for callers that
-   * need to react to an empty mapping (the import guard).
+   * The textarea is left untouched: while a grid is active it shows the uploaded file's rows
+   * as a read-only source view, and `preparedValues` (not the textarea) drives generation, so
+   * a payload that legitimately contains newlines (vCard, iCalendar) is never split on its own
+   * lines. Returns the build result for callers that need to react to an empty mapping.
    */
   function applyMapping(
     grid: ParsedBatchCsv,
@@ -160,7 +164,6 @@ export function BatchGenerator() {
     setPreparedValues(result.values)
     setFilenameOverrides(result.filenameOverrides)
     setCaptionOverrides(result.captionOverrides)
-    setInput(typeId === 'text' ? result.values.join('\n') : '')
     return result
   }
 
@@ -212,7 +215,9 @@ export function BatchGenerator() {
           setPreparedValues(result.values)
           setFilenameOverrides(null)
           setCaptionOverrides(null)
-          setInput(result.values.join('\n'))
+          // Show the file's data rows as a read-only source view; the mapping below (not this
+          // text) drives generation while a grid is active.
+          setInput(csvRowsToCommaText(grid))
           setFileError(null)
           setImportedFileName(file.name)
           return
@@ -293,7 +298,10 @@ export function BatchGenerator() {
   const percent = progress.total ? Math.round((progress.completed / progress.total) * 100) : 0
 
   const currentType = getCsvContentType(contentType)
-  const isStructured = csvGrid !== null && contentType !== 'text'
+  // A CSV mapping is active: the textarea is a read-only source view of the uploaded rows and
+  // `preparedValues` (not the textarea) drives the generated codes.
+  const mappingActive = csvGrid !== null
+  const isStructured = mappingActive && contentType !== 'text'
   const headerOptions = csvGrid
     ? csvGrid.headers.map((header, i) => ({ value: String(i), label: header || `Column ${i + 1}` }))
     : []
@@ -355,13 +363,13 @@ export function BatchGenerator() {
                 setFileError(null)
                 clearMapping()
               }}
-              disabled={isGenerating || isStructured}
-              rows={isStructured ? 3 : 9}
+              disabled={isGenerating || mappingActive}
+              rows={mappingActive ? 5 : 9}
               spellCheck={false}
               autoCapitalize="none"
               autoCorrect="off"
               placeholder={
-                isStructured
+                mappingActive
                   ? translate('batch.csvStructuredPlaceholder')
                   : translate('batch.inputPlaceholder')
               }
@@ -465,7 +473,7 @@ export function BatchGenerator() {
                 {translate(isStructured ? 'batch.csvMapStructuredHint' : 'batch.csvMapHint')}
               </p>
 
-              {isStructured && previewValues.length > 0 && (
+              {mappingActive && previewValues.length > 0 && (
                 <ul className="space-y-1 rounded-md bg-surface-inset p-2.5 font-['Geist_Mono'] text-xs text-text-secondary">
                   {previewValues.map((value, i) => (
                     <li key={i} className="truncate">

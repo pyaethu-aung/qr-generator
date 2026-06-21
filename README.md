@@ -77,9 +77,10 @@ entries; blank lines and exact duplicates are dropped). Choose a format
 downloads them as a single archive. Files are named by position and a slug of their content
 (`001-example-com.png`), so they sort in the order you pasted them.
 
-When you import a `.csv` with more than one column, a **column-mapping**
-panel appears (the first row is treated as the header). Pick a **content
-type** and map its fields to columns:
+When you import a `.csv` with more than one column, the list shows the file's
+rows (comma-separated) as a read-only source view and a **column-mapping**
+panel appears beneath it (the first row is treated as the header). Pick a
+**content type** and map its fields to columns:
 
 - **Text** (default) encodes one chosen column verbatim, exactly as before.
 - **Wi-Fi, Contact, Email, SMS, Phone, Location, Event, Crypto** build a
@@ -94,8 +95,9 @@ type** and map its fields to columns:
 Optionally pick a column to name each file (e.g. a `vehicle_id` column,
 producing `truck-12.png` instead of `001-…`). The filename mapping applies
 to the ZIP formats only; the single-PDF **Labels** output ignores it.
-Rows missing a required field are skipped. Editing the list by hand, or the
-**Clear** button, resets the mapping.
+Rows missing a required field are skipped. While a mapping is active the list
+is read-only; the **Clear** button (or importing a `.txt` / single-column
+`.csv`) resets the mapping and re-enables manual entry.
 
 **Labels** produces a single printable PDF arranged in an Avery-style grid
 instead of a ZIP. Three presets are available via a layout picker:

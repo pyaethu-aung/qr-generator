@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseBatchCsv } from '../parseBatchCsv'
+import { parseBatchCsv, csvRowsToCommaText } from '../parseBatchCsv'
 
 describe('parseBatchCsv', () => {
   it('splits headers from data rows', () => {
@@ -65,5 +65,26 @@ describe('parseBatchCsv', () => {
 
   it('handles a header-only file with no data rows', () => {
     expect(parseBatchCsv('url,name')).toEqual({ headers: ['url', 'name'], rows: [] })
+  })
+})
+
+describe('csvRowsToCommaText', () => {
+  it('serializes data rows to comma-separated lines, excluding the header', () => {
+    const grid = parseBatchCsv('url,name\nhttps://a.com,Alice\nhttps://b.com,Bob')
+    expect(csvRowsToCommaText(grid)).toBe('https://a.com,Alice\nhttps://b.com,Bob')
+  })
+
+  it('re-quotes cells containing a comma, quote, or newline', () => {
+    const grid = parseBatchCsv('a,b\n"x,y",plain\n"she said ""hi""",z')
+    expect(csvRowsToCommaText(grid)).toBe('"x,y",plain\n"she said ""hi""",z')
+  })
+
+  it('keeps padded trailing empty cells so column count is preserved', () => {
+    const grid = parseBatchCsv('a,b,c\n1')
+    expect(csvRowsToCommaText(grid)).toBe('1,,')
+  })
+
+  it('returns an empty string for a header-only grid', () => {
+    expect(csvRowsToCommaText(parseBatchCsv('a,b'))).toBe('')
   })
 })
