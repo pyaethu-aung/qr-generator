@@ -1,6 +1,7 @@
 import { useState, useId, useMemo } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { Input } from '../../common/Input'
+import { Textarea } from '../../common/Textarea'
 import { Callout } from '../../common/Callout'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import { buildEmailString, EMAIL_REGEX } from '../../../utils/email'
@@ -79,14 +80,12 @@ export function EmailForm({ config, onToChange, onSubjectChange, onBodyChange }:
         </button>
         {bodyOpen && (
           <div id={bodyRegionId}>
-            <textarea
+            <Textarea
               id={bodyId}
               aria-labelledby={bodyToggleId}
-              rows={3}
               placeholder={translate('controls.emailBodyPlaceholder')}
               value={config.body}
               onChange={(e) => onBodyChange(e.target.value)}
-              className="block w-full resize-none rounded-lg border border-border-strong bg-surface-inset px-3 py-2 text-sm text-text-primary shadow-sm placeholder:text-text-disabled focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring"
             />
           </div>
         )}

@@ -1,6 +1,7 @@
 import { useState, useId, useMemo } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { Input } from '../../common/Input'
+import { Textarea } from '../../common/Textarea'
 import { Callout } from '../../common/Callout'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import { isEndBeforeStart, veventDraftLength, VEVENT_PAYLOAD_WARN } from '../../../utils/vevent'
@@ -150,14 +151,12 @@ export function VEventForm({
         </button>
         {descriptionOpen && (
           <div id={descriptionRegionId}>
-            <textarea
+            <Textarea
               id={descriptionId}
               aria-labelledby={descriptionToggleId}
-              rows={3}
               placeholder={translate('controls.veventDescriptionPlaceholder')}
               value={config.description}
               onChange={(e) => onDescriptionChange(e.target.value)}
-              className="block w-full resize-none rounded-lg border border-border-strong bg-surface-inset px-3 py-2 text-sm text-text-primary shadow-sm placeholder:text-text-disabled focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring"
             />
           </div>
         )}
