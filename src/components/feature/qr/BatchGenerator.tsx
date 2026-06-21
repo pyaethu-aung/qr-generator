@@ -2,6 +2,16 @@ import { useId, useRef, useState } from 'react'
 import { Layers, Package, Check, Palette, Upload, FileText, Columns3, ChevronDown } from 'lucide-react'
 import { parseBatchFile } from '../../../utils/batch/parseBatchFile'
 import { parseBatchCsv, type ParsedBatchCsv } from '../../../utils/batch/parseBatchCsv'
+import {
+  CSV_CONTENT_TYPES,
+  getCsvContentType,
+  autoMapColumns,
+  defaultFixedValues,
+  buildCsvValues,
+  NO_COLUMN,
+  type CsvBuildResult,
+} from '../../../utils/batch/csvContentTypes'
+import type { QRContentMode } from '../../../types/qr'
 
 import { PillGroup } from '../../common/PillGroup'
 import { Callout } from '../../common/Callout'
@@ -27,65 +37,48 @@ const LAYOUT_OPTIONS: { value: LabelPresetId; label: string }[] = LABEL_SHEET_PR
   (preset) => ({ value: preset.id, label: preset.label }),
 )
 
-/** Sentinel for the "no filename column" choice (files named automatically from the value). */
-const NO_FILENAME_COLUMN = -1
+/** How many built payloads to show in the structured-mapping preview. */
+const PREVIEW_LIMIT = 3
+/** Collapse a multi-line payload to a single readable line for the preview. */
+const previewLine = (value: string) => value.replace(/\s+/g, ' ').trim().slice(0, 72)
 
-/** Newline-joins the non-empty cells of one CSV column for the values textarea. */
-function columnToText(grid: ParsedBatchCsv, col: number): string {
-  return grid.rows
-    .map((row) => row[col] ?? '')
-    .filter((cell) => cell.length > 0)
-    .join('\n')
-}
-
-/**
- * Builds the value→filename map for the chosen columns. Keyed by value (matching the
- * textarea's dedup, where the first occurrence wins), so a row whose value cell is blank,
- * or whose filename cell is blank, contributes no override. Returns `null` when no
- * filename column is selected.
- */
-function buildFilenameOverrides(
-  grid: ParsedBatchCsv,
-  valueCol: number,
-  filenameCol: number,
-): Record<string, string> | null {
-  if (filenameCol === NO_FILENAME_COLUMN) return null
-  const map: Record<string, string> = {}
-  for (const row of grid.rows) {
-    const value = row[valueCol] ?? ''
-    const name = row[filenameCol] ?? ''
-    if (!value || !name || value in map) continue
-    map[value] = name
-  }
-  return map
-}
-
-/** Styled native select for column pickers — accessible by default, no popover machinery. */
-function ColumnSelect({
+/** Styled native select shared by the column pickers and the fixed enum/toggle pickers. */
+function MappingSelect({
   label,
+  required,
   value,
   onChange,
-  children,
+  options,
 }: {
   label: string
-  value: number
-  onChange: (value: number) => void
-  children: React.ReactNode
+  required?: boolean
+  value: string
+  onChange: (value: string) => void
+  options: { value: string; label: string }[]
 }) {
   const id = useId()
   return (
     <div className="flex-1 space-y-1.5">
       <label htmlFor={id} className="block text-xs font-medium text-text-secondary">
         {label}
+        {required && (
+          <span aria-hidden className="ml-0.5 text-error">
+            *
+          </span>
+        )}
       </label>
       <div className="relative">
         <select
           id={id}
           value={value}
-          onChange={(e) => onChange(Number(e.target.value))}
+          onChange={(e) => onChange(e.target.value)}
           className="w-full appearance-none rounded-lg border border-border-strong bg-surface-inset py-2 pl-3 pr-9 text-sm text-text-primary transition-colors focus-visible:border-focus-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring/25"
         >
-          {children}
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
         </select>
         <ChevronDown
           size={15}
@@ -109,6 +102,7 @@ export function BatchGenerator() {
     captions,
     setCaptions,
     setFilenameOverrides,
+    setPreparedValues,
     values,
     truncated,
     status,
@@ -123,16 +117,48 @@ export function BatchGenerator() {
   const [fileError, setFileError] = useState<string | null>(null)
   // The parsed CSV grid drives the column-mapping UI; null when no multi-column CSV is active.
   const [csvGrid, setCsvGrid] = useState<ParsedBatchCsv | null>(null)
-  const [valueCol, setValueCol] = useState(0)
-  const [filenameCol, setFilenameCol] = useState(NO_FILENAME_COLUMN)
+  const [contentType, setContentType] = useState<QRContentMode>('text')
+  // Per-field column assignments (column fields) and fixed values (enum/toggle fields).
+  const [columns, setColumns] = useState<Record<string, number>>({})
+  const [fixed, setFixed] = useState<Record<string, string>>({})
+  const [filenameCol, setFilenameCol] = useState(NO_COLUMN)
 
-  // Leaving mapping mode (manual edit, .txt import, or a single-column CSV) clears the grid
-  // and any filename overrides so stale mappings never apply to edited values.
+  // Leaving mapping mode (manual edit, .txt import, or a single-column CSV) clears the grid,
+  // the prepared values, and any filename overrides so stale mappings never apply.
   function clearMapping() {
     setCsvGrid(null)
-    setValueCol(0)
-    setFilenameCol(NO_FILENAME_COLUMN)
+    setContentType('text')
+    setColumns({})
+    setFixed({})
+    setFilenameCol(NO_COLUMN)
     setFilenameOverrides(null)
+    setPreparedValues(null)
+  }
+
+  /**
+   * Builds every row's payload for the given mapping and pushes the result into the hook.
+   * Structured (non-text) payloads can contain newlines, so they go through `preparedValues`
+   * and the textarea is left empty; the plain text path mirrors the values into the textarea
+   * so they stay visible and survive a tab switch. Returns the build result for callers that
+   * need to react to an empty mapping (the import guard).
+   */
+  function applyMapping(
+    grid: ParsedBatchCsv,
+    typeId: QRContentMode,
+    cols: Record<string, number>,
+    fixedValues: Record<string, string>,
+    fnCol: number,
+  ): CsvBuildResult {
+    const result = buildCsvValues(grid, {
+      type: typeId,
+      columns: cols,
+      fixed: fixedValues,
+      filenameCol: fnCol,
+    })
+    setPreparedValues(result.values)
+    setFilenameOverrides(result.filenameOverrides)
+    setInput(typeId === 'text' ? result.values.join('\n') : '')
+    return result
   }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -161,17 +187,28 @@ export function BatchGenerator() {
       if (name.endsWith('.csv')) {
         const grid = parseBatchCsv(text)
         if (grid.headers.length >= 2 && grid.rows.length > 0) {
-          const text0 = columnToText(grid, 0)
-          if (!text0.trim()) {
+          const type = getCsvContentType('text')
+          const cols = autoMapColumns(grid, type)
+          const fixedValues = defaultFixedValues(type)
+          const result = buildCsvValues(grid, {
+            type: 'text',
+            columns: cols,
+            fixed: fixedValues,
+            filenameCol: NO_COLUMN,
+          })
+          if (result.values.length === 0) {
             setFileError(translate('batch.importErrorEmpty'))
             setImportedFileName(null)
             return
           }
           setCsvGrid(grid)
-          setValueCol(0)
-          setFilenameCol(NO_FILENAME_COLUMN)
+          setContentType('text')
+          setColumns(cols)
+          setFixed(fixedValues)
+          setFilenameCol(NO_COLUMN)
+          setPreparedValues(result.values)
           setFilenameOverrides(null)
-          setInput(text0)
+          setInput(result.values.join('\n'))
           setFileError(null)
           setImportedFileName(file.name)
           return
@@ -196,17 +233,35 @@ export function BatchGenerator() {
     reader.readAsText(file)
   }
 
-  function handleValueColChange(col: number) {
+  function handleTypeChange(nextId: QRContentMode) {
     if (!csvGrid) return
-    setValueCol(col)
-    setInput(columnToText(csvGrid, col))
-    setFilenameOverrides(buildFilenameOverrides(csvGrid, col, filenameCol))
+    const type = getCsvContentType(nextId)
+    const nextColumns = autoMapColumns(csvGrid, type)
+    const nextFixed = defaultFixedValues(type)
+    setContentType(nextId)
+    setColumns(nextColumns)
+    setFixed(nextFixed)
+    applyMapping(csvGrid, nextId, nextColumns, nextFixed, filenameCol)
+  }
+
+  function handleColumnChange(key: string, col: number) {
+    if (!csvGrid) return
+    const next = { ...columns, [key]: col }
+    setColumns(next)
+    applyMapping(csvGrid, contentType, next, fixed, filenameCol)
+  }
+
+  function handleFixedChange(key: string, val: string) {
+    if (!csvGrid) return
+    const next = { ...fixed, [key]: val }
+    setFixed(next)
+    applyMapping(csvGrid, contentType, columns, next, filenameCol)
   }
 
   function handleFilenameColChange(col: number) {
     if (!csvGrid) return
     setFilenameCol(col)
-    setFilenameOverrides(buildFilenameOverrides(csvGrid, valueCol, col))
+    applyMapping(csvGrid, contentType, columns, fixed, col)
   }
 
   const textareaId = useId()
@@ -232,6 +287,14 @@ export function BatchGenerator() {
   const count = values.length
   const canGenerate = count > 0 && !isGenerating
   const percent = progress.total ? Math.round((progress.completed / progress.total) * 100) : 0
+
+  const currentType = getCsvContentType(contentType)
+  const isStructured = csvGrid !== null && contentType !== 'text'
+  const headerOptions = csvGrid
+    ? csvGrid.headers.map((header, i) => ({ value: String(i), label: header || `Column ${i + 1}` }))
+    : []
+  const noneOption = { value: String(NO_COLUMN), label: translate('batch.csvMapColumnNone') }
+  const previewValues = values.slice(0, PREVIEW_LIMIT)
 
   const countLabel = translate('batch.countLabel')
     .replace('{count}', String(count))
@@ -288,12 +351,16 @@ export function BatchGenerator() {
                 setFileError(null)
                 clearMapping()
               }}
-              disabled={isGenerating}
-              rows={9}
+              disabled={isGenerating || isStructured}
+              rows={isStructured ? 3 : 9}
               spellCheck={false}
               autoCapitalize="none"
               autoCorrect="off"
-              placeholder={translate('batch.inputPlaceholder')}
+              placeholder={
+                isStructured
+                  ? translate('batch.csvStructuredPlaceholder')
+                  : translate('batch.inputPlaceholder')
+              }
               className="w-full resize-y rounded-lg border border-border-strong bg-surface-inset p-3 font-['Geist_Mono'] text-sm text-text-primary placeholder:text-text-disabled transition-colors focus-visible:border-focus-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring/25 disabled:opacity-50"
             />
             {fileError ? (
@@ -317,41 +384,99 @@ export function BatchGenerator() {
 
           {csvGrid && (
             <div className="space-y-3 rounded-lg border border-border-subtle bg-surface-raised p-4">
-              <p className="flex items-center gap-1.5 text-sm font-semibold text-text-primary">
-                <Columns3 size={15} aria-hidden className="shrink-0 text-action" />
-                {translate('batch.csvMapTitle')}
-              </p>
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <ColumnSelect
-                  label={translate('batch.csvMapValueLabel')}
-                  value={valueCol}
-                  onChange={handleValueColChange}
+              <div className="flex items-center justify-between gap-2">
+                <p className="flex items-center gap-1.5 text-sm font-semibold text-text-primary">
+                  <Columns3 size={15} aria-hidden className="shrink-0 text-action" />
+                  {translate('batch.csvMapTitle')}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    clearMapping()
+                    setInput('')
+                    setImportedFileName(null)
+                  }}
+                  disabled={isGenerating}
+                  className="-mr-1 rounded-md px-2 py-1 text-xs font-semibold text-text-secondary transition-colors hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1"
                 >
-                  {csvGrid.headers.map((header, i) => (
-                    <option key={i} value={i}>
-                      {header || `Column ${i + 1}`}
-                    </option>
-                  ))}
-                </ColumnSelect>
+                  {translate('batch.csvMapClear')}
+                </button>
+              </div>
+
+              <MappingSelect
+                label={translate('batch.csvMapTypeLabel')}
+                value={contentType}
+                onChange={(value) => handleTypeChange(value as QRContentMode)}
+                options={CSV_CONTENT_TYPES.map((type) => ({
+                  value: type.id,
+                  label: translate(type.labelKey),
+                }))}
+              />
+
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {currentType.fields.map((field) =>
+                  field.kind === 'column' ? (
+                    <MappingSelect
+                      key={field.key}
+                      label={translate(field.labelKey)}
+                      required={field.required}
+                      value={String(columns[field.key] ?? NO_COLUMN)}
+                      onChange={(value) => handleColumnChange(field.key, Number(value))}
+                      options={[noneOption, ...headerOptions]}
+                    />
+                  ) : (
+                    <MappingSelect
+                      key={field.key}
+                      label={translate(field.labelKey)}
+                      value={fixed[field.key] ?? field.default ?? ''}
+                      onChange={(value) => handleFixedChange(field.key, value)}
+                      options={
+                        field.kind === 'enum'
+                          ? (field.options ?? []).map((option) => ({
+                              value: option.value,
+                              label: translate(option.labelKey),
+                            }))
+                          : [
+                              { value: 'false', label: translate('batch.csvToggleNo') },
+                              { value: 'true', label: translate('batch.csvToggleYes') },
+                            ]
+                      }
+                    />
+                  ),
+                )}
                 {!isLabels && (
-                  <ColumnSelect
+                  <MappingSelect
                     label={translate('batch.csvMapFilenameLabel')}
-                    value={filenameCol}
-                    onChange={handleFilenameColChange}
-                  >
-                    <option value={NO_FILENAME_COLUMN}>
-                      {translate('batch.csvMapFilenameNone')}
-                    </option>
-                    {csvGrid.headers.map((header, i) => (
-                      <option key={i} value={i}>
-                        {header || `Column ${i + 1}`}
-                      </option>
-                    ))}
-                  </ColumnSelect>
+                    value={String(filenameCol)}
+                    onChange={(value) => handleFilenameColChange(Number(value))}
+                    options={[
+                      { value: String(NO_COLUMN), label: translate('batch.csvMapFilenameNone') },
+                      ...headerOptions,
+                    ]}
+                  />
                 )}
               </div>
-              {!isLabels && (
-                <p className="text-xs text-text-secondary">{translate('batch.csvMapHint')}</p>
+
+              <p className="text-xs text-text-secondary">
+                {translate(isStructured ? 'batch.csvMapStructuredHint' : 'batch.csvMapHint')}
+              </p>
+
+              {isStructured && previewValues.length > 0 && (
+                <ul className="space-y-1 rounded-md bg-surface-inset p-2.5 font-['Geist_Mono'] text-xs text-text-secondary">
+                  {previewValues.map((value, i) => (
+                    <li key={i} className="truncate">
+                      {previewLine(value)}
+                    </li>
+                  ))}
+                  {count > previewValues.length && (
+                    <li className="text-text-disabled">
+                      {translate('batch.csvPreviewMore').replace(
+                        '{count}',
+                        String(count - previewValues.length),
+                      )}
+                    </li>
+                  )}
+                </ul>
               )}
             </div>
           )}

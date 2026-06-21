@@ -9,6 +9,7 @@ const setFormat = vi.fn()
 const setLabelPreset = vi.fn()
 const setCaptions = vi.fn()
 const setFilenameOverrides = vi.fn()
+const setPreparedValues = vi.fn()
 const generate = vi.fn()
 
 let state: UseBatchGeneratorReturn
@@ -29,6 +30,8 @@ function makeState(over: Partial<UseBatchGeneratorReturn> = {}): UseBatchGenerat
     setCaptions,
     filenameOverrides: null,
     setFilenameOverrides,
+    preparedValues: null,
+    setPreparedValues,
     values: [],
     total: 0,
     truncated: false,
@@ -55,6 +58,7 @@ beforeEach(() => {
   setLabelPreset.mockReset()
   setCaptions.mockReset()
   setFilenameOverrides.mockReset()
+  setPreparedValues.mockReset()
   generate.mockReset()
   state = makeState()
 })
@@ -191,6 +195,34 @@ describe('BatchGenerator', () => {
       await waitFor(() => expect(screen.getByLabelText(/qr value column/i)).toBeInTheDocument())
       fireEvent.change(screen.getByLabelText(/qr value column/i), { target: { value: '1' } })
       expect(setInput).toHaveBeenLastCalledWith('TRUCK-1\nTRUCK-2')
+    })
+
+    it('seeds prepared values from the value column on import', async () => {
+      setup()
+      uploadCsv()
+      await waitFor(() => expect(screen.getByText(/map csv columns/i)).toBeInTheDocument())
+      expect(setPreparedValues).toHaveBeenLastCalledWith(['https://a.com', 'https://b.com'])
+    })
+
+    it('builds structured payloads through preparedValues when a content type is chosen', async () => {
+      setup()
+      uploadCsv('ssid,password\nNet,pw')
+      await waitFor(() => expect(screen.getByLabelText(/content type/i)).toBeInTheDocument())
+      fireEvent.change(screen.getByLabelText(/content type/i), { target: { value: 'wifi' } })
+      // The Wi-Fi field mappers appear and the built payload is pushed as a single value.
+      expect(screen.getByLabelText(/network name|ssid/i)).toBeInTheDocument()
+      expect(setPreparedValues).toHaveBeenLastCalledWith(['WIFI:T:WPA;S:Net;P:pw;;'])
+    })
+
+    it('builds an intact multi-line vCard as one prepared value', async () => {
+      setup()
+      uploadCsv('firstName,phone\nAung,+95912345678')
+      await waitFor(() => expect(screen.getByLabelText(/content type/i)).toBeInTheDocument())
+      fireEvent.change(screen.getByLabelText(/content type/i), { target: { value: 'vcard' } })
+      const lastCall = setPreparedValues.mock.calls.at(-1)?.[0] as string[]
+      expect(lastCall).toHaveLength(1)
+      expect(lastCall[0]).toContain('\n')
+      expect(lastCall[0].startsWith('BEGIN:VCARD')).toBe(true)
     })
 
     it('does not open the mapping UI for a single-column CSV', async () => {

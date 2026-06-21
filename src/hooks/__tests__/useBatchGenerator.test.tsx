@@ -86,6 +86,28 @@ describe('useBatchGenerator', () => {
     expect(arg.filenameByValue).toEqual({ 'https://a.com': 'TRUCK-1' })
   })
 
+  it('treats preparedValues as authoritative without splitting on newlines', async () => {
+    const vcard = 'BEGIN:VCARD\nVERSION:3.0\nFN:Aung\nEND:VCARD'
+    const { result } = renderHook(() => useBatchGenerator())
+    // The textarea text must be ignored once prepared values are set.
+    act(() => result.current.setInput('ignored\nlines'))
+    act(() => result.current.setPreparedValues([vcard]))
+    expect(result.current.values).toEqual([vcard])
+    await act(async () => {
+      await result.current.generate()
+    })
+    expect(vi.mocked(buildBatchZip).mock.calls[0][0].values).toEqual([vcard])
+  })
+
+  it('dedupes and caps preparedValues, then falls back to input when cleared', () => {
+    const { result } = renderHook(() => useBatchGenerator())
+    act(() => result.current.setPreparedValues(['a', 'a', 'b', '']))
+    expect(result.current.values).toEqual(['a', 'b'])
+    act(() => result.current.setInput('y'))
+    act(() => result.current.setPreparedValues(null))
+    expect(result.current.values).toEqual(['y'])
+  })
+
   it('builds a label sheet PDF and downloads it when the labels format is chosen', async () => {
     const { result } = renderHook(() => useBatchGenerator())
     act(() => result.current.setInput('VEH-001\nVEH-002'))

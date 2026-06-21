@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { downloadBlob } from '../utils/download'
-import { parseBatchInput, BATCH_MAX_LINES } from '../utils/batch/parseBatchInput'
+import { parseBatchInput, dedupeAndCap, BATCH_MAX_LINES } from '../utils/batch/parseBatchInput'
 import { buildBatchZip, type BatchFormat, type BatchDesign } from '../utils/batch/buildBatchZip'
 import { buildLabelSheetPdf } from '../utils/batch/buildLabelSheetPdf'
 import {
@@ -57,6 +57,13 @@ export interface UseBatchGeneratorReturn {
    */
   filenameOverrides: Record<string, string> | null
   setFilenameOverrides: (overrides: Record<string, string> | null) => void
+  /**
+   * Pre-built payloads from CSV column mapping, or `null` for the plain textarea path.
+   * When set, this (not `input`) is the source of truth for the values, so a payload that
+   * legitimately contains newlines (vCard, iCalendar) is never split on its own lines.
+   */
+  preparedValues: string[] | null
+  setPreparedValues: (values: string[] | null) => void
   /** Unique, capped values that will be rendered. */
   values: string[]
   /** Unique non-empty line count before the cap. */
@@ -76,11 +83,15 @@ export function useBatchGenerator(): UseBatchGeneratorReturn {
   const [labelPreset, setLabelPresetState] = useState<LabelPresetId>(DEFAULT_LABEL_PRESET_ID)
   const [captions, setCaptionsState] = useState(true)
   const [filenameOverrides, setFilenameOverrides] = useState<Record<string, string> | null>(null)
+  const [preparedValues, setPreparedValues] = useState<string[] | null>(null)
   const [status, setStatus] = useState<BatchStatus>('idle')
   const [progress, setProgress] = useState<BatchProgress>({ completed: 0, total: 0 })
   const [errorCode, setErrorCode] = useState<BatchErrorCode | null>(null)
 
-  const { values, total, truncated } = useMemo(() => parseBatchInput(input), [input])
+  const { values, total, truncated } = useMemo(
+    () => (preparedValues !== null ? dedupeAndCap(preparedValues) : parseBatchInput(input)),
+    [preparedValues, input],
+  )
 
   // Persist the pasted list (debounced) so switching tabs and back doesn't lose it.
   useEffect(() => {
@@ -133,7 +144,8 @@ export function useBatchGenerator(): UseBatchGeneratorReturn {
   )
 
   const generate = useCallback(async () => {
-    const { values: toRender } = parseBatchInput(input)
+    const { values: toRender } =
+      preparedValues !== null ? dedupeAndCap(preparedValues) : parseBatchInput(input)
     if (toRender.length === 0) {
       setStatus('error')
       setErrorCode('empty')
@@ -183,7 +195,7 @@ export function useBatchGenerator(): UseBatchGeneratorReturn {
       setStatus('error')
       setErrorCode('render-failed')
     }
-  }, [input, format, labelPreset, captions, filenameOverrides])
+  }, [input, preparedValues, format, labelPreset, captions, filenameOverrides])
 
   return {
     input,
@@ -196,6 +208,8 @@ export function useBatchGenerator(): UseBatchGeneratorReturn {
     setCaptions,
     filenameOverrides,
     setFilenameOverrides,
+    preparedValues,
+    setPreparedValues,
     values,
     total,
     truncated,
