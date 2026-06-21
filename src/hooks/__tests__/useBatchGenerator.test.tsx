@@ -126,6 +126,19 @@ describe('useBatchGenerator', () => {
     expect(result.current.status).toBe('success')
   })
 
+  it('passes caption overrides to the label sheet as captionByValue', async () => {
+    const { result } = renderHook(() => useBatchGenerator())
+    act(() => result.current.setPreparedValues(['WIFI:T:WPA;S:Net;P:pw;;']))
+    act(() => result.current.setCaptionOverrides({ 'WIFI:T:WPA;S:Net;P:pw;;': 'Net' }))
+    act(() => result.current.setFormat('labels'))
+    await act(async () => {
+      await result.current.generate()
+    })
+    expect(vi.mocked(buildLabelSheetPdf).mock.calls[0][0].captionByValue).toEqual({
+      'WIFI:T:WPA;S:Net;P:pw;;': 'Net',
+    })
+  })
+
   it('surfaces a render error when the zip build throws', async () => {
     vi.mocked(buildBatchZip).mockRejectedValueOnce(new Error('boom'))
     const { result } = renderHook(() => useBatchGenerator())

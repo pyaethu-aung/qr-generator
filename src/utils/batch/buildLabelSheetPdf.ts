@@ -25,6 +25,12 @@ export interface BuildLabelSheetOptions {
   presetId: LabelPresetId
   /** Print the value beneath each code (the asset-tag caption). */
   captions: boolean
+  /**
+   * Optional per-value caption text (from CSV content-type mapping): a Wi-Fi label shows
+   * its SSID, a contact shows the name, etc. A value absent here falls back to the value
+   * itself, so the plain list and Text mode are unchanged.
+   */
+  captionByValue?: Record<string, string>
   /** Reports progress after each code renders, 1-based, so the UI can show "N of total". */
   onProgress?: (completed: number, total: number) => void
   /** Raster resolution per QR in px (square). Generous so labels stay crisp when printed. */
@@ -67,7 +73,15 @@ function truncateToWidth(pdf: import('jspdf').jsPDF, text: string, maxWidth: num
  * @throws if `values` is empty, or propagates the first render error.
  */
 export async function buildLabelSheetPdf(options: BuildLabelSheetOptions): Promise<Blob> {
-  const { values, design, presetId, captions, onProgress, cellPx = DEFAULT_CELL_PX } = options
+  const {
+    values,
+    design,
+    presetId,
+    captions,
+    captionByValue,
+    onProgress,
+    cellPx = DEFAULT_CELL_PX,
+  } = options
 
   if (values.length === 0) {
     throw new Error('Cannot build a label sheet with no values')
@@ -112,7 +126,8 @@ export async function buildLabelSheetPdf(options: BuildLabelSheetOptions): Promi
     if (content.caption) {
       pdf.setFontSize(content.caption.fontSize)
       pdf.setTextColor(CAPTION_GRAY)
-      const text = truncateToWidth(pdf, value, content.caption.width)
+      const captionText = captionByValue?.[value] ?? value
+      const text = truncateToWidth(pdf, captionText, content.caption.width)
       pdf.text(text, content.caption.x, content.caption.y, { align: 'center' })
     }
 

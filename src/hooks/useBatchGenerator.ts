@@ -58,6 +58,12 @@ export interface UseBatchGeneratorReturn {
   filenameOverrides: Record<string, string> | null
   setFilenameOverrides: (overrides: Record<string, string> | null) => void
   /**
+   * Per-value Labels-sheet caption overrides from CSV content-type mapping (a Wi-Fi code
+   * captioned by its SSID, a contact by its name), or `null` to caption with the value.
+   */
+  captionOverrides: Record<string, string> | null
+  setCaptionOverrides: (overrides: Record<string, string> | null) => void
+  /**
    * Pre-built payloads from CSV column mapping, or `null` for the plain textarea path.
    * When set, this (not `input`) is the source of truth for the values, so a payload that
    * legitimately contains newlines (vCard, iCalendar) is never split on its own lines.
@@ -83,6 +89,7 @@ export function useBatchGenerator(): UseBatchGeneratorReturn {
   const [labelPreset, setLabelPresetState] = useState<LabelPresetId>(DEFAULT_LABEL_PRESET_ID)
   const [captions, setCaptionsState] = useState(true)
   const [filenameOverrides, setFilenameOverrides] = useState<Record<string, string> | null>(null)
+  const [captionOverrides, setCaptionOverrides] = useState<Record<string, string> | null>(null)
   const [preparedValues, setPreparedValues] = useState<string[] | null>(null)
   const [status, setStatus] = useState<BatchStatus>('idle')
   const [progress, setProgress] = useState<BatchProgress>({ completed: 0, total: 0 })
@@ -176,6 +183,7 @@ export function useBatchGenerator(): UseBatchGeneratorReturn {
           design,
           presetId: labelPreset,
           captions,
+          captionByValue: captionOverrides ?? undefined,
           onProgress,
         })
         downloadBlob(blob, `qr-labels-${toRender.length}-${stamp}.pdf`)
@@ -195,7 +203,7 @@ export function useBatchGenerator(): UseBatchGeneratorReturn {
       setStatus('error')
       setErrorCode('render-failed')
     }
-  }, [input, preparedValues, format, labelPreset, captions, filenameOverrides])
+  }, [input, preparedValues, format, labelPreset, captions, filenameOverrides, captionOverrides])
 
   return {
     input,
@@ -208,6 +216,8 @@ export function useBatchGenerator(): UseBatchGeneratorReturn {
     setCaptions,
     filenameOverrides,
     setFilenameOverrides,
+    captionOverrides,
+    setCaptionOverrides,
     preparedValues,
     setPreparedValues,
     values,

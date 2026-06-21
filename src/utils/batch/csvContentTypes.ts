@@ -59,6 +59,12 @@ export interface CsvContentType {
   fields: CsvField[]
   /** Builds one payload from a field-value accessor; returns '' when the row is incomplete. */
   build: (get: (key: string) => string) => string
+  /**
+   * A short, human-readable caption for the Labels sheet (the raw payload makes a useless
+   * caption — `WIFI:T:...` or a multi-line vCard). Omitted for `text`, whose value already
+   * reads fine, so the Labels renderer falls back to the value itself.
+   */
+  caption?: (get: (key: string) => string) => string
 }
 
 /**
@@ -98,6 +104,7 @@ export const CSV_CONTENT_TYPES: CsvContentType[] = [
         security: (get('security') || 'WPA') as WiFiSecurity,
         hidden: get('hidden') === 'true',
       }),
+    caption: (get) => get('ssid'),
   },
   {
     id: 'vcard',
@@ -121,6 +128,8 @@ export const CSV_CONTENT_TYPES: CsvContentType[] = [
         jobTitle: get('jobTitle'),
         website: get('website'),
       }),
+    caption: (get) =>
+      [get('firstName'), get('lastName')].map((part) => part.trim()).filter(Boolean).join(' '),
   },
   {
     id: 'email',
@@ -132,6 +141,7 @@ export const CSV_CONTENT_TYPES: CsvContentType[] = [
     ],
     build: (get) =>
       buildEmailString({ to: get('to'), subject: get('subject'), body: get('body') }),
+    caption: (get) => get('to'),
   },
   {
     id: 'sms',
@@ -141,12 +151,14 @@ export const CSV_CONTENT_TYPES: CsvContentType[] = [
       { key: 'message', labelKey: 'controls.smsMessageLabel', kind: 'column' },
     ],
     build: (get) => buildSmsString({ number: get('number'), message: get('message') }),
+    caption: (get) => get('number'),
   },
   {
     id: 'tel',
     labelKey: 'scan.typeTel',
     fields: [{ key: 'number', labelKey: 'controls.telNumberLabel', kind: 'column', required: true }],
     build: (get) => buildTelString({ number: get('number') }),
+    caption: (get) => get('number'),
   },
   {
     id: 'geo',
@@ -157,6 +169,7 @@ export const CSV_CONTENT_TYPES: CsvContentType[] = [
     ],
     build: (get) =>
       buildGeoString({ latitude: get('latitude'), longitude: get('longitude') }),
+    caption: (get) => `${get('latitude')},${get('longitude')}`,
   },
   {
     id: 'vevent',
@@ -178,6 +191,7 @@ export const CSV_CONTENT_TYPES: CsvContentType[] = [
         location: get('location'),
         description: get('description'),
       }),
+    caption: (get) => get('summary').replace(/\s+/g, ' ').trim(),
   },
   {
     id: 'crypto',
@@ -204,6 +218,7 @@ export const CSV_CONTENT_TYPES: CsvContentType[] = [
         amount: get('amount'),
         label: get('label'),
       }),
+    caption: (get) => get('network'),
   },
 ]
 
@@ -265,6 +280,11 @@ export interface CsvBuildResult {
    * the dedup downstream), or `null` when no filename column is mapped.
    */
   filenameOverrides: Record<string, string> | null
+  /**
+   * value -> Labels-sheet caption map (first occurrence wins), or `null` when the content
+   * type has no caption rule (`text`), so the Labels renderer falls back to the value.
+   */
+  captionOverrides: Record<string, string> | null
 }
 
 /**
@@ -277,6 +297,7 @@ export function buildCsvValues(grid: ParsedBatchCsv, mapping: CsvMapping): CsvBu
   const hasFilename = mapping.filenameCol !== NO_COLUMN
   const values: string[] = []
   const overrides: Record<string, string> = {}
+  const captions: Record<string, string> = {}
 
   for (const row of grid.rows) {
     const get = (key: string): string => {
@@ -297,7 +318,15 @@ export function buildCsvValues(grid: ParsedBatchCsv, mapping: CsvMapping): CsvBu
       const name = row[mapping.filenameCol] ?? ''
       if (name) overrides[value] = name
     }
+    if (type.caption && !(value in captions)) {
+      const caption = type.caption(get)
+      if (caption) captions[value] = caption
+    }
   }
 
-  return { values, filenameOverrides: hasFilename ? overrides : null }
+  return {
+    values,
+    filenameOverrides: hasFilename ? overrides : null,
+    captionOverrides: Object.keys(captions).length > 0 ? captions : null,
+  }
 }

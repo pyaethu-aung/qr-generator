@@ -9,6 +9,7 @@ const setFormat = vi.fn()
 const setLabelPreset = vi.fn()
 const setCaptions = vi.fn()
 const setFilenameOverrides = vi.fn()
+const setCaptionOverrides = vi.fn()
 const setPreparedValues = vi.fn()
 const generate = vi.fn()
 
@@ -30,6 +31,8 @@ function makeState(over: Partial<UseBatchGeneratorReturn> = {}): UseBatchGenerat
     setCaptions,
     filenameOverrides: null,
     setFilenameOverrides,
+    captionOverrides: null,
+    setCaptionOverrides,
     preparedValues: null,
     setPreparedValues,
     values: [],
@@ -58,6 +61,7 @@ beforeEach(() => {
   setLabelPreset.mockReset()
   setCaptions.mockReset()
   setFilenameOverrides.mockReset()
+  setCaptionOverrides.mockReset()
   setPreparedValues.mockReset()
   generate.mockReset()
   state = makeState()
@@ -212,6 +216,8 @@ describe('BatchGenerator', () => {
       // The Wi-Fi field mappers appear and the built payload is pushed as a single value.
       expect(screen.getByLabelText(/network name|ssid/i)).toBeInTheDocument()
       expect(setPreparedValues).toHaveBeenLastCalledWith(['WIFI:T:WPA;S:Net;P:pw;;'])
+      // The Labels caption for a Wi-Fi code is its SSID, not the raw payload.
+      expect(setCaptionOverrides).toHaveBeenLastCalledWith({ 'WIFI:T:WPA;S:Net;P:pw;;': 'Net' })
     })
 
     it('builds an intact multi-line vCard as one prepared value', async () => {

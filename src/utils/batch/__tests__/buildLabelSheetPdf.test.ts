@@ -112,6 +112,19 @@ describe('buildLabelSheetPdf', () => {
     expect(drawn.endsWith('…')).toBe(true)
   })
 
+  it('captions with captionByValue when present, falling back to the value', async () => {
+    await buildLabelSheetPdf({
+      values: ['WIFI:T:WPA;S:Yoma-Guest;P:pw;;', 'https://a.com'],
+      design: DESIGN,
+      presetId: 'a4-3x7',
+      captions: true,
+      captionByValue: { 'WIFI:T:WPA;S:Yoma-Guest;P:pw;;': 'Yoma-Guest' },
+    })
+    const drawn = pdf.text.mock.calls.map((c) => c[0] as string)
+    // The Wi-Fi payload shows its SSID; the unmapped URL falls back to the value.
+    expect(drawn).toEqual(['Yoma-Guest', 'https://a.com'])
+  })
+
   it('reports 1-based progress for every value', async () => {
     const onProgress = vi.fn()
     await buildLabelSheetPdf({
