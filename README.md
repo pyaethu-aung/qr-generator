@@ -114,6 +114,12 @@ its title, and so on. Plain text and URLs are captioned by their value. The
 page geometry lives in `src/utils/batch/labelSheetLayout.ts` and the PDF
 renderer in `src/utils/batch/buildLabelSheetPdf.ts`.
 
+> **Known limitation (TODO):** label-sheet captions render in Helvetica,
+> which has no Burmese glyphs, so a Burmese caption (e.g. a contact name or
+> event title) prints as missing glyphs. The QR payload and the on-screen
+> UI are unaffected. Fix: embed a Unicode font (e.g. Noto Sans Myanmar) in
+> the PDF (see the `TODO(i18n)` in `buildLabelSheetPdf.ts`).
+
 Every code inherits the design you last configured in the Generate tab:
 foreground/background colors, error correction, eye shapes, pixel pattern,
 gradient, and frame. Generation is fully client-side and reuses the same

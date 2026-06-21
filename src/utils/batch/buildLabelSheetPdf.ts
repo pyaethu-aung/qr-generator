@@ -92,6 +92,10 @@ export async function buildLabelSheetPdf(options: BuildLabelSheetOptions): Promi
   const geometry = computeSheetGeometry(preset)
 
   const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: preset.page })
+  // TODO(i18n): Helvetica has no Burmese glyphs, so a Burmese caption (e.g. a contact
+  // name or event title from a CSV) prints as missing glyphs. The QR payload and the
+  // on-screen UI are unaffected. Fix by embedding a Unicode font (e.g. Noto Sans Myanmar)
+  // via pdf.addFont and selecting it for captions. Pre-existing; not specific to mapping.
   pdf.setFont('helvetica', 'normal')
 
   for (let i = 0; i < values.length; i += 1) {
