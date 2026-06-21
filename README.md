@@ -106,10 +106,13 @@ instead of a ZIP. Three presets are available via a layout picker:
 | A4 · 2×4 | A4 | 2 columns × 4 rows (8 per page) |
 | Letter · 3×6 | Letter | 3 columns × 6 rows (18 per page) |
 
-A **Captions** toggle controls whether each cell includes the source text
-beneath the code. The page geometry lives in
-`src/utils/batch/labelSheetLayout.ts` and the PDF renderer in
-`src/utils/batch/buildLabelSheetPdf.ts`.
+A **Captions** toggle controls whether each cell includes a label beneath
+the code. When you map structured columns, the caption is the readable
+field rather than the raw payload: a Wi-Fi code is captioned by its network
+name, a contact by its full name, a location by its `lat,long`, an event by
+its title, and so on. Plain text and URLs are captioned by their value. The
+page geometry lives in `src/utils/batch/labelSheetLayout.ts` and the PDF
+renderer in `src/utils/batch/buildLabelSheetPdf.ts`.
 
 Every code inherits the design you last configured in the Generate tab:
 foreground/background colors, error correction, eye shapes, pixel pattern,
