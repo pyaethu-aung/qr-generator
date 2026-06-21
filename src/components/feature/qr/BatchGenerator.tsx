@@ -117,9 +117,13 @@ export function BatchGenerator() {
     maxLines,
   } = useBatchGenerator()
 
+  const isGenerating = status === 'generating'
+
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [importedFileName, setImportedFileName] = useState<string | null>(null)
   const [fileError, setFileError] = useState<string | null>(null)
+  // True while a file is dragged over the list area, for the drop affordance.
+  const [isDragging, setIsDragging] = useState(false)
   // The parsed CSV grid drives the column-mapping UI; null when no multi-column CSV is active.
   const [csvGrid, setCsvGrid] = useState<ParsedBatchCsv | null>(null)
   const [contentType, setContentType] = useState<QRContentMode>('text')
@@ -167,11 +171,9 @@ export function BatchGenerator() {
     return result
   }
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    e.target.value = ''
-
+  // Shared by the Import button and the textarea drop zone: validate the type, read the file,
+  // and route a multi-column CSV into the mapping UI or everything else into the textarea.
+  function processFile(file: File) {
     const name = file.name.toLowerCase()
     if (!name.endsWith('.txt') && !name.endsWith('.csv')) {
       setFileError(translate('batch.importErrorType'))
@@ -242,6 +244,32 @@ export function BatchGenerator() {
     reader.readAsText(file)
   }
 
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    e.target.value = ''
+    processFile(file)
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault()
+    setIsDragging(false)
+    if (isGenerating) return
+    const file = e.dataTransfer.files?.[0]
+    if (file) processFile(file)
+  }
+
+  function handleDragOver(e: React.DragEvent) {
+    e.preventDefault()
+    if (!isGenerating) setIsDragging(true)
+  }
+
+  function handleDragLeave(e: React.DragEvent) {
+    // Ignore leave events fired when crossing between the drop zone's own children.
+    if (e.currentTarget.contains(e.relatedTarget as Node | null)) return
+    setIsDragging(false)
+  }
+
   function handleTypeChange(nextId: QRContentMode) {
     if (!csvGrid) return
     const type = getCsvContentType(nextId)
@@ -277,7 +305,6 @@ export function BatchGenerator() {
   const formatLabelId = useId()
   const layoutLabelId = useId()
   const captionsLabelId = useId()
-  const isGenerating = status === 'generating'
   const isLabels = format === 'labels'
 
   const formatOptions = [
@@ -354,27 +381,44 @@ export function BatchGenerator() {
                 onChange={handleFileChange}
               />
             </div>
-            <textarea
-              id={textareaId}
-              value={input}
-              onChange={(e) => {
-                setInput(e.target.value)
-                setImportedFileName(null)
-                setFileError(null)
-                clearMapping()
-              }}
-              disabled={isGenerating || mappingActive}
-              rows={mappingActive ? 5 : 9}
-              spellCheck={false}
-              autoCapitalize="none"
-              autoCorrect="off"
-              placeholder={
-                mappingActive
-                  ? translate('batch.csvStructuredPlaceholder')
-                  : translate('batch.inputPlaceholder')
-              }
-              className="w-full resize-y rounded-lg border border-border-strong bg-surface-inset p-3 font-['Geist_Mono'] text-sm text-text-primary placeholder:text-text-disabled transition-colors focus-visible:border-focus-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring/25 disabled:opacity-50"
-            />
+            <div
+              className="relative"
+              onDragEnter={handleDragOver}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
+              <textarea
+                id={textareaId}
+                value={input}
+                onChange={(e) => {
+                  setInput(e.target.value)
+                  setImportedFileName(null)
+                  setFileError(null)
+                  clearMapping()
+                }}
+                disabled={isGenerating || mappingActive}
+                rows={mappingActive ? 5 : 9}
+                spellCheck={false}
+                autoCapitalize="none"
+                autoCorrect="off"
+                placeholder={
+                  mappingActive
+                    ? translate('batch.csvStructuredPlaceholder')
+                    : translate('batch.inputPlaceholder')
+                }
+                className="w-full resize-y rounded-lg border border-border-strong bg-surface-inset p-3 font-['Geist_Mono'] text-sm text-text-primary placeholder:text-text-disabled transition-colors focus-visible:border-focus-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring/25 disabled:opacity-50"
+              />
+              {isDragging && (
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-dashed border-action bg-surface-overlay/90 text-sm font-semibold text-action backdrop-blur-sm"
+                >
+                  <Upload size={20} className="shrink-0" />
+                  {translate('batch.dropHint')}
+                </div>
+              )}
+            </div>
             {fileError ? (
               <p className="flex items-center gap-1.5 text-xs text-error" role="alert">
                 {fileError}

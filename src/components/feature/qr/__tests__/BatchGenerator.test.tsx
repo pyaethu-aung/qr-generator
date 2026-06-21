@@ -262,4 +262,49 @@ describe('BatchGenerator', () => {
       expect(screen.getByLabelText(/your list/i)).toBeEnabled()
     })
   })
+
+  describe('drag and drop', () => {
+    function dropFile(file: File) {
+      fireEvent.drop(screen.getByLabelText(/your list/i), {
+        dataTransfer: { files: [file], types: ['Files'] },
+      })
+    }
+
+    it('shows the drop affordance while a file is dragged over the list', () => {
+      setup()
+      const zone = screen.getByLabelText(/your list/i).parentElement as HTMLElement
+      fireEvent.dragOver(zone)
+      expect(screen.getByText(/drop \.txt or \.csv to import/i)).toBeInTheDocument()
+      fireEvent.dragLeave(zone)
+      expect(screen.queryByText(/drop \.txt or \.csv to import/i)).not.toBeInTheDocument()
+    })
+
+    it('imports a dropped .txt file into the textarea', async () => {
+      setup()
+      dropFile(new File(['https://a.com\nhttps://b.com'], 'links.txt', { type: 'text/plain' }))
+      await waitFor(() =>
+        expect(setInput).toHaveBeenCalledWith('https://a.com\nhttps://b.com'),
+      )
+    })
+
+    it('opens the mapping UI when a multi-column .csv is dropped', async () => {
+      setup()
+      dropFile(new File(['url,id\nhttps://a.com,1'], 'fleet.csv', { type: 'text/csv' }))
+      await waitFor(() => expect(screen.getByText(/map csv columns/i)).toBeInTheDocument())
+    })
+
+    it('rejects a dropped file with an unsupported type', () => {
+      setup()
+      dropFile(new File(['data'], 'report.pdf', { type: 'application/pdf' }))
+      expect(screen.getByText(/unsupported file type/i)).toBeInTheDocument()
+      expect(setInput).not.toHaveBeenCalled()
+    })
+
+    it('ignores drops while generating', () => {
+      state = makeState({ values: ['a'], status: 'generating', progress: { completed: 0, total: 1 } })
+      setup()
+      dropFile(new File(['x'], 'links.txt', { type: 'text/plain' }))
+      expect(setInput).not.toHaveBeenCalled()
+    })
+  })
 })
