@@ -332,6 +332,7 @@
     "importErrorEmpty": "The file is empty or contains no usable rows.",
     "importErrorRead": "Could not read the file. Please try again.",
     "importErrorType": "Unsupported file type. Use .txt or .csv.",
+    "dropHint": "Drop .txt or .csv to import",
     "csvMapTitle": "Map CSV columns",
     "csvMapValueLabel": "QR value column",
     "csvMapFilenameLabel": "Filename column",

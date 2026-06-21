@@ -333,6 +333,7 @@ export interface BatchStrings {
   importErrorEmpty: string
   importErrorRead: string
   importErrorType: string
+  dropHint: string
   csvMapTitle: string
   csvMapValueLabel: string
   csvMapFilenameLabel: string
@@ -669,6 +670,7 @@ export type TranslationKey =
   | 'batch.importErrorEmpty'
   | 'batch.importErrorRead'
   | 'batch.importErrorType'
+  | 'batch.dropHint'
   | 'batch.csvMapTitle'
   | 'batch.csvMapValueLabel'
   | 'batch.csvMapFilenameLabel'
