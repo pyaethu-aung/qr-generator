@@ -78,12 +78,24 @@ downloads them as a single archive. Files are named by position and a slug of th
 (`001-example-com.png`), so they sort in the order you pasted them.
 
 When you import a `.csv` with more than one column, a **column-mapping**
-panel appears (the first row is treated as the header). Pick which column
-holds the QR **value**, and — optionally — which column names each file
-(e.g. an `asset_url` column as the value and a `vehicle_id` column as the
-filename, producing `truck-12.png` instead of `001-…`). The filename
-mapping applies to the ZIP formats only; the single-PDF **Labels** output
-ignores it. Editing the list by hand clears the mapping.
+panel appears (the first row is treated as the header). Pick a **content
+type** and map its fields to columns:
+
+- **Text** (default) encodes one chosen column verbatim, exactly as before.
+- **Wi-Fi, Contact, Email, SMS, Phone, Location, Event, Crypto** build a
+  proper payload per row from the columns you map (e.g. `ssid` and
+  `password` columns for Wi-Fi, or first name / phone / email columns for a
+  contact). Fields whose header name matches are wired up automatically, and
+  settings that rarely vary per row (Wi-Fi security, crypto network) are
+  single dropdowns applied to every row. Each code is built with the same
+  logic as the single-QR view, so contact and event codes (whose payloads
+  span several lines) come out intact rather than split into junk codes.
+
+Optionally pick a column to name each file (e.g. a `vehicle_id` column,
+producing `truck-12.png` instead of `001-…`). The filename mapping applies
+to the ZIP formats only; the single-PDF **Labels** output ignores it.
+Rows missing a required field are skipped. Editing the list by hand, or the
+**Clear** button, resets the mapping.
 
 **Labels** produces a single printable PDF arranged in an Avery-style grid
 instead of a ZIP. Three presets are available via a layout picker:
