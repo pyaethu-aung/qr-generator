@@ -102,6 +102,7 @@ export function BatchGenerator() {
     captions,
     setCaptions,
     setFilenameOverrides,
+    setCaptionOverrides,
     setPreparedValues,
     values,
     truncated,
@@ -132,6 +133,7 @@ export function BatchGenerator() {
     setFixed({})
     setFilenameCol(NO_COLUMN)
     setFilenameOverrides(null)
+    setCaptionOverrides(null)
     setPreparedValues(null)
   }
 
@@ -157,6 +159,7 @@ export function BatchGenerator() {
     })
     setPreparedValues(result.values)
     setFilenameOverrides(result.filenameOverrides)
+    setCaptionOverrides(result.captionOverrides)
     setInput(typeId === 'text' ? result.values.join('\n') : '')
     return result
   }
@@ -208,6 +211,7 @@ export function BatchGenerator() {
           setFilenameCol(NO_COLUMN)
           setPreparedValues(result.values)
           setFilenameOverrides(null)
+          setCaptionOverrides(null)
           setInput(result.values.join('\n'))
           setFileError(null)
           setImportedFileName(file.name)

@@ -144,4 +144,58 @@ describe('buildCsvValues', () => {
     })
     expect(filenameOverrides).toBeNull()
   })
+
+  it('has no caption override for text (the value is its own caption)', () => {
+    const g = grid(['url'], [['https://a.com']])
+    const { captionOverrides } = buildCsvValues(g, {
+      type: 'text',
+      columns: { value: 0 },
+      fixed: {},
+      filenameCol: NO_COLUMN,
+    })
+    expect(captionOverrides).toBeNull()
+  })
+
+  it('captions a Wi-Fi code by its SSID', () => {
+    const g = grid(['ssid', 'pw'], [['Yoma-Guest', 'welcome123']])
+    const { captionOverrides } = buildCsvValues(g, {
+      type: 'wifi',
+      columns: { ssid: 0, password: 1 },
+      fixed: { security: 'WPA', hidden: 'false' },
+      filenameCol: NO_COLUMN,
+    })
+    expect(captionOverrides).toEqual({ 'WIFI:T:WPA;S:Yoma-Guest;P:welcome123;;': 'Yoma-Guest' })
+  })
+
+  it('captions a contact by full name and a location by lat,long', () => {
+    const vcard = buildCsvValues(grid(['first', 'last'], [['Aung', 'Aung']]), {
+      type: 'vcard',
+      columns: { firstName: 0, lastName: 1 },
+      fixed: {},
+      filenameCol: NO_COLUMN,
+    })
+    expect(Object.values(vcard.captionOverrides ?? {})).toEqual(['Aung Aung'])
+
+    const geo = buildCsvValues(grid(['lat', 'lng'], [['16.8', '96.1']]), {
+      type: 'geo',
+      columns: { latitude: 0, longitude: 1 },
+      fixed: {},
+      filenameCol: NO_COLUMN,
+    })
+    expect(geo.captionOverrides).toEqual({ 'geo:16.8,96.1': '16.8,96.1' })
+  })
+
+  it('captions a crypto code by its network and an event by its summary', () => {
+    const crypto = buildCsvValues(
+      grid(['addr'], [['bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4']]),
+      { type: 'crypto', columns: { address: 0 }, fixed: { network: 'bitcoin' }, filenameCol: NO_COLUMN },
+    )
+    expect(Object.values(crypto.captionOverrides ?? {})).toEqual(['bitcoin'])
+
+    const vevent = buildCsvValues(
+      grid(['summary', 'start'], [['Yoma Townhall', '2026-07-01T09:00']]),
+      { type: 'vevent', columns: { summary: 0, start: 1 }, fixed: { allDay: 'false' }, filenameCol: NO_COLUMN },
+    )
+    expect(Object.values(vevent.captionOverrides ?? {})).toEqual(['Yoma Townhall'])
+  })
 })
