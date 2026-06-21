@@ -17,15 +17,21 @@ export interface ParsedBatchInput {
   truncated: boolean
 }
 
-export function parseBatchInput(raw: string): ParsedBatchInput {
+/**
+ * De-duplicates a list of already-separated values (first occurrence wins), drops empty
+ * entries, and caps the result, reporting the pre-cap unique count. This is the half of
+ * {@link parseBatchInput} that does NOT split on newlines, so it is safe for values that
+ * legitimately contain newlines (a vCard or iCalendar payload built from CSV columns):
+ * feeding those through the textarea path would explode one payload into many junk codes.
+ */
+export function dedupeAndCap(rawValues: string[]): ParsedBatchInput {
   const seen = new Set<string>()
   const unique: string[] = []
 
-  for (const line of raw.split('\n')) {
-    const trimmed = line.trim()
-    if (!trimmed || seen.has(trimmed)) continue
-    seen.add(trimmed)
-    unique.push(trimmed)
+  for (const value of rawValues) {
+    if (!value || seen.has(value)) continue
+    seen.add(value)
+    unique.push(value)
   }
 
   return {
@@ -33,4 +39,8 @@ export function parseBatchInput(raw: string): ParsedBatchInput {
     total: unique.length,
     truncated: unique.length > BATCH_MAX_LINES,
   }
+}
+
+export function parseBatchInput(raw: string): ParsedBatchInput {
+  return dedupeAndCap(raw.split('\n').map((line) => line.trim()))
 }

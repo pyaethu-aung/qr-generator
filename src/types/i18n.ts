@@ -338,6 +338,14 @@ export interface BatchStrings {
   csvMapFilenameLabel: string
   csvMapFilenameNone: string
   csvMapHint: string
+  csvMapTypeLabel: string
+  csvMapColumnNone: string
+  csvMapClear: string
+  csvMapStructuredHint: string
+  csvStructuredPlaceholder: string
+  csvToggleYes: string
+  csvToggleNo: string
+  csvPreviewMore: string
 }
 
 export interface HistoryStrings {
@@ -666,5 +674,13 @@ export type TranslationKey =
   | 'batch.csvMapFilenameLabel'
   | 'batch.csvMapFilenameNone'
   | 'batch.csvMapHint'
+  | 'batch.csvMapTypeLabel'
+  | 'batch.csvMapColumnNone'
+  | 'batch.csvMapClear'
+  | 'batch.csvMapStructuredHint'
+  | 'batch.csvStructuredPlaceholder'
+  | 'batch.csvToggleYes'
+  | 'batch.csvToggleNo'
+  | 'batch.csvPreviewMore'
   | 'history.sectionLabel'
   | 'history.clearAriaLabel'

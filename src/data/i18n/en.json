@@ -336,7 +336,15 @@
     "csvMapValueLabel": "QR value column",
     "csvMapFilenameLabel": "Filename column",
     "csvMapFilenameNone": "Auto (from value)",
-    "csvMapHint": "Pick the column to encode. Optionally name each file from another column."
+    "csvMapHint": "Pick the column to encode. Optionally name each file from another column.",
+    "csvMapTypeLabel": "Content type",
+    "csvMapColumnNone": "None",
+    "csvMapClear": "Clear",
+    "csvMapStructuredHint": "Map each field to a column. Codes build from the mapped cells; rows missing a required field are skipped.",
+    "csvStructuredPlaceholder": "QR values are built from the columns you map below.",
+    "csvToggleYes": "Yes",
+    "csvToggleNo": "No",
+    "csvPreviewMore": "+{count} more"
   },
   "export": {
     "modalTitle": "Export QR Code",
