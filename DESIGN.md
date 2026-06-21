@@ -234,6 +234,14 @@ Depth is conveyed primarily through tonal layering: `surface` (page) → `surfac
 - **Error:** Border and ring shift to `error`; error message below in 12px `text-error`.
 - **Placeholder:** `text-disabled` color.
 
+### Textarea
+
+The multiline sibling of the input — same surface, stroke, radius, and focus vocabulary, sized by `rows` instead of a fixed height. Used for the collapsible optional message bodies (email, SMS, calendar-event description).
+
+- **Style:** Inherits the Inputs / Fields treatment (surface-inset fill, `border-strong` stroke, 8px radius, 12px horizontal padding) with `resize-none` and 3 rows by default.
+- **Focus / Error / Placeholder:** Identical to Inputs / Fields, including the `focus-visible` ring and the `error`-colored border + message.
+- **Labelling:** Carries the same optional `label` / `helperText` / `error` API as the input. In the content forms it ships label-less, named instead by its collapsible toggle button via `aria-labelledby`.
+
 ### Navigation
 
 - **Navbar:** `surface-overlay` fill, `border-subtle` bottom border. 16px vertical / 48px horizontal padding.

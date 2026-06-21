@@ -1,6 +1,7 @@
 import { useState, useId, useMemo } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { Callout } from '../../common/Callout'
+import { Textarea } from '../../common/Textarea'
 import { PhoneNumberField } from './PhoneNumberField'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import { buildSmsString, SMS_PHONE_REGEX } from '../../../utils/sms'
@@ -58,14 +59,12 @@ export function SmsForm({ config, onNumberChange, onMessageChange }: SmsFormProp
         </button>
         {(messageOpen || hasMessage) && (
           <div id={messageRegionId}>
-            <textarea
+            <Textarea
               id={messageId}
               aria-labelledby={messageToggleId}
-              rows={3}
               placeholder={translate('controls.smsMessagePlaceholder')}
               value={config.message}
               onChange={(e) => onMessageChange(e.target.value)}
-              className="block w-full resize-none rounded-lg border border-border-strong bg-surface-inset px-3 py-2 text-sm text-text-primary shadow-sm placeholder:text-text-disabled focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring"
             />
           </div>
         )}
