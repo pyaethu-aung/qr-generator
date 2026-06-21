@@ -271,6 +271,31 @@ A searchable country dial-code picker following the ARIA combobox pattern. Desig
 - **Keyboard:** Arrow keys navigate; `Enter` selects and closes; `Escape` closes and refocuses the trigger; `Tab` away closes without refocus (preserves natural document order).
 - **`aria-live="polite"`** on the listbox announces the empty-results message to screen readers when the filter returns no matches.
 
+### Batch Mapping Select (Signature Component)
+
+The native `<select>` used throughout the Batch view's CSV column-mapping panel: content type, per-field column pickers, and the filename-column picker. It reuses the input vocabulary so the mapping panel reads as part of the same family, not a bolt-on.
+
+- **Trigger:** `appearance-none` native select on a surface-inset fill, `border-strong` stroke (1px), 8px radius, `py-2` height, `pl-3 pr-9` padding (the right pad clears the chevron). A non-interactive `ChevronDown` (15px, `text-secondary`) is absolutely positioned at the trailing edge.
+- **Label:** 12px (`text-xs`), 500 weight, `text-secondary`, sitting above the control. Required fields append a 0.5ch-offset `error`-colored asterisk (aria-hidden); the requiredness is also carried in the field model, not by color alone.
+- **Focus:** Border shifts to `focus-ring`; 2px ring at 25% opacity (`focus-visible` only) — identical to Inputs.
+- **Layout:** Pickers flow in a one- or two-column grid (`sm:grid-cols-2`) inside the mapping panel, which is a nested `surface-raised` block with a `border-subtle` stroke and 16px radius.
+
+### List Drop Zone (Signature Component)
+
+The Batch list textarea doubles as a file drop target for `.txt` / `.csv` import, mirroring the Import button's handler. The drop affordance is a transient overlay, not a persistent chrome element.
+
+- **Structure:** A `relative` wrapper carries the drag handlers (not the textarea itself) so a drop still lands while the textarea is read-only during an active CSV mapping.
+- **Drag-over overlay:** `absolute inset-0`, `pointer-events-none`, centered column layout. A 2px **dashed** `action` border, an `action`-tinted translucent fill (`surface-overlay/90`) with a light `backdrop-blur-sm`, an `Upload` glyph (20px), and the drop hint in `action`, 14px, 600 weight. It appears only while a file is dragged over the zone and is removed on drop or drag-leave.
+- **Accessibility:** The overlay is `aria-hidden`; the **Import** button remains the keyboard and assistive-tech path. Drops are ignored while a batch is generating.
+
+### Format & Layout Pills (Batch)
+
+The Batch view reuses the **Chips / Pills** component (see above) for its mutually-exclusive choices rather than inventing new controls: output format (PNG / SVG / PDF / Labels), label-sheet layout preset (3 Avery-style options), and the captions on/off toggle. Same 36px height, full radius, terracotta active fill, 150ms transition.
+
+### Label Sheet (Output Format)
+
+Not a screen component: the **Labels** format renders a single printable PDF instead of a ZIP, arranging codes in an Avery-style grid (3 presets: A4·3×7, A4·2×4, Letter·3×6). Each cell optionally prints a caption beneath the code — a readable field (Wi-Fi network name, contact full name, `lat,long`) when the source was a mapped CSV, falling back to the raw value otherwise. Geometry is pure points math in `labelSheetLayout.ts`; the render is jsPDF in `buildLabelSheetPdf.ts`.
+
 ## 6. Do's and Don'ts
 
 ### Do:
@@ -281,6 +306,7 @@ A searchable country dial-code picker following the ARIA combobox pattern. Desig
 - **Do** use full pill radius (9999px) for nav icon buttons, the Generate button, and segmented controls. Use 12px for inputs, cards, and download buttons.
 - **Do** apply 150ms ease to all state transitions — faster feels abrupt, slower feels sluggish.
 - **Do** maintain WCAG AA contrast across both light and dark themes on all text and interactive states.
+- **Do** reserve `backdrop-blur` for transient, functional overlays only — the batch file-drop affordance is the one sanctioned use. It signals an active drag state and disappears the moment the drag ends. This is the explicit exception to the no-decorative-blur rule below; never use blur for resting atmosphere.
 
 ### Don't:
 - **Don't** use blue, purple, or cool-gray. Every neutral must sit on the warm side of neutral (hue 48–68 in OKLCH).
