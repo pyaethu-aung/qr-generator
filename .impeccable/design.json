@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-06-20T12:00:00.000Z",
+  "generatedAt": "2026-06-21T00:00:00.000Z",
   "title": "Design System: QR Generator",
   "extensions": {
     "colorMeta": {
@@ -251,9 +251,21 @@
       }
     ],
     "breakpoints": [
-      { "name": "mobile", "value": "375px", "purpose": "Base mobile target. Single-column stacked layout." },
-      { "name": "tablet", "value": "768px", "purpose": "Threshold for switching the two-column card to a single-column stack." },
-      { "name": "desktop", "value": "1440px", "purpose": "Design frame width. Card wrapper uses 170px horizontal padding at this breakpoint." }
+      {
+        "name": "mobile",
+        "value": "375px",
+        "purpose": "Base mobile target. Single-column stacked layout."
+      },
+      {
+        "name": "tablet",
+        "value": "768px",
+        "purpose": "Threshold for switching the two-column card to a single-column stack."
+      },
+      {
+        "name": "desktop",
+        "value": "1440px",
+        "purpose": "Design frame width. Card wrapper uses 170px horizontal padding at this breakpoint."
+      }
     ]
   },
   "components": [
@@ -344,6 +356,22 @@
       "description": "Searchable country dial-code picker. Trigger fuses to the left edge of a phone input. ARIA combobox pattern: trigger opens a popover with a filter input driving a listbox via aria-activedescendant.",
       "html": "<div class=\"ds-ccs\" style=\"position:relative;display:inline-block\"><button class=\"ds-ccs-trigger\" type=\"button\" aria-haspopup=\"listbox\" aria-expanded=\"true\"><span style=\"position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)\">Country code</span><span style=\"font-size:16px;line-height:1\">🇲🇲</span><span style=\"font-weight:500\">+95</span><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" style=\"color:var(--color-text-secondary);transform:rotate(180deg);transition:transform 150ms ease\"><polyline points=\"6 9 12 15 18 9\"/></svg></button><div class=\"ds-ccs-popover\"><div class=\"ds-ccs-search-wrap\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" style=\"position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--color-text-secondary);pointer-events:none\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><line x1=\"21\" y1=\"21\" x2=\"16.65\" y2=\"16.65\"/></svg><input class=\"ds-ccs-search\" type=\"text\" role=\"combobox\" aria-expanded=\"true\" aria-autocomplete=\"list\" aria-label=\"Search country or code\" placeholder=\"Search country or code\" /></div><div class=\"ds-ccs-list\" role=\"listbox\" aria-label=\"Country code\"><div class=\"ds-ccs-option ds-ccs-option--active\" role=\"option\" aria-selected=\"true\"><span style=\"font-size:16px;line-height:1\" aria-hidden=\"true\">🇲🇲</span><span style=\"flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap\">Myanmar</span><span style=\"color:var(--color-text-secondary)\">+95</span><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\" style=\"color:var(--color-action)\"><polyline points=\"20 6 9 17 4 12\"/></svg></div><div class=\"ds-ccs-option\" role=\"option\" aria-selected=\"false\"><span style=\"font-size:16px;line-height:1\" aria-hidden=\"true\">🇺🇸</span><span style=\"flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap\">United States</span><span style=\"color:var(--color-text-secondary)\">+1</span></div><div class=\"ds-ccs-option\" role=\"option\" aria-selected=\"false\"><span style=\"font-size:16px;line-height:1\" aria-hidden=\"true\">🇬🇧</span><span style=\"flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap\">United Kingdom</span><span style=\"color:var(--color-text-secondary)\">+44</span></div></div></div></div>",
       "css": ".ds-ccs { position: relative; } .ds-ccs-trigger { display: inline-flex; flex-shrink: 0; align-items: center; gap: 6px; height: 44px; padding: 0 12px; white-space: nowrap; border-radius: 8px 0 0 8px; border: 1px solid var(--color-border-strong); background-color: var(--color-surface-inset); font-family: 'Inter', system-ui, sans-serif; font-size: 14px; color: var(--color-text-primary); cursor: pointer; transition: background-color 150ms ease; } .ds-ccs-trigger:hover { background-color: var(--color-surface-raised); } .ds-ccs-trigger:focus-visible { outline: none; z-index: 10; box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-focus-ring); } .ds-ccs-popover { position: absolute; left: 0; top: calc(100% + 6px); z-index: 20; width: 288px; max-width: calc(100vw - 3rem); border-radius: 12px; border: 1px solid var(--color-border-subtle); background-color: var(--color-surface-raised); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.10), 0 2px 4px -2px rgba(0,0,0,0.10); overflow: hidden; } .ds-ccs-search-wrap { position: relative; padding: 8px; border-bottom: 1px solid var(--color-border-subtle); } .ds-ccs-search { height: 36px; width: 100%; border-radius: 8px; border: 1px solid var(--color-border-strong); background-color: var(--color-surface-inset); padding: 0 12px 0 32px; font-family: 'Inter', system-ui, sans-serif; font-size: 14px; color: var(--color-text-primary); outline: none; box-sizing: border-box; } .ds-ccs-search::placeholder { color: var(--color-text-disabled); } .ds-ccs-search:focus-visible { border-color: var(--color-focus-ring); box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-focus-ring) 25%, transparent); } .ds-ccs-list { max-height: 256px; overflow-y: auto; padding: 4px; } .ds-ccs-option { display: flex; align-items: center; gap: 10px; border-radius: 8px; padding: 8px 10px; font-family: 'Inter', system-ui, sans-serif; font-size: 14px; color: var(--color-text-primary); cursor: pointer; } .ds-ccs-option:hover, .ds-ccs-option--active { background-color: var(--color-surface-inset); }"
+    },
+    {
+      "name": "Batch Mapping Select",
+      "kind": "custom",
+      "refersTo": "input",
+      "description": "Native select used across the Batch CSV column-mapping panel (content type, per-field column pickers, filename column). Reuses the input vocabulary.",
+      "html": "<div class=\"ds-mapping-field\"><label class=\"ds-mapping-label\" for=\"ds-map-type\">Content type<span class=\"ds-mapping-req\" aria-hidden=\"true\">*</span></label><div class=\"ds-mapping-wrap\"><select id=\"ds-map-type\" class=\"ds-mapping-select\"><option>Text</option><option>Wi-Fi</option><option>Contact</option></select><svg class=\"ds-mapping-chevron\" width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\"/></svg></div></div>",
+      "css": ".ds-mapping-field { display: flex; flex-direction: column; gap: 6px; } .ds-mapping-label { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); } .ds-mapping-req { margin-left: 2px; color: var(--color-error); } .ds-mapping-wrap { position: relative; } .ds-mapping-select { width: 100%; appearance: none; background: var(--color-surface-inset); color: var(--color-text-primary); border: 1px solid var(--color-border-strong); border-radius: 8px; padding: 8px 36px 8px 12px; font-size: 14px; transition: border-color 0.15s, box-shadow 0.15s; } .ds-mapping-select:focus-visible { outline: none; border-color: var(--color-focus-ring); box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-focus-ring) 25%, transparent); } .ds-mapping-chevron { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--color-text-secondary); }"
+    },
+    {
+      "name": "List Drop Zone",
+      "kind": "custom",
+      "refersTo": "input",
+      "description": "Batch list textarea doubling as a .txt/.csv drop target. The drag-over overlay is a transient functional affordance (the one sanctioned backdrop-blur use).",
+      "html": "<div class=\"ds-dropzone\"><textarea class=\"ds-dropzone-input\" rows=\"5\" placeholder=\"Paste one link or line of text per row\"></textarea><div class=\"ds-dropzone-overlay\" aria-hidden=\"true\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><polyline points=\"17 8 12 3 7 8\"/><line x1=\"12\" x2=\"12\" y1=\"3\" y2=\"15\"/></svg><span>Drop .txt or .csv to import</span></div></div>",
+      "css": ".ds-dropzone { position: relative; } .ds-dropzone-input { width: 100%; resize: vertical; background: var(--color-surface-inset); color: var(--color-text-primary); border: 1px solid var(--color-border-strong); border-radius: 8px; padding: 12px; font-family: \"Geist Mono\", monospace; font-size: 14px; } .ds-dropzone-input::placeholder { color: var(--color-text-disabled); } .ds-dropzone-input:focus-visible { outline: none; border-color: var(--color-focus-ring); box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-focus-ring) 25%, transparent); } .ds-dropzone-overlay { position: absolute; inset: 0; pointer-events: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; border: 2px dashed var(--color-action); border-radius: 8px; background: color-mix(in srgb, var(--color-surface-overlay) 90%, transparent); backdrop-filter: blur(2px); color: var(--color-action); font-size: 14px; font-weight: 600; }"
     }
   ],
   "narrative": {
@@ -388,7 +416,8 @@
       "Do apply 150ms ease to all state transitions — faster feels abrupt, slower feels sluggish.",
       "Do maintain WCAG AA contrast across both light and dark themes on all text and interactive states.",
       "Do use the Callout component (warning-surface background, warning-border stroke, warning text) as the single source of truth for all warning surfaces. Never invent a second warning pattern.",
-      "Do use role=group with aria-labelledby on any composite field that pairs two or more inputs under a single visible label."
+      "Do use role=group with aria-labelledby on any composite field that pairs two or more inputs under a single visible label.",
+      "Do reserve backdrop-blur for transient, functional overlays only (the batch file-drop affordance); never for resting atmosphere."
     ],
     "donts": [
       "Don't use blue, purple, or cool-gray. Every neutral must sit on the warm side of neutral (hue 48–68 in OKLCH).",
