@@ -38,7 +38,7 @@ Never push directly to `main`. All changes must go through a pull request. A `pr
 
 | Path | Purpose |
 |---|---|
-| `src/components/common/` | Reusable primitives (Button, Input, Card, etc.) |
+| `src/components/common/` | Reusable primitives (Button, Input, Textarea, Card, etc.) |
 | `src/components/feature/qr/` | QR-specific views |
 | `src/hooks/` | Stateful hooks and context providers |
 | `src/utils/` | Pure helpers — every file here requires a corresponding test |
