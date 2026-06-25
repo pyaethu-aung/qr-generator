@@ -195,12 +195,43 @@ The app supports multiple languages (English and Burmese) via custom locale conf
 
 - Install: `npm install` (also activates git hooks in `.githooks/` via the `prepare` script — the `pre-push` hook blocks direct pushes to `main`)
 - Dev server: `npm run dev`
-- Browser testing (MCP): `npx playwright install chromium` (one-time setup for Playwright MCP)
+- Browser testing (Playwright CLI): one-time `npm i -D @playwright/test && npx playwright install chromium`; see [Browser testing](#browser-testing-playwright-cli) below
 - Design source: `DESIGN.md` — tokens, component specs, and layout measurements; `PRODUCT.md` — brand personality and design principles
 - Lint: `npm run lint` (fix: `npm run lint:fix`)
 - Format check: `npm run format` (write: `npm run format:fix`)
 - Tests: `npm run test` (watch: `npm run test:watch`, coverage: `npm run test:coverage`)
 - Build: `npm run build`
+
+## Browser testing (Playwright CLI)
+
+`/impeccable critique` (and the `develop-web-feature` skill that drives it) test
+the running app in a real browser using the **Playwright CLI**, not the
+Playwright MCP. Install it once:
+
+```bash
+npm install -D @playwright/test    # test runner + library (provides `npx playwright`)
+npx playwright install chromium    # browser binary (add `firefox webkit` for cross-browser)
+```
+
+With the dev server running (`npm run dev`, default `http://localhost:5173`):
+
+```bash
+# Quick visual capture, one shot per theme and viewport
+npx playwright screenshot --viewport-size=1280,800 http://localhost:5173 desktop.png
+npx playwright screenshot --viewport-size=375,667  http://localhost:5173 mobile.png
+
+# Drive real user flows (clicks, typing, submits) and assert behavior
+npx playwright test
+```
+
+Notes:
+
+- Keep flow specs under `e2e/` and add a `playwright.config.ts` whose `webServer`
+  runs `npm run dev`, so the runner starts the app for you.
+- These browser tests are separate from the Vitest unit suite (`npm run test`);
+  exclude `e2e/` from Vitest's `include` glob so the two runners do not collide.
+- Only the critique pass drives the browser; the audit pass is static, which is
+  why the `develop-web-feature` skill can run them in parallel (audit in a subagent).
 
 ## Spec-Kit
 

@@ -1,20 +1,23 @@
 ---
 name: develop-web-feature
-description: "Develop, design, and ship a website feature end-to-end with /impeccable: shape, build, gate, audit, critique, fix, and open a PR. Portable across web projects. Use when asked to add, build, craft, or design a new feature."
+description: "Develop, design, and ship a website feature end-to-end with /impeccable: shape, build, gate, audit, critique, fix, open a PR, and release. Portable across web projects. Use when asked to add, build, craft, or design a new feature."
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
 argument-hint: "The feature to build (e.g. 'Calendar event content type')"
-allowed-tools: Bash(npm*) Bash(npx*) Bash(node*) Bash(git:*) Bash(gh:*) Bash(grep*) Bash(ls*) Bash(cat*) Read Write Edit
+allowed-tools: Bash(npm*) Bash(npx*) Bash(node*) Bash(git:*) Bash(gh:*) Bash(grep*) Bash(ls*) Bash(cat*) Read Write Edit Task
 ---
 
 # Develop a feature with /impeccable
 
-The playbook for taking a web feature from idea to PR using the `/impeccable`
-design workflow. It is not a runnable driver: the "driver" is the sequence of
+The playbook for taking a web feature from idea to release using the
+`/impeccable` design workflow. It is not a runnable driver: the "driver" is the sequence of
 skill invocations and gate commands below.
 
-The loop, in one line: **learn → shape → build → gate → audit → critique →
-fix → commit → PR**, iterating audit/critique until the score plateaus.
+The loop, in one line: **learn → shape → build → gate → audit + critique →
+fix → re-evaluate ↻ → commit → docs → PR**, then ship: **merge → version-bump
+PR → merge → tag + release**. Critique browser-tests the live app; the
+audit/critique → fix cycle repeats until no P0/P1 findings remain and the score
+plateaus. Publishing the release (not merging) is what deploys.
 
 This skill is portable. The *workflow* and *disciplines* are the same in every
 project; the *specifics* (gate commands, file layout, conventions, enforcement)
@@ -135,7 +138,8 @@ while building, and preview in a browser if the project has a dev server.
 /impeccable audit <feature>
 ```
 
-Technical pass: a11y, performance, theming, responsive, anti-patterns. Then:
+Technical pass: a11y, performance, theming, responsive, anti-patterns. It is
+static: it reads source and scores it, with no browser and no user prompts.
 
 ```
 /impeccable critique <feature>
@@ -143,20 +147,105 @@ Technical pass: a11y, performance, theming, responsive, anti-patterns. Then:
 
 Design pass: heuristics scored out of 40, persona walkthroughs, an AI-slop
 verdict, and a deterministic detector run. It persists a snapshot and prints
-a score trend across runs.
+a score trend across runs. It drives a browser and ends by asking you what to
+fix, so it stays in the foreground.
 
-## Phase 5: Fix, then re-evaluate
+### Under Claude Code: overlap the two passes (optional)
 
-Address findings by severity (P0/P1 first). The critique suggests follow-up
-commands (`/impeccable harden`, `clarify`, `polish`, `adapt`, `onboard`).
-Re-run `/impeccable critique`; expect the score to climb a few points per pass
-and plateau. Stop when the remaining items are P2/P3 polish, not when it hits
-a perfect 40.
+Both passes are read-only and ignore each other's output, so they can run at
+the same time. They are asymmetric, so the split is one-sided:
 
-## Phase 6: Commit and PR
+- **Offload `audit` to a background subagent** (the `Task` tool). It asks
+  nothing and returns a report you fix from, so it is safe to run headless.
+- **Keep `critique` in the foreground.** It drives a browser and calls
+  `AskUserQuestion`, neither of which an autonomous subagent can do, and
+  it already fans out its own Assessment A/B subagents internally: nesting it
+  inside a subagent would force critique back to its slower sequential
+  fallback.
+
+Merge both finding sets before Phase 5. **Never run two browser-driving
+`/impeccable` commands at once against one app:** they contend on the
+dev-server port and browser resources. Only critique drives the browser here
+(audit is static), which is the point of the split. Harnesses without parallel
+subagents run the two passes sequentially, in either order.
+
+### Critique must drive the real UI, not just source
+
+Critique earns its keep by judging what actually renders and behaves, so under
+Claude Code run it against the live app, not source alone, using the
+**Playwright CLI** (one-time install in the README):
+
+1. Start the dev server (`npm run dev`) in the background; note its URL.
+2. Screenshot each key state with `npx playwright screenshot --viewport-size=...`
+   across **both themes (light and dark)** and **mobile and desktop** widths.
+3. For real flows (the clicks, typing, and submits a user performs, plus the
+   edge cases the personas would hit), write a short spec under `e2e/` and run
+   it with `npx playwright test`. Feed the screenshots and any failures into
+   the critique alongside its detector output.
+
+This runs on the main thread; the audit subagent stays static and touches no
+browser. If the project ships a `/verify` skill, route the interaction pass
+through it.
+
+## Phase 5: Fix and loop until clean
+
+This is a loop, not a one-shot pass. Each round:
+
+1. **Fix by severity (P0/P1 first), driven by the findings.** Both audit and
+   critique tag every issue with a severity and a **Suggested command**; run
+   the command each finding names instead of free-handing the fix. Typical
+   routings:
+   - performance / LCP / bundle -> `/impeccable optimize`
+   - responsive breakage or overflow -> `/impeccable adapt`
+   - confusing copy or error text -> `/impeccable clarify`
+   - spacing, rhythm, hierarchy -> `/impeccable layout`
+   - clutter, cognitive overload, or too many visible options -> `/impeccable distill`
+   - generic type -> `/impeccable typeset`; flat color -> `/impeccable colorize`
+   - missing i18n, edge cases, error states -> `/impeccable harden`
+   - empty or first-run states -> `/impeccable onboard`
+2. **Re-run the gates** (Phase 3): the refine commands changed code, so
+   `test && lint && build` must pass again.
+3. **Re-evaluate** (Phase 4): re-run `audit` and the browser-tested `critique`.
+
+Repeat until **no P0 or P1 findings remain and the critique score plateaus**
+(expect a few points per pass). Stop when the remainder is genuine P2/P3
+polish, not at a perfect 40.
+
+Once the loop settles, **promote anything reusable before the final polish.**
+If the feature introduced a component, token, or pattern that belongs in the
+shared design system rather than this feature alone, run `/impeccable extract`
+to pull it into the project's primitives (here, `src/components/common/` and
+the token file), then re-run the gates. Skip this when the feature added
+nothing shareable. It is the cheapest moment to catch a feature-local
+duplicate of what should be a shared primitive.
+
+Then run `/impeccable polish` as the closing pass and re-run the gates one
+final time.
+
+## Phase 6: Commit, document, and PR
+
+**Precondition: the Phase 5 loop has converged.** Gates green, and no open P0
+or P1 audit or critique finding. If anything is still red or unresolved, return
+to Phase 5; do not commit or open a PR around an open P0/P1.
 
 Always branch off the default branch (`<type>/<slug>`, e.g. `feat/event-mode`)
-rather than committing to it, and never bypass hooks with `--no-verify`.
+rather than committing to it, and never bypass hooks with `--no-verify`. Commit
+in order, and open the PR last so it carries every commit:
+
+1. **The feature**, atomically: one logical change per commit; split unrelated
+   concerns into separate commits even within the one feature.
+2. **The docs the change moved, each as its own commit, before the PR.** Skip
+   any whose trigger did not fire; most features touch one or two, not all
+   three:
+   - **README** when user-visible behavior changed.
+   - **CLAUDE.md / AGENTS.md** when architecture, conventions, commands, or the
+     directory layout changed: what a future contributor or agent needs to know.
+   - **DESIGN.md** when the design system changed (new tokens, primitives, or
+     patterns, often right after `extract`).
+
+   This matches the project's own history, where `docs:`, `chore(claude):`, and
+   `docs(design):` commits land separately from the `feat:` commit.
+3. **The PR**, opened last so it carries the feature and the doc commits.
 
 **If `/commit-message` and `/create-pr` are installed,** route through them;
 they enforce the format and confirm before acting.
@@ -183,11 +272,54 @@ discipline:
   gh pr create --title "<type>: <summary>" --body "<what changed, why, test plan>"
   ```
 
-After a user-facing change, update the README (a `/update-readme` skill if
-present, or by hand).
+For each doc, prefer the project's tool: `/update-readme` for the README,
+`/impeccable document` for `DESIGN.md` (then reconcile its output with the
+file's hand-written notes rather than overwriting them), and a hand-written
+conventional commit for `CLAUDE.md` / `AGENTS.md`.
+
+## Phase 7: Merge, version, and release
+
+Phase 6 ends with the feature PR open; the rest is the release lifecycle. Two
+points are **human gates** (you cannot approve your own PR), and the release
+publish is an outward action to confirm before running.
+
+1. **Merge the feature PR.** After a human approves it and CI is green, merge it
+   (`gh pr merge`, per the repo's merge style). Merging to `main` does not deploy
+   anything on its own (see step 5).
+2. **Decide the version bump** from what merged, by Conventional Commit type:
+   a breaking change -> **major**, `feat` -> **minor**, `fix` and other
+   user-affecting patches -> **patch**. This repo is pre-1.0 (`0.14.0` now), so
+   by convention breaking changes ride in **minor** until `1.0.0` is cut
+   deliberately: most releases are minor (a new content type or view) or patch
+   (a bug fix).
+3. **Open the version-bump PR**, separate from the feature, because `main` is
+   protected. On a `chore/release-<X.Y.Z>` branch, set `version` in
+   `package.json` to `<X.Y.Z>`, then commit and open the PR through the same
+   `/commit-message` and `/create-pr` route as Phase 6, with the subject
+   `chore(release): bump version to <X.Y.Z>` (matching the repo's history).
+4. **Merge the version-bump PR** after approval (same human gate as step 1).
+5. **Tag and publish the release** on the merged `main`; the tag must match the
+   bumped version:
+
+   ```bash
+   gh release create v<X.Y.Z> --target main --generate-notes
+   ```
+
+   **Confirm before running this:** publishing the release is the deploy
+   trigger. `deploy.yml` (GitHub Pages) and `docker-publish.yml` (GHCR image +
+   Trivy scan) both fire on `release: published`, not on a tag push, so
+   `gh release create` is what ships the site and the image; a bare `git tag` +
+   push deploys nothing. After publishing, confirm both workflows go green (a
+   high/critical CVE makes Trivy fail the image publish).
 
 ## Universal disciplines (portable, every project)
 
+- **Build only what the feature needs (YAGNI).** Implement the scope confirmed
+  in Phase 1, nothing speculative: no unused props or options, no config flags
+  or abstraction layers for callers that do not exist yet, no generality added
+  "for later". The simplest thing that satisfies the feature and passes the
+  gates wins; add structure when a second real caller actually arrives, not
+  before. Applies to the feature's code, not to this workflow.
 - **The gates are the merge bar, nothing else.** A clean formatter or a high
   critique score is not permission to skip them; a failing unrelated check is
   not a reason to stop.
@@ -243,7 +375,8 @@ What Phase 0 surfaced in one React + Vite + Tailwind project, to show the
 ## What this skill is not
 
 A runnable driver. The browser-driving harness (start the dev server, click
-through the UI, screenshot) lives inside `/impeccable audit` and
-`/impeccable critique`, which spin it up themselves. For a standalone way to
+through the UI, screenshot) lives inside `/impeccable critique`, which spins it
+up itself (`/impeccable audit` is static: it reads and scores source, with no
+browser). For a standalone way to
 launch and drive a specific app, author a `run-<app>` skill with
 `/run-skill-generator`.
