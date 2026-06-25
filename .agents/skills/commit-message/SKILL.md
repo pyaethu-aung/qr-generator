@@ -4,7 +4,7 @@ description: Use when creating or amending git commits. Enforces atomic commits,
 metadata:
   version: "1.0.0"
 model: haiku
-allowed-tools: Bash(git log:*) Bash(git diff:*) Bash(git status:*) Bash(git add:*) Bash(git commit:*) Bash(echo:*) Bash(wc:*)
+allowed-tools: Bash(git log:*) Bash(git diff:*) Bash(git status:*) Bash(git add:*) Bash(CLAUDE_COMMIT_VIA_SKILL=1 git commit:*) Bash(echo:*) Bash(wc:*)
 ---
 
 # Commit Message Rules
@@ -171,9 +171,10 @@ Proposed message:
 Proceed? (yes / edit message / cancel)
 ```
 
-- **yes** — run `git commit` using a heredoc to preserve line breaks:
+- **yes**: run the commit with the skill token the PreToolUse guard requires,
+  using a heredoc to preserve line breaks:
   ```bash
-  git commit -F - <<'EOF'
+  CLAUDE_COMMIT_VIA_SKILL=1 git commit -F - <<'EOF'
   <full commit message>
   EOF
   ```

@@ -4,7 +4,7 @@ description: Use when creating a GitHub pull request. Derives title and body fro
 metadata:
   version: "1.0.2"
 model: haiku
-allowed-tools: Bash(git log:*) Bash(git diff:*) Bash(git status:*) Bash(git branch:*) Bash(git push:*) Bash(gh pr:*) Bash(gh repo:*)
+allowed-tools: Bash(git log:*) Bash(git diff:*) Bash(git status:*) Bash(git branch:*) Bash(git push:*) Bash(gh pr:*) Bash(CLAUDE_PR_VIA_SKILL=1 gh pr create:*) Bash(gh repo:*)
 ---
 
 # PR Creation Rules
@@ -120,8 +120,8 @@ Body:
 Proceed? (yes / edit / cancel)
 ```
 
-- **yes** — push the branch if not already pushed, then run
-  `gh pr create --title "<title>" --body "<body>" --base main`
+- **yes**: push the branch if not already pushed, then run
+  `CLAUDE_PR_VIA_SKILL=1 gh pr create --title "<title>" --body "<body>" --base main`
 - **edit** — ask what to change, revise, and show the summary again
 - **cancel** — stop without creating the PR
 
