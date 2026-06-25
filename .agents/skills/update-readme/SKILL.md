@@ -1,8 +1,8 @@
 ---
 name: update-readme
-description: Use after any change worth documenting — new feature, new skill, config change, or breaking change. Updates README.md to reflect the change, or creates it if missing.
+description: Use after any change worth documenting (new feature, new skill, config change, or breaking change). Updates README.md to reflect the change, or creates it if missing.
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
 model: sonnet
 allowed-tools: Bash(git log:*) Bash(git diff:*) Bash(git status:*) Bash(ls:*) Glob Read Write Edit
 ---
@@ -13,14 +13,24 @@ Follow these rules when updating or creating README.md.
 
 ## Understand what changed
 
-Inspect the recent commit(s) and working tree to determine what is worth documenting:
+Determine the full scope of the change, not just the last commit. The README
+update often lands as its own commit after a multi-commit feature, so inspect
+the working tree and everything on this branch, not only `HEAD~1..HEAD`:
 
 ```!
 git log --oneline -10
 ```
 
 ```!
-git diff HEAD~1 HEAD --stat
+git status --short
+```
+
+```!
+git diff --stat
+```
+
+```!
+git diff main...HEAD --stat 2>/dev/null || git diff master...HEAD --stat 2>/dev/null || true
 ```
 
 ---
@@ -48,6 +58,8 @@ If README.md exists, read it in full before making any changes:
 - Identify which section(s) the change belongs in
 - Match the existing tone, heading style, and formatting
 - Do not restructure or rewrite sections unrelated to the change
+- No em dashes in prose (project convention): use commas, colons, or
+  parentheses instead
 
 If README.md does not exist, create one from scratch using the structure in §4.
 
@@ -57,14 +69,20 @@ If README.md does not exist, create one from scratch using the structure in §4.
 
 - **Add** content for new features or skills
 - **Update** content for changed behaviour or options
-- **Remove** content for deleted features — do not leave stale documentation
+- **Remove** content for deleted features; do not leave stale documentation
 - **Never** rewrite the whole file for a small change; edit only the relevant section(s)
+- **Keep it user-facing.** The README documents what a user of the project
+  sees and does. Architecture, conventions, and internals belong in
+  `CLAUDE.md` / `AGENTS.md`; design tokens and component specs in `DESIGN.md`.
+  Do not duplicate those here.
+- **Keep links valid.** If you add, rename, or remove a section, update any
+  in-page anchor links or table-of-contents entries that point to it.
 
 ---
 
 ## 4. README structure (when creating from scratch)
 
-Use this structure as a starting point — adapt to what the project actually contains:
+Use this structure as a starting point; adapt to what the project actually contains:
 
 ```markdown
 # <project name>
@@ -101,8 +119,8 @@ Sections affected:
 Proceed? (yes / edit / cancel)
 ```
 
-- **yes** — write the changes
-- **edit** — ask what to change, revise, and show the summary again
-- **cancel** — stop without writing anything
+- **yes**: write the changes
+- **edit**: ask what to change, revise, and show the summary again
+- **cancel**: stop without writing anything
 
 Do not write any files until the user explicitly confirms.
