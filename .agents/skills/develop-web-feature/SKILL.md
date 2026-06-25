@@ -237,11 +237,13 @@ in order, and open the PR last so it carries every commit:
 2. **The docs the change moved, each as its own commit, before the PR.** Skip
    any whose trigger did not fire; most features touch one or two, not all
    three:
-   - **README** when user-visible behavior changed.
+   - **README** (`/update-readme`) when user-visible behavior changed.
    - **CLAUDE.md / AGENTS.md** when architecture, conventions, commands, or the
-     directory layout changed: what a future contributor or agent needs to know.
-   - **DESIGN.md** when the design system changed (new tokens, primitives, or
-     patterns, often right after `extract`).
+     directory layout changed (a hand-written conventional commit): what a
+     future contributor or agent needs to know.
+   - **DESIGN.md** (`/impeccable document`) when the design system changed (new
+     tokens, primitives, or patterns, often right after `extract`); reconcile
+     its output with the file's hand-written notes rather than overwriting them.
 
    This matches the project's own history, where `docs:`, `chore(claude):`, and
    `docs(design):` commits land separately from the `feat:` commit.
@@ -271,11 +273,6 @@ discipline:
   git push -u origin feat/<slug>
   gh pr create --title "<type>: <summary>" --body "<what changed, why, test plan>"
   ```
-
-For each doc, prefer the project's tool: `/update-readme` for the README,
-`/impeccable document` for `DESIGN.md` (then reconcile its output with the
-file's hand-written notes rather than overwriting them), and a hand-written
-conventional commit for `CLAUDE.md` / `AGENTS.md`.
 
 ## Phase 7: Merge, version, and release
 
