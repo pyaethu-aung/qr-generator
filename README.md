@@ -214,7 +214,6 @@ scaffolding, and commit/PR automation via skills in `.claude/skills/` and
 | `/commit-message` | Creating or amending any git commit |
 | `/create-pr` | Opening a GitHub pull request |
 | `/update-readme` | After any user-facing change worth documenting |
-| `/test-design` | Validate the live UI against `design.pen` spec using Playwright MCP |
 
 ## Docker Support
 

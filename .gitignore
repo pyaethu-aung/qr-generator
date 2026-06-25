@@ -32,6 +32,5 @@ coverage
 .cache
 .eslintcache
 
-# test-design skill output
-.test-design/
-.playwright-mcp/
+# local research notes
+.notes/
