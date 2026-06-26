@@ -354,6 +354,19 @@ export interface HistoryStrings {
   clearAriaLabel: string
 }
 
+export interface PresetsStrings {
+  sectionLabel: string
+  emptyHint: string
+  saveButton: string
+  savedLabel: string
+  saveNamePlaceholder: string
+  saveNameAriaLabel: string
+  saveConfirmAriaLabel: string
+  saveCancelAriaLabel: string
+  deleteAriaLabel: string
+  appliedLabel: string
+}
+
 export interface LocaleConfig {
   locale: LocaleMetadata
   common: CommonStrings
@@ -366,6 +379,7 @@ export interface LocaleConfig {
   scan: ScanStrings
   batch: BatchStrings
   history: HistoryStrings
+  presets: PresetsStrings
 }
 
 export type TranslationKey =
@@ -686,3 +700,13 @@ export type TranslationKey =
   | 'batch.csvPreviewMore'
   | 'history.sectionLabel'
   | 'history.clearAriaLabel'
+  | 'presets.sectionLabel'
+  | 'presets.emptyHint'
+  | 'presets.saveButton'
+  | 'presets.savedLabel'
+  | 'presets.saveNamePlaceholder'
+  | 'presets.saveNameAriaLabel'
+  | 'presets.saveConfirmAriaLabel'
+  | 'presets.saveCancelAriaLabel'
+  | 'presets.deleteAriaLabel'
+  | 'presets.appliedLabel'
