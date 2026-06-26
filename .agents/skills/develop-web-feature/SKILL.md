@@ -173,6 +173,20 @@ leave them for the end.
 rather than batching at the end. The implementation, each Phase 5 fix, and the
 Phase 6 docs all land as their own commits, so the history tracks every step.
 
+Treat each of the following as its own commit boundary — do not bundle them:
+
+- A new or substantially rewritten component
+- A new or substantially rewritten hook
+- A new utility module and its test
+- A new or updated type definition
+- An e2e spec (or a batch of specs for one scenario group)
+- An i18n / locale key addition
+- A doc update (README, architecture docs, design docs)
+
+If a single task touches more than two of the above categories, split it before
+committing: stage one category, commit, then the next. Check the project's
+`CLAUDE.md` for project-specific commit boundary guidance.
+
 ## Phase 3: Gate
 
 Run the project's gate commands (from Phase 0). All must pass before a PR;
