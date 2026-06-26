@@ -244,6 +244,18 @@ scaffolding, and commit/PR automation via skills in `.claude/skills/` and
 | `/create-pr` | Opening a GitHub pull request |
 | `/update-readme` | After any user-facing change worth documenting |
 
+### Hands-off permissions
+
+> **Workspace trust required.** If you see `Ignoring N permissions.allow entries … this workspace has not been trusted`, the allow list is inactive and every command will prompt. Fix it one of two ways:
+> - Run `claude` interactively in this repo once and accept the trust dialog.
+> - Or set `projects["/absolute/path/to/qr-generator"].hasTrustDialogAccepted: true` in your personal Claude config (`~/.claude.json`).
+
+`.claude/settings.json` pre-approves three commands so `/develop-web-feature` runs without mid-run approval prompts:
+
+- **`Bash(npm run dev*)`** — the skill starts the dev server in the background (`&`) to drive e2e and visual passes; the `&` operator triggers a safety prompt without this entry.
+- **`Bash(node .claude/skills/impeccable/scripts/critique-storage.mjs*)`** — `/impeccable` persists critique snapshots via this script; the `$SLUG` variable expansion triggers Claude Code's obfuscation heuristic without the allow entry.
+- **`Skills(create-pr)`** — `/develop-web-feature` invokes `/create-pr` as a sub-skill in Phase 6. Claude Code shows a "Use skill?" dialog for every skill invocation; this entry suppresses it so the PR opens without a pause.
+
 ## Docker Support
 
 [![Docker Build](https://github.com/pyaethu-aung/qr-generator/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/pyaethu-aung/qr-generator/actions/workflows/docker-publish.yml)

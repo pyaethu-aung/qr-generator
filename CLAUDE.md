@@ -82,6 +82,27 @@ Skills are stored under `.agents/skills/` (source files) with symlinks from `.cl
 
 Two `PreToolUse` hooks in `.claude/settings.json` enforce that `git commit` and `gh pr create` go through the relevant skills. Do not bypass them with `--no-verify`.
 
+### Permissions (hands-off / autonomous mode)
+
+> **Workspace trust required.** If you see `Ignoring 4 permissions.allow entries from .claude/settings.json: this workspace has not been trusted`, the allow list is silently inactive. Fix it one of two ways:
+> - Run `claude` interactively in this directory once and accept the trust dialog that appears.
+> - Or add the entry directly to your personal Claude config (`~/.claude.json`):
+>   ```json
+>   {
+>     "projects": {
+>       "/path/to/qr-generator": { "hasTrustDialogAccepted": true }
+>     }
+>   }
+>   ```
+
+`.claude/settings.json` pre-approves these commands so `/develop-web-feature` (and `/impeccable`) can run fully hands-off without mid-run approval prompts:
+
+| Permission | Why it's allowed |
+|---|---|
+| `Bash(npm run dev*)` | `/develop-web-feature` starts the dev server in the background (`&`) to drive e2e and visual passes; the `&` operator would otherwise trigger a safety prompt. |
+| `Bash(node .claude/skills/impeccable/scripts/critique-storage.mjs*)` | `/impeccable` persists and trends critique snapshots via this script; variable expansion in the command (`$SLUG`) triggers Claude Code's obfuscation heuristic without the allow entry. |
+| `Skills(create-pr)` | `/develop-web-feature` invokes `/create-pr` as a sub-skill in Phase 6. The harness shows a "Use skill?" approval dialog for every skill invocation; this entry suppresses it so the PR opens without a pause. |
+
 ## Deployment
 
 - **GitHub Pages**: triggered on push to `main` via `.github/workflows/deploy.yml`
