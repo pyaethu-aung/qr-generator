@@ -11,9 +11,12 @@ test('Generate view loads and produces a QR code', async ({ page }, testInfo) =>
   await expect(generate).toBeVisible()
   await page.screenshot({ path: testInfo.outputPath('01-initial.png'), fullPage: true })
 
-  // Primary flow: enter a value and generate a code.
+  // Primary flow: enter a value and generate a code, then wait for the
+  // rendered canvas (deterministic; avoids the flaky networkidle wait).
   await page.getByRole('textbox').first().fill('https://example.com')
   await generate.click()
-  await page.waitForLoadState('networkidle')
+  const qr = page.getByTestId('qr-code-canvas')
+  await expect(qr).toBeVisible()
+  await expect(qr).toHaveAttribute('data-value', 'https://example.com')
   await page.screenshot({ path: testInfo.outputPath('02-generated.png'), fullPage: true })
 })
