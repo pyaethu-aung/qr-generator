@@ -2,7 +2,7 @@
 name: develop-web-feature
 description: "Develop, design, and ship a website feature end-to-end with /impeccable: shape, build, gate, audit, critique, fix, open a PR, and release. Portable across web projects. Use when asked to add, build, craft, or design a new feature."
 metadata:
-  version: "1.3.0"
+  version: "1.4.0"
 argument-hint: "[--auto] The feature to build (e.g. 'Calendar event content type')"
 allowed-tools: Bash(npm*) Bash(npx*) Bash(node*) Bash(git:*) Bash(gh:*) Bash(grep*) Bash(ls*) Bash(cat*) Read Write Edit Task
 ---
@@ -150,10 +150,19 @@ planning only, without the build.)
 
 ## Phase 2: Build
 
+**Branch first.** Create a feature branch off the default branch
+(`<type>/<slug>`, e.g. `feat/event-mode`) before the first commit; never commit
+to the default branch.
+
 Follow the feature pattern from Phase 0. Match the surrounding code: use the
 project's primitives and design tokens, not ad-hoc markup or hard-coded
 values. Honor the design system and `/impeccable`'s shared laws (no em dashes
 in copy, accessibility bar, real translations where the project is localized).
+
+**Commit as you go.** When a logical chunk of the implementation is gate-green
+(Phase 3), commit it through `/commit-message`, one logical change per commit,
+rather than batching at the end. The implementation, each Phase 5 fix, and the
+Phase 6 docs all land as their own commits, so the history tracks every step.
 
 ## Phase 3: Gate
 
@@ -218,7 +227,8 @@ through it.
 
 ## Phase 5: Fix and loop until clean
 
-This is a loop, not a one-shot pass. Each round:
+This is a loop, not a one-shot pass. Work one finding (or one tightly related
+group) at a time so each fix is its own commit:
 
 1. **Fix by severity (P0/P1 first), driven by the findings.** Both audit and
    critique tag every issue with a severity and a **Suggested command**; run
@@ -234,7 +244,11 @@ This is a loop, not a one-shot pass. Each round:
    - empty or first-run states -> `/impeccable onboard`
 2. **Re-run the gates** (Phase 3): the refine commands changed code, so
    `test && lint && build` must pass again.
-3. **Re-evaluate** (Phase 4): re-run `audit` and the browser-tested `critique`.
+3. **Commit that fix on its own** once green: a focused `fix(<area>): ...` per
+   finding (or close group), so the history shows what each change addressed.
+   Route through `/commit-message` (`--yes` in autonomous mode).
+4. **Re-evaluate** (Phase 4): re-run `audit` and the browser-tested `critique`
+   to refresh the finding list.
 
 Repeat until **no P0 or P1 findings remain and the critique score plateaus**
 (expect a few points per pass). Stop when the remainder is genuine P2/P3
@@ -244,12 +258,12 @@ Once the loop settles, **promote anything reusable before the final polish.**
 If the feature introduced a component, token, or pattern that belongs in the
 shared design system rather than this feature alone, run `/impeccable extract`
 to pull it into the project's primitives (here, `src/components/common/` and
-the token file), then re-run the gates. Skip this when the feature added
-nothing shareable. It is the cheapest moment to catch a feature-local
-duplicate of what should be a shared primitive.
+the token file), then re-run the gates and commit it. Skip this when the
+feature added nothing shareable. It is the cheapest moment to catch a
+feature-local duplicate of what should be a shared primitive.
 
-Then run `/impeccable polish` as the closing pass and re-run the gates one
-final time.
+Then run `/impeccable polish` as the closing pass, re-run the gates one final
+time, and commit it.
 
 ## Phase 6: Commit, document, and PR
 
@@ -257,12 +271,13 @@ final time.
 or P1 audit or critique finding. If anything is still red or unresolved, return
 to Phase 5; do not commit or open a PR around an open P0/P1.
 
-Always branch off the default branch (`<type>/<slug>`, e.g. `feat/event-mode`)
-rather than committing to it, and never bypass hooks with `--no-verify`. Commit
-in order, and open the PR last so it carries every commit:
+The implementation and every P* fix are already committed incrementally on the
+feature branch (Phases 2 and 5), one logical change each. Never bypass hooks
+with `--no-verify`. Add the doc commits, then open the PR last so it carries
+every commit:
 
-1. **The feature**, atomically: one logical change per commit; split unrelated
-   concerns into separate commits even within the one feature.
+1. **The feature and its fixes** are already committed (Phases 2 and 5);
+   nothing to re-commit here.
 2. **The docs the change moved, each as its own commit, before the PR.** Skip
    any whose trigger did not fire; most features touch one or two, not all
    three:
@@ -290,7 +305,6 @@ discipline:
   into separate commits.
 
   ```bash
-  git checkout -b feat/<slug>
   git add <files for this change>
   git commit
   ```
