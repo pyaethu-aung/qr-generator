@@ -12,7 +12,9 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
-  reporter: process.env.CI ? [['html', { open: 'never' }], ['list']] : 'list',
+  // HTML report always (so `npx playwright show-report` works locally too);
+  // open: 'never' keeps it from auto-launching a browser at the end of a run.
+  reporter: [['html', { open: 'never' }], ['list']],
   use: {
     baseURL,
     screenshot: 'on',
