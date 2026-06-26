@@ -269,7 +269,8 @@ npm run docker:run
 ## Quality & Constitution Highlights
 
 - Every change must add/update relevant unit tests, maintain ≥85% coverage, and all tests must pass before merge.
-- Run `npm run test`, `npm run lint`, and `npm run build` after every change before opening a PR.
+- Every user-facing feature or fix must have a Playwright e2e spec in `e2e/` that proves the scenario works in a real browser.
+- Run `npm run test && npm run lint && npm run build && npm run test:e2e` before opening a PR. All four must pass.
 - UI must be fully functional and consistent across desktop/mobile and major browsers via responsive design.
 - Remove unused code/assets; keep files in the agreed structure above.
 - CI gates: lint, test, build must pass; PR review required. A `pre-push` git hook prevents direct pushes to `main` — all changes must go through a pull request.

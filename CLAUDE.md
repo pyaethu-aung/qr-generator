@@ -19,7 +19,7 @@ npm run docker:run      # run container at http://localhost:8080
 
 Run a single test file: `npx vitest run src/utils/share.test.ts`
 
-Before opening any PR, all three must pass locally: `npm run test && npm run lint && npm run build`
+Before opening any PR, all four must pass locally: `npm run test && npm run lint && npm run build && npm run test:e2e`
 
 Never push directly to `main`. All changes must go through a pull request. A `pre-push` git hook in `.githooks/` enforces this — activated automatically via the `prepare` npm script on `npm install`.
 
@@ -66,6 +66,8 @@ Headless rendering (no DOM preview) is shared: `renderQrPngBlob` (`src/utils/exp
 ## Testing
 
 Vitest with jsdom. Setup file: `src/setupTests.ts` (imports `@testing-library/jest-dom`). Mock browser APIs (`navigator.share`, `ClipboardItem`) per test file. Coverage threshold: **85%**.
+
+Playwright e2e tests live in `e2e/`. Run with `npm run test:e2e`. Every user-facing feature or fix must have a corresponding e2e spec that proves the scenario works in a real browser. The suite runs across four projects (desktop/mobile × light/dark) and must pass before opening a PR.
 
 ## Skills
 
