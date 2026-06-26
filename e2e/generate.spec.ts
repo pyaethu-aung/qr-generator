@@ -1,22 +1,88 @@
 import { test, expect } from '@playwright/test'
 
-// Smoke + visual capture of the Generate view. Runs once per project
-// (desktop/mobile x light/dark). The full-page screenshots and the recorded
-// video are the deliverable; CI uploads them per PR. Tighten the assertions
-// with data-testid hooks as the suite grows. See e2e/README.md.
-test('Generate view loads and produces a QR code', async ({ page }, testInfo) => {
+// ── helpers ────────────────────────────────────────────────────────────────
+
+/** Wait for the QR canvas to appear with the expected payload. */
+async function expectQr(page: import('@playwright/test').Page, value: string) {
+  const canvas = page.getByTestId('qr-code-canvas')
+  await expect(canvas).toBeVisible({ timeout: 5_000 })
+  await expect(canvas).toHaveAttribute('data-value', value)
+}
+
+// ── URL / text QR ──────────────────────────────────────────────────────────
+
+test('URL: typing a link renders a QR code', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('textbox').first().fill('https://example.com')
+  await expectQr(page, 'https://example.com')
+})
+
+// ── Wi-Fi QR ───────────────────────────────────────────────────────────────
+
+test('Wi-Fi: SSID + password renders a Wi-Fi QR code', async ({ page }) => {
   await page.goto('/')
 
-  const generate = page.getByRole('button', { name: /generate/i })
-  await expect(generate).toBeVisible()
-  await page.screenshot({ path: testInfo.outputPath('01-initial.png'), fullPage: true })
+  await page.getByRole('button', { name: 'Wi-Fi' }).click()
+  await page.getByPlaceholder('Your Wi-Fi name').fill('OfficeNet')
+  await page.getByPlaceholder('Network password').fill('s3cr3t!')
 
-  // Primary flow: enter a value and generate a code, then wait for the
-  // rendered canvas (deterministic; avoids the flaky networkidle wait).
+  // Wi-Fi QR payload starts with the MECARD-style prefix.
+  const canvas = page.getByTestId('qr-code-canvas')
+  await expect(canvas).toBeVisible({ timeout: 5_000 })
+  await expect(canvas).toHaveAttribute('data-value', /^WIFI:/)
+})
+
+// ── Contact (vCard) QR ─────────────────────────────────────────────────────
+
+test('Contact: first + last name renders a vCard QR code', async ({ page }) => {
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Contact' }).click()
+  await page.getByLabel('First Name').fill('Jane')
+  await page.getByLabel('Last Name').fill('Smith')
+
+  const canvas = page.getByTestId('qr-code-canvas')
+  await expect(canvas).toBeVisible({ timeout: 5_000 })
+  await expect(canvas).toHaveAttribute('data-value', /^BEGIN:VCARD/)
+})
+
+// ── Download ───────────────────────────────────────────────────────────────
+
+test('Download PNG: clicking Download PNG starts a file download', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('textbox').first().fill('https://yomafleet.com')
+  await expectQr(page, 'https://yomafleet.com')
+
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    page.getByRole('button', { name: /download png/i }).click(),
+  ])
+  expect(download.suggestedFilename()).toMatch(/\.png$/)
+})
+
+test('Download SVG: clicking Download SVG starts a file download', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('textbox').first().fill('https://yomafleet.com')
+  await expectQr(page, 'https://yomafleet.com')
+
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    page.getByRole('button', { name: /download svg/i }).click(),
+  ])
+  expect(download.suggestedFilename()).toMatch(/\.svg$/)
+})
+
+// ── Copy link ──────────────────────────────────────────────────────────────
+
+test('Copy link: button shows success feedback after clicking', async ({ page }) => {
+  await page.goto('/')
   await page.getByRole('textbox').first().fill('https://example.com')
-  await generate.click()
-  const qr = page.getByTestId('qr-code-canvas')
-  await expect(qr).toBeVisible()
-  await expect(qr).toHaveAttribute('data-value', 'https://example.com')
-  await page.screenshot({ path: testInfo.outputPath('02-generated.png'), fullPage: true })
+  await expectQr(page, 'https://example.com')
+
+  // Grant clipboard-write permission so navigator.clipboard.writeText succeeds.
+  await page.context().grantPermissions(['clipboard-write'])
+
+  await page.getByRole('button', { name: /copy link/i }).click()
+  // The button label changes to "Link copied" on success.
+  await expect(page.getByRole('button', { name: /copied/i })).toBeVisible({ timeout: 3_000 })
 })
