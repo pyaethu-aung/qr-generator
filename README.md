@@ -204,34 +204,32 @@ The app supports multiple languages (English and Burmese) via custom locale conf
 
 ## Browser testing (Playwright CLI)
 
-`/impeccable critique` (and the `develop-web-feature` skill that drives it) test
-the running app in a real browser using the **Playwright CLI**, not the
-Playwright MCP. Install it once:
+End-to-end / visual tests live in `e2e/` and drive the running app in a real
+browser, capturing a full-page screenshot and a video per run across desktop
+and mobile, light and dark. `/impeccable critique` (and the
+`develop-web-feature` skill that drives it) use the same setup. Contributor
+guide: [`e2e/README.md`](e2e/README.md).
 
 ```bash
-npm install -D @playwright/test    # test runner + library (provides `npx playwright`)
-npx playwright install chromium    # browser binary (add `firefox webkit` for cross-browser)
+npm run test:e2e                              # all projects (desktop/mobile x light/dark)
+npx playwright test --project=desktop-light   # a single project
+npx playwright show-report                    # open the last HTML report
 ```
 
-With the dev server running (`npm run dev`, default `http://localhost:5173`):
+One-time setup (the npm dependency is already in `package.json`):
 
 ```bash
-# Quick visual capture, one shot per theme and viewport
-npx playwright screenshot --viewport-size=1280,800 http://localhost:5173 desktop.png
-npx playwright screenshot --viewport-size=375,667  http://localhost:5173 mobile.png
-
-# Drive real user flows (clicks, typing, submits) and assert behavior
-npx playwright test
+npm install                       # installs @playwright/test
+npx playwright install chromium   # browser binary (~150 MB; skips if cached)
 ```
 
-Notes:
-
-- Keep flow specs under `e2e/` and add a `playwright.config.ts` whose `webServer`
-  runs `npm run dev`, so the runner starts the app for you.
-- These browser tests are separate from the Vitest unit suite (`npm run test`);
-  exclude `e2e/` from Vitest's `include` glob so the two runners do not collide.
-- Only the critique pass drives the browser; the audit pass is static, which is
-  why the `develop-web-feature` skill can run them in parallel (audit in a subagent).
+The runner starts the dev server itself (`webServer` in `playwright.config.ts`,
+default `http://localhost:5173`), so `npm run dev` need not be running. Output
+lands in `test-results/` and `playwright-report/` (both gitignored). On every
+PR to `main`, `.github/workflows/e2e.yml` runs the suite and uploads those as
+artifacts, so the screenshots and recording are reachable from the PR's checks.
+These tests are separate from the Vitest unit suite (`npm run test`); `e2e/` is
+excluded from Vitest in `vite.config.ts` so the two runners do not collide.
 
 ## Spec-Kit
 
