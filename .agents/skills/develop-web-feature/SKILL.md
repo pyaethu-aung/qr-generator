@@ -1,6 +1,6 @@
 ---
 name: develop-web-feature
-description: "Develop, design, and ship a website feature end-to-end with /impeccable: shape, build, gate, audit, critique, fix, open a PR, and release. Portable across web projects. Use when asked to add, build, craft, or design a new feature."
+description: "Develop, design, and ship a website feature end-to-end with /impeccable: shape, build, e2e specs, gate, audit, critique, fix, open a PR, and release. Portable across web projects. Use when asked to add, build, craft, or design a new feature."
 metadata:
   version: "1.4.0"
 argument-hint: "[--auto] The feature to build (e.g. 'Calendar event content type')"
@@ -159,6 +159,15 @@ project's primitives and design tokens, not ad-hoc markup or hard-coded
 values. Honor the design system and `/impeccable`'s shared laws (no em dashes
 in copy, accessibility bar, real translations where the project is localized).
 
+**Write e2e specs for the feature as you build it.** Every user-facing scenario
+introduced or changed must have a corresponding Playwright spec in `e2e/`. The
+spec is the proof that the feature works end-to-end in a real browser, not just
+that units pass in jsdom. Keep specs interaction-driven: navigate, fill, click,
+assert — one scenario per test, role-based selectors first, `data-testid` where
+a role is ambiguous. A well-written spec must fail on the code before your
+change and pass after. Place specs alongside the implementation commit; do not
+leave them for the end.
+
 **Commit as you go.** When a logical chunk of the implementation is gate-green
 (Phase 3), commit it through `/commit-message`, one logical change per commit,
 rather than batching at the end. The implementation, each Phase 5 fix, and the
@@ -267,9 +276,12 @@ time, and commit it.
 
 ## Phase 6: Commit, document, and PR
 
-**Precondition: the Phase 5 loop has converged.** Gates green, and no open P0
-or P1 audit or critique finding. If anything is still red or unresolved, return
-to Phase 5; do not commit or open a PR around an open P0/P1.
+**Precondition: the Phase 5 loop has converged.** Gates green, no open P0 or
+P1 audit or critique finding, and the full e2e suite passes. Run the e2e suite
+now (`npx playwright test`, or the project's `test:e2e` script) and fix any
+failure before opening the PR — a red e2e test is a broken user flow, not a
+cosmetic issue. If anything is still red or unresolved, return to Phase 5; do
+not open a PR around an open P0/P1 or a failing e2e spec.
 
 The implementation and every P* fix are already committed incrementally on the
 feature branch (Phases 2 and 5), one logical change each. Never bypass hooks
