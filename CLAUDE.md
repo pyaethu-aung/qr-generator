@@ -69,6 +69,22 @@ Vitest with jsdom. Setup file: `src/setupTests.ts` (imports `@testing-library/je
 
 Playwright e2e tests live in `e2e/`. Run with `npm run test:e2e`. Every user-facing feature or fix must have a corresponding e2e spec that proves the scenario works in a real browser. The suite runs across four projects (desktop/mobile × light/dark) and must pass before opening a PR.
 
+## Commit discipline
+
+One logical change per commit. Each of the following is its own commit boundary — do not bundle them:
+
+| Category | Path |
+|---|---|
+| New/rewritten component | `src/components/` |
+| New/rewritten hook | `src/hooks/` |
+| New utility module + its test | `src/utils/` |
+| New/updated type definition | `src/types/` |
+| e2e spec (one scenario group) | `e2e/` |
+| i18n key addition (all locales) | `src/data/i18n/` |
+| Doc update | `CLAUDE.md`, `README.md`, `DESIGN.md`, `PRODUCT.md` |
+
+If a task touches more than two categories, stage and commit one at a time.
+
 ## Skills
 
 Skills are stored under `.agents/skills/` (source files) with symlinks from `.claude/skills/`. Active skills are tracked in `skills-lock.json` (sourced from `pyaethu-aung/skills` on GitHub).
