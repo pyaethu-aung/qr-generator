@@ -2,8 +2,8 @@
 name: develop-web-feature
 description: "Develop, design, and ship a website feature end-to-end with /impeccable: shape, build, gate, audit, critique, fix, open a PR, and release. Portable across web projects. Use when asked to add, build, craft, or design a new feature."
 metadata:
-  version: "1.2.0"
-argument-hint: "The feature to build (e.g. 'Calendar event content type')"
+  version: "1.3.0"
+argument-hint: "[--auto] The feature to build (e.g. 'Calendar event content type')"
 allowed-tools: Bash(npm*) Bash(npx*) Bash(node*) Bash(git:*) Bash(gh:*) Bash(grep*) Bash(ls*) Bash(cat*) Read Write Edit Task
 ---
 
@@ -24,6 +24,30 @@ project; the *specifics* (gate commands, file layout, conventions, enforcement)
 differ, so Phase 0 installs the one hard dependency (`/impeccable`) and
 discovers the rest before any code is written. A concrete worked example from
 one project is at the end, as illustration only: yours will differ.
+
+## Autonomous mode (reduce human-in-the-loop)
+
+By default the workflow pauses in several places: `craft` confirms scope,
+`critique` asks what to fix, and the commit and PR skills each confirm. When
+the request asks for a hands-off run (it says "autonomous" or "hands-off", or
+passes `--auto`), collapse those into a single review at the PR:
+
+- **Skip craft's scope confirmation** when the prompt is already a complete
+  spec, or run one silent `/impeccable shape` pass and proceed. Phase 0's rule
+  still holds: if the scope is genuinely ambiguous, ask once rather than build
+  the wrong thing.
+- **Run `critique` non-interactively:** take its findings as the action plan
+  and let the Phase 5 loop fix P0/P1 by severity; do not stop to ask which to
+  address.
+- **Commit and open the PR without prompting:** route through
+  `/commit-message --yes` and `/create-pr --yes` (same format and skill token,
+  no confirmation pause).
+- **Stop at the opened PR.** Do not auto-merge and do not publish the release;
+  PR approval, merge, and the release publish stay human (Phase 7). The PR is
+  your single review surface.
+
+Autonomous mode removes only the in-flow confirmations. The gates, the fix
+loop, atomic commits, and the disciplines are unchanged.
 
 ## Phase 0: Set up
 
