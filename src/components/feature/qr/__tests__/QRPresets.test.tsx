@@ -42,6 +42,7 @@ const defaultProps = {
   saveConfirmAriaLabel: 'Save',
   saveCancelAriaLabel: 'Cancel',
   deleteAriaLabel: 'Delete {name}',
+  confirmDeleteAriaLabel: 'Confirm delete {name}',
   appliedLabel: 'Design applied',
 }
 
@@ -130,10 +131,19 @@ describe('QRPresets', () => {
     expect(onApply).toHaveBeenCalledWith(mockPreset)
   })
 
-  it('calls onDelete when the delete button is clicked', () => {
+  it('requires two clicks to delete (first click enters pending state)', () => {
     const onDelete = vi.fn()
     render(<QRPresets {...defaultProps} presets={[mockPreset]} onDelete={onDelete} />)
     fireEvent.click(screen.getByLabelText('Delete My Brand'))
+    expect(onDelete).not.toHaveBeenCalled()
+    expect(screen.getByLabelText('Confirm delete My Brand')).toBeTruthy()
+  })
+
+  it('calls onDelete on second click when in pending state', () => {
+    const onDelete = vi.fn()
+    render(<QRPresets {...defaultProps} presets={[mockPreset]} onDelete={onDelete} />)
+    fireEvent.click(screen.getByLabelText('Delete My Brand'))
+    fireEvent.click(screen.getByLabelText('Confirm delete My Brand'))
     expect(onDelete).toHaveBeenCalledWith('test-1')
   })
 

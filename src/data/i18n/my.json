@@ -386,6 +386,7 @@
     "saveConfirmAriaLabel": "သိမ်းရန်",
     "saveCancelAriaLabel": "မလုပ်တော့",
     "deleteAriaLabel": "{name} ကို ဖျက်ရန်",
+    "confirmDeleteAriaLabel": "{name} ကို ဖျက်ရန် အတည်ပြုပါ",
     "appliedLabel": "ဒီဇိုင်း ပြောင်းလဲပြီး"
   }
 }

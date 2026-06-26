@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect, useId } from 'react'
-import { Bookmark, Check, X } from 'lucide-react'
+import { Bookmark, Check, X, Trash2 } from 'lucide-react'
 import type { PresetEntry } from '../../../hooks/useQRPresets'
 import { PRESET_NAME_MAX } from '../../../utils/presets'
 
@@ -18,6 +18,7 @@ interface QRPresetsProps {
   saveConfirmAriaLabel: string
   saveCancelAriaLabel: string
   deleteAriaLabel: string
+  confirmDeleteAriaLabel: string
   appliedLabel: string
 }
 
@@ -36,23 +37,40 @@ export function QRPresets({
   saveConfirmAriaLabel,
   saveCancelAriaLabel,
   deleteAriaLabel,
+  confirmDeleteAriaLabel,
   appliedLabel,
 }: QRPresetsProps) {
   const [isSaving, setIsSaving] = useState(false)
   const [nameValue, setNameValue] = useState('')
   const [appliedId, setAppliedId] = useState<string | null>(null)
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
+  const [highlightNew, setHighlightNew] = useState(false)
   const [announcement, setAnnouncement] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const pendingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const inputId = useId()
 
   useEffect(() => () => {
     if (timerRef.current) clearTimeout(timerRef.current)
+    if (pendingTimerRef.current) clearTimeout(pendingTimerRef.current)
   }, [])
 
   useEffect(() => {
     if (isSaving) inputRef.current?.focus()
   }, [isSaving])
+
+  useEffect(() => {
+    if (!pendingDeleteId) return
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (pendingTimerRef.current) clearTimeout(pendingTimerRef.current)
+        setPendingDeleteId(null)
+      }
+    }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [pendingDeleteId])
 
   const handleStartSave = () => {
     setIsSaving(true)
@@ -65,9 +83,13 @@ export function QRPresets({
     onSave(name)
     setIsSaving(false)
     setNameValue('')
+    setHighlightNew(true)
     setAnnouncement(savedLabel)
     if (timerRef.current) clearTimeout(timerRef.current)
-    timerRef.current = setTimeout(() => setAnnouncement(''), 1500)
+    timerRef.current = setTimeout(() => {
+      setAnnouncement('')
+      setHighlightNew(false)
+    }, 1500)
   }, [nameValue, onSave, savedLabel])
 
   const handleCancelSave = () => {
@@ -78,6 +100,8 @@ export function QRPresets({
   const handleApply = useCallback((preset: PresetEntry) => {
     onApply(preset)
     setAppliedId(preset.id)
+    setPendingDeleteId(null)
+    setHighlightNew(false)
     setAnnouncement(appliedLabel)
     if (timerRef.current) clearTimeout(timerRef.current)
     timerRef.current = setTimeout(() => {
@@ -85,6 +109,18 @@ export function QRPresets({
       setAnnouncement('')
     }, 1500)
   }, [onApply, appliedLabel])
+
+  const handleDeleteRequest = useCallback((id: string) => {
+    if (pendingDeleteId === id) {
+      if (pendingTimerRef.current) clearTimeout(pendingTimerRef.current)
+      setPendingDeleteId(null)
+      onDelete(id)
+    } else {
+      if (pendingTimerRef.current) clearTimeout(pendingTimerRef.current)
+      setPendingDeleteId(id)
+      pendingTimerRef.current = setTimeout(() => setPendingDeleteId(null), 2500)
+    }
+  }, [pendingDeleteId, onDelete])
 
   const canSave = presets.length < maxPresets
 
@@ -151,8 +187,10 @@ export function QRPresets({
           className="grid gap-3"
           style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(88px, 1fr))' }}
         >
-          {presets.map((preset) => {
+          {presets.map((preset, index) => {
             const isApplied = appliedId === preset.id
+            const isPendingDelete = pendingDeleteId === preset.id
+            const isJustSaved = highlightNew && index === 0
             return (
               <div key={preset.id} className="group relative">
                 <button
@@ -163,9 +201,11 @@ export function QRPresets({
                   className={[
                     'w-full flex flex-col items-center gap-2 rounded-xl border p-2 text-left transition-[background-color,border-color,box-shadow] duration-150',
                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2',
-                    isApplied
-                      ? 'border-action bg-surface-raised ring-2 ring-action ring-offset-2'
-                      : 'border-border-subtle bg-surface-raised hover:border-border-strong hover:bg-surface-inset',
+                    isPendingDelete
+                      ? 'border-error bg-surface-raised ring-2 ring-error ring-offset-2'
+                      : isApplied || isJustSaved
+                        ? 'border-action bg-surface-raised ring-2 ring-action ring-offset-2'
+                        : 'border-border-subtle bg-surface-raised hover:border-border-strong hover:bg-surface-inset',
                   ].join(' ')}
                 >
                   <div
@@ -188,11 +228,20 @@ export function QRPresets({
                 </button>
                 <button
                   type="button"
-                  onClick={() => onDelete(preset.id)}
-                  aria-label={deleteAriaLabel.replace('{name}', preset.name)}
-                  className="absolute -right-1 -top-1 flex size-6 items-center justify-center rounded-full bg-error text-error-fg shadow opacity-0 group-hover:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                  onClick={() => handleDeleteRequest(preset.id)}
+                  aria-label={isPendingDelete
+                    ? confirmDeleteAriaLabel.replace('{name}', preset.name)
+                    : deleteAriaLabel.replace('{name}', preset.name)}
+                  className={[
+                    'absolute -right-1 -top-1 flex size-6 items-center justify-center rounded-full bg-error text-error-fg shadow transition-[opacity,transform] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring',
+                    isPendingDelete
+                      ? 'opacity-100 scale-125'
+                      : 'opacity-0 group-hover:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100',
+                  ].join(' ')}
                 >
-                  <X size={10} aria-hidden />
+                  {isPendingDelete
+                    ? <Trash2 size={10} aria-hidden />
+                    : <X size={10} aria-hidden />}
                 </button>
               </div>
             )

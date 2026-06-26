@@ -386,6 +386,7 @@
     "saveConfirmAriaLabel": "Save",
     "saveCancelAriaLabel": "Cancel",
     "deleteAriaLabel": "Delete {name}",
+    "confirmDeleteAriaLabel": "Confirm delete {name}",
     "appliedLabel": "Design applied"
   }
 }

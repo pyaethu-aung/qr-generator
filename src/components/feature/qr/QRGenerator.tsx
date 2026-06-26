@@ -566,6 +566,7 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
           saveConfirmAriaLabel={translate('presets.saveConfirmAriaLabel')}
           saveCancelAriaLabel={translate('presets.saveCancelAriaLabel')}
           deleteAriaLabel={translate('presets.deleteAriaLabel')}
+          confirmDeleteAriaLabel={translate('presets.confirmDeleteAriaLabel')}
           appliedLabel={translate('presets.appliedLabel')}
         />
         <QRHistory
