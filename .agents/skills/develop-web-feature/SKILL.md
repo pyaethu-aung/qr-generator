@@ -36,9 +36,14 @@ passes `--auto`), collapse those into a single review at the PR:
   spec, or run one silent `/impeccable shape` pass and proceed. Phase 0's rule
   still holds: if the scope is genuinely ambiguous, ask once rather than build
   the wrong thing.
-- **Run `critique` non-interactively:** take its findings as the action plan
-  and let the Phase 5 loop fix P0/P1 by severity; do not stop to ask which to
-  address.
+- **Run `audit` and `critique` non-interactively:** feed both passes' findings
+  into the Phase 5 loop, which fixes P0/P1 by severity. Audit already prompts
+  for nothing; critique just skips its closing question.
+- **Surface what was not fixed.** P0/P1 from both passes are fixed in the loop;
+  the remaining P2/P3 are deliberately not auto-fixed, but must not vanish in a
+  hands-off run. List them in the PR body under a **Deferred (P2/P3)** heading,
+  drawn from the critique snapshot in `.impeccable/critique/` and the audit
+  report, so you can triage them at review.
 - **Commit and open the PR without prompting:** route through
   `/commit-message --yes` and `/create-pr --yes` (same format and skill token,
   no confirmation pause).
