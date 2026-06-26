@@ -67,6 +67,21 @@ and `src/utils/qrSvgComposer.ts` is the single source that composes the
 QR + frame SVG for the preview and all exports. Styling and frame state are
 owned by `useQRDesign` and persisted to `localStorage`.
 
+## Saved presets
+
+The **Saved designs** panel below the Generate form stores up to 10 named design
+configurations (foreground/background color, error correction, eye shapes, pixel
+pattern, and frame) for one-click reuse across any content type. Click
+**Save design**, name the preset, and press Enter or the confirm button; the new
+card appears immediately with a color-swatch preview showing the saved colors.
+Clicking a preset card applies all its settings to the current form without
+changing the QR content.
+
+Deleting a preset requires two clicks: the first click puts the card in a
+pending state (trash icon, red ring); the second click confirms. Press Escape or
+wait 2.5 seconds to cancel. Presets are stored in `localStorage` and survive
+page reloads.
+
 ## Batch generation
 
 The **Batch** view (toggle at the top of the page) turns a list into many
