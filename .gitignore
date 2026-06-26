@@ -34,3 +34,8 @@ coverage
 
 # local research notes
 .notes/
+
+# Playwright (e2e) output
+test-results/
+playwright-report/
+playwright/.cache/
