@@ -107,9 +107,11 @@ test('Presets: deleting a preset removes it from the grid', async ({ page }) => 
   await page.getByPlaceholder('Name this design').press('Enter')
   await expect(page.getByText('Temp Preset')).toBeVisible()
 
-  // Hover the preset card to reveal the delete button, then delete.
+  // First click enters the pending-delete state (trash icon, no deletion yet).
   await page.getByRole('button', { name: 'Temp Preset', exact: true }).hover()
   await page.getByRole('button', { name: 'Delete Temp Preset' }).click()
+  // Second click confirms the deletion.
+  await page.getByRole('button', { name: 'Confirm delete Temp Preset' }).click()
   await expect(page.getByText('Temp Preset')).not.toBeVisible()
 })
 

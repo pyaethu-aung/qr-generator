@@ -364,6 +364,7 @@ export interface PresetsStrings {
   saveConfirmAriaLabel: string
   saveCancelAriaLabel: string
   deleteAriaLabel: string
+  confirmDeleteAriaLabel: string
   appliedLabel: string
 }
 
@@ -709,4 +710,5 @@ export type TranslationKey =
   | 'presets.saveConfirmAriaLabel'
   | 'presets.saveCancelAriaLabel'
   | 'presets.deleteAriaLabel'
+  | 'presets.confirmDeleteAriaLabel'
   | 'presets.appliedLabel'
