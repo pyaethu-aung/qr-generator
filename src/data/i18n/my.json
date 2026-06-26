@@ -375,5 +375,17 @@
   "history": {
     "sectionLabel": "မကြာမီ ထုတ်လုပ်ထားသည်",
     "clearAriaLabel": "မှတ်တမ်းရှင်းပစ်ပါ"
+  },
+  "presets": {
+    "sectionLabel": "သိမ်းဆည်းထားသော ဒီဇိုင်းများ",
+    "emptyHint": "မည်သည့် QR ကုဒ်နှင့်မဆို ပြန်သုံးနိုင်ရန် လက်ရှိ ဒီဇိုင်းကို သိမ်းဆည်းပါ။",
+    "saveButton": "ဒီဇိုင်း သိမ်းရန်",
+    "savedLabel": "ဒီဇိုင်း သိမ်းပြီး",
+    "saveNamePlaceholder": "ဒီဇိုင်း နာမည်ပေးပါ",
+    "saveNameAriaLabel": "ဒီဇိုင်း နာမည်",
+    "saveConfirmAriaLabel": "သိမ်းရန်",
+    "saveCancelAriaLabel": "မလုပ်တော့",
+    "deleteAriaLabel": "{name} ကို ဖျက်ရန်",
+    "appliedLabel": "ဒီဇိုင်း ပြောင်းလဲပြီး"
   }
 }
