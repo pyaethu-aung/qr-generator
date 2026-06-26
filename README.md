@@ -67,6 +67,21 @@ and `src/utils/qrSvgComposer.ts` is the single source that composes the
 QR + frame SVG for the preview and all exports. Styling and frame state are
 owned by `useQRDesign` and persisted to `localStorage`.
 
+## Saved presets
+
+The **Saved designs** panel below the Generate form stores up to 10 named design
+configurations (foreground/background color, error correction, eye shapes, pixel
+pattern, and frame) for one-click reuse across any content type. Click
+**Save design**, name the preset, and press Enter or the confirm button; the new
+card appears immediately with a color-swatch preview showing the saved colors.
+Clicking a preset card applies all its settings to the current form without
+changing the QR content.
+
+Deleting a preset requires two clicks: the first click puts the card in a
+pending state (trash icon, red ring); the second click confirms. Press Escape or
+wait 2.5 seconds to cancel. Presets are stored in `localStorage` and survive
+page reloads.
+
 ## Batch generation
 
 The **Batch** view (toggle at the top of the page) turns a list into many
@@ -195,12 +210,41 @@ The app supports multiple languages (English and Burmese) via custom locale conf
 
 - Install: `npm install` (also activates git hooks in `.githooks/` via the `prepare` script — the `pre-push` hook blocks direct pushes to `main`)
 - Dev server: `npm run dev`
-- Browser testing (MCP): `npx playwright install chromium` (one-time setup for Playwright MCP)
+- Browser testing (Playwright CLI): one-time `npm i -D @playwright/test && npx playwright install chromium`; see [Browser testing](#browser-testing-playwright-cli) below
 - Design source: `DESIGN.md` — tokens, component specs, and layout measurements; `PRODUCT.md` — brand personality and design principles
 - Lint: `npm run lint` (fix: `npm run lint:fix`)
 - Format check: `npm run format` (write: `npm run format:fix`)
 - Tests: `npm run test` (watch: `npm run test:watch`, coverage: `npm run test:coverage`)
 - Build: `npm run build`
+
+## Browser testing (Playwright CLI)
+
+End-to-end / visual tests live in `e2e/` and drive the running app in a real
+browser, capturing a full-page screenshot and a video per run across desktop
+and mobile, light and dark. `/impeccable critique` (and the
+`develop-web-feature` skill that drives it) use the same setup. Contributor
+guide: [`e2e/README.md`](e2e/README.md).
+
+```bash
+npm run test:e2e                              # all projects (desktop/mobile x light/dark)
+npx playwright test --project=desktop-light   # a single project
+npx playwright show-report                    # open the last HTML report
+```
+
+One-time setup (the npm dependency is already in `package.json`):
+
+```bash
+npm install                       # installs @playwright/test
+npx playwright install chromium   # browser binary (~150 MB; skips if cached)
+```
+
+The runner starts the dev server itself (`webServer` in `playwright.config.ts`,
+default `http://localhost:5173`), so `npm run dev` need not be running. Output
+lands in `test-results/` and `playwright-report/` (both gitignored). On every
+PR to `main`, `.github/workflows/e2e.yml` runs the suite and uploads those as
+artifacts, so the screenshots and recording are reachable from the PR's checks.
+These tests are separate from the Vitest unit suite (`npm run test`); `e2e/` is
+excluded from Vitest in `vite.config.ts` so the two runners do not collide.
 
 ## Spec-Kit
 
@@ -214,7 +258,18 @@ scaffolding, and commit/PR automation via skills in `.claude/skills/` and
 | `/commit-message` | Creating or amending any git commit |
 | `/create-pr` | Opening a GitHub pull request |
 | `/update-readme` | After any user-facing change worth documenting |
-| `/test-design` | Validate the live UI against `design.pen` spec using Playwright MCP |
+
+### Hands-off permissions
+
+> **Workspace trust required.** If you see `Ignoring N permissions.allow entries … this workspace has not been trusted`, the allow list is inactive and every command will prompt. Fix it one of two ways:
+> - Run `claude` interactively in this repo once and accept the trust dialog.
+> - Or set `projects["/absolute/path/to/qr-generator"].hasTrustDialogAccepted: true` in your personal Claude config (`~/.claude.json`).
+
+`.claude/settings.json` pre-approves three commands so `/develop-web-feature` runs without mid-run approval prompts:
+
+- **`Bash(npm run dev*)`** — the skill starts the dev server in the background (`&`) to drive e2e and visual passes; the `&` operator triggers a safety prompt without this entry.
+- **`Bash(node .claude/skills/impeccable/scripts/critique-storage.mjs*)`** — `/impeccable` persists critique snapshots via this script; the `$SLUG` variable expansion triggers Claude Code's obfuscation heuristic without the allow entry.
+- **`Skills(create-pr)`** — `/develop-web-feature` invokes `/create-pr` as a sub-skill in Phase 6. Claude Code shows a "Use skill?" dialog for every skill invocation; this entry suppresses it so the PR opens without a pause.
 
 ## Docker Support
 
@@ -241,7 +296,8 @@ npm run docker:run
 ## Quality & Constitution Highlights
 
 - Every change must add/update relevant unit tests, maintain ≥85% coverage, and all tests must pass before merge.
-- Run `npm run test`, `npm run lint`, and `npm run build` after every change before opening a PR.
+- Every user-facing feature or fix must have a Playwright e2e spec in `e2e/` that proves the scenario works in a real browser.
+- Run `npm run test && npm run lint && npm run build && npm run test:e2e` before opening a PR. All four must pass.
 - UI must be fully functional and consistent across desktop/mobile and major browsers via responsive design.
 - Remove unused code/assets; keep files in the agreed structure above.
 - CI gates: lint, test, build must pass; PR review required. A `pre-push` git hook prevents direct pushes to `main` — all changes must go through a pull request.

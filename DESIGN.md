@@ -161,7 +161,7 @@ A restrained palette built on warm neutrals with a single terracotta accent. Eve
 **Body Font:** Inter (with Segoe UI, system-ui, sans-serif fallback) — the only typeface in the current build
 **Mono Font:** Geist Mono (loaded via Google Fonts — hex values in the color picker only)
 
-> **Implementation note:** Playfair Display (the intended heading font from `design.pen`) is not yet loaded. All headings currently use Inter 700. When added, it applies to Display and Title roles only. This section reflects what is built.
+> **Implementation note:** Playfair Display (the intended heading font) is not yet loaded. All headings currently use Inter 700. When added, it applies to Display and Title roles only. This section reflects what is built.
 
 **Character:** Inter carries the full UI — from hero headline to form labels. Hierarchy comes entirely from size and weight contrast: 700 for display and titles, 600 for labels and eyebrows, 400 for body copy. It's functional and clear, which suits the non-technical audience. The eyebrow captions compensate for the single-font system with aggressive uppercase tracking, giving sections visual anchoring without a second typeface.
 

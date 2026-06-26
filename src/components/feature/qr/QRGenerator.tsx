@@ -4,11 +4,15 @@ import { Share2, Download, Check, Link2 } from 'lucide-react'
 import { QRControls } from './QRControls'
 import { QRPreview } from './QRPreview'
 import { QRHistory } from './QRHistory'
+import { QRPresets } from './QRPresets'
 import { useQRGenerator } from '../../../hooks/useQRGenerator'
 import { useQRDesign } from '../../../hooks/useQRDesign'
 import { useQRShare } from '../../../hooks/useQRShare'
 import { useQRHistory } from '../../../hooks/useQRHistory'
+import { useQRPresets } from '../../../hooks/useQRPresets'
 import type { HistoryEntry } from '../../../hooks/useQRHistory'
+import type { PresetEntry } from '../../../hooks/useQRPresets'
+import { PRESETS_MAX } from '../../../utils/presets'
 import { renderQrPngBlob } from '../../../utils/export/pngRenderer'
 import { DEFAULT_DESIGN_CONFIG } from '../../../utils/persistedDesign'
 import { useWiFiConfig } from '../../../hooks/useWiFiConfig'
@@ -78,6 +82,7 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
 
   const {
     designConfig,
+    setDesignConfig,
     setEyeFrameShape,
     setEyeCenterShape,
     setEyeFrameColor,
@@ -96,11 +101,13 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
     setFrameText,
     setFrameColor,
     setFramePosition,
+    applyFrameConfig,
     frameTextLimit,
   } = useQRDesign(inputValue, inputEcLevel)
 
   const { translate } = useLocaleContext()
   const { history, addEntry, clear: clearHistory } = useQRHistory()
+  const { presets, save: savePreset, remove: removePreset } = useQRPresets()
 
   // Apply a scanner round-trip once per token: load the raw decoded string into Text mode.
   const lastSeedToken = useRef(0)
@@ -205,6 +212,27 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
     setInputBgColor(entry.bgColor)
     setInputEcLevel(entry.ecLevel)
   }, [setInputValue, setInputFgColor, setInputBgColor, setInputEcLevel])
+
+  const handleApplyPreset = useCallback((preset: PresetEntry) => {
+    setInputFgColor(preset.fgColor)
+    setInputBgColor(preset.bgColor)
+    setInputTransparentBg(preset.transparentBg)
+    setInputEcLevel(preset.ecLevel)
+    setDesignConfig(preset.designConfig)
+    applyFrameConfig(preset.frameConfig)
+  }, [setInputFgColor, setInputBgColor, setInputTransparentBg, setInputEcLevel, setDesignConfig, applyFrameConfig])
+
+  const handleSavePreset = useCallback((name: string) => {
+    savePreset({
+      name,
+      fgColor: inputFgColor,
+      bgColor: inputBgColor,
+      transparentBg: inputTransparentBg,
+      ecLevel: inputEcLevel,
+      designConfig,
+      frameConfig,
+    })
+  }, [savePreset, inputFgColor, inputBgColor, inputTransparentBg, inputEcLevel, designConfig, frameConfig])
 
   const isShareDisabled = !liveValue || isSharing
 
@@ -523,6 +551,24 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
             </div>
           </div>
         </div>
+        <QRPresets
+          presets={presets}
+          onApply={handleApplyPreset}
+          onDelete={removePreset}
+          onSave={handleSavePreset}
+          maxPresets={PRESETS_MAX}
+          sectionLabel={translate('presets.sectionLabel')}
+          emptyHint={translate('presets.emptyHint')}
+          saveButton={translate('presets.saveButton')}
+          savedLabel={translate('presets.savedLabel')}
+          saveNamePlaceholder={translate('presets.saveNamePlaceholder')}
+          saveNameAriaLabel={translate('presets.saveNameAriaLabel')}
+          saveConfirmAriaLabel={translate('presets.saveConfirmAriaLabel')}
+          saveCancelAriaLabel={translate('presets.saveCancelAriaLabel')}
+          deleteAriaLabel={translate('presets.deleteAriaLabel')}
+          confirmDeleteAriaLabel={translate('presets.confirmDeleteAriaLabel')}
+          appliedLabel={translate('presets.appliedLabel')}
+        />
         <QRHistory
           history={history}
           onRestore={handleRestore}

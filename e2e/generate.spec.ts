@@ -1,0 +1,88 @@
+import { test, expect } from '@playwright/test'
+
+// ── helpers ────────────────────────────────────────────────────────────────
+
+/** Wait for the QR canvas to appear with the expected payload. */
+async function expectQr(page: import('@playwright/test').Page, value: string) {
+  const canvas = page.getByTestId('qr-code-canvas')
+  await expect(canvas).toBeVisible({ timeout: 5_000 })
+  await expect(canvas).toHaveAttribute('data-value', value)
+}
+
+// ── URL / text QR ──────────────────────────────────────────────────────────
+
+test('URL: typing a link renders a QR code', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('textbox').first().fill('https://example.com')
+  await expectQr(page, 'https://example.com')
+})
+
+// ── Wi-Fi QR ───────────────────────────────────────────────────────────────
+
+test('Wi-Fi: SSID + password renders a Wi-Fi QR code', async ({ page }) => {
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Wi-Fi' }).click()
+  await page.getByPlaceholder('Your Wi-Fi name').fill('OfficeNet')
+  await page.getByPlaceholder('Network password').fill('s3cr3t!')
+
+  // Wi-Fi QR payload starts with the MECARD-style prefix.
+  const canvas = page.getByTestId('qr-code-canvas')
+  await expect(canvas).toBeVisible({ timeout: 5_000 })
+  await expect(canvas).toHaveAttribute('data-value', /^WIFI:/)
+})
+
+// ── Contact (vCard) QR ─────────────────────────────────────────────────────
+
+test('Contact: first + last name renders a vCard QR code', async ({ page }) => {
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Contact' }).click()
+  await page.getByLabel('First Name').fill('Jane')
+  await page.getByLabel('Last Name').fill('Smith')
+
+  const canvas = page.getByTestId('qr-code-canvas')
+  await expect(canvas).toBeVisible({ timeout: 5_000 })
+  await expect(canvas).toHaveAttribute('data-value', /^BEGIN:VCARD/)
+})
+
+// ── Download ───────────────────────────────────────────────────────────────
+
+test('Download PNG: clicking Download PNG starts a file download', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('textbox').first().fill('https://yomafleet.com')
+  await expectQr(page, 'https://yomafleet.com')
+
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    page.getByRole('button', { name: /download png/i }).click(),
+  ])
+  expect(download.suggestedFilename()).toMatch(/\.png$/)
+})
+
+test('Download SVG: clicking Download SVG starts a file download', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('textbox').first().fill('https://yomafleet.com')
+  await expectQr(page, 'https://yomafleet.com')
+
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    page.getByRole('button', { name: /download svg/i }).click(),
+  ])
+  expect(download.suggestedFilename()).toMatch(/\.svg$/)
+})
+
+// ── Copy link ──────────────────────────────────────────────────────────────
+
+test('Copy link: button shows success feedback after clicking', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('textbox').first().fill('https://example.com')
+  await expectQr(page, 'https://example.com')
+
+  // Grant clipboard-write permission so navigator.clipboard.writeText succeeds.
+  await page.context().grantPermissions(['clipboard-write'])
+
+  await page.getByRole('button', { name: /copy link/i }).click()
+  // The button label changes to "Link copied" on success.
+  await expect(page.getByRole('button', { name: /copied/i })).toBeVisible({ timeout: 3_000 })
+})

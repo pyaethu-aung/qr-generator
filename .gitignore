@@ -32,6 +32,10 @@ coverage
 .cache
 .eslintcache
 
-# test-design skill output
-.test-design/
-.playwright-mcp/
+# local research notes
+.notes/
+
+# Playwright (e2e) output
+test-results/
+playwright-report/
+playwright/.cache/

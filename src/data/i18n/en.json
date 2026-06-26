@@ -375,5 +375,18 @@
   "history": {
     "sectionLabel": "Recently generated",
     "clearAriaLabel": "Clear history"
+  },
+  "presets": {
+    "sectionLabel": "Saved designs",
+    "emptyHint": "Save your current design to reuse it with any code.",
+    "saveButton": "Save design",
+    "savedLabel": "Design saved",
+    "saveNamePlaceholder": "Name this design",
+    "saveNameAriaLabel": "Design preset name",
+    "saveConfirmAriaLabel": "Save",
+    "saveCancelAriaLabel": "Cancel",
+    "deleteAriaLabel": "Delete {name}",
+    "confirmDeleteAriaLabel": "Confirm delete {name}",
+    "appliedLabel": "Design applied"
   }
 }

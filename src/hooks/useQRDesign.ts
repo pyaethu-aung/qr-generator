@@ -94,6 +94,10 @@ export function useQRDesign(value: string = '', ecLevel: 'L' | 'M' | 'Q' | 'H' =
     setFrameConfig(prev => ({ ...prev, position }))
   }, [])
 
+  const applyFrameConfig = useCallback((config: QRFrameConfig) => {
+    setFrameConfig(config)
+  }, [])
+
   const matrixSize = getMatrixSize(value, ecLevel)
   const [isWarningDismissed, setIsWarningDismissed] = useState(false)
   const isRiskyPattern = !isWarningDismissed && RISKY_PATTERNS.has(designConfig.pixelPattern) && matrixSize >= 41
@@ -128,6 +132,7 @@ export function useQRDesign(value: string = '', ecLevel: 'L' | 'M' | 'Q' | 'H' =
     setFrameText,
     setFrameColor,
     setFramePosition,
+    applyFrameConfig,
     frameTextLimit: FRAME_TEXT_LIMIT,
   }
 }

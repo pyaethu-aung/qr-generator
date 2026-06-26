@@ -25,6 +25,7 @@
     /* Status */
     --color-link: #A04D28;
     --color-error: #C53030;
+    --color-error-fg: #FFFFFF;
     --color-error-surface: #FEF2F2;
     --color-error-border: #FECACA;
     --color-warning: #7C4A18;
@@ -66,6 +67,7 @@
     /* Status */
     --color-link: #D4916E;
     --color-error: #F87171;
+    --color-error-fg: #1A1612;
     --color-error-surface: rgba(155, 27, 27, 0.2);
     --color-error-border: rgba(155, 27, 27, 0.5);
     --color-warning: #D4A850;
@@ -109,6 +111,7 @@
   --color-focus-ring: var(--color-focus-ring);
   --color-link: var(--color-link);
   --color-error: var(--color-error);
+  --color-error-fg: var(--color-error-fg);
   --color-error-surface: var(--color-error-surface);
   --color-error-border: var(--color-error-border);
   --color-warning: var(--color-warning);

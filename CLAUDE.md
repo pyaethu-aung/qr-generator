@@ -19,7 +19,7 @@ npm run docker:run      # run container at http://localhost:8080
 
 Run a single test file: `npx vitest run src/utils/share.test.ts`
 
-Before opening any PR, all three must pass locally: `npm run test && npm run lint && npm run build`
+Before opening any PR, all four must pass locally: `npm run test && npm run lint && npm run build && npm run test:e2e`
 
 Never push directly to `main`. All changes must go through a pull request. A `pre-push` git hook in `.githooks/` enforces this — activated automatically via the `prepare` npm script on `npm install`.
 
@@ -67,6 +67,24 @@ Headless rendering (no DOM preview) is shared: `renderQrPngBlob` (`src/utils/exp
 
 Vitest with jsdom. Setup file: `src/setupTests.ts` (imports `@testing-library/jest-dom`). Mock browser APIs (`navigator.share`, `ClipboardItem`) per test file. Coverage threshold: **85%**.
 
+Playwright e2e tests live in `e2e/`. Run with `npm run test:e2e`. Every user-facing feature or fix must have a corresponding e2e spec that proves the scenario works in a real browser. The suite runs across four projects (desktop/mobile × light/dark) and must pass before opening a PR.
+
+## Commit discipline
+
+One logical change per commit. Each of the following is its own commit boundary — do not bundle them:
+
+| Category | Path |
+|---|---|
+| New/rewritten component | `src/components/` |
+| New/rewritten hook | `src/hooks/` |
+| New utility module + its test | `src/utils/` |
+| New/updated type definition | `src/types/` |
+| e2e spec (one scenario group) | `e2e/` |
+| i18n key addition (all locales) | `src/data/i18n/` |
+| Doc update | `CLAUDE.md`, `README.md`, `DESIGN.md`, `PRODUCT.md` |
+
+If a task touches more than two categories, stage and commit one at a time.
+
 ## Skills
 
 Skills are stored under `.agents/skills/` (source files) with symlinks from `.claude/skills/`. Active skills are tracked in `skills-lock.json` (sourced from `pyaethu-aung/skills` on GitHub).
@@ -79,6 +97,27 @@ Skills are stored under `.agents/skills/` (source files) with symlinks from `.cl
 | `/develop-web-feature` | Building a new feature end-to-end (shape → build → audit → PR) |
 
 Two `PreToolUse` hooks in `.claude/settings.json` enforce that `git commit` and `gh pr create` go through the relevant skills. Do not bypass them with `--no-verify`.
+
+### Permissions (hands-off / autonomous mode)
+
+> **Workspace trust required.** If you see `Ignoring 4 permissions.allow entries from .claude/settings.json: this workspace has not been trusted`, the allow list is silently inactive. Fix it one of two ways:
+> - Run `claude` interactively in this directory once and accept the trust dialog that appears.
+> - Or add the entry directly to your personal Claude config (`~/.claude.json`):
+>   ```json
+>   {
+>     "projects": {
+>       "/path/to/qr-generator": { "hasTrustDialogAccepted": true }
+>     }
+>   }
+>   ```
+
+`.claude/settings.json` pre-approves these commands so `/develop-web-feature` (and `/impeccable`) can run fully hands-off without mid-run approval prompts:
+
+| Permission | Why it's allowed |
+|---|---|
+| `Bash(npm run dev*)` | `/develop-web-feature` starts the dev server in the background (`&`) to drive e2e and visual passes; the `&` operator would otherwise trigger a safety prompt. |
+| `Bash(node .claude/skills/impeccable/scripts/critique-storage.mjs*)` | `/impeccable` persists and trends critique snapshots via this script; variable expansion in the command (`$SLUG`) triggers Claude Code's obfuscation heuristic without the allow entry. |
+| `Skills(create-pr)` | `/develop-web-feature` invokes `/create-pr` as a sub-skill in Phase 6. The harness shows a "Use skill?" approval dialog for every skill invocation; this entry suppresses it so the PR opens without a pause. |
 
 ## Deployment
 

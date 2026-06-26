@@ -2,9 +2,10 @@
 name: commit-message
 description: Use when creating or amending git commits. Enforces atomic commits, the 50/72 subject/body rule, and Conventional Commits format.
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
 model: haiku
-allowed-tools: Bash(git log:*) Bash(git diff:*) Bash(git status:*) Bash(git add:*) Bash(git commit:*) Bash(echo:*) Bash(wc:*)
+argument-hint: "[--yes] (skip the confirmation prompt for hands-off runs)"
+allowed-tools: Bash(git log:*) Bash(git diff:*) Bash(git status:*) Bash(git add:*) Bash(CLAUDE_COMMIT_VIA_SKILL=1 git commit:*) Bash(echo:*) Bash(wc:*)
 ---
 
 # Commit Message Rules
@@ -157,7 +158,8 @@ Do not skip this step. The count must appear in every confirmation.
 ## 5. Confirmation Before Commit
 
 After the character count check, pause and show the user a summary
-before running `git commit`:
+before running `git commit` (skip the pause if `--yes` was passed; see the
+autonomous-mode note below):
 
 ```
 Subject: "<subject line>" (N chars ✅)
@@ -171,17 +173,24 @@ Proposed message:
 Proceed? (yes / edit message / cancel)
 ```
 
-- **yes** — run `git commit` using a heredoc to preserve line breaks:
+- **yes**: run the commit with the skill token the PreToolUse guard requires,
+  using a heredoc to preserve line breaks:
   ```bash
-  git commit -F - <<'EOF'
+  CLAUDE_COMMIT_VIA_SKILL=1 git commit -F - <<'EOF'
   <full commit message>
   EOF
   ```
-- **edit message** — ask the user what to change, revise, and show the
+- **edit message**: ask the user what to change, revise, and show the
   summary again
-- **cancel** — stop without committing; leave the index as-is
+- **cancel**: stop without committing; leave the index as-is
 
-Do not run `git commit` until the user explicitly confirms.
+Do not run `git commit` until the user explicitly confirms, unless `--yes` was
+passed.
+
+**Autonomous mode (`--yes`).** Skip the confirmation prompt: still run the
+section 4 character-count check and enforce its limits, then commit directly
+with the token. This is for hands-off runs where a human reviews the commits
+later (for example in the PR); do not pass `--yes` for one-off commits.
 
 ## Examples
 

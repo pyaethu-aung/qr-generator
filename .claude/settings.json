@@ -1,4 +1,12 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(CACHE_DIR=*)",
+      "Bash(npm run dev*)",
+      "Bash(node .claude/skills/impeccable/scripts/critique-storage.mjs*)",
+      "Skills(create-pr)"
+    ]
+  },
   "hooks": {
     "PreToolUse": [
       {
@@ -6,13 +14,11 @@
         "hooks": [
           {
             "type": "command",
-            "if": "Bash(git commit*)",
             "command": "bash .claude/hooks/git-commit-guard.sh",
             "statusMessage": "Enforcing /commit-message skill..."
           },
           {
             "type": "command",
-            "if": "Bash(gh pr create*)",
             "command": "bash .claude/hooks/gh-pr-guard.sh",
             "statusMessage": "Enforcing /create-pr skill..."
           }
