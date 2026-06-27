@@ -46,10 +46,12 @@ passes `--auto`), collapse those into a single review at the PR:
   report, so you can triage them at review.
 - **Commit and open the PR without prompting:** route through
   `/commit-message --yes` and `/create-pr --yes` (same format and skill token,
-  no confirmation pause).
-- **Stop at the opened PR.** Do not auto-merge and do not publish the release;
-  PR approval, merge, and the release publish stay human (Phase 7). The PR is
-  your single review surface.
+  no confirmation pause). Opening the PR is **not optional** — never stop
+  before it is open.
+- **Stop immediately after the PR is open.** Do not auto-merge and do not
+  publish the release; PR approval, merge, and the release publish stay human
+  (Phase 7). Report the PR URL and deferred findings, then stop. The user will
+  resume Phase 7 manually once the PR is merged.
 
 Autonomous mode removes only the in-flow confirmations. The gates, the fix
 loop, atomic commits, and the disciplines are unchanged.
@@ -377,33 +379,22 @@ discipline:
   gh pr create --title "<type>: <summary>" --body "<what changed, why, test plan>"
   ```
 
-**After the PR is open, spawn a background subagent to watch for the merge,
-then report to the user and stop:**
+**After the PR is open, report to the user and stop:**
 
-1. Note the PR number from the `gh pr create` output.
-2. Launch a background Task (via the `Task` tool) with this command:
-   ```bash
-   until [ "$(gh pr view <NUMBER> --json state -q .state)" = "MERGED" ]; do
-     sleep 120
-   done
-   echo "PR #<NUMBER> merged"
-   ```
-3. Tell the user:
-   ```
-   PR open: <url>
-   Watching for merge in the background. Phase 7 (version bump + release)
-   will continue automatically once the PR is approved and merged.
+```
+PR open: <url>
 
-   Deferred (P2/P3):
-   <list any unresolved P2/P3 findings from audit/critique, or "none">
-   ```
-4. **Stop here.** Do not proceed to Phase 7 until the background task
-   notifies completion (`<task-notification>`). When that notification
-   arrives, continue with Phase 7 automatically.
+Deferred (P2/P3):
+<list any unresolved P2/P3 findings from audit/critique, or "none">
 
-> Note: Phase 7 requires the main conversation to still be open when the PR
-> is merged. If the session ends before then, start a new session and run
-> Phase 7 manually from the merge step.
+Phase 7 (version bump + release): when the PR is approved and merged,
+resume this conversation (or start a new one) and say "PR merged, continue
+Phase 7". The version bump is <major|minor|patch> — <current> → <next>.
+```
+
+**Stop here.** Do not proceed to Phase 7 without an explicit user signal that
+the PR has been merged. PR approval, merge, and the release publish are human
+gates.
 
 ## Phase 7: Merge, version, and release
 
