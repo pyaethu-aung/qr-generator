@@ -6,7 +6,10 @@ export interface LocaleMetadata {
   code: SupportedLocale
   name: string
   toggleLabel: string
-  switchTo: Record<SupportedLocale, string>
+  // Partial: a locale need not provide a switch label for every other locale.
+  // getCopy() falls back to the default locale for any missing entry, so an
+  // additively-introduced locale does not require editing existing locale files.
+  switchTo: Partial<Record<SupportedLocale, string>>
 }
 
 export interface SeoMetadata {
