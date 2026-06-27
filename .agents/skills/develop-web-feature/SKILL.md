@@ -86,15 +86,14 @@ the same conventions inlined there.
 ### Learn this project (do not skip)
 
 **First, check for a cached baseline.** This skill caches its Phase 0 findings
-per project in your OS user cache directory — `$XDG_CACHE_HOME/develop-web-feature/`
-(falling back to `$HOME/.cache/develop-web-feature/`) on Linux, or
-`$HOME/Library/Caches/develop-web-feature/` on macOS — under a filename keyed to
-this repo's absolute path. If that file exists, read it and trust it: skip the
-discovery below, re-deriving only the entries whose source has changed. One
-thing is never cached — the **green baseline**: always re-run the gates once on
-a clean tree, because it is a live fact (dependency or coverage drift), not a
-static answer. If there is no cache file, discover everything from scratch and
-write it at the end of this phase (see "Cache the baseline").
+in `.cache/develop-web-feature/` inside the project root, under a filename
+keyed to this repo's absolute path. If that file exists, read it and trust it:
+skip the discovery below, re-deriving only the entries whose source has
+changed. One thing is never cached — the **green baseline**: always re-run the
+gates once on a clean tree, because it is a live fact (dependency or coverage
+drift), not a static answer. If there is no cache file, discover everything
+from scratch and write it at the end of this phase (see "Cache the
+baseline").
 
 Before building, find this project's answers. Most live in `CLAUDE.md` /
 `AGENTS.md`, `README`, `package.json` scripts, the lint config, and
@@ -119,23 +118,24 @@ If any of these is ambiguous, ask rather than guess.
 
 ### Cache the baseline
 
-Write what you found to the OS user cache so the next run skips rediscovery:
+Write what you found to the project cache so the next run skips rediscovery:
 
 ```bash
-CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/develop-web-feature"   # macOS: "$HOME/Library/Caches/develop-web-feature"
+CACHE_DIR=.cache/develop-web-feature
+# Ensure the directory exists and is gitignored
 mkdir -p "$CACHE_DIR"
+grep -qxF '.cache/develop-web-feature/' .gitignore 2>/dev/null || echo '.cache/develop-web-feature/' >> .gitignore
 KEY="$(basename "$PWD")-$(printf '%s' "$PWD" | shasum | cut -c1-8)"   # repo name + path hash, collision-safe
 # write the findings to "$CACHE_DIR/$KEY.md"
 ```
 
-It lives outside the repo on purpose: a regenerable cache, never committed, no
-`.gitignore` entry needed. Record the five findings above plus the date you
-captured them, and keep it terse — a cheat sheet, not documentation. Treat an
-entry as stale and re-derive it when its source moves: the gates when
-`package.json` scripts or the lint config change; the feature pattern when a
-newer comparable feature lands. The gate run itself is never cached — confirm
-green on a clean tree every time. The "Worked example" below shows the shape of
-a filled-in baseline.
+Record the five findings above plus the date you captured them, and keep it
+terse — a cheat sheet, not documentation. Treat an entry as stale and
+re-derive it when its source moves: the gates when `package.json` scripts or
+the lint config change; the feature pattern when a newer comparable feature
+lands. The gate run itself is never cached — confirm green on a clean tree
+every time. The "Worked example" below shows the shape of a filled-in
+baseline.
 
 ## Phase 1: Shape before building
 
@@ -280,8 +280,7 @@ polish, not at a perfect 40.
 Once the loop settles, **promote anything reusable before the final polish.**
 If the feature introduced a component, token, or pattern that belongs in the
 shared design system rather than this feature alone, run `/impeccable extract`
-to pull it into the project's primitives (here, `src/components/common/` and
-the token file), then re-run the gates and commit it. Skip this when the
+to pull it into the project's shared primitives, then re-run the gates and commit it. Skip this when the
 feature added nothing shareable. It is the cheapest moment to catch a
 feature-local duplicate of what should be a shared primitive.
 
@@ -382,10 +381,8 @@ publish is an outward action to confirm before running.
    anything on its own (see step 5).
 2. **Decide the version bump** from what merged, by Conventional Commit type:
    a breaking change -> **major**, `feat` -> **minor**, `fix` and other
-   user-affecting patches -> **patch**. This repo is pre-1.0 (`0.14.0` now), so
-   by convention breaking changes ride in **minor** until `1.0.0` is cut
-   deliberately: most releases are minor (a new content type or view) or patch
-   (a bug fix).
+   user-affecting patches -> **patch**. Check the project's current version in
+   `package.json` to determine the next version number.
 3. **Open the version-bump PR**, separate from the feature, because `main` is
    protected. On a `chore/release-<X.Y.Z>` branch, set `version` in
    `package.json` to `<X.Y.Z>`, then commit and open the PR through the same
@@ -400,11 +397,10 @@ publish is an outward action to confirm before running.
    ```
 
    **Confirm before running this:** publishing the release is the deploy
-   trigger. `deploy.yml` (GitHub Pages) and `docker-publish.yml` (GHCR image +
-   Trivy scan) both fire on `release: published`, not on a tag push, so
-   `gh release create` is what ships the site and the image; a bare `git tag` +
-   push deploys nothing. After publishing, confirm both workflows go green (a
-   high/critical CVE makes Trivy fail the image publish).
+   trigger. Check the project's CI/CD config to understand what fires on
+   `release: published` vs a tag push — deployment workflows vary by project.
+   After publishing, confirm all release workflows go green before considering
+   the release done.
 
 ## Universal disciplines (portable, every project)
 
@@ -431,28 +427,25 @@ publish is an outward action to confirm before running.
   scan can be unavailable or noisy; weigh it alongside the design review, not
   above it.
 
-## Worked example: qr-generator (illustration only)
+## Worked example (illustration only)
 
 What Phase 0 surfaced in one React + Vite + Tailwind project, to show the
 *kind* of thing to look for. None of this is portable; yours will differ.
 
-- **Gates:** `npm run test && npm run lint && npm run build`. Prettier was
-  *not* a gate (a 286-file pre-existing backlog made `npm run format` fail on
-  untouched files).
-- **Feature pattern:** each QR "content mode" = a type union entry + a pure
-  `buildXString` util + a `useXConfig` hook + an `XForm` component + parallel
-  tests, wired into two files. Copying the newest mode was the fastest start.
-- **i18n in three files:** a key needed adding to `en.json`, `my.json`, **and**
-  both a `ControlStrings` interface and a `TranslationKey` union in
-  `src/types/i18n.ts`, or lint/build failed.
-- **Lint was React Compiler strict:** no `setState` in an effect, no ref
-  access during render, `useCallback` wanted an inline function. Three
-  separate rewrites came from these.
+- **Gates:** `npm run test && npm run lint && npm run build`. The formatter was
+  *not* a gate (a large pre-existing backlog made it fail on untouched files).
+- **Feature pattern:** each content mode = a type union entry + a pure builder
+  util + a config hook + a form component + parallel tests, wired into two
+  shared registry files. Copying the newest mode was the fastest start.
+- **i18n in multiple files:** a key needed adding to each locale JSON file
+  *and* to a `TranslationKey` union type, or the build failed.
+- **Lint was strict:** framework-specific rules (e.g. React Compiler) rejected
+  patterns that worked in other projects. Several rewrites came from these.
 - **Enforcement:** `PreToolUse` hooks routed `git commit`/`gh pr create`
   through `/commit-message` and `/create-pr`; a `pre-push` hook blocked pushes
-  to `main`; branches were `feat/<slug>`.
-- **Design system:** warm token palette, a strict "three accent elements per
-  view" economy, no em dashes, WCAG AA, English + Burmese.
+  to the default branch; branches were `feat/<slug>`.
+- **Design system:** a token palette with a strict accent economy, defined
+  accessibility bar, and copy conventions documented in `PRODUCT.md`.
 
 ## Installing this skill and its dependencies elsewhere
 
