@@ -376,6 +376,10 @@
     "sectionLabel": "Recently generated",
     "clearAriaLabel": "Clear history"
   },
+  "scanHistory": {
+    "sectionLabel": "Recently scanned",
+    "clearAriaLabel": "Clear scan history"
+  },
   "presets": {
     "sectionLabel": "Saved designs",
     "emptyHint": "Save your current design to reuse it with any code.",
