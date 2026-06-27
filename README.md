@@ -178,9 +178,10 @@ Every decoded scan is remembered under **Recently scanned**, mirroring the
 generate-side history: the last eight scans are kept in `localStorage`
 (deduped by value), each shown as a row with its content-type icon and a
 readable label. Tapping a row restores it into the result panel — with the
-same Copy / Open / Edit-in-generator actions — and a clear button wipes the
-list. The list survives a reload. Storage lives in
-`src/utils/scanHistory.ts`; the row list is `ScanHistory.tsx`.
+same Copy / Open / Edit-in-generator actions — each row has a remove button
+that forgets just that scan, and a clear button wipes the whole list. The
+list survives a reload. Storage lives in `src/utils/scanHistory.ts`; the row
+list is `ScanHistory.tsx`.
 
 ## Stack
 
