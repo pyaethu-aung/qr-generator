@@ -10,16 +10,28 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 const SETTINGS_PATH = '.claude/settings.json';
 
 const REQUIRED = [
-  'Bash(npm run dev*)',
+  // npm scripts — covers dev server, all gate commands, and redirect/background variants
+  'Bash(npm run *)',
+  // Playwright e2e runner
+  'Bash(npx playwright*)',
+  // e2e fixture directory setup
+  'Bash(mkdir -p e2e*)',
+  // Node scripts written to the project cache dir (avoids node -e inline blocks)
+  'Bash(node .cache/develop-web-feature/*)',
+  // Phase 0 scripts
+  'Bash(node .claude/skills/develop-web-feature/scripts/setup.mjs*)',
   'Bash(node .claude/skills/develop-web-feature/scripts/cache-check.mjs*)',
   'Bash(node .claude/skills/develop-web-feature/scripts/discover.mjs*)',
   'Bash(node .claude/skills/develop-web-feature/scripts/cache-write.mjs*)',
 ];
 
-// Added only when the corresponding skill is present
+// Added only when the corresponding skill or tool is present
 const CONDITIONAL = [
   { path: '.claude/skills/commit-message', entry: 'Skills(commit-message)' },
   { path: '.claude/skills/create-pr',      entry: 'Skills(create-pr)' },
+  // impeccable critique-storage is invoked with an env var prefix (IMPECCABLE_CRITIQUE_META=...)
+  // so the node-path allow entry alone does not match; add the env-var-prefixed form too
+  { path: '.claude/skills/impeccable',     entry: 'Bash(IMPECCABLE_CRITIQUE_META=*)' },
 ];
 
 let settings = {};
