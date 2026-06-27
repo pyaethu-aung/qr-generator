@@ -35,13 +35,24 @@ describe('LanguageToggle', () => {
     expect(toggle).toHaveAttribute('aria-label')
   })
 
-  it('updates its accessible label to describe the next language', async () => {
+  it('cycles English to Burmese to Spanish and back', async () => {
     const user = userEvent.setup()
     renderToggle()
 
-    const toggle = screen.getByRole('button', { name: /switch to burmese/i })
+    // Starts on English: next is Burmese.
+    const toggle = screen.getByRole('button', { name: locales.en.locale.switchTo.my })
     await user.click(toggle)
 
-    expect(toggle).toHaveAccessibleName(locales.my.locale.switchTo.en)
+    // Now on Burmese: next is Spanish. Burmese has no Spanish label, so the
+    // aria-label falls back to the English copy.
+    expect(toggle).toHaveAccessibleName(locales.en.locale.switchTo.es)
+    await user.click(toggle)
+
+    // Now on Spanish: next wraps back to English.
+    expect(toggle).toHaveAccessibleName(locales.es.locale.switchTo.en)
+    await user.click(toggle)
+
+    // Back on English: next is Burmese again.
+    expect(toggle).toHaveAccessibleName(locales.en.locale.switchTo.my)
   })
 })
