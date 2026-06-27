@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, within } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { LocaleProvider } from '../../../../hooks/LocaleProvider'
 import { QRScanner } from '../QRScanner'
@@ -8,6 +8,7 @@ const scanFile = vi.fn()
 const cancelScan = vi.fn()
 const startCamera = vi.fn()
 const stopCamera = vi.fn()
+const showResult = vi.fn()
 const reset = vi.fn()
 
 let scannerState: UseQrScannerReturn
@@ -27,6 +28,7 @@ function makeState(over: Partial<UseQrScannerReturn> = {}): UseQrScannerReturn {
     cancelScan,
     startCamera,
     stopCamera,
+    showResult,
     reset,
     ...over,
   }
@@ -42,10 +44,12 @@ function setup(onEdit = vi.fn()) {
 }
 
 beforeEach(() => {
+  localStorage.clear()
   scanFile.mockReset()
   cancelScan.mockReset()
   startCamera.mockReset()
   stopCamera.mockReset()
+  showResult.mockReset()
   reset.mockReset()
   scannerState = makeState()
 })
@@ -102,17 +106,19 @@ describe('QRScanner — result', () => {
   it('shows the decoded value with a URL type chip and an Open link', () => {
     scannerState = makeState({ decoded: 'https://example.com' })
     setup()
-    expect(screen.getByText('https://example.com')).toBeInTheDocument()
-    expect(screen.getByText('Link')).toBeInTheDocument()
-    const open = screen.getByRole('link', { name: /open link/i })
+    const result = within(screen.getByRole('region', { name: /scan result/i }))
+    expect(result.getByText('https://example.com')).toBeInTheDocument()
+    expect(result.getByText('Link')).toBeInTheDocument()
+    const open = result.getByRole('link', { name: /open link/i })
     expect(open).toHaveAttribute('href', 'https://example.com')
   })
 
   it('omits the Open link for non-URL content', () => {
     scannerState = makeState({ decoded: 'just some text' })
     setup()
-    expect(screen.getByText('Text')).toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: /open link/i })).not.toBeInTheDocument()
+    const result = within(screen.getByRole('region', { name: /scan result/i }))
+    expect(result.getByText('Text')).toBeInTheDocument()
+    expect(result.queryByRole('link', { name: /open link/i })).not.toBeInTheDocument()
   })
 
   it('round-trips the value to the generator', () => {
@@ -137,5 +143,31 @@ describe('QRScanner — result', () => {
     fireEvent.click(screen.getByRole('button', { name: /^copy$/i }))
     expect(writeText).toHaveBeenCalledWith('copy me')
     vi.unstubAllGlobals()
+  })
+})
+
+describe('QRScanner — scan history', () => {
+  it('records a decoded scan into the history list', () => {
+    scannerState = makeState({ decoded: 'https://history.example' })
+    setup()
+    expect(screen.getByText('Recently scanned')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /Link: https:\/\/history\.example/i }),
+    ).toBeInTheDocument()
+  })
+
+  it('restores a history entry through showResult', () => {
+    scannerState = makeState({ decoded: 'https://history.example' })
+    setup()
+    fireEvent.click(screen.getByRole('button', { name: /Link: https:\/\/history\.example/i }))
+    expect(showResult).toHaveBeenCalledWith('https://history.example')
+  })
+
+  it('clears the history list', () => {
+    scannerState = makeState({ decoded: 'https://history.example' })
+    setup()
+    expect(screen.getByText('Recently scanned')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /clear scan history/i }))
+    expect(screen.queryByText('Recently scanned')).not.toBeInTheDocument()
   })
 })
