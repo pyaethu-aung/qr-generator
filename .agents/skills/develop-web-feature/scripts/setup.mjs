@@ -24,7 +24,13 @@ const CONDITIONAL = [
 
 let settings = {};
 if (existsSync(SETTINGS_PATH)) {
-  try { settings = JSON.parse(readFileSync(SETTINGS_PATH, 'utf8')); } catch { /* start fresh */ }
+  try {
+    settings = JSON.parse(readFileSync(SETTINGS_PATH, 'utf8'));
+  } catch (err) {
+    console.error(`[setup] ERROR: ${SETTINGS_PATH} contains invalid JSON — aborting to avoid data loss.`);
+    console.error(`[setup] Fix the file manually, then re-run setup.`);
+    process.exit(1);
+  }
 }
 if (!settings.permissions) settings.permissions = {};
 if (!Array.isArray(settings.permissions.allow)) settings.permissions.allow = [];
