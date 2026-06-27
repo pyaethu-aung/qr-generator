@@ -273,6 +273,12 @@ Claude Code run it against the live app, not source alone, using the
    it with `npx playwright test`. Feed the screenshots and any failures into
    the critique alongside its detector output.
 
+Write all temp screenshots to `.cache/develop-web-feature/` (e.g.
+`npx playwright screenshot --output=.cache/develop-web-feature/01-desktop-light.png`).
+`cache-write.mjs` already creates this directory and gitignores it. Temp files
+in the project root require a destructive `rm` cleanup step, which is not
+auto-allowed.
+
 This runs on the main thread; the audit subagent stays static and touches no
 browser. If the project ships a `/verify` skill, route the interaction pass
 through it.
@@ -433,6 +439,10 @@ publish is an outward action to confirm before running.
 
 ## Universal disciplines (portable, every project)
 
+- **Never use `node -e '...'` inline scripts.** Multi-line inline node code
+  triggers Claude Code's static-analysis block. Write the script to
+  `.cache/develop-web-feature/<name>.mjs` with the Write tool, then run
+  `node .cache/develop-web-feature/<name>.mjs`. The cache dir is gitignored.
 - **Never prefix Bash commands with `cd /absolute/path;`.** The working
   directory is always the project root — run all commands from there directly.
   Compound `cd /abs/path; cmd` and `cd /abs/path && cmd` patterns trigger

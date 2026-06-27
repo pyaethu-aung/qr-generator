@@ -1,12 +1,16 @@
 {
   "permissions": {
     "allow": [
+      "Bash(npm run *)",
+      "Bash(npx playwright*)",
+      "Bash(mkdir -p e2e*)",
+      "Bash(node .cache/develop-web-feature/*)",
       "Bash(node .claude/skills/develop-web-feature/scripts/setup.mjs*)",
       "Bash(node .claude/skills/develop-web-feature/scripts/cache-check.mjs*)",
       "Bash(node .claude/skills/develop-web-feature/scripts/discover.mjs*)",
       "Bash(node .claude/skills/develop-web-feature/scripts/cache-write.mjs*)",
-      "Bash(npm run dev*)",
       "Bash(node .claude/skills/impeccable/scripts/critique-storage.mjs*)",
+      "Bash(IMPECCABLE_CRITIQUE_META=*)",
       "Skills(create-pr)",
       "Skills(commit-message)"
     ]
