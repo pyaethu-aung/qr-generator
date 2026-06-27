@@ -33,6 +33,19 @@ test('Scan history: a decoded scan is remembered and can be restored', async ({ 
   ).toBeVisible()
 })
 
+test('Scan history: removing one entry forgets just that scan', async ({ page }) => {
+  await scanFixture(page)
+  await expect(page.getByText('Recently scanned')).toBeVisible()
+
+  // Delete the single remembered scan via its per-entry remove button.
+  await page
+    .getByRole('button', { name: /Remove from scan history: https:\/\/history\.example/i })
+    .click()
+
+  // With nothing left, the whole section disappears.
+  await expect(page.getByText('Recently scanned')).toBeHidden()
+})
+
 test('Scan history: clearing removes the remembered scans', async ({ page }) => {
   await scanFixture(page)
   await expect(page.getByText('Recently scanned')).toBeVisible()
