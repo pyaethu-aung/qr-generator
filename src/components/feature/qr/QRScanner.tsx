@@ -1,9 +1,11 @@
-import { useCallback, useId, useRef, useState, type DragEvent } from 'react'
+import { useCallback, useEffect, useId, useRef, useState, type DragEvent } from 'react'
 import { Upload, Camera, Copy, Check, ExternalLink, PencilLine, RotateCcw, X } from 'lucide-react'
 
 import { PillGroup } from '../../common/PillGroup'
 import { Callout } from '../../common/Callout'
+import { ScanHistory } from './ScanHistory'
 import { useQrScanner, type ScanErrorCode } from '../../../hooks/useQrScanner'
+import { useScanHistory, type ScanHistoryEntry } from '../../../hooks/useScanHistory'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import { classifyDecoded, getOpenableUrl, type DecodedContentType } from '../../../utils/qrClassify'
 import type { TranslationKey } from '../../../types/i18n'
@@ -42,8 +44,9 @@ const ACTION_BUTTON =
 
 export function QRScanner({ onEditInGenerator }: QRScannerProps) {
   const { translate } = useLocaleContext()
-  const { decoded, error, isDecoding, isCameraActive, videoRef, scanFile, cancelScan, startCamera, stopCamera, reset } =
+  const { decoded, error, isDecoding, isCameraActive, videoRef, scanFile, cancelScan, startCamera, stopCamera, showResult, reset } =
     useQrScanner()
+  const { history, addEntry, clear: clearHistory } = useScanHistory()
 
   const [method, setMethodState] = useState<InputMethod>('upload')
   const [isDragging, setIsDragging] = useState(false)
@@ -94,6 +97,31 @@ export function QRScanner({ onEditInGenerator }: QRScannerProps) {
     setCopyState('idle')
   }, [reset])
 
+  // Remember every decoded value the moment it appears. The ref guards against re-recording
+  // the same result on a re-render (and against a restored entry being saved as if freshly
+  // scanned), so dedup/reordering only happens on a genuinely new decode.
+  const recordedRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (decoded && decoded !== recordedRef.current) {
+      recordedRef.current = decoded
+      addEntry({ value: decoded, type: classifyDecoded(decoded) })
+    }
+  }, [decoded, addEntry])
+
+  const handleRestore = useCallback(
+    (entry: ScanHistoryEntry) => {
+      recordedRef.current = entry.value
+      showResult(entry.value)
+      setCopyState('idle')
+    },
+    [showResult],
+  )
+
+  const typeLabel = useCallback(
+    (type: DecodedContentType) => translate(TYPE_KEY[type]),
+    [translate],
+  )
+
   const contentType = decoded ? classifyDecoded(decoded) : null
   const openUrl = decoded ? getOpenableUrl(decoded) : null
 
@@ -112,7 +140,7 @@ export function QRScanner({ onEditInGenerator }: QRScannerProps) {
 
         <div className="rounded-xl border border-border-strong bg-surface-overlay p-6 sm:p-8 shadow-lg">
           {decoded ? (
-            <div className="space-y-5" aria-labelledby={resultHeadingId}>
+            <div className="space-y-5" role="region" aria-labelledby={resultHeadingId}>
               <div className="flex items-center justify-between gap-3">
                 <h3 id={resultHeadingId} className="text-lg font-bold text-text-primary">
                   {translate('scan.resultTitle')}
@@ -277,6 +305,15 @@ export function QRScanner({ onEditInGenerator }: QRScannerProps) {
             </div>
           )}
         </div>
+
+        <ScanHistory
+          history={history}
+          onRestore={handleRestore}
+          onClear={clearHistory}
+          sectionLabel={translate('scanHistory.sectionLabel')}
+          clearAriaLabel={translate('scanHistory.clearAriaLabel')}
+          typeLabel={typeLabel}
+        />
       </div>
     </section>
   )
