@@ -703,6 +703,7 @@ export type TranslationKey =
   | 'history.clearAriaLabel'
   | 'scanHistory.sectionLabel'
   | 'scanHistory.clearAriaLabel'
+  | 'scanHistory.removeAriaLabel'
   | 'presets.sectionLabel'
   | 'presets.emptyHint'
   | 'presets.saveButton'
