@@ -378,7 +378,8 @@
   },
   "scanHistory": {
     "sectionLabel": "မကြာမီ စကင်ဖတ်ထားသည်",
-    "clearAriaLabel": "စကင်ဖတ်မှတ်တမ်း ရှင်းပစ်ပါ"
+    "clearAriaLabel": "စကင်ဖတ်မှတ်တမ်း ရှင်းပစ်ပါ",
+    "removeAriaLabel": "စကင်ဖတ်မှတ်တမ်းမှ ဖယ်ရှားပါ"
   },
   "presets": {
     "sectionLabel": "သိမ်းဆည်းထားသော ဒီဇိုင်းများ",

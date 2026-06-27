@@ -378,7 +378,8 @@
   },
   "scanHistory": {
     "sectionLabel": "Recently scanned",
-    "clearAriaLabel": "Clear scan history"
+    "clearAriaLabel": "Clear scan history",
+    "removeAriaLabel": "Remove from scan history"
   },
   "presets": {
     "sectionLabel": "Saved designs",
