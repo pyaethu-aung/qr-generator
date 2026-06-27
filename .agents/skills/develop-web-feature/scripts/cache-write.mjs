@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 /**
  * cache-write.mjs
- * Write Phase 0 findings (from stdin) to the project cache.
+ * Write Phase 0 findings to the project cache.
  * Also ensures .cache/develop-web-feature/ exists and is gitignored.
  * Run from the project root.
  *
- * Usage:
- *   echo "<findings markdown>" | node cache-write.mjs
+ * Usage (preferred — no shell pipeline needed):
+ *   node cache-write.mjs <findings-file>
+ *
+ * Usage (stdin fallback):
  *   cat findings.md | node cache-write.mjs
  */
 import { createHash } from 'node:crypto';
@@ -32,12 +34,20 @@ if (existsSync('.gitignore')) {
   console.error(`[cache-write] Created .gitignore with ${GITIGNORE_ENTRY}`);
 }
 
-// Read content from stdin
-let content = '';
-process.stdin.setEncoding('utf8');
-process.stdin.on('data', chunk => { content += chunk; });
-process.stdin.on('end', () => {
-  const cacheFile = `${CACHE_DIR}/${key}.md`;
+// Read from file path arg or stdin
+const cacheFile = `${CACHE_DIR}/${key}.md`;
+const filePath = process.argv[2];
+
+if (filePath) {
+  const content = readFileSync(filePath, 'utf8');
   writeFileSync(cacheFile, content);
   console.log(`[cache-write] Saved to ${cacheFile}`);
-});
+} else {
+  let content = '';
+  process.stdin.setEncoding('utf8');
+  process.stdin.on('data', chunk => { content += chunk; });
+  process.stdin.on('end', () => {
+    writeFileSync(cacheFile, content);
+    console.log(`[cache-write] Saved to ${cacheFile}`);
+  });
+}
