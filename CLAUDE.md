@@ -100,7 +100,7 @@ Two `PreToolUse` hooks in `.claude/settings.json` enforce that `git commit` and 
 
 ### Permissions (hands-off / autonomous mode)
 
-> **Workspace trust required.** If you see `Ignoring 4 permissions.allow entries from .claude/settings.json: this workspace has not been trusted`, the allow list is silently inactive. Fix it one of two ways:
+> **Workspace trust required.** If you see `Ignoring N permissions.allow entries from .claude/settings.json: this workspace has not been trusted`, the allow list is silently inactive. Fix it one of two ways:
 > - Run `claude` interactively in this directory once and accept the trust dialog that appears.
 > - Or add the entry directly to your personal Claude config (`~/.claude.json`):
 >   ```json
@@ -111,13 +111,25 @@ Two `PreToolUse` hooks in `.claude/settings.json` enforce that `git commit` and 
 >   }
 >   ```
 
-`.claude/settings.json` pre-approves these commands so `/develop-web-feature` (and `/impeccable`) can run fully hands-off without mid-run approval prompts:
+`/develop-web-feature` self-configures its required allow entries via a setup script. The only entry you need to add manually (once) is the bootstrap entry for the setup script itself:
 
-| Permission | Why it's allowed |
+```json
+"Bash(node .claude/skills/develop-web-feature/scripts/setup.mjs*)"
+```
+
+Then run it from the project root:
+
+```bash
+node .claude/skills/develop-web-feature/scripts/setup.mjs
+```
+
+This adds all remaining entries for `npm run dev`, the Phase 0 scripts, and `Skills(commit-message)` / `Skills(create-pr)` if those skills are installed. It is idempotent — safe to re-run any time.
+
+The `/impeccable` skill has one separate entry that must be added manually:
+
+| Permission | Why |
 |---|---|
-| `Bash(npm run dev*)` | `/develop-web-feature` starts the dev server in the background (`&`) to drive e2e and visual passes; the `&` operator would otherwise trigger a safety prompt. |
-| `Bash(node .claude/skills/impeccable/scripts/critique-storage.mjs*)` | `/impeccable` persists and trends critique snapshots via this script; variable expansion in the command (`$SLUG`) triggers Claude Code's obfuscation heuristic without the allow entry. |
-| `Skills(create-pr)` | `/develop-web-feature` invokes `/create-pr` as a sub-skill in Phase 6. The harness shows a "Use skill?" approval dialog for every skill invocation; this entry suppresses it so the PR opens without a pause. |
+| `Bash(node .claude/skills/impeccable/scripts/critique-storage.mjs*)` | `/impeccable` persists critique snapshots via this script; variable expansion (`$SLUG`) triggers Claude Code's obfuscation heuristic without the allow entry. |
 
 ## Deployment
 

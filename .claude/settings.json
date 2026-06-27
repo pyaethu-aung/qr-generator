@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(CACHE_DIR=.cache/develop-web-feature*)",
+      "Bash(node .claude/skills/develop-web-feature/scripts/setup.mjs*)",
+      "Bash(node .claude/skills/develop-web-feature/scripts/cache-check.mjs*)",
+      "Bash(node .claude/skills/develop-web-feature/scripts/discover.mjs*)",
+      "Bash(node .claude/skills/develop-web-feature/scripts/cache-write.mjs*)",
       "Bash(npm run dev*)",
       "Bash(node .claude/skills/impeccable/scripts/critique-storage.mjs*)",
       "Skills(create-pr)"

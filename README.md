@@ -265,11 +265,21 @@ scaffolding, and commit/PR automation via skills in `.claude/skills/` and
 > - Run `claude` interactively in this repo once and accept the trust dialog.
 > - Or set `projects["/absolute/path/to/qr-generator"].hasTrustDialogAccepted: true` in your personal Claude config (`~/.claude.json`).
 
-`.claude/settings.json` pre-approves three commands so `/develop-web-feature` runs without mid-run approval prompts:
+`/develop-web-feature` self-configures its required allow entries. Add one bootstrap entry to `.claude/settings.json` manually, then run the setup script:
 
-- **`Bash(npm run dev*)`** — the skill starts the dev server in the background (`&`) to drive e2e and visual passes; the `&` operator triggers a safety prompt without this entry.
-- **`Bash(node .claude/skills/impeccable/scripts/critique-storage.mjs*)`** — `/impeccable` persists critique snapshots via this script; the `$SLUG` variable expansion triggers Claude Code's obfuscation heuristic without the allow entry.
-- **`Skills(create-pr)`** — `/develop-web-feature` invokes `/create-pr` as a sub-skill in Phase 6. Claude Code shows a "Use skill?" dialog for every skill invocation; this entry suppresses it so the PR opens without a pause.
+```json
+"Bash(node .claude/skills/develop-web-feature/scripts/setup.mjs*)"
+```
+
+```bash
+node .claude/skills/develop-web-feature/scripts/setup.mjs
+```
+
+The script adds all remaining entries (`npm run dev`, Phase 0 scripts, `Skills(commit-message/create-pr)` if installed) and is idempotent — safe to re-run any time.
+
+The `/impeccable` skill requires one separate manual entry:
+
+- **`Bash(node .claude/skills/impeccable/scripts/critique-storage.mjs*)`** — persists critique snapshots; the `$SLUG` variable expansion triggers Claude Code's obfuscation heuristic without it.
 
 ## Docker Support
 
