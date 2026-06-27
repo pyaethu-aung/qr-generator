@@ -56,6 +56,25 @@ loop, atomic commits, and the disciplines are unchanged.
 
 ## Phase 0: Set up
 
+### Configure permissions
+
+Run the setup script once to wire up all required allow entries in
+`.claude/settings.json`. It is idempotent — safe to re-run on every session:
+
+```bash
+node .claude/skills/develop-web-feature/scripts/setup.mjs
+```
+
+This adds entries for `npm run dev`, the three Phase 0 scripts, and
+`Skills(commit-message)` / `Skills(create-pr)` if those skills are installed.
+The only entry that must exist beforehand (to approve `setup.mjs` itself) is:
+
+```json
+"Bash(node .claude/skills/develop-web-feature/scripts/setup.mjs*)"
+```
+
+Add it to `.claude/settings.json` once; `setup.mjs` handles everything else.
+
 ### Ensure dependencies
 
 **`/impeccable` is required.** The whole workflow is built on it. If it is not
@@ -85,19 +104,29 @@ the same conventions inlined there.
 
 ### Learn this project (do not skip)
 
-**First, check for a cached baseline.** This skill caches its Phase 0 findings
-in `.cache/develop-web-feature/` inside the project root, under a filename
-keyed to this repo's absolute path. If that file exists, read it and trust it:
-skip the discovery below, re-deriving only the entries whose source has
-changed. One thing is never cached — the **green baseline**: always re-run the
-gates once on a clean tree, because it is a live fact (dependency or coverage
-drift), not a static answer. If there is no cache file, discover everything
-from scratch and write it at the end of this phase (see "Cache the
-baseline").
+**First, check for a cached baseline:**
 
-Before building, find this project's answers. Most live in `CLAUDE.md` /
-`AGENTS.md`, `README`, `package.json` scripts, the lint config, and
-`.claude/settings.json`. Establish:
+```bash
+node .claude/skills/develop-web-feature/scripts/cache-check.mjs
+```
+
+If the cache file exists, read it and trust it: skip the discovery below,
+re-deriving only the entries whose source has changed. One thing is never
+cached — the **green baseline**: always re-run the gates once on a clean tree,
+because it is a live fact (dependency or coverage drift), not a static answer.
+If there is no cache file, proceed with full discovery.
+
+**Run the discovery script** to get a structured overview of the project's
+scripts, inferred gates, git hooks, enforcement config, and which doc files are
+present:
+
+```bash
+node .claude/skills/develop-web-feature/scripts/discover.mjs
+```
+
+Use the output as a starting point. Then read `CLAUDE.md` / `AGENTS.md`,
+`README`, the lint config, and any doc files the script flagged as present to
+fill in the rest. Establish:
 
 - **The gates:** the exact commands that must pass before a PR (test? lint?
   typecheck? build? a coverage threshold?). Run them once now on a clean tree
@@ -118,23 +147,36 @@ If any of these is ambiguous, ask rather than guess.
 
 ### Cache the baseline
 
-Write what you found to the project cache so the next run skips rediscovery:
+Write what you found to the project cache so the next run skips rediscovery.
+Pipe the findings markdown into `cache-write.mjs` — it creates the cache
+directory, updates `.gitignore` if needed, and writes the file:
 
 ```bash
-CACHE_DIR=.cache/develop-web-feature
-# Ensure the directory exists and is gitignored
-mkdir -p "$CACHE_DIR"
-grep -qxF '.cache/develop-web-feature/' .gitignore 2>/dev/null || echo '.cache/develop-web-feature/' >> .gitignore
-KEY="$(basename "$PWD")-$(printf '%s' "$PWD" | shasum | cut -c1-8)"   # repo name + path hash, collision-safe
-# write the findings to "$CACHE_DIR/$KEY.md"
+cat <<'FINDINGS' | node .claude/skills/develop-web-feature/scripts/cache-write.mjs
+## Phase 0 Baseline — <project> — <date>
+
+### Gates
+...
+
+### Feature pattern
+...
+
+### Enforcement
+...
+
+### Design system
+...
+
+### What is NOT a gate
+...
+FINDINGS
 ```
 
-Record the five findings above plus the date you captured them, and keep it
-terse — a cheat sheet, not documentation. Treat an entry as stale and
-re-derive it when its source moves: the gates when `package.json` scripts or
-the lint config change; the feature pattern when a newer comparable feature
-lands. The gate run itself is never cached — confirm green on a clean tree
-every time. The "Worked example" below shows the shape of a filled-in
+Keep the content terse — a cheat sheet, not documentation. Treat an entry as
+stale and re-derive it when its source moves: the gates when `package.json`
+scripts or the lint config change; the feature pattern when a newer comparable
+feature lands. The gate run itself is never cached — confirm green on a clean
+tree every time. The "Worked example" below shows the shape of a filled-in
 baseline.
 
 ## Phase 1: Shape before building
