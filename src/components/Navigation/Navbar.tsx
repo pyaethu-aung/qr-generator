@@ -1,5 +1,6 @@
 import { useLocaleContext } from '../../hooks/LocaleProvider'
 import { ThemeToggle } from '../common/ThemeToggle'
+import { LanguageToggle } from '../common/LanguageToggle'
 
 export function Navbar() {
   const { translate } = useLocaleContext()
@@ -15,7 +16,8 @@ export function Navbar() {
           <p className="mt-1 hidden sm:block text-xs sm:text-sm text-text-secondary">{translate('layout.headerSubtitle')}</p>
         </div>
 
-        <nav aria-label={translate('layout.navLabel')}>
+        <nav aria-label={translate('layout.navLabel')} className="flex items-center gap-2">
+          <LanguageToggle />
           <ThemeToggle />
         </nav>
       </div>
