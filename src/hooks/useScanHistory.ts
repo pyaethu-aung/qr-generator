@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react'
 import {
   loadScanHistory,
   saveScanHistoryEntry,
+  removeScanHistoryEntry,
   clearScanHistory,
   type ScanHistoryEntry,
   type NewScanHistoryEntry,
@@ -12,6 +13,7 @@ export type { ScanHistoryEntry }
 export interface UseScanHistoryReturn {
   history: ScanHistoryEntry[]
   addEntry: (entry: NewScanHistoryEntry) => void
+  remove: (id: string) => void
   clear: () => void
 }
 
@@ -22,10 +24,14 @@ export function useScanHistory(): UseScanHistoryReturn {
     setHistory(saveScanHistoryEntry(entry))
   }, [])
 
+  const remove = useCallback((id: string) => {
+    setHistory(removeScanHistoryEntry(id))
+  }, [])
+
   const clear = useCallback(() => {
     clearScanHistory()
     setHistory([])
   }, [])
 
-  return { history, addEntry, clear }
+  return { history, addEntry, remove, clear }
 }
