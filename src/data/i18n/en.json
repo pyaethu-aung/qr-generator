@@ -5,7 +5,8 @@
     "toggleLabel": "Language",
     "switchTo": {
       "en": "Switch to English",
-      "my": "Switch to Burmese"
+      "my": "Switch to Burmese",
+      "es": "Switch to Spanish"
     }
   },
   "common": {

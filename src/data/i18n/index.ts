@@ -1,4 +1,5 @@
 import en from './en.json'
+import es from './es.json'
 import my from './my.json'
 
 import type { LocaleConfig, TranslationKey } from '../../types/i18n'
@@ -6,6 +7,7 @@ import type { LocaleConfig, TranslationKey } from '../../types/i18n'
 const localeRegistry = {
   en: en as LocaleConfig,
   my: my as LocaleConfig,
+  es: es as LocaleConfig,
 } as const
 
 export const locales = localeRegistry
