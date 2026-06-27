@@ -79,6 +79,16 @@ export function saveScanHistoryEntry(entry: NewScanHistoryEntry): ScanHistoryEnt
   return updated
 }
 
+export function removeScanHistoryEntry(id: string): ScanHistoryEntry[] {
+  const updated = loadScanHistory().filter(e => e.id !== id)
+  try {
+    localStorage.setItem(SCAN_HISTORY_KEY, JSON.stringify(updated))
+  } catch {
+    // Ignore if localStorage is unavailable
+  }
+  return updated
+}
+
 export function clearScanHistory(): void {
   try {
     localStorage.removeItem(SCAN_HISTORY_KEY)
