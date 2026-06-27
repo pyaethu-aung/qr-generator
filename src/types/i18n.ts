@@ -701,6 +701,8 @@ export type TranslationKey =
   | 'batch.csvPreviewMore'
   | 'history.sectionLabel'
   | 'history.clearAriaLabel'
+  | 'scanHistory.sectionLabel'
+  | 'scanHistory.clearAriaLabel'
   | 'presets.sectionLabel'
   | 'presets.emptyHint'
   | 'presets.saveButton'
