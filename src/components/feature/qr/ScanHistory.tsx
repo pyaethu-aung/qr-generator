@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect, type ComponentType } from 'react'
 import {
   Trash2,
+  X,
   Link as LinkIcon,
   Wifi,
   User,
@@ -18,9 +19,11 @@ import type { DecodedContentType } from '../../../utils/qrClassify'
 interface ScanHistoryProps {
   history: ScanHistoryEntry[]
   onRestore: (entry: ScanHistoryEntry) => void
+  onRemove: (entry: ScanHistoryEntry) => void
   onClear: () => void
   sectionLabel: string
   clearAriaLabel: string
+  removeAriaLabel: string
   typeLabel: (type: DecodedContentType) => string
 }
 
@@ -40,9 +43,11 @@ const TYPE_ICON: Record<DecodedContentType, ComponentType<{ size?: number; class
 export function ScanHistory({
   history,
   onRestore,
+  onRemove,
   onClear,
   sectionLabel,
   clearAriaLabel,
+  removeAriaLabel,
   typeLabel,
 }: ScanHistoryProps) {
   const [restoredId, setRestoredId] = useState<string | null>(null)
@@ -63,6 +68,11 @@ export function ScanHistory({
       setAnnouncement('')
     }, 1500)
   }, [onRestore])
+
+  const handleRemove = useCallback((entry: ScanHistoryEntry) => {
+    if (restoredId === entry.id) setRestoredId(null)
+    onRemove(entry)
+  }, [onRemove, restoredId])
 
   if (history.length === 0) return null
 
@@ -87,18 +97,20 @@ export function ScanHistory({
           const isRestored = restoredId === entry.id
           const Icon = TYPE_ICON[entry.type]
           return (
-            <li key={entry.id}>
+            <li
+              key={entry.id}
+              className={[
+                'flex items-stretch gap-2 rounded-xl border transition-[background-color,border-color,box-shadow] duration-150',
+                isRestored
+                  ? 'border-action bg-surface-raised ring-2 ring-action ring-offset-2'
+                  : 'border-border-subtle bg-surface-raised hover:border-border-strong',
+              ].join(' ')}
+            >
               <button
                 type="button"
                 onClick={() => handleRestore(entry)}
                 aria-label={`${typeLabel(entry.type)}: ${entry.label}`}
-                className={[
-                  'group flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-[background-color,border-color,box-shadow] duration-150',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2',
-                  isRestored
-                    ? 'border-action bg-surface-raised ring-2 ring-action ring-offset-2'
-                    : 'border-border-subtle bg-surface-raised hover:border-border-strong hover:bg-surface-inset',
-                ].join(' ')}
+                className="group flex min-w-0 flex-1 items-center gap-3 rounded-l-xl p-3 text-left transition-colors duration-150 hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-inset"
               >
                 <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface-inset text-text-secondary">
                   <Icon size={16} aria-hidden />
@@ -109,6 +121,14 @@ export function ScanHistory({
                   </span>
                   <span className="block truncate text-sm text-text-primary">{entry.label}</span>
                 </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleRemove(entry)}
+                aria-label={`${removeAriaLabel}: ${entry.label}`}
+                className="flex w-11 shrink-0 items-center justify-center rounded-r-xl text-text-secondary transition-colors duration-150 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-inset"
+              >
+                <X size={16} aria-hidden />
               </button>
             </li>
           )

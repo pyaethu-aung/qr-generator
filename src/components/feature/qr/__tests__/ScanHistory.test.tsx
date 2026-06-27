@@ -17,19 +17,22 @@ const entry = (over: Partial<ScanHistoryEntry> = {}): ScanHistoryEntry => ({
 
 function setup(history: ScanHistoryEntry[], over: Partial<Parameters<typeof ScanHistory>[0]> = {}) {
   const onRestore = vi.fn()
+  const onRemove = vi.fn()
   const onClear = vi.fn()
   render(
     <ScanHistory
       history={history}
       onRestore={onRestore}
+      onRemove={onRemove}
       onClear={onClear}
       sectionLabel="Recently scanned"
       clearAriaLabel="Clear scan history"
+      removeAriaLabel="Remove from scan history"
       typeLabel={typeLabel}
       {...over}
     />,
   )
-  return { onRestore, onClear }
+  return { onRestore, onRemove, onClear }
 }
 
 describe('ScanHistory', () => {
@@ -38,9 +41,11 @@ describe('ScanHistory', () => {
       <ScanHistory
         history={[]}
         onRestore={vi.fn()}
+        onRemove={vi.fn()}
         onClear={vi.fn()}
         sectionLabel="Recently scanned"
         clearAriaLabel="Clear scan history"
+        removeAriaLabel="Remove from scan history"
         typeLabel={typeLabel}
       />,
     )
@@ -56,14 +61,33 @@ describe('ScanHistory', () => {
 
   it('calls onRestore with the entry when a row is clicked', () => {
     const { onRestore } = setup([entry({ value: 'restore-me', label: 'restore-me' })])
-    fireEvent.click(screen.getByRole('button', { name: /restore-me/i }))
+    fireEvent.click(screen.getByRole('button', { name: /url: restore-me/i }))
     expect(onRestore).toHaveBeenCalledWith(expect.objectContaining({ value: 'restore-me' }))
   })
 
   it('announces the restored entry to assistive tech', () => {
     setup([entry({ label: 'restored value' })])
-    fireEvent.click(screen.getByRole('button', { name: /restored value/i }))
+    fireEvent.click(screen.getByRole('button', { name: /url: restored value/i }))
     expect(screen.getByText('restored value', { selector: '.sr-only' })).toBeInTheDocument()
+  })
+
+  it('renders a remove button for each entry', () => {
+    setup([
+      entry({ id: '1', value: 'one', label: 'one' }),
+      entry({ id: '2', value: 'two', label: 'two' }),
+    ])
+    expect(
+      screen.getAllByRole('button', { name: /remove from scan history/i }),
+    ).toHaveLength(2)
+  })
+
+  it('calls onRemove with the entry when its remove button is clicked', () => {
+    const { onRemove, onRestore } = setup([entry({ value: 'drop-me', label: 'drop-me' })])
+    fireEvent.click(
+      screen.getByRole('button', { name: /remove from scan history: drop-me/i }),
+    )
+    expect(onRemove).toHaveBeenCalledWith(expect.objectContaining({ value: 'drop-me' }))
+    expect(onRestore).not.toHaveBeenCalled()
   })
 
   it('calls onClear when the clear button is pressed', () => {

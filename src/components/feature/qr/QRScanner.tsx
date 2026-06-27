@@ -46,7 +46,7 @@ export function QRScanner({ onEditInGenerator }: QRScannerProps) {
   const { translate } = useLocaleContext()
   const { decoded, error, isDecoding, isCameraActive, videoRef, scanFile, cancelScan, startCamera, stopCamera, showResult, reset } =
     useQrScanner()
-  const { history, addEntry, clear: clearHistory } = useScanHistory()
+  const { history, addEntry, remove: removeHistoryEntry, clear: clearHistory } = useScanHistory()
 
   const [method, setMethodState] = useState<InputMethod>('upload')
   const [isDragging, setIsDragging] = useState(false)
@@ -115,6 +115,11 @@ export function QRScanner({ onEditInGenerator }: QRScannerProps) {
       setCopyState('idle')
     },
     [showResult],
+  )
+
+  const handleRemove = useCallback(
+    (entry: ScanHistoryEntry) => removeHistoryEntry(entry.id),
+    [removeHistoryEntry],
   )
 
   const typeLabel = useCallback(
@@ -309,9 +314,11 @@ export function QRScanner({ onEditInGenerator }: QRScannerProps) {
         <ScanHistory
           history={history}
           onRestore={handleRestore}
+          onRemove={handleRemove}
           onClear={clearHistory}
           sectionLabel={translate('scanHistory.sectionLabel')}
           clearAriaLabel={translate('scanHistory.clearAriaLabel')}
+          removeAriaLabel={translate('scanHistory.removeAriaLabel')}
           typeLabel={typeLabel}
         />
       </div>
