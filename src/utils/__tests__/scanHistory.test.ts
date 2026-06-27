@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import {
   loadScanHistory,
   saveScanHistoryEntry,
+  removeScanHistoryEntry,
   clearScanHistory,
   SCAN_HISTORY_MAX_ENTRIES,
   type ScanHistoryEntry,
@@ -124,6 +125,39 @@ describe('saveScanHistoryEntry', () => {
   it('handles localStorage.setItem throwing without crashing', () => {
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('quota') })
     expect(() => saveScanHistoryEntry(makeEntry())).not.toThrow()
+  })
+})
+
+describe('removeScanHistoryEntry', () => {
+  beforeEach(() => localStorage.clear())
+  afterEach(() => { localStorage.clear(); vi.restoreAllMocks() })
+
+  it('removes only the entry with the matching id', () => {
+    saveScanHistoryEntry(makeEntry({ value: 'keep' }))
+    const afterAdd = saveScanHistoryEntry(makeEntry({ value: 'drop' }))
+    const target = afterAdd.find(e => e.value === 'drop')!
+    const result = removeScanHistoryEntry(target.id)
+    expect(result).toHaveLength(1)
+    expect(result[0].value).toBe('keep')
+  })
+
+  it('persists the removal to localStorage', () => {
+    const [entry] = saveScanHistoryEntry(makeEntry())
+    removeScanHistoryEntry(entry.id)
+    expect(loadScanHistory()).toEqual([])
+  })
+
+  it('returns the list unchanged when the id is unknown', () => {
+    saveScanHistoryEntry(makeEntry({ value: 'stay' }))
+    const result = removeScanHistoryEntry('no-such-id')
+    expect(result).toHaveLength(1)
+    expect(result[0].value).toBe('stay')
+  })
+
+  it('handles localStorage.setItem throwing without crashing', () => {
+    const [entry] = saveScanHistoryEntry(makeEntry())
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('quota') })
+    expect(() => removeScanHistoryEntry(entry.id)).not.toThrow()
   })
 })
 
