@@ -1,7 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(CACHE_DIR=*)",
+      "Bash(CACHE_DIR=.cache/develop-web-feature*)",
       "Bash(npm run dev*)",
       "Bash(node .claude/skills/impeccable/scripts/critique-storage.mjs*)",
       "Skills(create-pr)"
