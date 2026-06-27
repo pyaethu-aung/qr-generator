@@ -148,29 +148,16 @@ If any of these is ambiguous, ask rather than guess.
 ### Cache the baseline
 
 Write what you found to the project cache so the next run skips rediscovery.
-Pipe the findings markdown into `cache-write.mjs` — it creates the cache
-directory, updates `.gitignore` if needed, and writes the file:
+Use the **Write tool** to save the findings to a temp file, then pass the path
+to `cache-write.mjs` — it creates the cache directory, updates `.gitignore`
+if needed, and writes the cache file:
 
-```bash
-cat <<'FINDINGS' | node .claude/skills/develop-web-feature/scripts/cache-write.mjs
-## Phase 0 Baseline — <project> — <date>
-
-### Gates
-...
-
-### Feature pattern
-...
-
-### Enforcement
-...
-
-### Design system
-...
-
-### What is NOT a gate
-...
-FINDINGS
-```
+1. Write the findings markdown to `.cache/develop-web-feature/findings-draft.md`
+   using the Write tool (not a shell command).
+2. Run the cache script:
+   ```bash
+   node .claude/skills/develop-web-feature/scripts/cache-write.mjs .cache/develop-web-feature/findings-draft.md
+   ```
 
 Keep the content terse — a cheat sheet, not documentation. Treat an entry as
 stale and re-derive it when its source moves: the gates when `package.json`
