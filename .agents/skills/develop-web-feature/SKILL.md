@@ -433,6 +433,11 @@ publish is an outward action to confirm before running.
 
 ## Universal disciplines (portable, every project)
 
+- **Never prefix Bash commands with `cd /absolute/path;`.** The working
+  directory is always the project root — run all commands from there directly.
+  Compound `cd /abs/path; cmd` and `cd /abs/path && cmd` patterns trigger
+  Claude Code's path-resolution-bypass check and block the command even when
+  the intent is read-only. Use relative paths or run commands as-is.
 - **Build only what the feature needs (YAGNI).** Implement the scope confirmed
   in Phase 1, nothing speculative: no unused props or options, no config flags
   or abstraction layers for callers that do not exist yet, no generality added
