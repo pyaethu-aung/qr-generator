@@ -377,4 +377,17 @@ describe('useQrScanner — camera', () => {
     expect(stop).toHaveBeenCalled()
     expect(result.current.isCameraActive).toBe(false)
   })
+
+  it('showResult displays a value and clears any prior error', async () => {
+    const { result } = renderHook(() => useQrScanner())
+    await act(async () => {
+      await result.current.scanFile(new File(['x'], 'note.txt', { type: 'text/plain' }))
+    })
+    expect(result.current.error).toBe('unsupported-file')
+
+    act(() => result.current.showResult('https://restored.example'))
+    expect(result.current.decoded).toBe('https://restored.example')
+    expect(result.current.error).toBeNull()
+    expect(result.current.isDecoding).toBe(false)
+  })
 })

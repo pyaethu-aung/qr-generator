@@ -51,6 +51,8 @@ export interface UseQrScannerReturn {
   startCamera: () => Promise<void>
   /** Stop the camera and release the stream. */
   stopCamera: () => void
+  /** Display a previously decoded value as the current result (used to restore from history). */
+  showResult: (value: string) => void
   /** Clear the current result/error so the scanner can be used again. */
   reset: () => void
 }
@@ -364,6 +366,13 @@ export function useQrScanner(): UseQrScannerReturn {
     }
   }, [stopCamera])
 
+  const showResult = useCallback((value: string) => {
+    stopCamera()
+    setError(null)
+    setIsDecoding(false)
+    setDecoded(value)
+  }, [stopCamera])
+
   const reset = useCallback(() => {
     setDecoded(null)
     setError(null)
@@ -382,6 +391,7 @@ export function useQrScanner(): UseQrScannerReturn {
     cancelScan,
     startCamera,
     stopCamera,
+    showResult,
     reset,
   }
 }
