@@ -204,11 +204,12 @@ list is `ScanHistory.tsx`.
 
 ## Localization (i18n)
 
-The app supports multiple languages (English and Burmese) via custom locale config files in `src/data/i18n/`.
-- Localized strings are stored in `en.json` and `my.json`.
+The app supports multiple languages (English, Burmese, and Spanish) via custom locale config files in `src/data/i18n/`.
+- Localized strings are stored in `en.json`, `my.json`, and `es.json`.
 - Components consume translations via `useLocaleContext` and `translate(key)`.
 - User language preference is persisted in `localStorage`.
-- The language toggle UI is currently hidden from the navbar; the locale infrastructure and translations remain intact for future re-enabling.
+- The globe button in the navbar cycles through every registered locale; adding a new locale extends the cycle automatically.
+- A locale need not provide a switch label for every other locale: any missing translation falls back to English (for example, Burmese has no Spanish label and shows the English "Switch to Spanish").
 
 ## SEO & Accessibility
 
