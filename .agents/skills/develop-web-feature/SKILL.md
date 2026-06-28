@@ -2,7 +2,7 @@
 name: develop-web-feature
 description: "Develop, design, and ship a website feature end-to-end with /impeccable: shape, build, e2e specs, gate, audit, critique, fix, open a PR, and release. Portable across web projects. Use when asked to add, build, craft, or design a new feature."
 metadata:
-  version: "1.4.0"
+  version: "1.5.0"
 argument-hint: "[--auto] The feature to build (e.g. 'Calendar event content type')"
 allowed-tools: Bash(npm*) Bash(npx*) Bash(node*) Bash(git:*) Bash(gh:*) Bash(grep*) Bash(ls*) Bash(cat*) Read Write Edit Task
 ---
@@ -67,8 +67,27 @@ Run the setup script once to wire up all required allow entries in
 node .claude/skills/develop-web-feature/scripts/setup.mjs
 ```
 
-This adds entries for `npm run dev`, the three Phase 0 scripts, and
-`Skills(commit-message)` / `Skills(create-pr)` if those skills are installed.
+This adds every allow entry a hands-off run needs, **derived from your project**
+so it is not tied to any one stack: project scripts via the detected package
+manager (`<pm> run *`), direct grants only for the test/lint/type tools your
+`package.json` actually depends on (Playwright, Vitest/Jest/Mocha, `tsc`, ESLint),
+`npx impeccable*`, the Phase 0 scripts, the **dev-server lifecycle helper**, and
+read-only / staging / branch-creation git. When the matching skill is installed it
+also adds the skill-invocation tokens `Skill(develop-web-feature)`,
+`Skill(impeccable)`, `Skill(commit-message)`, `Skill(create-pr)`,
+`Skill(update-readme)` (each in both the bare and `:*` form), the `/impeccable`
+script forms, the sentinel-prefixed commit / PR forms the guard hooks require, and
+`gh pr view` / `gh pr list` for create-pr's existing-PR check and verify. Commit
+and PR creation therefore stay gated behind their skills; `gh pr merge` stays
+ungranted (Phase 7 is a human gate); and pushing to the default branch stays
+blocked by the project's `pre-push` hook.
+
+> **Token gotcha:** the Claude Code permission token is `Skill(name)` —
+> **singular**. The plural `Skills(name)` silently never matches, so a setup that
+> writes it leaves every skill call prompting. Grant both `Skill(name)` and
+> `Skill(name:*)`: the `:*` form is what matches an invocation that carries
+> arguments (e.g. `/impeccable craft <feature>`).
+
 The only entry that must exist beforehand (to approve `setup.mjs` itself) is:
 
 ```json
@@ -267,13 +286,22 @@ Critique earns its keep by judging what actually renders and behaves, so under
 Claude Code run it against the live app, not source alone, using the
 **Playwright CLI** (one-time install in the README):
 
-1. Start the dev server (`npm run dev`) in the background; note its URL.
+1. Start the dev server with the lifecycle helper, which spawns it detached,
+   waits for the port, and prints the ready URL — no raw `curl`/`lsof` needed:
+   ```bash
+   node .claude/skills/develop-web-feature/scripts/dev-server.mjs start
+   ```
 2. Screenshot each key state with `npx playwright screenshot --viewport-size=...`
    across **both themes (light and dark)** and **mobile and desktop** widths.
 3. For real flows (the clicks, typing, and submits a user performs, plus the
    edge cases the personas would hit), write a short spec under `e2e/` and run
    it with `npx playwright test`. Feed the screenshots and any failures into
    the critique alongside its detector output.
+4. When the critique pass is done, stop the server (kills the whole process
+   group; no `pkill`/`kill` needed):
+   ```bash
+   node .claude/skills/develop-web-feature/scripts/dev-server.mjs stop
+   ```
 
 Write all temp screenshots to `.cache/develop-web-feature/` (e.g.
 `npx playwright screenshot --output=.cache/develop-web-feature/01-desktop-light.png`).
@@ -439,6 +467,12 @@ publish is an outward action to confirm before running.
   Compound `cd /abs/path; cmd` and `cd /abs/path && cmd` patterns trigger
   Claude Code's path-resolution-bypass check and block the command even when
   the intent is read-only. Use relative paths or run commands as-is.
+- **Manage the dev server through the helper, not raw process tools.** Start,
+  query, and stop it with
+  `node .claude/skills/develop-web-feature/scripts/dev-server.mjs start|url|stop`.
+  Raw `curl`/`lsof`/`pkill`/`kill` are not auto-allowed (and should not be); the
+  helper waits for the port, reports the URL, and kills the whole process group
+  on stop, so the critique pass never stalls on a permission prompt.
 - **Build only what the feature needs (YAGNI).** Implement the scope confirmed
   in Phase 1, nothing speculative: no unused props or options, no config flags
   or abstraction layers for callers that do not exist yet, no generality added
