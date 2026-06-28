@@ -462,6 +462,11 @@ publish is an outward action to confirm before running.
   triggers Claude Code's static-analysis block. Write the script to
   `.cache/develop-web-feature/<name>.mjs` with the Write tool, then run
   `node .cache/develop-web-feature/<name>.mjs`. The cache dir is gitignored.
+- **Inspect files with the Read and Grep tools, not shell parsers.** Reaching for
+  `python3 -c`, `jq`, or `cat`/`sed` to read or pretty-print a file needs broad
+  shell grants and prompts in a hands-off run; the Read and Grep tools need no
+  Bash permission. Remove a tracked file with `git rm <path>` (granted), not a
+  bare `rm` (intentionally not auto-allowed).
 - **Never prefix Bash commands with `cd /absolute/path;`.** The working
   directory is always the project root — run all commands from there directly.
   Compound `cd /abs/path; cmd` and `cd /abs/path && cmd` patterns trigger

@@ -52,6 +52,9 @@ const REQUIRED = [
   'Bash(mkdir -p *)',
   // Node scripts written to the project cache dir (avoids node -e inline blocks)
   'Bash(node .cache/develop-web-feature/*)',
+  // Deleting the skill's own temp files (critique body, screenshots). Scoped to
+  // the gitignored cache dir, so a bare `rm` elsewhere still prompts.
+  'Bash(rm -f .cache/develop-web-feature/*)',
   // Phase 0 scripts + the dev-server lifecycle helper (replaces raw curl/lsof/pkill/kill)
   'Bash(node .claude/skills/develop-web-feature/scripts/setup.mjs*)',
   'Bash(node .claude/skills/develop-web-feature/scripts/cache-check.mjs*)',
@@ -69,6 +72,12 @@ const REQUIRED = [
   'Bash(git branch:*)',
   'Bash(git rev-parse:*)',
   'Bash(git add:*)',
+  // Removing tracked files (e.g. deleting a locale/module). `git rm` both deletes
+  // and stages; plain `rm` stays ungranted so destructive deletes still prompt.
+  'Bash(git rm:*)',
+  // Unstaging so each logical change commits atomically (stage a subset, commit,
+  // repeat). Covers `--hard` too, but the workflow commits incrementally.
+  'Bash(git reset:*)',
   'Bash(git switch:*)',
   'Bash(git checkout -b:*)',
   // The one outward git action; the pre-push hook still blocks pushes to the default branch.
