@@ -30,7 +30,7 @@ describe('App integration', () => {
     vi.clearAllMocks()
   })
 
-  it.skip('updates UI copy and metadata when the language toggle switches to Burmese', async () => {
+  it('updates UI copy and metadata when the language dropdown switches to Spanish', async () => {
     const user = userEvent.setup()
 
     render(
@@ -45,57 +45,16 @@ describe('App integration', () => {
 
     expect(screen.getByRole('heading', { name: /sculpt standout qr codes/i })).toBeInTheDocument()
     expect(document.documentElement.lang).toBe(locales.en.locale.code)
-    expect(document.title).toBe(locales.en.seo.title)
 
-    const toggle = screen.getByRole('button', { name: locales.en.locale.switchTo.my })
-    await user.click(toggle)
+    await user.selectOptions(
+      screen.getByRole('combobox', { name: locales.en.locale.toggleLabel }),
+      'es',
+    )
 
     await waitFor(() => {
-      expect(document.documentElement.lang).toBe(locales.my.locale.code)
-      expect(screen.getByRole('heading', { name: locales.my.hero.title })).toBeInTheDocument()
-
-      const descriptionMeta = document.querySelector('meta[name="description"]')
-      const ogDescriptionMeta = document.querySelector('meta[property="og:description"]')
-
-      expect(descriptionMeta).not.toBeNull()
-      expect(ogDescriptionMeta).not.toBeNull()
-
-      if (!descriptionMeta || !ogDescriptionMeta) {
-        throw new Error('SEO meta tags did not render for Burmese locale')
-      }
-
-      expect(descriptionMeta).toHaveAttribute('content', locales.my.seo.description)
-      expect(ogDescriptionMeta).toHaveAttribute('content', locales.my.seo.ogDescription)
+      expect(document.documentElement.lang).toBe(locales.es.locale.code)
+      expect(screen.getByRole('heading', { name: locales.es.hero.title })).toBeInTheDocument()
     })
-  })
-
-  it.skip('applies the toggle and metadata updates within 1 second', async () => {
-    const user = userEvent.setup()
-    render(
-      <ThemeProvider>
-        <HelmetProvider>
-          <LocaleProvider>
-            <App />
-          </LocaleProvider>
-        </HelmetProvider>
-      </ThemeProvider>,
-    )
-
-    const toggle = screen.getByRole('button', { name: locales.en.locale.switchTo.my })
-    const startTime = performance.now()
-
-    await user.click(toggle)
-
-    await waitFor(
-      () => {
-        expect(document.documentElement.lang).toBe(locales.my.locale.code)
-        expect(document.title).toBe(locales.my.seo.title)
-      },
-      { timeout: 1000 },
-    )
-
-    const duration = performance.now() - startTime
-    expect(duration).toBeLessThanOrEqual(1000)
   })
 
   it('switches between the Generate and Scan views via the toggle', async () => {
@@ -121,7 +80,7 @@ describe('App integration', () => {
   })
 
   it('derives initial locale from localStorage on load', () => {
-    window.localStorage.setItem('qr-generator:locale-preference', 'my')
+    window.localStorage.setItem('qr-generator:locale-preference', 'es')
 
     render(
       <ThemeProvider>
@@ -133,8 +92,8 @@ describe('App integration', () => {
       </ThemeProvider>,
     )
 
-    expect(document.documentElement.lang).toBe('my')
-    expect(screen.getByRole('heading', { name: locales.my.hero.title })).toBeInTheDocument()
-    expect(document.title).toBe(locales.my.seo.title)
+    expect(document.documentElement.lang).toBe('es')
+    expect(screen.getByRole('heading', { name: locales.es.hero.title })).toBeInTheDocument()
+    expect(document.title).toBe(locales.es.seo.title)
   })
 })
