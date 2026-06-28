@@ -5,6 +5,12 @@
  * develop-web-feature to run hands-off. Safe to run multiple times (idempotent).
  * Run from the project root.
  *
+ * Defaults to a DRY RUN: prints the entries it would add and writes nothing,
+ * exiting non-zero when a delta exists so a skill update can never widen the
+ * allow list silently. Re-run with --write to apply:
+ *   node .claude/skills/develop-web-feature/scripts/setup.mjs            # preview the delta
+ *   node .claude/skills/develop-web-feature/scripts/setup.mjs --write    # apply it
+ *
  * Personal, not shared: auto-approve grants are a per-developer trust decision,
  * so they go in the gitignored .local file (where Claude Code itself writes
  * "always allow" approvals) — never the committed settings.json. Each developer
@@ -49,16 +55,51 @@ const TOOLCHAIN_MAP = [
 ];
 const TOOLCHAIN = [...new Set(TOOLCHAIN_MAP.filter((t) => hasDep(t.dep)).map((t) => t.entry))];
 
+// Browser-driver policy: prefer the Playwright CLI when present; fall back to a
+// Playwright MCP server only when the CLI is absent. So the MCP browser tools are
+// granted ONLY in that fallback case (a Playwright server declared in .mcp.json
+// AND no CLI dependency). Scoped to the inspect/drive tools the critique uses; the
+// code-execution tools (browser_evaluate, browser_run_code_unsafe) are
+// deliberately excluded (least privilege).
+const mcpServers = readJSON('.mcp.json')?.mcpServers ?? {};
+// The MCP tool token is `mcp__<serverName>__<tool>`, where serverName is the key
+// in .mcp.json — so derive the prefix from the matched server rather than
+// assuming it is literally "playwright".
+const playwrightServerName = Object.entries(mcpServers).find(
+  ([name, def]) =>
+    /playwright/i.test(name) || (Array.isArray(def?.args) && def.args.some((a) => /@playwright\/mcp/i.test(String(a)))),
+)?.[0];
+const cliPresent = hasDep('@playwright/test') || hasDep('playwright');
+const MCP_BROWSER_TOOLS = [
+  'browser_navigate',
+  'browser_navigate_back',
+  'browser_snapshot',
+  'browser_take_screenshot',
+  'browser_click',
+  'browser_type',
+  'browser_hover',
+  'browser_select_option',
+  'browser_press_key',
+  'browser_wait_for',
+  'browser_resize',
+  'browser_console_messages',
+  'browser_network_requests',
+  'browser_tabs',
+  'browser_handle_dialog',
+  'browser_close',
+];
+const MCP_PLAYWRIGHT =
+  playwrightServerName && !cliPresent ? MCP_BROWSER_TOOLS.map((t) => `mcp__${playwrightServerName}__${t}`) : [];
+
 const REQUIRED = [
-  // All project scripts (gates, dev server, e2e) via the detected package manager.
-  `Bash(${pm} run *)`,
+  // Full-suite gate runs (test / lint / build / e2e) go through the gate runner,
+  // which orchestrates them in Node and logs each to the cache dir. This single
+  // entry replaces the broad `<pm> run *` grant and the `echo` status-marker
+  // grant, and removes the `$?` / `>` / `&&` permission-prompt class (those live
+  // inside the script now, where the permission heuristics never apply).
+  'Bash(node .claude/skills/develop-web-feature/scripts/gates.mjs*)',
   // The skill's one hard dependency, installed via npx (available under any PM).
   'Bash(npx impeccable*)',
-  // Status markers the gate/baseline commands print via the `<cmd> && echo PASS
-  // || echo FAIL` pattern. A compound command auto-approves only when EVERY
-  // sub-command matches, so the bare `echo`s need their own grant. echo cannot
-  // mutate state, so this is safe and stack-generic.
-  'Bash(echo:*)',
   // Spec / fixture directory creation. `mkdir -p` is create-only, never destructive.
   'Bash(mkdir -p *)',
   // Node scripts written to the project cache dir (avoids node -e inline blocks)
@@ -142,29 +183,45 @@ if (existsSync(SETTINGS_PATH)) {
 if (!settings.permissions) settings.permissions = {};
 if (!Array.isArray(settings.permissions.allow)) settings.permissions.allow = [];
 
-const existing = new Set(settings.permissions.allow);
-const added = [];
+// Dry run by default; --write applies the delta.
+const applyMode = process.argv.slice(2).includes('--write');
 
-for (const entry of [...REQUIRED, ...TOOLCHAIN]) {
-  if (!existing.has(entry)) {
-    settings.permissions.allow.push(entry);
-    existing.add(entry);
-    added.push(entry);
-  }
-}
-
+// Everything this setup manages, in order: REQUIRED + TOOLCHAIN always, plus
+// each CONDITIONAL entry whose skill/tool is actually present. De-dupe while
+// preserving order (a Set keeps insertion order).
+const initialAllow = new Set(settings.permissions.allow);
+const candidates = [...REQUIRED, ...TOOLCHAIN, ...MCP_PLAYWRIGHT];
 for (const { path, entry } of CONDITIONAL) {
-  if (existsSync(path) && !existing.has(entry)) {
-    settings.permissions.allow.push(entry);
-    existing.add(entry);
-    added.push(entry);
-  }
+  if (existsSync(path)) candidates.push(entry);
+}
+const managed = [...new Set(candidates)];
+const toAdd = managed.filter((entry) => !initialAllow.has(entry));
+const alreadyPresent = managed.length - toAdd.length;
+
+// Nothing to change: identical in either mode, so a steady-state re-run on every
+// session stays quiet and exits 0 (the common case).
+if (toAdd.length === 0) {
+  console.log('[setup] All required allow entries already present — nothing to do.');
+  process.exit(0);
 }
 
-if (added.length > 0) {
-  writeFileSync(SETTINGS_PATH, JSON.stringify(settings, null, 2) + '\n');
-  console.log(`[setup] Added ${added.length} allow ${added.length === 1 ? 'entry' : 'entries'} to ${SETTINGS_PATH}:`);
-  added.forEach(e => console.log(`  + ${e}`));
-} else {
-  console.log('[setup] All required allow entries already present — nothing to do.');
+// A delta exists. Dry run (default): list ONLY the new entries, write nothing,
+// and exit non-zero so the caller can detect that grants want to expand. This is
+// the moment a skill update's new grants become visible before they land.
+if (!applyMode) {
+  console.log('[setup] DRY RUN — no changes written.');
+  console.log(
+    `[setup] ${toAdd.length} new ${toAdd.length === 1 ? 'entry' : 'entries'} would be added to ${SETTINGS_PATH}` +
+      (alreadyPresent ? ` (${alreadyPresent} already present):` : ':'),
+  );
+  toAdd.forEach((entry) => console.log(`  + ${entry}`));
+  console.log('[setup] Review the list above, then re-run with --write to apply.');
+  process.exit(1);
 }
+
+// --write: apply the delta.
+for (const entry of toAdd) settings.permissions.allow.push(entry);
+writeFileSync(SETTINGS_PATH, JSON.stringify(settings, null, 2) + '\n');
+console.log(`[setup] Added ${toAdd.length} allow ${toAdd.length === 1 ? 'entry' : 'entries'} to ${SETTINGS_PATH}:`);
+toAdd.forEach((entry) => console.log(`  + ${entry}`));
+process.exit(0);
