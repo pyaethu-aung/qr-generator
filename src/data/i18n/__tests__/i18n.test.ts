@@ -16,11 +16,11 @@ describe('i18n resolver', () => {
   it('falls back to English and logs missing translations once', async () => {
     const module = await loadModule()
     const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    const originalHeading = module.locales.my.hero.title
-    const heroStrings = module.locales.my.hero
+    const originalHeading = module.locales.es.hero.title
+    const heroStrings = module.locales.es.hero
     try {
       heroStrings.title = ''
-      const heading = module.getCopy('my', localeKey)
+      const heading = module.getCopy('es', localeKey)
       expect(heading).toBe(en.hero.title)
       expect(consoleSpy).toHaveBeenCalledTimes(1)
       expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining(localeKey))
@@ -32,12 +32,12 @@ describe('i18n resolver', () => {
   it('logs once per unique locale key pair', async () => {
     const module = await loadModule()
     const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
-    const originalHeading = module.locales.my.hero.title
-    const heroStrings = module.locales.my.hero
+    const originalHeading = module.locales.es.hero.title
+    const heroStrings = module.locales.es.hero
     try {
       heroStrings.title = ''
-      module.getCopy('my', localeKey)
-      module.getCopy('my', localeKey)
+      module.getCopy('es', localeKey)
+      module.getCopy('es', localeKey)
       expect(consoleSpy).toHaveBeenCalledTimes(1)
     } finally {
       heroStrings.title = originalHeading
