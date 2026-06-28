@@ -125,7 +125,7 @@ Then run it from the project root:
 node .claude/skills/develop-web-feature/scripts/setup.mjs
 ```
 
-This adds all remaining entries for `npm run dev`, the Phase 0 scripts, and `Skills(commit-message)` / `Skills(create-pr)` if those skills are installed. It is idempotent — safe to re-run any time.
+This adds all remaining entries for `npm run dev`, the Phase 0 scripts, and the skill-invocation tokens `Skill(commit-message)` / `Skill(create-pr)` (singular — the plural `Skills(...)` never matches) if those skills are installed. It is idempotent — safe to re-run any time.
 
 The `/impeccable` skill has one separate entry that must be added manually:
 
