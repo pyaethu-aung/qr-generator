@@ -1,9 +1,15 @@
 #!/usr/bin/env node
 /**
  * setup.mjs
- * Ensure .claude/settings.json has all the allow entries needed for
+ * Ensure .claude/settings.local.json has all the allow entries needed for
  * develop-web-feature to run hands-off. Safe to run multiple times (idempotent).
  * Run from the project root.
+ *
+ * Personal, not shared: auto-approve grants are a per-developer trust decision,
+ * so they go in the gitignored .local file (where Claude Code itself writes
+ * "always allow" approvals) — never the committed settings.json. Each developer
+ * runs this once in their own checkout to opt in. Project-wide enforcement
+ * (the commit/PR guard hooks) stays in the shared settings.json.
  *
  * Portable: the toolchain grants are DERIVED from the project (its package
  * manager and dependencies), never hard-coded to one stack. The skill-infra and
@@ -12,7 +18,7 @@
  */
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 
-const SETTINGS_PATH = '.claude/settings.json';
+const SETTINGS_PATH = '.claude/settings.local.json';
 
 function readJSON(path) {
   try { return JSON.parse(readFileSync(path, 'utf8')); } catch { return null; }
