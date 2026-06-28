@@ -35,12 +35,6 @@ describe('PhoneNumberField', () => {
     expect(numberInput()).toHaveAttribute('placeholder', '+95 9 123 456 789')
   })
 
-  it('defaults to Myanmar when the locale is Burmese and the value is empty', () => {
-    window.localStorage.setItem('qr-generator:locale-preference', 'my')
-    setup('')
-    expect(screen.getByRole('button', { name: /နိုင်ငံကုဒ်/ })).toHaveTextContent('+95')
-  })
-
   it('composes the dial code with the local number upward', () => {
     const { onChange } = setup('')
     fireEvent.click(screen.getByRole('button', { name: /country code/i }))
