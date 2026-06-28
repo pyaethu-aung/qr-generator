@@ -113,6 +113,9 @@ const REQUIRED = [
   'Bash(node .claude/skills/develop-web-feature/scripts/discover.mjs*)',
   'Bash(node .claude/skills/develop-web-feature/scripts/cache-write.mjs*)',
   'Bash(node .claude/skills/develop-web-feature/scripts/dev-server.mjs*)',
+  // Reads /impeccable critique's persisted snapshot to drive the hands-off fix
+  // loop without waiting on critique's interactive Recommended Actions prompt.
+  'Bash(node .claude/skills/develop-web-feature/scripts/critique-plan.mjs*)',
   // Git: read-only inspection, staging, and branch creation. Commit and PR
   // creation stay gated behind the /commit-message and /create-pr skills (their
   // sentinel-prefixed forms are added conditionally below); these cover

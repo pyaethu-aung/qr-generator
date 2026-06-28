@@ -2,7 +2,7 @@
 name: develop-web-feature
 description: "Develop, design, and ship a website feature end-to-end with /impeccable: shape, build, e2e specs, gate, audit, critique, fix, open a PR, and release. Portable across web projects. Use when asked to add, build, craft, or design a new feature."
 metadata:
-  version: "1.6.0"
+  version: "1.7.0"
 argument-hint: "[--auto] The feature to build (e.g. 'Calendar event content type')"
 allowed-tools: Bash(npm*) Bash(npx*) Bash(node*) Bash(git:*) Bash(gh:*) Bash(grep*) Bash(ls*) Bash(cat*) Read Write Edit Task
 ---
@@ -36,14 +36,33 @@ passes `--auto`), collapse those into a single review at the PR:
   spec, or run one silent `/impeccable shape` pass and proceed. Phase 0's rule
   still holds: if the scope is genuinely ambiguous, ask once rather than build
   the wrong thing.
-- **Run `audit` and `critique` non-interactively:** feed both passes' findings
-  into the Phase 5 loop, which fixes P0/P1 by severity. Audit already prompts
-  for nothing; critique just skips its closing question.
+- **Run `audit` and `critique`, then continue past critique's hand-back.**
+  Audit prompts for nothing. `/impeccable critique` always ends by printing a
+  **Recommended Actions** list and the line "you can ask me to run these one at
+  a time…" (and, with three or more findings, it calls `AskUserQuestion`); it
+  has no non-interactive mode of its own. In a hands-off run that ending is a
+  **continuation point, not a stop**: do not answer it and do not yield. Two
+  things make that reliable:
+  - **Derive the work-list from the snapshot, not the prompt.** Critique
+    persists every run to `.impeccable/critique/<timestamp>__<slug>.md` (YAML
+    frontmatter with `p0_count` / `p1_count`, plus a `## Priority Issues`
+    section). Run
+    `node .claude/skills/develop-web-feature/scripts/critique-plan.mjs` (add
+    `--slug <slug>` to target one file): it reads the latest snapshot, prints the
+    P0/P1 to fix and the P2/P3 to defer, and exits non-zero while any P0/P1
+    remain (a deterministic convergence signal, like the gate runner). This
+    works even when critique would otherwise hard-yield via `AskUserQuestion`.
+  - **Keep critique itself non-interactive.** When invoking it, instruct it to
+    output the findings and Recommended Actions and to skip the clarifying
+    `AskUserQuestion` step, so the call returns instead of waiting.
+  Feed the script's P0/P1 into the Phase 5 loop (fix each by its issue text via
+  the Phase 5 routing table); record its P2/P3 as Deferred.
 - **Surface what was not fixed.** P0/P1 from both passes are fixed in the loop;
   the remaining P2/P3 are deliberately not auto-fixed, but must not vanish in a
   hands-off run. List them in the PR body under a **Deferred (P2/P3)** heading,
-  drawn from the critique snapshot in `.impeccable/critique/` and the audit
-  report, so you can triage them at review.
+  taken from `critique-plan.mjs`'s P2/P3 output (the snapshot in
+  `.impeccable/critique/`) and the audit report, so you can triage them at
+  review.
 - **Commit and open the PR without prompting:** route through
   `/commit-message --yes` and `/create-pr --yes` (same format and skill token,
   no confirmation pause). Opening the PR is **not optional** — never stop
@@ -308,7 +327,9 @@ static: it reads source and scores it, with no browser and no user prompts.
 Design pass: heuristics scored out of 40, persona walkthroughs, an AI-slop
 verdict, and a deterministic detector run. It persists a snapshot and prints
 a score trend across runs. It drives a browser and ends by asking you what to
-fix, so it stays in the foreground.
+fix, so it stays in the foreground. In a hands-off run that closing question is
+**not** a stop: derive the work-list from the persisted snapshot via
+`critique-plan.mjs` and continue (see Autonomous mode).
 
 ### Under Claude Code: overlap the two passes (optional)
 
@@ -321,7 +342,9 @@ the same time. They are asymmetric, so the split is one-sided:
   `AskUserQuestion`, neither of which an autonomous subagent can do, and
   it already fans out its own Assessment A/B subagents internally: nesting it
   inside a subagent would force critique back to its slower sequential
-  fallback.
+  fallback. "Foreground" means the main thread, not that the run halts for
+  input: in a hands-off run, continue past critique's closing question using the
+  persisted-snapshot work-list (Autonomous mode) rather than waiting on it.
 
 Merge both finding sets before Phase 5. **Never run two browser-driving
 `/impeccable` commands at once against one app:** they contend on the
@@ -371,7 +394,10 @@ through it.
 ## Phase 5: Fix and loop until clean
 
 This is a loop, not a one-shot pass. Work one finding (or one tightly related
-group) at a time so each fix is its own commit:
+group) at a time so each fix is its own commit. In a hands-off run the finding
+list is the P0/P1 output of `critique-plan.mjs` (Phase 4 / Autonomous mode), and
+its exit code is the loop's convergence signal: keep looping while it exits
+non-zero (P0/P1 remain), and stop when it exits 0 (only deferred P2/P3 left).
 
 1. **Fix by severity (P0/P1 first), driven by the findings.** Both audit and
    critique tag every issue with a severity and a **Suggested command**; run
