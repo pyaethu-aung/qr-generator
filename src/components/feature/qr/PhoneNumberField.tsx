@@ -47,7 +47,7 @@ export function PhoneNumberField({
   hint,
   previewLabel,
 }: PhoneNumberFieldProps) {
-  const { locale, translate } = useLocaleContext()
+  const { translate } = useLocaleContext()
   const hintId = useId()
   const groupLabelId = useId()
   const previewId = useId()
@@ -55,13 +55,9 @@ export function PhoneNumberField({
   const inputId = useId()
 
   // Derive the initial split once from the upstream value: a "+..." value maps onto
-  // selector + local part; an empty value falls back to the locale's home country
-  // (Burmese UI → Myanmar). After mount this field is the only writer of `value`.
-  const [iso, setIso] = useState<string | null>(() => {
-    const match = matchDialCode(value)
-    if (match) return match.country.iso
-    return value.trim() ? null : locale === 'my' ? 'MM' : null
-  })
+  // selector + local part; anything else starts with no country selected. After
+  // mount this field is the only writer of `value`.
+  const [iso, setIso] = useState<string | null>(() => matchDialCode(value)?.country.iso ?? null)
   const [local, setLocal] = useState(() => matchDialCode(value)?.rest ?? value)
 
   const [numberError, setNumberError] = useState<string | undefined>()
