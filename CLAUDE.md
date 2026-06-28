@@ -102,7 +102,13 @@ Two `PreToolUse` hooks in `.claude/settings.json` enforce that `git commit` and 
 
 ### Permissions (hands-off / autonomous mode)
 
-> **Workspace trust required.** If you see `Ignoring N permissions.allow entries from .claude/settings.json: this workspace has not been trusted`, the allow list is silently inactive. Fix it one of two ways:
+Auto-approve grants are **personal, not shared**: they live in the gitignored
+`.claude/settings.local.json` (where Claude Code also writes "always allow"
+approvals), so each developer opts in by running the setup script in their own
+checkout. The committed `.claude/settings.json` holds only the enforcement
+hooks — project policy everyone shares, never per-developer grants.
+
+> **Workspace trust required.** If you see `Ignoring N permissions.allow entries from .claude/settings.local.json: this workspace has not been trusted`, the allow list is silently inactive. Fix it one of two ways:
 > - Run `claude` interactively in this directory once and accept the trust dialog that appears.
 > - Or add the entry directly to your personal Claude config (`~/.claude.json`):
 >   ```json
@@ -113,7 +119,7 @@ Two `PreToolUse` hooks in `.claude/settings.json` enforce that `git commit` and 
 >   }
 >   ```
 
-`/develop-web-feature` self-configures its required allow entries via a setup script. The only entry you need to add manually (once) is the bootstrap entry for the setup script itself:
+`/develop-web-feature` self-configures its required allow entries (into `.claude/settings.local.json`) via a setup script. The only entry you need to add manually (once) is the bootstrap entry for the setup script itself — add it to `.claude/settings.local.json`:
 
 ```json
 "Bash(node .claude/skills/develop-web-feature/scripts/setup.mjs*)"
@@ -127,7 +133,7 @@ node .claude/skills/develop-web-feature/scripts/setup.mjs
 
 This adds all remaining entries for `npm run dev`, the Phase 0 scripts, and the skill-invocation tokens `Skill(commit-message)` / `Skill(create-pr)` (singular — the plural `Skills(...)` never matches) if those skills are installed. It is idempotent — safe to re-run any time.
 
-The `/impeccable` skill has one separate entry that must be added manually:
+The `/impeccable` skill has one separate entry that must be added manually (also to `.claude/settings.local.json`):
 
 | Permission | Why |
 |---|---|
