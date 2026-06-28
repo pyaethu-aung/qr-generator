@@ -151,7 +151,11 @@ fill in the rest. Establish:
 
 - **The gates:** the exact commands that must pass before a PR (test? lint?
   typecheck? build? a coverage threshold?). Run them once now on a clean tree
-  so you know the green baseline.
+  so you know the green baseline. Run each command plainly — no `$?`, `$(…)`,
+  or backticks. Shell expansion trips Claude Code's command-injection
+  heuristic and forces a permission prompt even when the base command is
+  allowed, breaking hands-off mode; the tool already reports each command's
+  exit status, so you never need `; echo "EXIT:$?"`.
 - **The feature pattern:** how an existing comparable feature is structured.
   Find the newest one and copy its file layout (types, logic, state, UI,
   i18n, tests). Match it; do not invent a new shape.
