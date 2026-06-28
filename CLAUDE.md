@@ -32,7 +32,7 @@ Never push directly to `main`. All changes must go through a pull request. A `pr
 ### Context providers (wired in `src/main.tsx`)
 
 - `ThemeProvider` — reads/writes `localStorage`, toggles `.dark` on `<html>`, exposes `useThemeContext()`
-- `LocaleProvider` — reads/writes `localStorage`, syncs `document.documentElement.lang`, exposes `useLocaleContext()` with `translate(key)` and a locale-aware `seo` object. Locales are additive: register a new JSON in `src/data/i18n/index.ts` and `SupportedLocale`, the `TranslationKey` union, and the registry all widen from it (no type edits). `LocaleMetadata.switchTo` is a `Partial` record, so a new locale needs no edits to existing locale files; `getCopy()` falls back to the default locale for any missing key. The navbar `LanguageToggle` cycles through `localeCodes`, so it picks up new locales automatically.
+- `LocaleProvider` — reads/writes `localStorage`, syncs `document.documentElement.lang`, exposes `useLocaleContext()` with `translate(key)` and a locale-aware `seo` object. Locales are additive: register a new JSON in `src/data/i18n/index.ts` and `SupportedLocale`, the `TranslationKey` union, and the registry all widen from it (no type edits). `LocaleMetadata.switchTo` is a `Partial` record, so a new locale needs no edits to existing locale files; `getCopy()` falls back to the default locale for any missing key. The navbar `LanguageToggle` is a native `<select>` dropdown that lists every locale in `localeCodes` by its `locale.name`, so it picks up new locales automatically.
 
 ### Directory conventions
 
@@ -42,7 +42,7 @@ Never push directly to `main`. All changes must go through a pull request. A `pr
 | `src/components/feature/qr/` | QR-specific views |
 | `src/hooks/` | Stateful hooks and context providers |
 | `src/utils/` | Pure helpers — every file here requires a corresponding test |
-| `src/data/` | Static config and i18n JSON (`en.json`, `my.json`, `es.json`) |
+| `src/data/` | Static config and i18n JSON (`en.json`, `es.json`) |
 | `src/types/` | Shared TypeScript types |
 
 ### Styling
