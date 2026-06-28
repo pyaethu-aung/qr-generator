@@ -40,7 +40,10 @@
       "Skill(update-readme:*)",
       "Bash(gh pr view:*)",
       "Bash(gh pr list:*)",
-      "Bash(mkdir -p *)"
+      "Bash(mkdir -p *)",
+      "Bash(git rm:*)",
+      "Bash(rm -f .cache/develop-web-feature/*)",
+      "Bash(git reset:*)"
     ]
   },
   "hooks": {
