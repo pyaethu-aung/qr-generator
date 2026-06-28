@@ -2,32 +2,39 @@ import { test, expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
 
 const html = (page: Page) => page.locator('html')
+// Scope to the navbar landmark: the select's accessible name is the localized
+// toggle label (Language / Idioma), so a name-based selector would stop matching
+// after the locale changes. The navbar holds exactly one combobox.
+const languageSelect = (page: Page) => page.getByRole('navigation').getByRole('combobox')
 
-// ── Locale switcher: English → Burmese → Spanish ────────────────────────────
+// ── Locale switcher: English ↔ Spanish via the dropdown ─────────────────────
 
-test('Locale: cycles through English, Burmese, and Spanish', async ({ page }) => {
+test('Locale: switches between English and Spanish via the dropdown', async ({ page }) => {
   await page.goto('/')
 
   // Default locale is English.
   await expect(page.getByRole('heading', { name: 'Sculpt standout QR codes' })).toBeVisible()
   await expect(html(page)).toHaveAttribute('lang', 'en')
 
-  // First click: English → Burmese. The existing Burmese locale stays intact.
-  await page.getByRole('button', { name: 'Switch to Burmese' }).click()
-  await expect(html(page)).toHaveAttribute('lang', 'my')
-
-  // Second click: Burmese → Spanish. Burmese ships no Spanish switch label, so
-  // the button text falls back to the English "Switch to Spanish" copy.
-  await page.getByRole('button', { name: 'Switch to Spanish' }).click()
+  // Pick Spanish from the dropdown.
+  await languageSelect(page).selectOption('es')
   await expect(html(page)).toHaveAttribute('lang', 'es')
-
-  // Spanish copy renders across the hero and the tab chrome.
   await expect(page.getByRole('heading', { name: 'Crea códigos QR que destacan' })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Escanear' })).toBeVisible()
 
-  // Third click wraps back around to English.
-  await page.getByRole('button', { name: 'Cambiar a inglés' }).click()
+  // Switch back to English.
+  await languageSelect(page).selectOption('en')
   await expect(html(page)).toHaveAttribute('lang', 'en')
+  await expect(page.getByRole('heading', { name: 'Sculpt standout QR codes' })).toBeVisible()
+})
+
+// ── Burmese is gone: the dropdown offers only English and Spanish ────────────
+
+test('Locale: dropdown lists only English and Spanish', async ({ page }) => {
+  await page.goto('/')
+
+  const options = languageSelect(page).locator('option')
+  await expect(options).toHaveText(['English', 'Español'])
 })
 
 // ── Spanish preference persists across a reload ─────────────────────────────
@@ -35,8 +42,7 @@ test('Locale: cycles through English, Burmese, and Spanish', async ({ page }) =>
 test('Locale: Spanish selection persists across reload', async ({ page }) => {
   await page.goto('/')
 
-  await page.getByRole('button', { name: 'Switch to Burmese' }).click()
-  await page.getByRole('button', { name: 'Switch to Spanish' }).click()
+  await languageSelect(page).selectOption('es')
   await expect(html(page)).toHaveAttribute('lang', 'es')
 
   await page.reload()
