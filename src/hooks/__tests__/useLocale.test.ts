@@ -15,9 +15,9 @@ describe('useLocale', () => {
   })
 
   it('initializes with stored preference if available', () => {
-    window.localStorage.setItem('qr-generator:locale-preference', 'my')
+    window.localStorage.setItem('qr-generator:locale-preference', 'es')
     const { result } = renderHook(() => useLocale())
-    expect(result.current.locale).toBe('my')
+    expect(result.current.locale).toBe('es')
   })
 
   it('falls back to default if stored preference is invalid', () => {
@@ -30,11 +30,11 @@ describe('useLocale', () => {
     const { result } = renderHook(() => useLocale())
 
     act(() => {
-      result.current.setLocale('my')
+      result.current.setLocale('es')
     })
 
-    expect(result.current.locale).toBe('my')
-    expect(window.localStorage.getItem('qr-generator:locale-preference')).toBe('my')
+    expect(result.current.locale).toBe('es')
+    expect(window.localStorage.getItem('qr-generator:locale-preference')).toBe('es')
   })
 
   it('gracefully handles localStorage errors', () => {
@@ -49,10 +49,10 @@ describe('useLocale', () => {
     expect(result.current.locale).toBe(defaultLocale)
 
     act(() => {
-      result.current.setLocale('my')
+      result.current.setLocale('es')
     })
 
-    expect(result.current.locale).toBe('my') // Should still update state even if persistence fails
+    expect(result.current.locale).toBe('es') // Should still update state even if persistence fails
 
     getItemSpy.mockRestore()
     setItemSpy.mockRestore()
