@@ -48,6 +48,11 @@ const REQUIRED = [
   `Bash(${pm} run *)`,
   // The skill's one hard dependency, installed via npx (available under any PM).
   'Bash(npx impeccable*)',
+  // Status markers the gate/baseline commands print via the `<cmd> && echo PASS
+  // || echo FAIL` pattern. A compound command auto-approves only when EVERY
+  // sub-command matches, so the bare `echo`s need their own grant. echo cannot
+  // mutate state, so this is safe and stack-generic.
+  'Bash(echo:*)',
   // Spec / fixture directory creation. `mkdir -p` is create-only, never destructive.
   'Bash(mkdir -p *)',
   // Node scripts written to the project cache dir (avoids node -e inline blocks)
