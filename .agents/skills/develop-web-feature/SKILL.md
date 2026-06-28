@@ -2,7 +2,7 @@
 name: develop-web-feature
 description: "Develop, design, and ship a website feature end-to-end with /impeccable: shape, build, e2e specs, gate, audit, critique, fix, open a PR, and release. Portable across web projects. Use when asked to add, build, craft, or design a new feature."
 metadata:
-  version: "1.5.0"
+  version: "1.6.0"
 argument-hint: "[--auto] The feature to build (e.g. 'Calendar event content type')"
 allowed-tools: Bash(npm*) Bash(npx*) Bash(node*) Bash(git:*) Bash(gh:*) Bash(grep*) Bash(ls*) Bash(cat*) Read Write Edit Task
 ---
@@ -60,16 +60,27 @@ loop, atomic commits, and the disciplines are unchanged.
 
 ### Configure permissions
 
-Run the setup script once to wire up all required allow entries in
-`.claude/settings.json`. It is idempotent — safe to re-run on every session:
+The setup script wires up every required allow entry in
+`.claude/settings.local.json` (personal and gitignored, never the committed
+`settings.json`). It is idempotent and safe to re-run on every session. **It
+defaults to a dry run:** it prints the entries it would add and writes nothing,
+so any new grant is visible before it lands. Re-run with `--write` to apply.
 
 ```bash
-node .claude/skills/develop-web-feature/scripts/setup.mjs
+node .claude/skills/develop-web-feature/scripts/setup.mjs           # preview the delta
+node .claude/skills/develop-web-feature/scripts/setup.mjs --write   # apply it
 ```
 
+When the allow list is already complete the dry run reports nothing to do and
+exits 0; when grants would change it lists only the *new* entries and exits
+non-zero, so a skill update can never widen your permissions silently. In a
+hands-off run, surface that delta and confirm before `--write` whenever it is
+non-empty; the steady-state case (no delta) needs no pause.
+
 This adds every allow entry a hands-off run needs, **derived from your project**
-so it is not tied to any one stack: project scripts via the detected package
-manager (`<pm> run *`), direct grants only for the test/lint/type tools your
+so it is not tied to any one stack: full-suite gate runs via the gate runner
+(`scripts/gates.mjs`, which replaces the broad `<pm> run *` grant), direct grants
+only for the test/lint/type tools your
 `package.json` actually depends on (Playwright, Vitest/Jest/Mocha, `tsc`, ESLint),
 `npx impeccable*`, the Phase 0 scripts, the **dev-server lifecycle helper**, and
 read-only / staging / branch-creation git. When the matching skill is installed it
@@ -94,7 +105,10 @@ The only entry that must exist beforehand (to approve `setup.mjs` itself) is:
 "Bash(node .claude/skills/develop-web-feature/scripts/setup.mjs*)"
 ```
 
-Add it to `.claude/settings.json` once; `setup.mjs` handles everything else.
+Add it to `.claude/settings.local.json` once; `setup.mjs` handles everything
+else. Because that grant ends in `*`, it also authorizes the `--write` form, so
+the dry run is a discipline the workflow follows (preview, confirm a non-empty
+delta, then `--write`), not a second approval prompt.
 
 ### Ensure dependencies
 
@@ -122,6 +136,32 @@ you choose to add them: they are single-file skills, drop each `SKILL.md` into
 `.claude/skills/<name>/`), Phase 6 routes through them. If the user chooses not
 to install them, Phase 6 falls back to doing the commit and PR directly, with
 the same conventions inlined there.
+
+**Choose the browser driver (CLI preferred, MCP fallback).** Critique drives the
+live UI and the e2e gate runs the browser. `discover.mjs` reports which drivers
+are available and recommends one by this rule:
+
+- **Playwright CLI present** (a `@playwright/test` / `playwright` dependency):
+  **use the CLI.** It is what a `playwright test` gate and CI run, and the
+  portable, installable path. If its browser binary is missing, install it once
+  from the project root (cached and idempotent, a no-op when present; add
+  `--with-deps` for the OS libraries a CI image needs):
+  ```bash
+  npx playwright install chromium
+  ```
+- **No CLI, but a Playwright MCP server configured** (a `playwright` entry in
+  `.mcp.json`, or the `mcp__playwright__*` tools otherwise available): **use the
+  MCP browser tools** for the critique. No install needed.
+- **Neither configured:** **default to the CLI and install it** from the project
+  root: `npm i -D @playwright/test && npx playwright install chromium`.
+
+The CLI path needs no extra grant (`setup.mjs` adds `Bash(npx playwright*)`); the
+MCP browser tools are granted only when MCP is the chosen driver (a Playwright
+server in `.mcp.json` and no CLI dependency), scoped to inspect/drive tools. An
+MCP server cannot run the CI gate (CI has no agent), so a project whose gate is
+`playwright test` always has the CLI present and takes the first branch; the
+**committed** e2e specs the skill writes are therefore always CLI, and MCP is
+only ever the ad-hoc critique-inspection driver.
 
 ### Learn this project (do not skip)
 
@@ -151,11 +191,13 @@ fill in the rest. Establish:
 
 - **The gates:** the exact commands that must pass before a PR (test? lint?
   typecheck? build? a coverage threshold?). Run them once now on a clean tree
-  so you know the green baseline. Run each command plainly — no `$?`, `$(…)`,
-  or backticks. Shell expansion trips Claude Code's command-injection
-  heuristic and forces a permission prompt even when the base command is
-  allowed, breaking hands-off mode; the tool already reports each command's
-  exit status, so you never need `; echo "EXIT:$?"`.
+  so you know the green baseline — use the gate runner, which executes the
+  project's gates, logs each to the cache dir, and prints a PASS/FAIL summary:
+  `node .claude/skills/develop-web-feature/scripts/gates.mjs` (add `--coverage`
+  or `--e2e` when needed). It replaces hand-written `<pm> run … > log 2>&1`
+  commands. For any *other* command, run it plainly — no `$?`, `$(…)`, or
+  backticks; shell expansion trips Claude Code's command-injection heuristic
+  and forces a permission prompt even when the base command is allowed.
 - **The feature pattern:** how an existing comparable feature is structured.
   Find the newest one and copy its file layout (types, logic, state, UI,
   i18n, tests). Match it; do not invent a new shape.
@@ -243,9 +285,12 @@ committing: stage one category, commit, then the next. Check the project's
 
 ## Phase 3: Gate
 
-Run the project's gate commands (from Phase 0). All must pass before a PR;
-this is the only bar that blocks merge. Iterate on one test file at a time
-while building, and preview in a browser if the project has a dev server.
+Run the gate runner —
+`node .claude/skills/develop-web-feature/scripts/gates.mjs` (the gates derived
+in Phase 0). All must pass before a PR; this is the only bar that blocks merge.
+Iterate on one test file at a time while building (`npx vitest run <file>` or
+the project's equivalent), and preview in a browser if the project has a dev
+server.
 
 ## Phase 4: Evaluate
 
@@ -287,28 +332,34 @@ subagents run the two passes sequentially, in either order.
 ### Critique must drive the real UI, not just source
 
 Critique earns its keep by judging what actually renders and behaves, so under
-Claude Code run it against the live app, not source alone, using the
-**Playwright CLI** (one-time install in the README):
+Claude Code run it against the live app, not source alone, using the **browser
+driver chosen in Phase 0** (the Playwright CLI, or the Playwright MCP tools when
+MCP is the fallback):
 
 1. Start the dev server with the lifecycle helper, which spawns it detached,
    waits for the port, and prints the ready URL — no raw `curl`/`lsof` needed:
    ```bash
    node .claude/skills/develop-web-feature/scripts/dev-server.mjs start
    ```
-2. Screenshot each key state with `npx playwright screenshot --viewport-size=...`
-   across **both themes (light and dark)** and **mobile and desktop** widths.
+2. Screenshot each key state across **both themes (light and dark)** and
+   **mobile and desktop** widths. CLI: `npx playwright screenshot --viewport-size=...`.
+   MCP: `browser_navigate`, then `browser_resize` + `browser_take_screenshot`.
 3. For real flows (the clicks, typing, and submits a user performs, plus the
-   edge cases the personas would hit), write a short spec under `e2e/` and run
-   it with `npx playwright test`. Feed the screenshots and any failures into
-   the critique alongside its detector output.
+   edge cases the personas would hit). CLI: write a short spec under `e2e/` and
+   run it with `npx playwright test`. MCP: drive the flow with `browser_navigate`
+   / `browser_click` / `browser_type` and read state via `browser_snapshot`. Feed
+   the screenshots and any failures into the critique alongside its detector
+   output. The **committed** e2e specs (the gate) are always CLI; an MCP flow
+   here is ad-hoc inspection, not a saved spec.
 4. When the critique pass is done, stop the server (kills the whole process
    group; no `pkill`/`kill` needed):
    ```bash
    node .claude/skills/develop-web-feature/scripts/dev-server.mjs stop
    ```
 
-Write all temp screenshots to `.cache/develop-web-feature/` (e.g.
-`npx playwright screenshot --output=.cache/develop-web-feature/01-desktop-light.png`).
+Write all temp screenshots to `.cache/develop-web-feature/` (CLI:
+`npx playwright screenshot --output=.cache/develop-web-feature/01-desktop-light.png`;
+MCP: pass that path as `browser_take_screenshot`'s `filename`).
 `cache-write.mjs` already creates this directory and gitignores it. Temp files
 in the project root require a destructive `rm` cleanup step, which is not
 auto-allowed.
@@ -473,8 +524,9 @@ publish is an outward action to confirm before running.
   bare `rm` (intentionally not auto-allowed).
 - **Redirect output to the cache dir, never `/tmp/`.** A `/tmp/` path triggers a
   path-access prompt that `Bash()` allow entries cannot suppress; write logs to
-  `.cache/develop-web-feature/<name>.log` instead (e.g.
-  `npm run test:coverage > .cache/develop-web-feature/cov.log 2>&1`).
+  `.cache/develop-web-feature/<name>.log` instead. Full gate runs need no manual
+  redirect — the gate runner (`scripts/gates.mjs`) logs each gate to the cache
+  dir for you.
 - **Never prefix Bash commands with `cd /absolute/path;`.** The working
   directory is always the project root — run all commands from there directly.
   Compound `cd /abs/path; cmd` and `cd /abs/path && cmd` patterns trigger
