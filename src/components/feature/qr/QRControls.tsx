@@ -12,6 +12,7 @@ import { TelForm } from './TelForm'
 import { GeoForm } from './GeoForm'
 import { VEventForm } from './VEventForm'
 import { CryptoForm } from './CryptoForm'
+import { CapacityCounter } from './CapacityCounter'
 import { DEFAULT_FRAME_COLOR } from '../../../data/defaults'
 import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig, SmsConfig, TelConfig, GeoConfig, VEventConfig, CryptoConfig, QREyeFrameShape, QREyeCenterShape, QRPixelPattern, QRFrameStyle, QRFramePosition, QRGradient, QRGradientType, QRGradientDirection } from '../../../types/qr'
 
@@ -296,6 +297,9 @@ export interface QRControlsProps {
   maxLogoSize?: number
   // Locale-aware labels
   placeholder?: string
+  capacityUsageLabel?: string
+  capacityNearLimitLabel?: string
+  capacityOverLimitLabel?: string
   correctionLabel?: string
   foregroundLabel?: string
   backgroundLabel?: string
@@ -464,6 +468,9 @@ export function QRControls({
   onLogoSizeChange,
   maxLogoSize,
   placeholder = 'Enter URL or text',
+  capacityUsageLabel,
+  capacityNearLimitLabel,
+  capacityOverLimitLabel,
   correctionLabel = 'Scan Reliability',
   foregroundLabel = 'Foreground',
   backgroundLabel = 'Background',
@@ -880,15 +887,24 @@ export function QRControls({
             onChange={onCryptoChange}
           />
         ) : (
-          <Input
-            label={contentModeTextLabel}
-            placeholder={placeholder}
-            value={value}
-            onChange={(e) => onValueChange(e.target.value)}
-            error={inputError}
-            inputMode="url"
-            required
-          />
+          <div className="flex flex-col gap-1">
+            <Input
+              label={contentModeTextLabel}
+              placeholder={placeholder}
+              value={value}
+              onChange={(e) => onValueChange(e.target.value)}
+              error={inputError}
+              inputMode="url"
+              required
+            />
+            <CapacityCounter
+              value={value}
+              ecLevel={ecLevel}
+              usageLabel={capacityUsageLabel}
+              nearLimitLabel={capacityNearLimitLabel}
+              overLimitLabel={capacityOverLimitLabel}
+            />
+          </div>
         )}
 
         <div className={`space-y-4 transition-opacity duration-150 ${(contentMode === 'text' ? !value.trim() : !hasContent) ? 'opacity-40' : ''}`}>
