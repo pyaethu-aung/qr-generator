@@ -27,6 +27,13 @@ above the form:
   wall-clock time the scanner's device is set to; all-day events use
   `VALUE=DATE` with the exclusive end date handled automatically.
 
+The **Text / URL** field shows a live capacity counter beneath it: the
+characters used against the QR code's capacity for the current error
+correction level (for example `42 / 1273`, where the limit shrinks as
+reliability rises). It turns amber as the content nears the limit and red
+once it goes over. Content past the limit is held back from generating
+rather than failing, so the preview always stays a code that scans.
+
 ## Customization
 
 QR codes can be styled before download:
