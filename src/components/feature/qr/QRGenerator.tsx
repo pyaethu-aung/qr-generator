@@ -314,6 +314,9 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
                 hasContent={!!liveValue}
                 ecLevel={inputEcLevel}
                 onEcLevelChange={setInputEcLevel}
+                capacityUsageLabel={translate('controls.capacityUsage')}
+                capacityNearLimitLabel={translate('controls.capacityNearLimit')}
+                capacityOverLimitLabel={translate('controls.capacityOverLimit')}
                 fgColor={inputFgColor}
                 onFgColorChange={setInputFgColor}
                 bgColor={inputBgColor}
