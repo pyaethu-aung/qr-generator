@@ -240,7 +240,10 @@
     "copyLink": "Copiar enlace",
     "copyLinkSuccess": "Enlace copiado",
     "copyLinkError": "No se pudo copiar el enlace",
-    "copyLinkHint": "Cualquiera con el enlace ve tu texto y diseño (no tu logotipo)."
+    "copyLinkHint": "Cualquiera con el enlace ve tu texto y diseño (no tu logotipo).",
+    "capacityUsage": "{used} de {max} caracteres usados",
+    "capacityNearLimit": "Cerca del límite",
+    "capacityOverLimit": "Capacidad superada"
   },
   "preview": {
     "sectionLabel": "Vista previa en vivo",
