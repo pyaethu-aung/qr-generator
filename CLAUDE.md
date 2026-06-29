@@ -125,13 +125,14 @@ hooks — project policy everyone shares, never per-developer grants.
 "Bash(node .claude/skills/develop-web-feature/scripts/setup.mjs*)"
 ```
 
-Then run it from the project root:
+Then run it from the project root. It **defaults to a dry run** (it prints the grants it would add and writes nothing); re-run with `--write` to apply:
 
 ```bash
-node .claude/skills/develop-web-feature/scripts/setup.mjs
+node .claude/skills/develop-web-feature/scripts/setup.mjs           # preview the delta
+node .claude/skills/develop-web-feature/scripts/setup.mjs --write   # apply it
 ```
 
-This adds all remaining entries for `npm run dev`, the Phase 0 scripts, and the skill-invocation tokens `Skill(commit-message)` / `Skill(create-pr)` (singular — the plural `Skills(...)` never matches) if those skills are installed. It is idempotent — safe to re-run any time.
+This adds the gate runner, the dev-server helper, the skill's other helper scripts, the test/lint/type grants it derives from `package.json`, and the skill-invocation tokens `Skill(commit-message)` / `Skill(create-pr)` (singular; the plural `Skills(...)` never matches) if those skills are installed. It is idempotent, safe to re-run any time. For an unattended run that should not stop on per-edit permission prompts, add `--grant-edits` to also auto-approve `Edit` / `Write` / `MultiEdit`, scoped to the project's source and test directories (config, `package.json`, `.github/`, `.claude/`, and docs still prompt).
 
 The `/impeccable` skill has one separate entry that must be added manually (also to `.claude/settings.local.json`):
 

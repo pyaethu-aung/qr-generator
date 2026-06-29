@@ -2,7 +2,7 @@
 name: develop-web-feature
 description: "Develop, design, and ship a website feature end-to-end with /impeccable: shape, build, e2e specs, gate, audit, critique, fix, open a PR, and release. Portable across web projects. Use when asked to add, build, craft, or design a new feature."
 metadata:
-  version: "1.7.0"
+  version: "1.8.0"
 argument-hint: "[--auto] The feature to build (e.g. 'Calendar event content type')"
 allowed-tools: Bash(npm*) Bash(npx*) Bash(node*) Bash(git:*) Bash(gh:*) Bash(grep*) Bash(ls*) Bash(cat*) Read Write Edit Task
 ---
@@ -63,6 +63,16 @@ passes `--auto`), collapse those into a single review at the PR:
   taken from `critique-plan.mjs`'s P2/P3 output (the snapshot in
   `.impeccable/critique/`) and the audit report, so you can triage them at
   review.
+- **File edits still gate on permission; handle that out-of-band.** `--auto`
+  removes the skill's own confirmations, but Claude Code still prompts before
+  each `Edit` / `Write`. For an unattended run, enable one of: accept-edits mode
+  (shift+tab, or `--permission-mode acceptEdits`); `bypassPermissions` for fully
+  unattended; or grant scoped edits up front with
+  `node .claude/skills/develop-web-feature/scripts/setup.mjs --grant-edits --write`,
+  which auto-approves `Edit` / `Write` / `MultiEdit` for the project's source and
+  test directories only (config, `package.json`, `.github/`, `.claude/`, and docs
+  still prompt). The scoped grant is narrower than accept-edits mode but persists
+  across sessions, so it is opt-in; pick per your trust preference.
 - **Commit and open the PR without prompting:** route through
   `/commit-message --yes` and `/create-pr --yes` (same format and skill token,
   no confirmation pause). Opening the PR is **not optional** — never stop
@@ -95,6 +105,11 @@ exits 0; when grants would change it lists only the *new* entries and exits
 non-zero, so a skill update can never widen your permissions silently. In a
 hands-off run, surface that delta and confirm before `--write` whenever it is
 non-empty; the steady-state case (no delta) needs no pause.
+
+By default it grants no file-edit permission, so edits still prompt. Pass
+`--grant-edits` (off by default) to also auto-approve `Edit` / `Write` /
+`MultiEdit`, scoped to the project's source and test directories, for unattended
+runs (see Autonomous mode for the trade-off versus accept-edits mode).
 
 This adds every allow entry a hands-off run needs, **derived from your project**
 so it is not tied to any one stack: full-suite gate runs via the gate runner

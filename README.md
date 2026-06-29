@@ -282,17 +282,18 @@ scaffolding, and commit/PR automation via skills in `.claude/skills/` and
 > - Run `claude` interactively in this repo once and accept the trust dialog.
 > - Or set `projects["/absolute/path/to/qr-generator"].hasTrustDialogAccepted: true` in your personal Claude config (`~/.claude.json`).
 
-`/develop-web-feature` self-configures its required allow entries. Add one bootstrap entry to `.claude/settings.json` manually, then run the setup script:
+`/develop-web-feature` self-configures its required allow entries. Add one bootstrap entry to `.claude/settings.local.json` manually, then run the setup script:
 
 ```json
 "Bash(node .claude/skills/develop-web-feature/scripts/setup.mjs*)"
 ```
 
 ```bash
-node .claude/skills/develop-web-feature/scripts/setup.mjs
+node .claude/skills/develop-web-feature/scripts/setup.mjs           # preview (dry run)
+node .claude/skills/develop-web-feature/scripts/setup.mjs --write   # apply
 ```
 
-The script adds all remaining entries (`npm run dev`, Phase 0 scripts, `Skills(commit-message/create-pr)` if installed) and is idempotent — safe to re-run any time.
+The script **defaults to a dry run** (writes nothing; re-run with `--write` to apply) and is idempotent. It adds the gate runner, the dev-server helper, the other helper scripts, the grants derived from `package.json`, and `Skill(commit-message)` / `Skill(create-pr)` (singular; the plural `Skills(...)` never matches) if installed. For an unattended run that should not stop on per-edit permission prompts, add `--grant-edits` to also auto-approve `Edit` / `Write` / `MultiEdit`, scoped to the project's source and test directories.
 
 The `/impeccable` skill requires one separate manual entry:
 
