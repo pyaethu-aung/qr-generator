@@ -29,6 +29,8 @@ Never push directly to `main`. All changes must go through a pull request. A `pr
 
 `useQRGenerator` owns all QR config state. Input fields update "pending" state (e.g. `inputFgColor`); clicking **Generate** snapshots them into `config`, which drives the `qrcode.react` preview. Downloads use the headless `qrcode` library against the pending input state — not the DOM.
 
+**Capacity guard.** `src/utils/qrCapacity.ts` holds the version-40 byte-mode capacity per EC level and `getCapacityStatus` (measured in UTF-8 bytes). `useQRGenerator` treats content past that capacity like its length validation: `isBlocked` clears the live preview and disables downloads, so `qrcode.create` never sees an unencodable value. This matters because `getMatrixSize` (`qrShapeRenderer.ts`) runs at render and `qrcode.create` throws on over-capacity input — reachable at Q/H levels under the 2000-char input cap — so it catches and falls back to the version-1 size rather than crashing the generator. The `CapacityCounter` under the Text/URL field (text mode only) is the visible signal: `used / max`, amber near the limit, red over it.
+
 ### Context providers (wired in `src/main.tsx`)
 
 - `ThemeProvider` — reads/writes `localStorage`, toggles `.dark` on `<html>`, exposes `useThemeContext()`
