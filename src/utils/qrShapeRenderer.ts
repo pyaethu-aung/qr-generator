@@ -16,8 +16,16 @@ export interface ParsedQR {
 
 export function getMatrixSize(value: string, ecLevel: 'L' | 'M' | 'Q' | 'H'): number {
   if (!value) return 21;
-  const qr = qrcode.create(value, { errorCorrectionLevel: ecLevel })
-  return qr.modules.size;
+  // Content past the level's capacity has no encodable matrix — qrcode.create
+  // throws. This runs at render (logo-cap / risky-pattern derivation), so a throw
+  // would take the whole generator down; report the smallest matrix instead and
+  // let the capacity guard upstream clear the preview.
+  try {
+    const qr = qrcode.create(value, { errorCorrectionLevel: ecLevel })
+    return qr.modules.size;
+  } catch {
+    return 21;
+  }
 }
 
 /**

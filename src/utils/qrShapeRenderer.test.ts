@@ -1,6 +1,22 @@
 import { describe, it, expect } from 'vitest'
-import { parseQRCode, getEyeFramePath, getEyeCenterPath, getDataPath, getDataShapeRendering, generateQRPaths } from './qrShapeRenderer'
+import { parseQRCode, getEyeFramePath, getEyeCenterPath, getDataPath, getDataShapeRendering, generateQRPaths, getMatrixSize } from './qrShapeRenderer'
 import type { QRModule } from './qrShapeRenderer'
+
+describe('getMatrixSize', () => {
+  it('returns the version-1 size (21) for empty content', () => {
+    expect(getMatrixSize('', 'M')).toBe(21)
+  })
+
+  it('grows the matrix as content grows', () => {
+    expect(getMatrixSize('https://example.com/a-fairly-long-path', 'M')).toBeGreaterThan(21)
+  })
+
+  it('falls back to 21 instead of throwing when content exceeds capacity', () => {
+    // 1300 bytes is past the Highest-level capacity (1273); qrcode.create throws.
+    expect(() => getMatrixSize('a'.repeat(1300), 'H')).not.toThrow()
+    expect(getMatrixSize('a'.repeat(1300), 'H')).toBe(21)
+  })
+})
 
 describe('qrShapeRenderer Matrix Parser (Foundational)', () => {
   it('should correctly parse a QR code matrix extracting the size and modules', () => {
