@@ -11,6 +11,14 @@
  *   node .claude/skills/develop-web-feature/scripts/setup.mjs            # preview the delta
  *   node .claude/skills/develop-web-feature/scripts/setup.mjs --write    # apply it
  *
+ * --grant-edits (opt-in, off by default): also grant the structured file-edit
+ * tools (Edit/Write/MultiEdit) so a hands-off run does not stop on the per-edit
+ * permission prompt. Scoped to the project's source/test directories that exist
+ * (config, package.json, .github/, .claude/, and docs still prompt) — narrower
+ * than accept-edits mode, which auto-approves every path:
+ *   node .claude/skills/develop-web-feature/scripts/setup.mjs --grant-edits           # preview
+ *   node .claude/skills/develop-web-feature/scripts/setup.mjs --grant-edits --write   # apply
+ *
  * Personal, not shared: auto-approve grants are a per-developer trust decision,
  * so they go in the gitignored .local file (where Claude Code itself writes
  * "always allow" approvals) — never the committed settings.json. Each developer
@@ -55,12 +63,14 @@ const TOOLCHAIN_MAP = [
 ];
 const TOOLCHAIN = [...new Set(TOOLCHAIN_MAP.filter((t) => hasDep(t.dep)).map((t) => t.entry))];
 
-// Browser-driver policy: prefer the Playwright CLI when present; fall back to a
-// Playwright MCP server only when the CLI is absent. So the MCP browser tools are
-// granted ONLY in that fallback case (a Playwright server declared in .mcp.json
-// AND no CLI dependency). Scoped to the inspect/drive tools the critique uses; the
-// code-execution tools (browser_evaluate, browser_run_code_unsafe) are
-// deliberately excluded (least privilege).
+// Browser-driver policy: the Playwright MCP server and the e2e CLI serve
+// different roles and coexist — the CLI (`npx playwright`) runs the spec suite,
+// while the MCP server drives the LIVE browser interactively during the critique
+// phase (navigate, snapshot, screenshot, click). So the MCP browser tools are
+// granted whenever a Playwright server is declared in .mcp.json, regardless of
+// whether the CLI is also a dependency. Scoped to the inspect/drive tools the
+// critique uses; the code-execution tools (browser_evaluate,
+// browser_run_code_unsafe) are deliberately excluded (least privilege).
 const mcpServers = readJSON('.mcp.json')?.mcpServers ?? {};
 // The MCP tool token is `mcp__<serverName>__<tool>`, where serverName is the key
 // in .mcp.json — so derive the prefix from the matched server rather than
@@ -69,7 +79,6 @@ const playwrightServerName = Object.entries(mcpServers).find(
   ([name, def]) =>
     /playwright/i.test(name) || (Array.isArray(def?.args) && def.args.some((a) => /@playwright\/mcp/i.test(String(a)))),
 )?.[0];
-const cliPresent = hasDep('@playwright/test') || hasDep('playwright');
 const MCP_BROWSER_TOOLS = [
   'browser_navigate',
   'browser_navigate_back',
@@ -88,8 +97,23 @@ const MCP_BROWSER_TOOLS = [
   'browser_handle_dialog',
   'browser_close',
 ];
-const MCP_PLAYWRIGHT =
-  playwrightServerName && !cliPresent ? MCP_BROWSER_TOOLS.map((t) => `mcp__${playwrightServerName}__${t}`) : [];
+const MCP_PLAYWRIGHT = playwrightServerName
+  ? MCP_BROWSER_TOOLS.map((t) => `mcp__${playwrightServerName}__${t}`)
+  : [];
+
+// --grant-edits (opt-in, off by default): auto-approve the structured file-edit
+// tools so a hands-off run does not stop on the per-edit permission prompt.
+// Deliberately scoped to the project's source/test directories that exist (NOT
+// root config, package.json, .github/, .claude/, or docs — those still prompt),
+// and DERIVED from the layout rather than hard-coded, so it stays portable. It is
+// narrower than accept-edits mode (which auto-approves EVERY path) but, unlike
+// that per-session mode, it persists across sessions — hence opt-in only.
+const grantEdits = process.argv.slice(2).includes('--grant-edits');
+const EDIT_TOOLS = ['Edit', 'Write', 'MultiEdit'];
+const SOURCE_DIRS = ['src', 'app', 'lib', 'packages', 'e2e', 'tests', 'test', 'cypress'];
+const EDIT_GRANTS = grantEdits
+  ? SOURCE_DIRS.filter((d) => existsSync(d)).flatMap((d) => EDIT_TOOLS.map((tool) => `${tool}(${d}/**)`))
+  : [];
 
 const REQUIRED = [
   // Full-suite gate runs (test / lint / build / e2e) go through the gate runner,
@@ -193,7 +217,7 @@ const applyMode = process.argv.slice(2).includes('--write');
 // each CONDITIONAL entry whose skill/tool is actually present. De-dupe while
 // preserving order (a Set keeps insertion order).
 const initialAllow = new Set(settings.permissions.allow);
-const candidates = [...REQUIRED, ...TOOLCHAIN, ...MCP_PLAYWRIGHT];
+const candidates = [...REQUIRED, ...TOOLCHAIN, ...MCP_PLAYWRIGHT, ...EDIT_GRANTS];
 for (const { path, entry } of CONDITIONAL) {
   if (existsSync(path)) candidates.push(entry);
 }
