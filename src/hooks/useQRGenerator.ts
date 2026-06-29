@@ -5,6 +5,7 @@ import { exportSvg } from '../utils/export/svgExporter'
 import { renderQrPngBlob } from '../utils/export/pngRenderer'
 import { getHydratedAppearance } from '../utils/shareConfig'
 import { loadPersistedAppearance, persistAppearance } from '../utils/persistedAppearance'
+import { getCapacityStatus } from '../utils/qrCapacity'
 
 export const INPUT_LENGTH_LIMIT = 2000
 
@@ -69,6 +70,16 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
   const effectiveInput = externalValue !== undefined ? externalValue : inputValue
   const effectiveError = externalValue !== undefined ? undefined : inputError
 
+  // Content past the QR capacity for the active level cannot be encoded — qrcode.create
+  // throws on it. Treat it like a validation failure so the preview clears to its
+  // placeholder and downloads disable, instead of the generator crashing. The capacity
+  // counter under the field is what tells the user the count is over the limit.
+  const isOverCapacity = useMemo(
+    () => getCapacityStatus(effectiveInput, inputEcLevel).isOverLimit,
+    [effectiveInput, inputEcLevel],
+  )
+  const isBlocked = Boolean(effectiveError) || isOverCapacity
+
   useEffect(() => {
     return () => {
       if (downloadTimerRef.current) clearTimeout(downloadTimerRef.current)
@@ -102,18 +113,18 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
 
   // Debounce the text field — 300 ms for valid input, 0 ms to clear on invalid/empty
   useEffect(() => {
-    const effective = effectiveInput.trim() && !effectiveError ? effectiveInput : ''
+    const effective = effectiveInput.trim() && !isBlocked ? effectiveInput : ''
     const delay = effective ? 300 : 0
     const timer = setTimeout(() => setLiveValue(effective), delay)
     return () => clearTimeout(timer)
-  }, [effectiveInput, effectiveError])
+  }, [effectiveInput, isBlocked])
 
   const canDownload = useMemo(
-    () => Boolean(effectiveInput.trim()) && !effectiveError,
-    [effectiveError, effectiveInput],
+    () => Boolean(effectiveInput.trim()) && !isBlocked,
+    [isBlocked, effectiveInput],
   )
 
-  const isPending = Boolean(effectiveInput.trim()) && !effectiveError && liveValue !== effectiveInput.trim()
+  const isPending = Boolean(effectiveInput.trim()) && !isBlocked && liveValue !== effectiveInput.trim()
 
   const downloadPng = useCallback(async (
     designConfig: QRDesignConfig,
