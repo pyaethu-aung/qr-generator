@@ -131,6 +131,45 @@ describe('useQRGenerator', () => {
     expect(result.current.liveValue).toBe('')
   })
 
+  it('blocks generation when content exceeds the capacity for the level', () => {
+    const { result } = renderHook(() => useQRGenerator())
+    // Highest reliability has the smallest capacity (1273 bytes); 1300 characters
+    // is over it but under the 2000-character input limit, so there is no length
+    // error — only the capacity guard should stop generation.
+    act(() => {
+      result.current.setInputEcLevel('H')
+      result.current.setInputValue('a'.repeat(1300))
+    })
+
+    act(() => {
+      vi.advanceTimersByTime(300)
+    })
+
+    expect(result.current.inputError).toBeUndefined()
+    expect(result.current.canDownload).toBe(false)
+    expect(result.current.liveValue).toBe('')
+  })
+
+  it('allows generation again once the level has room for the content', () => {
+    const { result } = renderHook(() => useQRGenerator())
+    act(() => {
+      result.current.setInputEcLevel('H')
+      result.current.setInputValue('a'.repeat(1300))
+    })
+
+    // Lowering reliability to Low (2953 bytes) lifts the limit above the content.
+    act(() => {
+      result.current.setInputEcLevel('L')
+    })
+
+    act(() => {
+      vi.advanceTimersByTime(300)
+    })
+
+    expect(result.current.canDownload).toBe(true)
+    expect(result.current.liveValue).toBe('a'.repeat(1300))
+  })
+
   it('should generate PNG download with custom design config', async () => {
     const { result } = renderHook(() => useQRGenerator())
 
