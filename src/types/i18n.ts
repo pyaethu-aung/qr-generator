@@ -238,6 +238,9 @@ export interface ControlStrings {
   copyLinkSuccess: string
   copyLinkError: string
   copyLinkHint: string
+  capacityUsage: string
+  capacityNearLimit: string
+  capacityOverLimit: string
 }
 
 export interface PreviewStrings {
@@ -603,6 +606,9 @@ export type TranslationKey =
   | 'controls.copyLinkSuccess'
   | 'controls.copyLinkError'
   | 'controls.copyLinkHint'
+  | 'controls.capacityUsage'
+  | 'controls.capacityNearLimit'
+  | 'controls.capacityOverLimit'
   | 'preview.sectionLabel'
   | 'preview.shareStatusSharing'
   | 'preview.shareStatusShared'
