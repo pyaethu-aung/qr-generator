@@ -288,6 +288,8 @@ export interface QRControlsProps {
   onDownloadSvg?: () => void
   canDownload?: boolean
   hasContent?: boolean
+  /** The fully-built QR payload for the active non-text content mode. Undefined in text mode. */
+  builtValue?: string
   inputError?: string
   // Logo
   logoDataUrl?: string | null
@@ -461,6 +463,7 @@ export function QRControls({
   onDownloadSvg,
   canDownload = false,
   hasContent = false,
+  builtValue,
   inputError,
   logoDataUrl,
   onLogoChange,
@@ -905,6 +908,16 @@ export function QRControls({
               overLimitLabel={capacityOverLimitLabel}
             />
           </div>
+        )}
+
+        {contentMode !== 'text' && builtValue !== undefined && (
+          <CapacityCounter
+            value={builtValue}
+            ecLevel={ecLevel}
+            usageLabel={capacityUsageLabel}
+            nearLimitLabel={capacityNearLimitLabel}
+            overLimitLabel={capacityOverLimitLabel}
+          />
         )}
 
         <div className={`space-y-4 transition-opacity duration-150 ${(contentMode === 'text' ? !value.trim() : !hasContent) ? 'opacity-40' : ''}`}>
