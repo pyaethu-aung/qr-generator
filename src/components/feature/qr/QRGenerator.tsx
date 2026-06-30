@@ -70,6 +70,27 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
     : contentMode === 'crypto' ? cryptoString
     : undefined
 
+  // Raw field bytes for the capacity counter — counts what the user typed, not
+  // the QR payload (which has format overhead). This keeps the counter live even
+  // when required fields are missing and avoids an overhead jump on the first char.
+  const capacityValue = contentMode === 'wifi'
+    ? [wifiConfig.ssid, wifiConfig.password].join('')
+    : contentMode === 'vcard'
+    ? [vcardConfig.firstName, vcardConfig.lastName, vcardConfig.phone, vcardConfig.email, vcardConfig.company, vcardConfig.jobTitle, vcardConfig.website].join('')
+    : contentMode === 'email'
+    ? [emailConfig.to, emailConfig.subject, emailConfig.body].join('')
+    : contentMode === 'sms'
+    ? [smsConfig.number, smsConfig.message].join('')
+    : contentMode === 'tel'
+    ? telConfig.number
+    : contentMode === 'geo'
+    ? [geoConfig.latitude, geoConfig.longitude].join('')
+    : contentMode === 'vevent'
+    ? [veventConfig.summary, veventConfig.start, veventConfig.end, veventConfig.location, veventConfig.description].join('')
+    : contentMode === 'crypto'
+    ? [cryptoConfig.address, cryptoConfig.amount, cryptoConfig.label].join('')
+    : undefined
+
   const {
     liveValue,
     inputValue,
@@ -322,7 +343,7 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
                 value={inputValue}
                 onValueChange={setInputValue}
                 hasContent={!!liveValue}
-                builtValue={builtValue}
+                capacityValue={capacityValue}
                 ecLevel={inputEcLevel}
                 onEcLevelChange={setInputEcLevel}
                 capacityUsageLabel={translate('controls.capacityUsage')}
