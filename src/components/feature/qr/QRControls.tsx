@@ -288,8 +288,8 @@ export interface QRControlsProps {
   onDownloadSvg?: () => void
   canDownload?: boolean
   hasContent?: boolean
-  /** The fully-built QR payload for the active non-text content mode. Undefined in text mode. */
-  builtValue?: string
+  /** Raw typed content for the capacity counter in non-text modes. Undefined in text mode. */
+  capacityValue?: string
   inputError?: string
   // Logo
   logoDataUrl?: string | null
@@ -463,7 +463,7 @@ export function QRControls({
   onDownloadSvg,
   canDownload = false,
   hasContent = false,
-  builtValue,
+  capacityValue,
   inputError,
   logoDataUrl,
   onLogoChange,
@@ -910,9 +910,9 @@ export function QRControls({
           </div>
         )}
 
-        {contentMode !== 'text' && builtValue !== undefined && (
+        {contentMode !== 'text' && capacityValue !== undefined && (
           <CapacityCounter
-            value={builtValue}
+            value={capacityValue}
             ecLevel={ecLevel}
             usageLabel={capacityUsageLabel}
             nearLimitLabel={capacityNearLimitLabel}
