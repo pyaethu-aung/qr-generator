@@ -60,6 +60,16 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
   const { veventConfig, veventString, setSummary: setVEventSummary, setStart: setVEventStart, setEnd: setVEventEnd, setAllDay: setVEventAllDay, setLocation: setVEventLocation, setDescription: setVEventDescription } = useVEventConfig()
   const { cryptoConfig, cryptoString, setField: setCryptoField } = useCryptoConfig()
 
+  const builtValue = contentMode === 'wifi' ? wifiString
+    : contentMode === 'vcard' ? vcardString
+    : contentMode === 'email' ? emailString
+    : contentMode === 'sms' ? smsString
+    : contentMode === 'tel' ? telString
+    : contentMode === 'geo' ? geoString
+    : contentMode === 'vevent' ? veventString
+    : contentMode === 'crypto' ? cryptoString
+    : undefined
+
   const {
     liveValue,
     inputValue,
@@ -78,7 +88,7 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
     canDownload,
     recentDownload,
     isPending,
-  } = useQRGenerator(contentMode === 'wifi' ? wifiString : contentMode === 'vcard' ? vcardString : contentMode === 'email' ? emailString : contentMode === 'sms' ? smsString : contentMode === 'tel' ? telString : contentMode === 'geo' ? geoString : contentMode === 'vevent' ? veventString : contentMode === 'crypto' ? cryptoString : undefined)
+  } = useQRGenerator(builtValue)
 
   const {
     designConfig,
@@ -312,6 +322,7 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
                 value={inputValue}
                 onValueChange={setInputValue}
                 hasContent={!!liveValue}
+                builtValue={builtValue}
                 ecLevel={inputEcLevel}
                 onEcLevelChange={setInputEcLevel}
                 capacityUsageLabel={translate('controls.capacityUsage')}
