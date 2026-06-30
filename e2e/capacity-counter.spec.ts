@@ -45,3 +45,37 @@ test('counter warns near the limit and flags going over', async ({ page }) => {
   await expect(warning).toHaveText('Over capacity')
   await expect(count).toHaveText('1300 / 1273')
 })
+
+// ── Non-text content types ───────────────────────────────────────────────────
+// The same counter appears below every non-text form, counting the built payload.
+
+test('Wi-Fi mode: counter shows built payload byte count', async ({ page }) => {
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Wi-Fi' }).click()
+
+  const count = page.getByTestId('capacity-count')
+
+  // No fields filled yet → empty payload → 0 bytes. Non-text modes default to Highest (1273).
+  await expect(count).toHaveText('0 / 1273')
+
+  // Fill SSID and password. Payload becomes "WIFI:T:WPA;S:A;P:B;;" = 20 bytes.
+  await page.getByPlaceholder('Your Wi-Fi name').fill('A')
+  await page.getByPlaceholder('Network password').fill('B')
+  await expect(count).toHaveText('20 / 1273')
+})
+
+test('Wi-Fi mode: counter tracks the EC level', async ({ page }) => {
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Wi-Fi' }).click()
+  await page.getByPlaceholder('Your Wi-Fi name').fill('A')
+  await page.getByPlaceholder('Network password').fill('B')
+
+  const count = page.getByTestId('capacity-count')
+  await expect(count).toHaveText('20 / 1273')
+
+  // Switching to Medium expands capacity; the payload byte count stays the same.
+  await page.getByRole('button', { name: /Medium/ }).click()
+  await expect(count).toHaveText('20 / 2331')
+})
