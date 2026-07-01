@@ -113,8 +113,10 @@ export interface ControlStrings {
   vcardLastNamePlaceholder: string
   vcardPhoneLabel: string
   vcardPhonePlaceholder: string
+  vcardPhoneError: string
   vcardEmailLabel: string
   vcardEmailPlaceholder: string
+  vcardEmailError: string
   vcardProfessionalLabel: string
   vcardCompanyLabel: string
   vcardCompanyPlaceholder: string
@@ -122,6 +124,7 @@ export interface ControlStrings {
   vcardJobTitlePlaceholder: string
   vcardWebsiteLabel: string
   vcardWebsitePlaceholder: string
+  vcardWebsiteError: string
   vcardCorrectionHint: string
   contentModeEmail: string
   emailToLabel: string
@@ -481,8 +484,10 @@ export type TranslationKey =
   | 'controls.vcardLastNamePlaceholder'
   | 'controls.vcardPhoneLabel'
   | 'controls.vcardPhonePlaceholder'
+  | 'controls.vcardPhoneError'
   | 'controls.vcardEmailLabel'
   | 'controls.vcardEmailPlaceholder'
+  | 'controls.vcardEmailError'
   | 'controls.vcardProfessionalLabel'
   | 'controls.vcardCompanyLabel'
   | 'controls.vcardCompanyPlaceholder'
@@ -490,6 +495,7 @@ export type TranslationKey =
   | 'controls.vcardJobTitlePlaceholder'
   | 'controls.vcardWebsiteLabel'
   | 'controls.vcardWebsitePlaceholder'
+  | 'controls.vcardWebsiteError'
   | 'controls.vcardCorrectionHint'
   | 'controls.contentModeEmail'
   | 'controls.emailToLabel'
