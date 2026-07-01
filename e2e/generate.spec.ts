@@ -97,6 +97,62 @@ test('Contact: fixing an invalid website clears the error and includes it in the
   await expect(canvas).toHaveAttribute('data-value', /URL:https:\/\/example\.com/)
 })
 
+// ── Location (geo) QR ───────────────────────────────────────────────────────
+
+test('Location: invalid latitude is flagged only after the field is blurred', async ({ page }) => {
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Location' }).click()
+  const latitude = page.getByLabel('Latitude')
+  await latitude.fill('91')
+  await expect(page.getByRole('alert')).not.toBeVisible()
+
+  await latitude.blur()
+  await expect(page.getByRole('alert')).toContainText(/between -90 and 90/i)
+
+  await latitude.fill('45')
+  await expect(page.getByRole('alert')).not.toBeVisible()
+})
+
+// ── Crypto QR ────────────────────────────────────────────────────────────────
+
+test('Crypto: invalid address is flagged only after the field is blurred', async ({ page }) => {
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Crypto' }).click()
+  const address = page.getByLabel('Wallet address')
+  await address.fill('nonsense')
+  await expect(page.getByRole('alert')).not.toBeVisible()
+
+  await address.blur()
+  await expect(page.getByRole('alert')).toContainText(/doesn't look like a Bitcoin address/i)
+
+  await address.fill('bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4')
+  await expect(page.getByRole('alert')).not.toBeVisible()
+})
+
+// ── Event (vEvent) QR ────────────────────────────────────────────────────────
+
+test('Event: end before start is flagged only once a date field has been left', async ({ page }) => {
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Event' }).click()
+  const start = page.getByLabel('Starts')
+  const end = page.getByLabel('Ends')
+
+  // Fill the end date first — with no start yet, there's nothing to compare and no field
+  // has been left, so the check hasn't armed.
+  await end.fill('2026-07-01T18:00')
+  await expect(page.getByRole('alert')).not.toBeVisible()
+
+  // Filling start moves focus off End, which blurs it and arms the check.
+  await start.fill('2026-07-01T19:00')
+  await expect(page.getByRole('alert')).toContainText(/can't be before the start/i)
+
+  await end.fill('2026-07-01T21:00')
+  await expect(page.getByRole('alert')).not.toBeVisible()
+})
+
 // ── Download ───────────────────────────────────────────────────────────────
 
 test('Download PNG: clicking Download PNG starts a file download', async ({ page }) => {
