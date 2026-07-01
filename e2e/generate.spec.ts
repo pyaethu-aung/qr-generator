@@ -46,6 +46,57 @@ test('Contact: first + last name renders a vCard QR code', async ({ page }) => {
   await expect(canvas).toHaveAttribute('data-value', /^BEGIN:VCARD/)
 })
 
+test('Contact: invalid email is flagged and omitted from the vCard', async ({ page }) => {
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Contact' }).click()
+  await page.getByLabel('First Name').fill('Jane')
+  const email = page.getByLabel('Email')
+  await email.fill('not-an-email')
+  await email.blur()
+
+  await expect(page.getByRole('alert')).toContainText(/valid email/i)
+
+  const canvas = page.getByTestId('qr-code-canvas')
+  await expect(canvas).toBeVisible({ timeout: 5_000 })
+  await expect(canvas).not.toHaveAttribute('data-value', /EMAIL:/)
+})
+
+test('Contact: invalid phone number is flagged and omitted from the vCard', async ({ page }) => {
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Contact' }).click()
+  await page.getByLabel('First Name').fill('Jane')
+  const phone = page.getByLabel('Phone')
+  await phone.fill('abc')
+  await phone.blur()
+
+  await expect(page.getByRole('alert')).toContainText(/phone number/i)
+
+  const canvas = page.getByTestId('qr-code-canvas')
+  await expect(canvas).toBeVisible({ timeout: 5_000 })
+  await expect(canvas).not.toHaveAttribute('data-value', /TEL/)
+})
+
+test('Contact: fixing an invalid website clears the error and includes it in the vCard', async ({ page }) => {
+  await page.goto('/')
+
+  await page.getByRole('button', { name: 'Contact' }).click()
+  await page.getByLabel('First Name').fill('Jane')
+  await page.getByRole('button', { name: /Professional details/i }).click()
+
+  const website = page.getByLabel('Website')
+  await website.fill('not a url')
+  await website.blur()
+  await expect(page.getByRole('alert')).toContainText(/valid website/i)
+
+  await website.fill('https://example.com')
+  await expect(page.getByRole('alert')).not.toBeVisible()
+
+  const canvas = page.getByTestId('qr-code-canvas')
+  await expect(canvas).toHaveAttribute('data-value', /URL:https:\/\/example\.com/)
+})
+
 // ── Download ───────────────────────────────────────────────────────────────
 
 test('Download PNG: clicking Download PNG starts a file download', async ({ page }) => {
