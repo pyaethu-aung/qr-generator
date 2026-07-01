@@ -39,12 +39,16 @@ export function GeoForm({ config, onLatitudeChange, onLongitudeChange }: GeoForm
 
   useEffect(() => () => clearTimeout(foundTimerRef.current), [])
 
+  const [latTouched, setLatTouched] = useState(false)
+  const [lngTouched, setLngTouched] = useState(false)
+
   // A non-empty field that fails to parse is an explicit error; a blank field is merely
-  // incomplete and stays quiet until the user commits to a value.
+  // incomplete and stays quiet until the user commits to a value. Deferred until the
+  // field is blurred once, so a mid-typo digit doesn't flash red before the user is done.
   const lat = parseLatitude(config.latitude)
   const lng = parseLongitude(config.longitude)
-  const latError = config.latitude.trim() !== '' && lat === null
-  const lngError = config.longitude.trim() !== '' && lng === null
+  const latError = latTouched && config.latitude.trim() !== '' && lat === null
+  const lngError = lngTouched && config.longitude.trim() !== '' && lng === null
 
   const showPreview = lat !== null && lng !== null
   const previewCoords = showPreview ? `${lat}, ${lng}` : ''
@@ -116,6 +120,7 @@ export function GeoForm({ config, onLatitudeChange, onLongitudeChange }: GeoForm
             placeholder={translate('controls.geoLatitudePlaceholder')}
             value={config.latitude}
             onChange={(e) => editCoordinate(onLatitudeChange)(e.target.value)}
+            onBlur={() => setLatTouched(true)}
             error={latError ? translate('controls.geoLatitudeError') : undefined}
             aria-describedby={`${hintId} ${guidanceId}`}
             inputMode="decimal"
@@ -129,6 +134,7 @@ export function GeoForm({ config, onLatitudeChange, onLongitudeChange }: GeoForm
             placeholder={translate('controls.geoLongitudePlaceholder')}
             value={config.longitude}
             onChange={(e) => editCoordinate(onLongitudeChange)(e.target.value)}
+            onBlur={() => setLngTouched(true)}
             error={lngError ? translate('controls.geoLongitudeError') : undefined}
             aria-describedby={`${hintId} ${guidanceId}`}
             inputMode="decimal"

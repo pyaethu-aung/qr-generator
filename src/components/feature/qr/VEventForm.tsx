@@ -44,8 +44,11 @@ export function VEventForm({
   // Starts open when a description already exists, but the user can still
   // collapse it afterwards — the content is kept in state, only hidden.
   const [descriptionOpen, setDescriptionOpen] = useState(!!config.description)
+  const [endTouched, setEndTouched] = useState(false)
 
-  const endError = isEndBeforeStart(config)
+  // Deferred until either date field is blurred once, so mid-entry typing doesn't
+  // flash red before the user is done choosing both dates.
+  const endError = endTouched && isEndBeforeStart(config)
 
   // The QR only exists once both required fields are filled. When the user has
   // started elsewhere (the other required field, or an optional one like the
@@ -110,6 +113,7 @@ export function VEventForm({
           aria-describedby={hintId}
           value={config.start}
           onChange={(e) => onStartChange(e.target.value)}
+          onBlur={() => setEndTouched(true)}
           helperText={startHint}
           required
         />
@@ -119,6 +123,7 @@ export function VEventForm({
           aria-describedby={hintId}
           value={config.end}
           onChange={(e) => onEndChange(e.target.value)}
+          onBlur={() => setEndTouched(true)}
           min={config.start || undefined}
           error={endError ? translate('controls.veventEndError') : undefined}
         />

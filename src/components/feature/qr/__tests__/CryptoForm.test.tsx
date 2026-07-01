@@ -41,13 +41,16 @@ describe('CryptoForm', () => {
     expect(onChange).toHaveBeenCalledWith('network', 'ethereum')
   })
 
-  it('shows an address error only once a non-empty value fails its network format', () => {
+  it('shows an address error only once a non-empty value fails its network format and the field is blurred', () => {
     setup({ address: 'nonsense' })
+    expect(screen.queryByText(/doesn't look like a Bitcoin address/i)).not.toBeInTheDocument()
+    fireEvent.blur(addressInput())
     expect(screen.getByText(/doesn't look like a Bitcoin address/i)).toBeInTheDocument()
   })
 
   it('stays quiet on a blank address', () => {
     setup()
+    fireEvent.blur(addressInput())
     expect(screen.queryByText(/doesn't look like/i)).not.toBeInTheDocument()
   })
 
@@ -62,8 +65,11 @@ describe('CryptoForm', () => {
     expect(screen.queryByRole('textbox', { name: /label/i })).not.toBeInTheDocument()
   })
 
-  it('flags an amount that is not greater than zero', () => {
+  it('flags an amount that is not greater than zero once the field is blurred', () => {
     setup({ address: BTC, amount: '0' })
+    const amountInput = screen.getByRole('textbox', { name: /amount/i })
+    expect(screen.queryByText(/greater than zero/i)).not.toBeInTheDocument()
+    fireEvent.blur(amountInput)
     expect(screen.getByText(/greater than zero/i)).toBeInTheDocument()
   })
 

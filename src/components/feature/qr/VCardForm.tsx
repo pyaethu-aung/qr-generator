@@ -35,24 +35,26 @@ export function VCardForm({
 
   const hasProfessionalData = config.company || config.jobTitle || config.website
 
-  const [phoneError, setPhoneError] = useState<string | undefined>()
-  const [emailError, setEmailError] = useState<string | undefined>()
-  const [websiteError, setWebsiteError] = useState<string | undefined>()
+  const [phoneTouched, setPhoneTouched] = useState(false)
+  const [emailTouched, setEmailTouched] = useState(false)
+  const [websiteTouched, setWebsiteTouched] = useState(false)
 
-  const validatePhone = (value: string) => {
-    const trimmed = value.trim()
-    setPhoneError(!trimmed || PHONE_REGEX.test(trimmed) ? undefined : translate('controls.vcardPhoneError'))
-  }
+  // Deferred until each field is blurred once, so a mid-typo digit doesn't flash red
+  // before the user is done; live thereafter so a fix clears the error immediately.
+  const phoneTrimmed = config.phone.trim()
+  const phoneError = phoneTouched && phoneTrimmed !== '' && !PHONE_REGEX.test(phoneTrimmed)
+    ? translate('controls.vcardPhoneError')
+    : undefined
 
-  const validateEmail = (value: string) => {
-    const trimmed = value.trim()
-    setEmailError(!trimmed || EMAIL_REGEX.test(trimmed) ? undefined : translate('controls.vcardEmailError'))
-  }
+  const emailTrimmed = config.email.trim()
+  const emailError = emailTouched && emailTrimmed !== '' && !EMAIL_REGEX.test(emailTrimmed)
+    ? translate('controls.vcardEmailError')
+    : undefined
 
-  const validateWebsite = (value: string) => {
-    const trimmed = value.trim()
-    setWebsiteError(!trimmed || URL_REGEX.test(trimmed) ? undefined : translate('controls.vcardWebsiteError'))
-  }
+  const websiteTrimmed = config.website.trim()
+  const websiteError = websiteTouched && websiteTrimmed !== '' && !URL_REGEX.test(websiteTrimmed)
+    ? translate('controls.vcardWebsiteError')
+    : undefined
 
   return (
     <div className="flex flex-col gap-4">
@@ -79,8 +81,8 @@ export function VCardForm({
         label={translate('controls.vcardPhoneLabel')}
         placeholder={translate('controls.vcardPhonePlaceholder')}
         value={config.phone}
-        onChange={(e) => { onPhoneChange(e.target.value); if (phoneError) setPhoneError(undefined) }}
-        onBlur={(e) => validatePhone(e.target.value)}
+        onChange={(e) => onPhoneChange(e.target.value)}
+        onBlur={() => setPhoneTouched(true)}
         error={phoneError}
         type="tel"
         autoComplete="tel"
@@ -90,8 +92,8 @@ export function VCardForm({
         label={translate('controls.vcardEmailLabel')}
         placeholder={translate('controls.vcardEmailPlaceholder')}
         value={config.email}
-        onChange={(e) => { onEmailChange(e.target.value); if (emailError) setEmailError(undefined) }}
-        onBlur={(e) => validateEmail(e.target.value)}
+        onChange={(e) => onEmailChange(e.target.value)}
+        onBlur={() => setEmailTouched(true)}
         error={emailError}
         type="email"
         autoComplete="email"
@@ -137,8 +139,8 @@ export function VCardForm({
               label={translate('controls.vcardWebsiteLabel')}
               placeholder={translate('controls.vcardWebsitePlaceholder')}
               value={config.website}
-              onChange={(e) => { onWebsiteChange(e.target.value); if (websiteError) setWebsiteError(undefined) }}
-              onBlur={(e) => validateWebsite(e.target.value)}
+              onChange={(e) => onWebsiteChange(e.target.value)}
+              onBlur={() => setWebsiteTouched(true)}
               error={websiteError}
               type="url"
               autoComplete="url"
