@@ -80,13 +80,16 @@ describe('VEventForm', () => {
     expect(endInput()).toHaveAttribute('min', '2026-07-01T19:00')
   })
 
-  it('shows an error when the end precedes the start', () => {
+  it('shows an error when the end precedes the start once a date field is blurred', () => {
     setup({ ...defaultConfig, start: '2026-07-01T19:00', end: '2026-07-01T18:00' })
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    fireEvent.blur(endInput())
     expect(screen.getByRole('alert')).toHaveTextContent(/can't be before the start/i)
   })
 
   it('shows no error while the end field is empty', () => {
     setup({ ...defaultConfig, start: '2026-07-01T19:00' })
+    fireEvent.blur(startInput())
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 

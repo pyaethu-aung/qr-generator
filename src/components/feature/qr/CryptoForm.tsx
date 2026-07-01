@@ -1,4 +1,4 @@
-import { useId, useMemo } from 'react'
+import { useId, useMemo, useState } from 'react'
 import { Input } from '../../common/Input'
 import { Callout } from '../../common/Callout'
 import { PillGroup } from '../../common/PillGroup'
@@ -27,9 +27,14 @@ export function CryptoForm({ config, onChange }: CryptoFormProps) {
   const hintId = useId()
   const networkLabelId = useId()
 
+  const [addressTouched, setAddressTouched] = useState(false)
+  const [amountTouched, setAmountTouched] = useState(false)
+
   const addressFilled = !!config.address.trim()
   const addressValid = isValidCryptoAddress(config.network, config.address)
-  const addressError = addressFilled && !addressValid
+  // Deferred until the field is blurred once, so a mid-typo character doesn't flash
+  // red before the user is done; live thereafter so a fix clears the error immediately.
+  const addressError = addressTouched && addressFilled && !addressValid
   const otherFilled = !!config.amount.trim() || !!config.label.trim()
   // Mirror vevent: when the user filled an optional field first, say what's still missing.
   const addressHint = !addressFilled && otherFilled
@@ -37,7 +42,7 @@ export function CryptoForm({ config, onChange }: CryptoFormProps) {
     : undefined
 
   const amountFilled = !!config.amount.trim()
-  const amountError = amountFilled && !isValidAmount(config.amount)
+  const amountError = amountTouched && amountFilled && !isValidAmount(config.amount)
 
   const unit = cryptoUnit(config.network)
   const isBitcoin = config.network === 'bitcoin'
@@ -83,6 +88,7 @@ export function CryptoForm({ config, onChange }: CryptoFormProps) {
         aria-describedby={hintId}
         value={config.address}
         onChange={(e) => onChange('address', e.target.value)}
+        onBlur={() => setAddressTouched(true)}
         error={addressError
           ? isBitcoin
             ? translate('controls.cryptoAddressErrorBitcoin')
@@ -101,6 +107,7 @@ export function CryptoForm({ config, onChange }: CryptoFormProps) {
           : translate('controls.cryptoAmountPlaceholderEthereum')}
         value={config.amount}
         onChange={(e) => onChange('amount', e.target.value)}
+        onBlur={() => setAmountTouched(true)}
         error={amountError ? translate('controls.cryptoAmountError') : undefined}
         inputMode="decimal"
         autoComplete="off"

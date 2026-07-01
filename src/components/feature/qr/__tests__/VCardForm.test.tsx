@@ -130,11 +130,23 @@ describe('VCardForm', () => {
   })
 
   it('clears the phone error once the field is fixed', () => {
-    setup({ ...defaultConfig, phone: 'abc' })
-    const field = screen.getByLabelText(/Phone/i)
-    fireEvent.blur(field)
+    const { rerender } = setup({ ...defaultConfig, phone: 'abc' })
+    fireEvent.blur(screen.getByLabelText(/Phone/i))
     expect(screen.getByRole('alert')).toBeInTheDocument()
-    fireEvent.change(field, { target: { value: '+1234567890' } })
+    rerender(
+      <LocaleProvider>
+        <VCardForm
+          config={{ ...defaultConfig, phone: '+1234567890' }}
+          onFirstNameChange={vi.fn()}
+          onLastNameChange={vi.fn()}
+          onPhoneChange={vi.fn()}
+          onEmailChange={vi.fn()}
+          onCompanyChange={vi.fn()}
+          onJobTitleChange={vi.fn()}
+          onWebsiteChange={vi.fn()}
+        />
+      </LocaleProvider>,
+    )
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 

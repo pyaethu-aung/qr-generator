@@ -84,13 +84,20 @@ describe('EmailForm', () => {
     expect(screen.getByRole('alert')).toBeInTheDocument()
   })
 
-  it('clears email error on onChange after blur error', () => {
-    setup({ to: 'notanemail', subject: '', body: '' })
-    const toInput = screen.getByRole('textbox', { name: /To/i })
-    fireEvent.blur(toInput)
+  it('clears the email error live once the field is fixed', () => {
+    const { rerender } = setup({ to: 'notanemail', subject: '', body: '' })
+    fireEvent.blur(screen.getByRole('textbox', { name: /To/i }))
     expect(screen.getByRole('alert')).toBeInTheDocument()
-    // onChange clears the error state
-    fireEvent.change(toInput, { target: { value: 'valid@example.com' } })
+    rerender(
+      <LocaleProvider>
+        <EmailForm
+          config={{ to: 'valid@example.com', subject: '', body: '' }}
+          onToChange={vi.fn()}
+          onSubjectChange={vi.fn()}
+          onBodyChange={vi.fn()}
+        />
+      </LocaleProvider>,
+    )
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 })

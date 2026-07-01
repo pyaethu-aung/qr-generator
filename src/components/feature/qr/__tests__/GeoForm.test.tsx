@@ -54,18 +54,40 @@ describe('GeoForm', () => {
     expect(lngInput()).toHaveAttribute('inputmode', 'decimal')
   })
 
-  it('shows an error for an out-of-range latitude', () => {
+  it('shows an error for an out-of-range latitude once the field is blurred', () => {
     setup({ latitude: '91', longitude: '0' })
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    fireEvent.blur(latInput())
     expect(screen.getByRole('alert')).toHaveTextContent(/between -90 and 90/i)
   })
 
-  it('shows an error for an out-of-range longitude', () => {
+  it('shows an error for an out-of-range longitude once the field is blurred', () => {
     setup({ latitude: '0', longitude: '200' })
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    fireEvent.blur(lngInput())
     expect(screen.getByRole('alert')).toHaveTextContent(/between -180 and 180/i)
   })
 
   it('shows no error while a coordinate field is empty', () => {
     setup({ latitude: '', longitude: '' })
+    fireEvent.blur(latInput())
+    fireEvent.blur(lngInput())
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('updates the latitude error live once the field has been touched', () => {
+    const { rerender } = setup({ latitude: '91', longitude: '0' })
+    fireEvent.blur(latInput())
+    expect(screen.getByRole('alert')).toBeInTheDocument()
+    rerender(
+      <LocaleProvider>
+        <GeoForm
+          config={{ latitude: '45', longitude: '0' }}
+          onLatitudeChange={vi.fn()}
+          onLongitudeChange={vi.fn()}
+        />
+      </LocaleProvider>,
+    )
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 

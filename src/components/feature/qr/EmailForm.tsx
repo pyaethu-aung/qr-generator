@@ -25,18 +25,18 @@ export function EmailForm({ config, onToChange, onSubjectChange, onBodyChange }:
   // Starts open when a message already exists, but the user can still
   // collapse it afterwards — the content is kept in state, only hidden.
   const [bodyOpen, setBodyOpen] = useState(!!config.body)
-  const [toError, setToError] = useState<string | undefined>()
+  const [toTouched, setToTouched] = useState(false)
 
   const payloadLength = useMemo(() => buildEmailString(config).length, [config])
 
   const isPayloadLong = payloadLength > EMAIL_PAYLOAD_WARN
 
-  const validateEmail = (value: string) => {
-    const trimmed = value.trim()
-    if (!trimmed) { setToError(undefined); return }
-    const valid = EMAIL_REGEX.test(trimmed)
-    setToError(valid ? undefined : translate('controls.emailToError'))
-  }
+  // Deferred until the field is blurred once, so a mid-typo character doesn't flash
+  // red before the user is done; live thereafter so a fix clears the error immediately.
+  const toTrimmed = config.to.trim()
+  const toError = toTouched && toTrimmed !== '' && !EMAIL_REGEX.test(toTrimmed)
+    ? translate('controls.emailToError')
+    : undefined
 
   return (
     <div className="flex flex-col gap-4">
@@ -46,8 +46,8 @@ export function EmailForm({ config, onToChange, onSubjectChange, onBodyChange }:
         placeholder={translate('controls.emailToPlaceholder')}
         aria-describedby={hintId}
         value={config.to}
-        onChange={(e) => { onToChange(e.target.value); if (toError) setToError(undefined) }}
-        onBlur={(e) => validateEmail(e.target.value)}
+        onChange={(e) => onToChange(e.target.value)}
+        onBlur={() => setToTouched(true)}
         error={toError}
         type="email"
         autoComplete="email"
