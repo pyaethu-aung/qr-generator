@@ -344,6 +344,7 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
                 onValueChange={setInputValue}
                 hasContent={!!liveValue}
                 capacityValue={capacityValue}
+                capacityPayloadValue={builtValue}
                 ecLevel={inputEcLevel}
                 onEcLevelChange={setInputEcLevel}
                 capacityUsageLabel={translate('controls.capacityUsage')}

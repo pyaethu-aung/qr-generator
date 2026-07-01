@@ -290,6 +290,8 @@ export interface QRControlsProps {
   hasContent?: boolean
   /** Raw typed content for the capacity counter in non-text modes. Undefined in text mode. */
   capacityValue?: string
+  /** Formatted payload the QR encodes, for the non-text counter's warning state. Undefined in text mode. */
+  capacityPayloadValue?: string
   inputError?: string
   // Logo
   logoDataUrl?: string | null
@@ -464,6 +466,7 @@ export function QRControls({
   canDownload = false,
   hasContent = false,
   capacityValue,
+  capacityPayloadValue,
   inputError,
   logoDataUrl,
   onLogoChange,
@@ -913,6 +916,7 @@ export function QRControls({
         {contentMode !== 'text' && capacityValue !== undefined && (
           <CapacityCounter
             value={capacityValue}
+            payloadValue={capacityPayloadValue}
             ecLevel={ecLevel}
             usageLabel={capacityUsageLabel}
             nearLimitLabel={capacityNearLimitLabel}
