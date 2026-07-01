@@ -116,4 +116,43 @@ describe('VCardForm', () => {
     fireEvent.change(screen.getByLabelText(/Website/i), { target: { value: 'https://b.com' } })
     expect(onWebsiteChange).toHaveBeenCalledWith('https://b.com')
   })
+
+  it('shows an error when an invalid phone number is blurred', () => {
+    setup({ ...defaultConfig, phone: 'abc' })
+    fireEvent.blur(screen.getByLabelText(/Phone/i))
+    expect(screen.getByRole('alert')).toHaveTextContent(/phone number/i)
+  })
+
+  it('does not show a phone error for an empty field', () => {
+    setup()
+    fireEvent.blur(screen.getByLabelText(/Phone/i))
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('clears the phone error once the field is fixed', () => {
+    setup({ ...defaultConfig, phone: 'abc' })
+    const field = screen.getByLabelText(/Phone/i)
+    fireEvent.blur(field)
+    expect(screen.getByRole('alert')).toBeInTheDocument()
+    fireEvent.change(field, { target: { value: '+1234567890' } })
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('shows an error when an invalid email is blurred', () => {
+    setup({ ...defaultConfig, email: 'not-an-email' })
+    fireEvent.blur(screen.getByLabelText(/Email/i))
+    expect(screen.getByRole('alert')).toHaveTextContent(/valid email/i)
+  })
+
+  it('shows an error when an invalid website is blurred', () => {
+    setup({ ...defaultConfig, website: 'not a url' })
+    fireEvent.blur(screen.getByLabelText(/Website/i))
+    expect(screen.getByRole('alert')).toHaveTextContent(/valid website/i)
+  })
+
+  it('does not show a website error for a valid bare domain', () => {
+    setup({ ...defaultConfig, website: 'example.com' })
+    fireEvent.blur(screen.getByLabelText(/Website/i))
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
 })
