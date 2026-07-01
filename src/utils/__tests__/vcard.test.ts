@@ -108,4 +108,24 @@ describe('buildVCardString', () => {
     expect(result).not.toContain('TITLE')
     expect(result).not.toContain('URL')
   })
+
+  it('omits phone when it fails the phone shape check', () => {
+    const result = buildVCardString({ ...base, phone: 'not a number' })
+    expect(result).not.toContain('TEL')
+  })
+
+  it('omits email when it fails the email shape check', () => {
+    const result = buildVCardString({ ...base, email: 'not-an-email' })
+    expect(result).not.toContain('EMAIL')
+  })
+
+  it('omits website when it fails the url shape check', () => {
+    const result = buildVCardString({ ...base, website: 'not a url' })
+    expect(result).not.toContain('URL')
+  })
+
+  it('includes website without a scheme when it is otherwise valid', () => {
+    const result = buildVCardString({ ...base, website: 'example.com' })
+    expect(result).toContain('URL:example.com')
+  })
 })

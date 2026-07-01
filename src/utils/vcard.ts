@@ -1,4 +1,7 @@
 import type { VCardConfig } from '../types/qr'
+import { EMAIL_REGEX } from './email'
+import { PHONE_REGEX } from './phone'
+import { URL_REGEX } from './url'
 
 function escapeVCardField(value: string): string {
   return value
@@ -21,11 +24,11 @@ export function buildVCardString(config: VCardConfig): string {
     `N:${escapeVCardField(lastName.trim())};${escapeVCardField(firstName.trim())};;;`,
   ]
 
-  if (phone.trim()) lines.push(`TEL;TYPE=CELL:${phone.trim()}`)
-  if (email.trim()) lines.push(`EMAIL:${escapeVCardField(email.trim())}`)
+  if (PHONE_REGEX.test(phone.trim())) lines.push(`TEL;TYPE=CELL:${phone.trim()}`)
+  if (EMAIL_REGEX.test(email.trim())) lines.push(`EMAIL:${escapeVCardField(email.trim())}`)
   if (company.trim()) lines.push(`ORG:${escapeVCardField(company.trim())}`)
   if (jobTitle.trim()) lines.push(`TITLE:${escapeVCardField(jobTitle.trim())}`)
-  if (website.trim()) lines.push(`URL:${website.trim()}`)
+  if (URL_REGEX.test(website.trim())) lines.push(`URL:${website.trim()}`)
 
   lines.push('END:VCARD')
 
