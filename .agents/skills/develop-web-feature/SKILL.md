@@ -2,7 +2,7 @@
 name: develop-web-feature
 description: "Develop, design, and ship a website feature end-to-end with /impeccable: shape, build, e2e specs, gate, audit, critique, fix, open a PR, and release. Portable across web projects. Use when asked to add, build, craft, or design a new feature."
 metadata:
-  version: "1.8.0"
+  version: "1.2.0"
 argument-hint: "[--auto] The feature to build (e.g. 'Calendar event content type')"
 allowed-tools: Bash(npm*) Bash(npx*) Bash(node*) Bash(git:*) Bash(gh:*) Bash(grep*) Bash(ls*) Bash(cat*) Read Write Edit Task
 ---
