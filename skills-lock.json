@@ -5,13 +5,13 @@
       "source": "pyaethu-aung/skills",
       "sourceType": "github",
       "skillPath": "skills/commit-message/SKILL.md",
-      "computedHash": "69d3302c17c702c8224834116d5bfd8b1e94ceabc7c835303a154a057dee7bb3"
+      "computedHash": "b3e216cc6a6e9317f52ca5587e8157fd572560f0d949c98d5d3ddb038bb96a8d"
     },
     "create-pr": {
       "source": "pyaethu-aung/skills",
       "sourceType": "github",
       "skillPath": "skills/create-pr/SKILL.md",
-      "computedHash": "f7ecf7e907c7918bfe3b34b0aa2352b21b669604c05a6d342bef9640458d70eb"
+      "computedHash": "b087697304f87795ac8b5aca35c0d9724f948e8346f54e2502a4754b3166f304"
     },
     "develop-web-feature": {
       "source": "pyaethu-aung/skills",
