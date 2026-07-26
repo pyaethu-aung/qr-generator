@@ -27,21 +27,20 @@ describe('mapWithConcurrency', () => {
   })
 
   it('handles an empty list', async () => {
-    const result = await mapWithConcurrency([], 4, async (item) => item)
+    const result = await mapWithConcurrency([], 4, (item) => Promise.resolve(item))
     expect(result).toEqual([])
   })
 
   it('handles concurrency greater than the item count', async () => {
-    const result = await mapWithConcurrency([1, 2], 10, async (item) => item * 10)
+    const result = await mapWithConcurrency([1, 2], 10, (item) => Promise.resolve(item * 10))
     expect(result).toEqual([10, 20])
   })
 
   it('propagates a task error', async () => {
     await expect(
-      mapWithConcurrency([1, 2, 3], 2, async (item) => {
-        if (item === 2) throw new Error('boom')
-        return item
-      }),
+      mapWithConcurrency([1, 2, 3], 2, (item) =>
+        item === 2 ? Promise.reject(new Error('boom')) : Promise.resolve(item),
+      ),
     ).rejects.toThrow('boom')
   })
 })
