@@ -16,19 +16,33 @@ export const localeCodes = Object.keys(localeRegistry) as SupportedLocale[]
 
 const missingTranslationLog = new Set<string>()
 
-function resolveTranslation(locale: SupportedLocale, key: TranslationKey): string | undefined {
-  const segments = key.split('.')
-  let current: unknown = locales[locale]
-
-  for (const segment of segments) {
-    if (current && typeof current === 'object' && segment in current) {
-      current = (current as Record<string, unknown>)[segment]
-    } else {
-      return undefined
+/** Flattens a locale's nested copy tree into `"a.b.c" -> string` for O(1) lookups. */
+function flattenLocale(node: unknown, prefix: string, out: Map<string, string>): void {
+  if (typeof node === 'string') {
+    out.set(prefix, node)
+    return
+  }
+  if (node && typeof node === 'object') {
+    for (const [key, value] of Object.entries(node)) {
+      flattenLocale(value, prefix ? `${prefix}.${key}` : key, out)
     }
   }
+}
 
-  return typeof current === 'string' ? current : undefined
+const flatLocaleCache = new Map<SupportedLocale, Map<string, string>>()
+
+function getFlatLocale(locale: SupportedLocale): Map<string, string> {
+  let flat = flatLocaleCache.get(locale)
+  if (!flat) {
+    flat = new Map()
+    flattenLocale(locales[locale], '', flat)
+    flatLocaleCache.set(locale, flat)
+  }
+  return flat
+}
+
+function resolveTranslation(locale: SupportedLocale, key: TranslationKey): string | undefined {
+  return getFlatLocale(locale).get(key)
 }
 
 function logMissingTranslation(locale: SupportedLocale, key: TranslationKey) {
