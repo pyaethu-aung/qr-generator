@@ -16,6 +16,7 @@ import type {
   QRFrameStyle,
 } from '../types/qr'
 import { DEFAULT_FRAME_COLOR } from '../data/defaults'
+import { readJSON } from './safeLocalStorage'
 
 export const DESIGN_STORAGE_KEY = 'qr-generator-design-config'
 export const FRAME_STORAGE_KEY = 'qr-generator-frame-config'
@@ -72,49 +73,39 @@ function loadGradient(raw: unknown): QRGradient | null {
  * the default config when nothing valid is stored.
  */
 export function loadDesignConfig(): QRDesignConfig {
-  try {
-    const stored = localStorage.getItem(DESIGN_STORAGE_KEY)
-    if (!stored) return DEFAULT_DESIGN_CONFIG
-    const parsed = JSON.parse(stored) as Partial<QRDesignConfig> & { eyeShape?: QREyeShape }
+  const parsed = readJSON<(Partial<QRDesignConfig> & { eyeShape?: QREyeShape }) | null>(DESIGN_STORAGE_KEY, null)
+  if (!parsed) return DEFAULT_DESIGN_CONFIG
 
-    // Legacy shape present and not yet migrated → split it.
-    if (parsed.eyeShape && !parsed.eyeFrameShape) {
-      const mapped = LEGACY_EYE_SHAPE_MAP[parsed.eyeShape] ?? LEGACY_EYE_SHAPE_MAP.Square
-      return {
-        eyeFrameShape: mapped.frame,
-        eyeCenterShape: mapped.center,
-        eyeFrameColor: null,
-        eyeCenterColor: null,
-        pixelPattern: parsed.pixelPattern ?? 'Square',
-        fgGradient: loadGradient(parsed.fgGradient),
-      }
-    }
-
+  // Legacy shape present and not yet migrated → split it.
+  if (parsed.eyeShape && !parsed.eyeFrameShape) {
+    const mapped = LEGACY_EYE_SHAPE_MAP[parsed.eyeShape] ?? LEGACY_EYE_SHAPE_MAP.Square
     return {
-      eyeFrameShape: parsed.eyeFrameShape ?? DEFAULT_DESIGN_CONFIG.eyeFrameShape,
-      eyeCenterShape: parsed.eyeCenterShape ?? DEFAULT_DESIGN_CONFIG.eyeCenterShape,
-      eyeFrameColor: parsed.eyeFrameColor ?? null,
-      eyeCenterColor: parsed.eyeCenterColor ?? null,
-      pixelPattern: parsed.pixelPattern ?? DEFAULT_DESIGN_CONFIG.pixelPattern,
+      eyeFrameShape: mapped.frame,
+      eyeCenterShape: mapped.center,
+      eyeFrameColor: null,
+      eyeCenterColor: null,
+      pixelPattern: parsed.pixelPattern ?? 'Square',
       fgGradient: loadGradient(parsed.fgGradient),
     }
-  } catch {
-    return DEFAULT_DESIGN_CONFIG
+  }
+
+  return {
+    eyeFrameShape: parsed.eyeFrameShape ?? DEFAULT_DESIGN_CONFIG.eyeFrameShape,
+    eyeCenterShape: parsed.eyeCenterShape ?? DEFAULT_DESIGN_CONFIG.eyeCenterShape,
+    eyeFrameColor: parsed.eyeFrameColor ?? null,
+    eyeCenterColor: parsed.eyeCenterColor ?? null,
+    pixelPattern: parsed.pixelPattern ?? DEFAULT_DESIGN_CONFIG.pixelPattern,
+    fgGradient: loadGradient(parsed.fgGradient),
   }
 }
 
 export function loadFrameConfig(): QRFrameConfig {
-  try {
-    const stored = localStorage.getItem(FRAME_STORAGE_KEY)
-    if (!stored) return DEFAULT_FRAME_CONFIG
-    const parsed = JSON.parse(stored) as Partial<QRFrameConfig>
-    return {
-      style: FRAME_STYLES.includes(parsed.style as QRFrameStyle) ? (parsed.style as QRFrameStyle) : DEFAULT_FRAME_CONFIG.style,
-      text: typeof parsed.text === 'string' ? parsed.text.slice(0, FRAME_TEXT_LIMIT) : DEFAULT_FRAME_CONFIG.text,
-      color: typeof parsed.color === 'string' ? parsed.color : DEFAULT_FRAME_CONFIG.color,
-      position: parsed.position === 'top' ? 'top' : 'bottom',
-    }
-  } catch {
-    return DEFAULT_FRAME_CONFIG
+  const parsed = readJSON<Partial<QRFrameConfig> | null>(FRAME_STORAGE_KEY, null)
+  if (!parsed) return DEFAULT_FRAME_CONFIG
+  return {
+    style: FRAME_STYLES.includes(parsed.style as QRFrameStyle) ? (parsed.style as QRFrameStyle) : DEFAULT_FRAME_CONFIG.style,
+    text: typeof parsed.text === 'string' ? parsed.text.slice(0, FRAME_TEXT_LIMIT) : DEFAULT_FRAME_CONFIG.text,
+    color: typeof parsed.color === 'string' ? parsed.color : DEFAULT_FRAME_CONFIG.color,
+    position: parsed.position === 'top' ? 'top' : 'bottom',
   }
 }

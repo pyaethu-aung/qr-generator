@@ -7,6 +7,7 @@
 
 import type { QRErrorCorrectionLevel } from '../types/qr'
 import { DEFAULT_QR_CONFIG } from '../data/defaults'
+import { readJSON, writeJSON } from './safeLocalStorage'
 
 export interface PersistedAppearance {
   fgColor: string
@@ -35,33 +36,23 @@ export function defaultAppearance(): PersistedAppearance {
  */
 export function loadPersistedAppearance(): PersistedAppearance {
   const fallback = defaultAppearance()
-  try {
-    const raw = localStorage.getItem(APPEARANCE_STORAGE_KEY)
-    if (!raw) return fallback
-    const parsed = JSON.parse(raw) as Partial<PersistedAppearance>
-    return {
-      fgColor:
-        typeof parsed.fgColor === 'string' && HEX_COLOR_RE.test(parsed.fgColor)
-          ? parsed.fgColor
-          : fallback.fgColor,
-      bgColor:
-        typeof parsed.bgColor === 'string' && HEX_COLOR_RE.test(parsed.bgColor)
-          ? parsed.bgColor
-          : fallback.bgColor,
-      ecLevel: EC_LEVELS.includes(parsed.ecLevel as QRErrorCorrectionLevel)
-        ? (parsed.ecLevel as QRErrorCorrectionLevel)
-        : fallback.ecLevel,
-      transparentBg: typeof parsed.transparentBg === 'boolean' ? parsed.transparentBg : fallback.transparentBg,
-    }
-  } catch {
-    return fallback
+  const parsed = readJSON<Partial<PersistedAppearance>>(APPEARANCE_STORAGE_KEY, {})
+  return {
+    fgColor:
+      typeof parsed.fgColor === 'string' && HEX_COLOR_RE.test(parsed.fgColor)
+        ? parsed.fgColor
+        : fallback.fgColor,
+    bgColor:
+      typeof parsed.bgColor === 'string' && HEX_COLOR_RE.test(parsed.bgColor)
+        ? parsed.bgColor
+        : fallback.bgColor,
+    ecLevel: EC_LEVELS.includes(parsed.ecLevel as QRErrorCorrectionLevel)
+      ? (parsed.ecLevel as QRErrorCorrectionLevel)
+      : fallback.ecLevel,
+    transparentBg: typeof parsed.transparentBg === 'boolean' ? parsed.transparentBg : fallback.transparentBg,
   }
 }
 
 export function persistAppearance(appearance: PersistedAppearance): void {
-  try {
-    localStorage.setItem(APPEARANCE_STORAGE_KEY, JSON.stringify(appearance))
-  } catch {
-    // Ignore if localStorage is unavailable
-  }
+  writeJSON(APPEARANCE_STORAGE_KEY, appearance)
 }

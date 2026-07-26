@@ -1,4 +1,5 @@
 import type { DecodedContentType } from './qrClassify'
+import { createLocalStorageList } from './localStorageList'
 
 /**
  * One decoded QR code remembered from the Scan view. Mirrors the generate-side
@@ -14,9 +15,7 @@ export interface ScanHistoryEntry {
   type: DecodedContentType
 }
 
-const SCAN_HISTORY_KEY = 'qr-generator:scan-history'
 export const SCAN_HISTORY_MAX_ENTRIES = 8
-const LABEL_MAX = 40
 const CONTENT_TYPES: readonly DecodedContentType[] = [
   'url',
   'wifi',
@@ -30,11 +29,6 @@ const CONTENT_TYPES: readonly DecodedContentType[] = [
   'text',
 ]
 
-function makeLabel(value: string): string {
-  const trimmed = value.trim()
-  return trimmed.length > LABEL_MAX ? `${trimmed.slice(0, LABEL_MAX)}…` : trimmed
-}
-
 function isValidEntry(e: unknown): e is ScanHistoryEntry {
   if (!e || typeof e !== 'object') return false
   const entry = e as Partial<ScanHistoryEntry>
@@ -47,52 +41,16 @@ function isValidEntry(e: unknown): e is ScanHistoryEntry {
   )
 }
 
-export function loadScanHistory(): ScanHistoryEntry[] {
-  try {
-    const raw = localStorage.getItem(SCAN_HISTORY_KEY)
-    if (!raw) return []
-    const parsed: unknown = JSON.parse(raw)
-    if (!Array.isArray(parsed)) return []
-    return parsed.filter(isValidEntry)
-  } catch {
-    return []
-  }
-}
+const scanHistoryList = createLocalStorageList<ScanHistoryEntry>({
+  storageKey: 'qr-generator:scan-history',
+  maxEntries: SCAN_HISTORY_MAX_ENTRIES,
+  labelMax: 40,
+  isValidEntry,
+})
 
 export type NewScanHistoryEntry = Omit<ScanHistoryEntry, 'id' | 'savedAt' | 'label'>
 
-export function saveScanHistoryEntry(entry: NewScanHistoryEntry): ScanHistoryEntry[] {
-  const newEntry: ScanHistoryEntry = {
-    id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-    savedAt: Date.now(),
-    label: makeLabel(entry.value),
-    ...entry,
-  }
-  const existing = loadScanHistory()
-  const deduped = existing.filter(e => e.value !== entry.value)
-  const updated = [newEntry, ...deduped].slice(0, SCAN_HISTORY_MAX_ENTRIES)
-  try {
-    localStorage.setItem(SCAN_HISTORY_KEY, JSON.stringify(updated))
-  } catch {
-    // Ignore if localStorage is unavailable
-  }
-  return updated
-}
-
-export function removeScanHistoryEntry(id: string): ScanHistoryEntry[] {
-  const updated = loadScanHistory().filter(e => e.id !== id)
-  try {
-    localStorage.setItem(SCAN_HISTORY_KEY, JSON.stringify(updated))
-  } catch {
-    // Ignore if localStorage is unavailable
-  }
-  return updated
-}
-
-export function clearScanHistory(): void {
-  try {
-    localStorage.removeItem(SCAN_HISTORY_KEY)
-  } catch {
-    // Ignore if localStorage is unavailable
-  }
-}
+export const loadScanHistory = scanHistoryList.load
+export const saveScanHistoryEntry = scanHistoryList.save
+export const removeScanHistoryEntry = scanHistoryList.remove
+export const clearScanHistory = scanHistoryList.clear

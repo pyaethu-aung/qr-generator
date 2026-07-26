@@ -11,6 +11,7 @@ import type {
   QRFrameStyle,
   QRFramePosition,
 } from '../types/qr'
+import { readJSON, writeJSON, removeItem } from './safeLocalStorage'
 
 export interface PresetEntry {
   id: string
@@ -99,15 +100,9 @@ function isValidPreset(e: unknown): e is PresetEntry {
 }
 
 export function loadPresets(): PresetEntry[] {
-  try {
-    const raw = localStorage.getItem(PRESETS_KEY)
-    if (!raw) return []
-    const parsed: unknown = JSON.parse(raw)
-    if (!Array.isArray(parsed)) return []
-    return parsed.filter(isValidPreset)
-  } catch {
-    return []
-  }
+  const parsed = readJSON<unknown>(PRESETS_KEY, [])
+  if (!Array.isArray(parsed)) return []
+  return parsed.filter(isValidPreset)
 }
 
 export function savePreset(entry: NewPresetEntry): PresetEntry[] {
@@ -125,28 +120,16 @@ export function savePreset(entry: NewPresetEntry): PresetEntry[] {
     frameConfig: entry.frameConfig,
   }
   const updated = [newEntry, ...loadPresets()].slice(0, PRESETS_MAX)
-  try {
-    localStorage.setItem(PRESETS_KEY, JSON.stringify(updated))
-  } catch {
-    // storage unavailable
-  }
+  writeJSON(PRESETS_KEY, updated)
   return updated
 }
 
 export function deletePreset(id: string): PresetEntry[] {
   const updated = loadPresets().filter(p => p.id !== id)
-  try {
-    localStorage.setItem(PRESETS_KEY, JSON.stringify(updated))
-  } catch {
-    // storage unavailable
-  }
+  writeJSON(PRESETS_KEY, updated)
   return updated
 }
 
 export function clearPresets(): void {
-  try {
-    localStorage.removeItem(PRESETS_KEY)
-  } catch {
-    // storage unavailable
-  }
+  removeItem(PRESETS_KEY)
 }
