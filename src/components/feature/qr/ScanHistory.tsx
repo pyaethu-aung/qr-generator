@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect, type ComponentType } from 'react'
+import { useCallback, type ComponentType } from 'react'
 import {
   Trash2,
   X,
@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import type { ScanHistoryEntry } from '../../../hooks/useScanHistory'
 import type { DecodedContentType } from '../../../utils/qrClassify'
+import { useTimedState } from '../../../hooks/useTimedState'
 
 interface ScanHistoryProps {
   history: ScanHistoryEntry[]
@@ -50,29 +51,19 @@ export function ScanHistory({
   removeAriaLabel,
   typeLabel,
 }: ScanHistoryProps) {
-  const [restoredId, setRestoredId] = useState<string | null>(null)
-  const [announcement, setAnnouncement] = useState('')
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  useEffect(() => () => {
-    if (timerRef.current) clearTimeout(timerRef.current)
-  }, [])
+  const [restoredId, setRestoredId, setRestoredIdImmediate] = useTimedState<string | null>(null, 1500)
+  const [announcement, setAnnouncement] = useTimedState('', 1500)
 
   const handleRestore = useCallback((entry: ScanHistoryEntry) => {
     onRestore(entry)
     setRestoredId(entry.id)
     setAnnouncement(entry.label)
-    if (timerRef.current) clearTimeout(timerRef.current)
-    timerRef.current = setTimeout(() => {
-      setRestoredId(null)
-      setAnnouncement('')
-    }, 1500)
-  }, [onRestore])
+  }, [onRestore, setRestoredId, setAnnouncement])
 
   const handleRemove = useCallback((entry: ScanHistoryEntry) => {
-    if (restoredId === entry.id) setRestoredId(null)
+    if (restoredId === entry.id) setRestoredIdImmediate(null)
     onRemove(entry)
-  }, [onRemove, restoredId])
+  }, [onRemove, restoredId, setRestoredIdImmediate])
 
   if (history.length === 0) return null
 

@@ -14,6 +14,8 @@ import { VEventForm } from './VEventForm'
 import { CryptoForm } from './CryptoForm'
 import { CapacityCounter } from './CapacityCounter'
 import { DEFAULT_FRAME_COLOR } from '../../../data/defaults'
+import { useFileDrop } from '../../../hooks/useFileDrop'
+import { readRaw, writeRaw } from '../../../utils/safeLocalStorage'
 import type { QRErrorCorrectionLevel, QRContentMode, WiFiConfig, WiFiSecurity, VCardConfig, EmailConfig, SmsConfig, TelConfig, GeoConfig, VEventConfig, CryptoConfig, QREyeFrameShape, QREyeCenterShape, QRPixelPattern, QRFrameStyle, QRFramePosition, QRGradient, QRGradientType, QRGradientDirection } from '../../../types/qr'
 
 /** Seeded end color when a gradient is first enabled (indigo). The start seeds from fgColor. */
@@ -667,15 +669,10 @@ export function QRControls({
   const [showUrlInput, setShowUrlInput] = useState(false)
   const [logoError, setLogoError] = useState<string | undefined>()
   const [logoFilename, setLogoFilename] = useState<string | undefined>()
-  const [isDragOver, setIsDragOver] = useState(false)
   const [isLoadingLogo, setIsLoadingLogo] = useState(false)
   const [isLogoOpen, setIsLogoOpen] = useState(false)
-  const [isStyleOpen, setIsStyleOpen] = useState(() => {
-    try { return localStorage.getItem('qr-generator-style-open') === 'true' } catch { return false }
-  })
-  const [isFrameOpen, setIsFrameOpen] = useState(() => {
-    try { return localStorage.getItem('qr-generator-frame-open') === 'true' } catch { return false }
-  })
+  const [isStyleOpen, setIsStyleOpen] = useState(() => readRaw('qr-generator-style-open') === 'true')
+  const [isFrameOpen, setIsFrameOpen] = useState(() => readRaw('qr-generator-frame-open') === 'true')
 
   const pixelPatternLabelId = useId()
   const fgColorId = useId()
@@ -778,12 +775,7 @@ export function QRControls({
     onLogoChange?.(null)
   }
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragOver(false)
-    const file = e.dataTransfer.files[0]
-    if (file) processFile(file)
-  }
+  const { isDragging: isDragOver, onDragOver: handleLogoDragOver, onDragLeave: handleLogoDragLeave, onDrop: handleDrop } = useFileDrop(processFile)
 
   // Foreground fill: 'solid' uses fgColor; a gradient carries its own stops + direction.
   const fillType: 'solid' | QRGradientType = fgGradient ? fgGradient.type : 'solid'
@@ -959,7 +951,7 @@ export function QRControls({
             onClick={() => {
               const next = !isStyleOpen
               setIsStyleOpen(next)
-              try { localStorage.setItem('qr-generator-style-open', String(next)) } catch { /* storage unavailable */ }
+              writeRaw('qr-generator-style-open', String(next))
             }}
             className="flex min-h-[44px] items-center justify-between w-full text-sm font-medium text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
             aria-expanded={isStyleOpen}
@@ -1236,7 +1228,7 @@ export function QRControls({
                 onClick={() => {
                   const next = !isFrameOpen
                   setIsFrameOpen(next)
-                  try { localStorage.setItem('qr-generator-frame-open', String(next)) } catch { /* storage unavailable */ }
+                  writeRaw('qr-generator-frame-open', String(next))
                 }}
                 className="flex min-h-[44px] items-center justify-between w-full text-sm font-medium text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
                 aria-expanded={isFrameOpen}
@@ -1397,8 +1389,8 @@ export function QRControls({
                     htmlFor={logoFileId}
                     role="button"
                     aria-label={logoUploadAriaLabel}
-                    onDragOver={(e) => { e.preventDefault(); setIsDragOver(true) }}
-                    onDragLeave={() => setIsDragOver(false)}
+                    onDragOver={handleLogoDragOver}
+                    onDragLeave={handleLogoDragLeave}
                     onDrop={handleDrop}
                     onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); fileInputRef.current?.click() } }}
                     tabIndex={0}
