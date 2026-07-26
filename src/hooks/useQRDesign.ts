@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import type {
   QRDesignConfig,
   QRErrorCorrectionLevel,
@@ -18,6 +18,7 @@ import {
   loadDesignConfig,
   loadFrameConfig,
 } from '../utils/persistedDesign'
+import { writeJSON } from '../utils/safeLocalStorage'
 
 const EC_LOGO_MAX: Record<QRErrorCorrectionLevel, number> = { L: 7, M: 15, Q: 25, H: 30 }
 
@@ -37,79 +38,76 @@ export function useQRDesign(value: string = '', ecLevel: 'L' | 'M' | 'Q' | 'H' =
   const [designConfig, setDesignConfig] = useState<QRDesignConfig>(loadDesignConfig)
 
   useEffect(() => {
-    try {
-      localStorage.setItem(DESIGN_STORAGE_KEY, JSON.stringify(designConfig))
-    } catch {
-      // Ignore if localStorage is unavailable
-    }
+    writeJSON(DESIGN_STORAGE_KEY, designConfig)
   }, [designConfig])
 
-  const setEyeFrameShape = useCallback((eyeFrameShape: QREyeFrameShape) => {
-    setDesignConfig(prev => ({ ...prev, eyeFrameShape }))
+  const updateDesignConfig = useCallback((patch: Partial<QRDesignConfig>) => {
+    setDesignConfig(prev => ({ ...prev, ...patch }))
   }, [])
+
+  const setEyeFrameShape = useCallback((eyeFrameShape: QREyeFrameShape) => {
+    updateDesignConfig({ eyeFrameShape })
+  }, [updateDesignConfig])
 
   const setEyeCenterShape = useCallback((eyeCenterShape: QREyeCenterShape) => {
-    setDesignConfig(prev => ({ ...prev, eyeCenterShape }))
-  }, [])
+    updateDesignConfig({ eyeCenterShape })
+  }, [updateDesignConfig])
 
   const setEyeFrameColor = useCallback((eyeFrameColor: string | null) => {
-    setDesignConfig(prev => ({ ...prev, eyeFrameColor }))
-  }, [])
+    updateDesignConfig({ eyeFrameColor })
+  }, [updateDesignConfig])
 
   const setEyeCenterColor = useCallback((eyeCenterColor: string | null) => {
-    setDesignConfig(prev => ({ ...prev, eyeCenterColor }))
-  }, [])
+    updateDesignConfig({ eyeCenterColor })
+  }, [updateDesignConfig])
 
   const setPixelPattern = useCallback((pixelPattern: QRPixelPattern) => {
-    setDesignConfig(prev => ({ ...prev, pixelPattern }))
-  }, [])
+    updateDesignConfig({ pixelPattern })
+  }, [updateDesignConfig])
 
   const setFgGradient = useCallback((fgGradient: QRGradient | null) => {
-    setDesignConfig(prev => ({ ...prev, fgGradient }))
-  }, [])
+    updateDesignConfig({ fgGradient })
+  }, [updateDesignConfig])
 
   const [frameConfig, setFrameConfig] = useState<QRFrameConfig>(loadFrameConfig)
 
   useEffect(() => {
-    try {
-      localStorage.setItem(FRAME_STORAGE_KEY, JSON.stringify(frameConfig))
-    } catch {
-      // Ignore if localStorage is unavailable
-    }
+    writeJSON(FRAME_STORAGE_KEY, frameConfig)
   }, [frameConfig])
 
-  const setFrameStyle = useCallback((style: QRFrameStyle) => {
-    setFrameConfig(prev => ({ ...prev, style }))
+  const updateFrameConfig = useCallback((patch: Partial<QRFrameConfig>) => {
+    setFrameConfig(prev => ({ ...prev, ...patch }))
   }, [])
+
+  const setFrameStyle = useCallback((style: QRFrameStyle) => {
+    updateFrameConfig({ style })
+  }, [updateFrameConfig])
 
   const setFrameText = useCallback((text: string) => {
-    setFrameConfig(prev => ({ ...prev, text: text.slice(0, FRAME_TEXT_LIMIT) }))
-  }, [])
+    updateFrameConfig({ text: text.slice(0, FRAME_TEXT_LIMIT) })
+  }, [updateFrameConfig])
 
   const setFrameColor = useCallback((color: string) => {
-    setFrameConfig(prev => ({ ...prev, color }))
-  }, [])
+    updateFrameConfig({ color })
+  }, [updateFrameConfig])
 
   const setFramePosition = useCallback((position: QRFramePosition) => {
-    setFrameConfig(prev => ({ ...prev, position }))
-  }, [])
+    updateFrameConfig({ position })
+  }, [updateFrameConfig])
 
   const applyFrameConfig = useCallback((config: QRFrameConfig) => {
     setFrameConfig(config)
   }, [])
 
-  const matrixSize = getMatrixSize(value, ecLevel)
-  const [isWarningDismissed, setIsWarningDismissed] = useState(false)
+  const matrixSize = useMemo(() => getMatrixSize(value, ecLevel), [value, ecLevel])
+
+  // Tracks which pattern the warning was dismissed for, so switching patterns
+  // re-shows it without needing a separate "previous pattern" state variable.
+  const [dismissedForPattern, setDismissedForPattern] = useState<QRPixelPattern | null>(null)
+  const isWarningDismissed = dismissedForPattern === designConfig.pixelPattern
   const isRiskyPattern = !isWarningDismissed && RISKY_PATTERNS.has(designConfig.pixelPattern) && matrixSize >= 41
 
-  const dismissWarning = () => setIsWarningDismissed(true)
-
-  // Reset dismissal when pixel pattern changes
-  const [prevPattern, setPrevPattern] = useState(designConfig.pixelPattern)
-  if (prevPattern !== designConfig.pixelPattern) {
-    setIsWarningDismissed(false)
-    setPrevPattern(designConfig.pixelPattern)
-  }
+  const dismissWarning = () => setDismissedForPattern(designConfig.pixelPattern)
 
   return {
     designConfig,
