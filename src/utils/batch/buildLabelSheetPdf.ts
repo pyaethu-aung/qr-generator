@@ -18,6 +18,11 @@ import {
   getLabelPreset,
   type LabelPresetId,
 } from './labelSheetLayout'
+import { mapWithConcurrency } from '../concurrency'
+
+// Each render is an independent canvas/Image round-trip with no shared mutable state, so
+// a bounded pool of concurrent renders cuts wall-clock time for large sheets.
+const RENDER_CONCURRENCY = 6
 
 export interface BuildLabelSheetOptions {
   values: string[]
@@ -91,6 +96,25 @@ export async function buildLabelSheetPdf(options: BuildLabelSheetOptions): Promi
   const preset = getLabelPreset(presetId)
   const geometry = computeSheetGeometry(preset)
 
+  // The QR render (canvas/Image round-trip) for each value is independent, so it runs
+  // with bounded concurrency; the jsPDF document itself is a single mutable, page-order-
+  // dependent object, so drawing into it stays a sequential pass afterward.
+  let completed = 0
+  const dataUrls = await mapWithConcurrency(values, RENDER_CONCURRENCY, async (value) => {
+    const pngBlob = await renderQrPngBlob(value, {
+      ecLevel: design.ecLevel,
+      fgColor: design.fgColor,
+      bgColor: design.bgColor,
+      designConfig: design.designConfig,
+      frameConfig: design.frameConfig,
+      size: cellPx,
+    })
+    const dataUrl = await blobToDataUrl(pngBlob)
+    completed += 1
+    onProgress?.(completed, values.length)
+    return dataUrl
+  })
+
   const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: preset.page })
   // TODO(i18n): Helvetica has no Burmese glyphs, so a Burmese caption (e.g. a contact
   // name or event title from a CSV) prints as missing glyphs. The QR payload and the
@@ -113,18 +137,8 @@ export async function buildLabelSheetPdf(options: BuildLabelSheetOptions): Promi
     pdf.rect(cell.x, cell.y, cell.width, cell.height)
 
     const value = values[i]
-    const pngBlob = await renderQrPngBlob(value, {
-      ecLevel: design.ecLevel,
-      fgColor: design.fgColor,
-      bgColor: design.bgColor,
-      designConfig: design.designConfig,
-      frameConfig: design.frameConfig,
-      size: cellPx,
-    })
-    const dataUrl = await blobToDataUrl(pngBlob)
-
     if (content.qr.width > 0) {
-      pdf.addImage(dataUrl, 'PNG', content.qr.x, content.qr.y, content.qr.width, content.qr.height)
+      pdf.addImage(dataUrls[i], 'PNG', content.qr.x, content.qr.y, content.qr.width, content.qr.height)
     }
 
     if (content.caption) {
@@ -134,8 +148,6 @@ export async function buildLabelSheetPdf(options: BuildLabelSheetOptions): Promi
       const text = truncateToWidth(pdf, captionText, content.caption.width)
       pdf.text(text, content.caption.x, content.caption.y, { align: 'center' })
     }
-
-    onProgress?.(i + 1, values.length)
   }
 
   return pdf.output('blob')
