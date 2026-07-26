@@ -30,13 +30,15 @@ export interface CapacityStatus {
   isOverLimit: boolean
 }
 
+const textEncoder = new TextEncoder()
+
 /**
  * Bytes the content occupies in a QR byte-mode payload. A single character can
  * cost several bytes (emoji, accented letters), so this is measured in UTF-8
  * bytes rather than JS string length — the count the capacity limit is about.
  */
 export function contentByteLength(value: string): number {
-  return new TextEncoder().encode(value).length
+  return textEncoder.encode(value).length
 }
 
 /** Counter state for `value` at the given error-correction level. */

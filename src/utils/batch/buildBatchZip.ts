@@ -12,6 +12,7 @@ import { exportSvg } from '../export/svgExporter'
 import { renderQrPngBlob } from '../export/pngRenderer'
 import { exportPdf } from '../export/pdfExporter'
 import { batchFilename } from './batchFilename'
+import { mapWithConcurrency } from '../concurrency'
 
 export type BatchFormat = 'png' | 'svg' | 'pdf'
 
@@ -43,6 +44,9 @@ export interface BuildBatchZipOptions {
 // Match the single-QR download size so a code looks identical whether downloaded alone or in a batch.
 const DEFAULT_DIMENSION = QR_SIZE_DOWNLOAD
 const PDF_DPI = 300
+// Each render is an independent canvas/Image round-trip with no shared mutable state, so
+// a bounded pool of concurrent renders cuts wall-clock time for large batches.
+const RENDER_CONCURRENCY = 6
 
 async function renderOne(
   value: string,
@@ -85,10 +89,11 @@ async function renderOne(
 }
 
 /**
- * Render every value and return a single `application/zip` blob. Rendering is sequential
- * so the canvas is reused predictably and progress reports stay monotonic. Files are
- * stored (level 0): PNG and PDF are already compressed, and storing keeps zipping fast
- * and deterministic.
+ * Render every value and return a single `application/zip` blob. Each render is an
+ * independent canvas/Image round-trip, so they run with bounded concurrency rather than
+ * one at a time; filenames are still assigned in original list order afterward so dedup
+ * suffixes stay deterministic. Files are stored (level 0): PNG and PDF are already
+ * compressed, and storing keeps zipping fast and deterministic.
  *
  * @throws if `values` is empty, or propagates the first render/zip error.
  */
@@ -99,16 +104,20 @@ export async function buildBatchZip(options: BuildBatchZipOptions): Promise<Blob
     throw new Error('Cannot build a batch with no values')
   }
 
-  const used = new Set<string>()
-  const files: Record<string, Uint8Array> = {}
-
-  for (let i = 0; i < values.length; i += 1) {
-    const value = values[i]
+  let completed = 0
+  const bytesByValue = await mapWithConcurrency(values, RENDER_CONCURRENCY, async (value) => {
     const blob = await renderOne(value, format, design, dimension)
     const bytes = new Uint8Array(await blob.arrayBuffer())
-    files[batchFilename(value, i, format, used, filenameByValue?.[value])] = bytes
-    onProgress?.(i + 1, values.length)
-  }
+    completed += 1
+    onProgress?.(completed, values.length)
+    return bytes
+  })
+
+  const used = new Set<string>()
+  const files: Record<string, Uint8Array> = {}
+  values.forEach((value, i) => {
+    files[batchFilename(value, i, format, used, filenameByValue?.[value])] = bytesByValue[i]
+  })
 
   const zipped = zipSync(files, { level: 0 })
   return new Blob([zipped], { type: 'application/zip' })
