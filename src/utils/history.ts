@@ -1,4 +1,5 @@
 import type { QRErrorCorrectionLevel } from '../types/qr'
+import { createLocalStorageList } from './localStorageList'
 
 export interface HistoryEntry {
   id: string
@@ -11,16 +12,9 @@ export interface HistoryEntry {
   ecLevel: QRErrorCorrectionLevel
 }
 
-const HISTORY_KEY = 'qr-generator:history'
 export const HISTORY_MAX_ENTRIES = 8
-const LABEL_MAX = 40
 const HEX_RE = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/
 const EC_LEVELS: readonly QRErrorCorrectionLevel[] = ['L', 'M', 'Q', 'H']
-
-function makeLabel(value: string): string {
-  const trimmed = value.trim()
-  return trimmed.length > LABEL_MAX ? `${trimmed.slice(0, LABEL_MAX)}…` : trimmed
-}
 
 function isValidEntry(e: unknown): e is HistoryEntry {
   if (!e || typeof e !== 'object') return false
@@ -37,42 +31,15 @@ function isValidEntry(e: unknown): e is HistoryEntry {
   )
 }
 
-export function loadHistory(): HistoryEntry[] {
-  try {
-    const raw = localStorage.getItem(HISTORY_KEY)
-    if (!raw) return []
-    const parsed: unknown = JSON.parse(raw)
-    if (!Array.isArray(parsed)) return []
-    return parsed.filter(isValidEntry)
-  } catch {
-    return []
-  }
-}
+const historyList = createLocalStorageList<HistoryEntry>({
+  storageKey: 'qr-generator:history',
+  maxEntries: HISTORY_MAX_ENTRIES,
+  labelMax: 40,
+  isValidEntry,
+})
 
 export type NewHistoryEntry = Omit<HistoryEntry, 'id' | 'savedAt' | 'label'>
 
-export function saveHistoryEntry(entry: NewHistoryEntry): HistoryEntry[] {
-  const newEntry: HistoryEntry = {
-    id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-    savedAt: Date.now(),
-    label: makeLabel(entry.value),
-    ...entry,
-  }
-  const existing = loadHistory()
-  const deduped = existing.filter(e => e.value !== entry.value)
-  const updated = [newEntry, ...deduped].slice(0, HISTORY_MAX_ENTRIES)
-  try {
-    localStorage.setItem(HISTORY_KEY, JSON.stringify(updated))
-  } catch {
-    // Ignore if localStorage is unavailable
-  }
-  return updated
-}
-
-export function clearHistory(): void {
-  try {
-    localStorage.removeItem(HISTORY_KEY)
-  } catch {
-    // Ignore if localStorage is unavailable
-  }
-}
+export const loadHistory = historyList.load
+export const saveHistoryEntry = historyList.save
+export const clearHistory = historyList.clear
