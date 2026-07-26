@@ -24,6 +24,7 @@ import { useGeoConfig } from '../../../hooks/useGeoConfig'
 import { useVEventConfig } from '../../../hooks/useVEventConfig'
 import { useCryptoConfig } from '../../../hooks/useCryptoConfig'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
+import { useCopyToClipboard } from '../../../hooks/useCopyToClipboard'
 import { isEndBeforeStart } from '../../../utils/vevent'
 import { isValidCryptoAddress } from '../../../utils/crypto'
 import { buildShareUrl, type ShareContentData } from '../../../utils/shareConfig'
@@ -60,36 +61,35 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
   const { veventConfig, veventString, setSummary: setVEventSummary, setStart: setVEventStart, setEnd: setVEventEnd, setAllDay: setVEventAllDay, setLocation: setVEventLocation, setDescription: setVEventDescription } = useVEventConfig()
   const { cryptoConfig, cryptoString, setField: setCryptoField } = useCryptoConfig()
 
-  const builtValue = contentMode === 'wifi' ? wifiString
-    : contentMode === 'vcard' ? vcardString
-    : contentMode === 'email' ? emailString
-    : contentMode === 'sms' ? smsString
-    : contentMode === 'tel' ? telString
-    : contentMode === 'geo' ? geoString
-    : contentMode === 'vevent' ? veventString
-    : contentMode === 'crypto' ? cryptoString
-    : undefined
+  // One entry per structured content mode: the built QR payload string, the raw field
+  // bytes for the capacity counter (what the user typed, not the payload — which has
+  // format overhead, so the counter stays live even with required fields missing), and
+  // the config object `buildShareUrl` encodes into a `#c=` link. Text mode has no entry:
+  // it falls back to `inputValue` at each of the three call sites below.
+  const structuredContent: Partial<Record<QRContentMode, { string: string; raw: string; content: ShareContentData }>> = {
+    wifi: { string: wifiString, raw: [wifiConfig.ssid, wifiConfig.password].join(''), content: wifiConfig },
+    vcard: {
+      string: vcardString,
+      raw: [vcardConfig.firstName, vcardConfig.lastName, vcardConfig.phone, vcardConfig.email, vcardConfig.company, vcardConfig.jobTitle, vcardConfig.website].join(''),
+      content: vcardConfig,
+    },
+    email: { string: emailString, raw: [emailConfig.to, emailConfig.subject, emailConfig.body].join(''), content: emailConfig },
+    sms: { string: smsString, raw: [smsConfig.number, smsConfig.message].join(''), content: smsConfig },
+    tel: { string: telString, raw: telConfig.number, content: telConfig },
+    geo: { string: geoString, raw: [geoConfig.latitude, geoConfig.longitude].join(''), content: geoConfig },
+    vevent: {
+      string: veventString,
+      raw: [veventConfig.summary, veventConfig.start, veventConfig.end, veventConfig.location, veventConfig.description].join(''),
+      content: veventConfig,
+    },
+    crypto: { string: cryptoString, raw: [cryptoConfig.address, cryptoConfig.amount, cryptoConfig.label].join(''), content: cryptoConfig },
+  }
+  const activeContent = structuredContent[contentMode]
 
-  // Raw field bytes for the capacity counter — counts what the user typed, not
-  // the QR payload (which has format overhead). This keeps the counter live even
-  // when required fields are missing and avoids an overhead jump on the first char.
-  const capacityValue = contentMode === 'wifi'
-    ? [wifiConfig.ssid, wifiConfig.password].join('')
-    : contentMode === 'vcard'
-    ? [vcardConfig.firstName, vcardConfig.lastName, vcardConfig.phone, vcardConfig.email, vcardConfig.company, vcardConfig.jobTitle, vcardConfig.website].join('')
-    : contentMode === 'email'
-    ? [emailConfig.to, emailConfig.subject, emailConfig.body].join('')
-    : contentMode === 'sms'
-    ? [smsConfig.number, smsConfig.message].join('')
-    : contentMode === 'tel'
-    ? telConfig.number
-    : contentMode === 'geo'
-    ? [geoConfig.latitude, geoConfig.longitude].join('')
-    : contentMode === 'vevent'
-    ? [veventConfig.summary, veventConfig.start, veventConfig.end, veventConfig.location, veventConfig.description].join('')
-    : contentMode === 'crypto'
-    ? [cryptoConfig.address, cryptoConfig.amount, cryptoConfig.label].join('')
-    : undefined
+  const builtValue = activeContent?.string
+
+  // Raw field bytes for the capacity counter — see comment on `structuredContent` above.
+  const capacityValue = activeContent?.raw
 
   const {
     liveValue,
@@ -134,7 +134,7 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
     setFramePosition,
     applyFrameConfig,
     frameTextLimit,
-  } = useQRDesign(inputValue, inputEcLevel)
+  } = useQRDesign(liveValue, inputEcLevel)
 
   const { translate } = useLocaleContext()
   const { history, addEntry, clear: clearHistory } = useQRHistory()
@@ -178,41 +178,20 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
     void share(canvasRef.current)
   }, [share])
 
-  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'error'>('idle')
-  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  useEffect(() => () => {
-    if (copyTimerRef.current) clearTimeout(copyTimerRef.current)
-  }, [])
+  const [copyState, copyToClipboard] = useCopyToClipboard()
 
   const handleCopyLink = useCallback(async () => {
-    const content: ShareContentData =
-      contentMode === 'wifi' ? wifiConfig
-        : contentMode === 'vcard' ? vcardConfig
-          : contentMode === 'email' ? emailConfig
-            : contentMode === 'sms' ? smsConfig
-              : contentMode === 'tel' ? telConfig
-                : contentMode === 'geo' ? geoConfig
-                  : contentMode === 'vevent' ? veventConfig
-                    : contentMode === 'crypto' ? cryptoConfig
-                      : inputValue
     const url = buildShareUrl({
       mode: contentMode,
-      content,
+      content: activeContent?.content ?? inputValue,
       ecLevel: inputEcLevel,
       fgColor: inputFgColor,
       bgColor: inputBgColor,
       design: designConfig,
       frame: frameConfig,
     })
-    if (copyTimerRef.current) clearTimeout(copyTimerRef.current)
-    try {
-      await navigator.clipboard.writeText(url)
-      setCopyState('copied')
-    } catch {
-      setCopyState('error')
-    }
-    copyTimerRef.current = setTimeout(() => setCopyState('idle'), 2000)
-  }, [contentMode, wifiConfig, vcardConfig, emailConfig, smsConfig, telConfig, geoConfig, veventConfig, cryptoConfig, inputValue, inputEcLevel, inputFgColor, inputBgColor, designConfig, frameConfig])
+    await copyToClipboard(url)
+  }, [contentMode, activeContent, inputValue, inputEcLevel, inputFgColor, inputBgColor, designConfig, frameConfig, copyToClipboard])
 
   const captureHistoryEntry = useCallback(async () => {
     if (!liveValue) return

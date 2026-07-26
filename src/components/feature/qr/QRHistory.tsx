@@ -1,6 +1,7 @@
-import { useState, useCallback, useRef, useEffect } from 'react'
+import { useCallback } from 'react'
 import { Trash2 } from 'lucide-react'
 import type { HistoryEntry } from '../../../hooks/useQRHistory'
+import { useTimedState } from '../../../hooks/useTimedState'
 
 interface QRHistoryProps {
   history: HistoryEntry[]
@@ -11,24 +12,14 @@ interface QRHistoryProps {
 }
 
 export function QRHistory({ history, onRestore, onClear, sectionLabel, clearAriaLabel }: QRHistoryProps) {
-  const [restoredId, setRestoredId] = useState<string | null>(null)
-  const [announcement, setAnnouncement] = useState('')
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  useEffect(() => () => {
-    if (timerRef.current) clearTimeout(timerRef.current)
-  }, [])
+  const [restoredId, setRestoredId] = useTimedState<string | null>(null, 1500)
+  const [announcement, setAnnouncement] = useTimedState('', 1500)
 
   const handleRestore = useCallback((entry: HistoryEntry) => {
     onRestore(entry)
     setRestoredId(entry.id)
     setAnnouncement(entry.label)
-    if (timerRef.current) clearTimeout(timerRef.current)
-    timerRef.current = setTimeout(() => {
-      setRestoredId(null)
-      setAnnouncement('')
-    }, 1500)
-  }, [onRestore])
+  }, [onRestore, setRestoredId, setAnnouncement])
 
   if (history.length === 0) return null
 

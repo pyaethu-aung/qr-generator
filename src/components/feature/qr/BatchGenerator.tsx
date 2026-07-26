@@ -26,6 +26,7 @@ import {
   type LabelPresetId,
 } from '../../../utils/batch/labelSheetLayout'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
+import { useFileDrop } from '../../../hooks/useFileDrop'
 
 // File formats are proper nouns: identical across locales, so they aren't translated.
 // "Labels" is a word, so it carries a translation key (filled in per-render below).
@@ -122,8 +123,6 @@ export function BatchGenerator() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [importedFileName, setImportedFileName] = useState<string | null>(null)
   const [fileError, setFileError] = useState<string | null>(null)
-  // True while a file is dragged over the list area, for the drop affordance.
-  const [isDragging, setIsDragging] = useState(false)
   // The parsed CSV grid drives the column-mapping UI; null when no multi-column CSV is active.
   const [csvGrid, setCsvGrid] = useState<ParsedBatchCsv | null>(null)
   const [contentType, setContentType] = useState<QRContentMode>('text')
@@ -251,24 +250,10 @@ export function BatchGenerator() {
     processFile(file)
   }
 
-  function handleDrop(e: React.DragEvent) {
-    e.preventDefault()
-    setIsDragging(false)
-    if (isGenerating) return
-    const file = e.dataTransfer.files?.[0]
-    if (file) processFile(file)
-  }
-
-  function handleDragOver(e: React.DragEvent) {
-    e.preventDefault()
-    if (!isGenerating) setIsDragging(true)
-  }
-
-  function handleDragLeave(e: React.DragEvent) {
-    // Ignore leave events fired when crossing between the drop zone's own children.
-    if (e.currentTarget.contains(e.relatedTarget as Node | null)) return
-    setIsDragging(false)
-  }
+  const { isDragging, onDragEnter, onDragOver, onDragLeave, onDrop } = useFileDrop(
+    processFile,
+    { disabled: isGenerating },
+  )
 
   function handleTypeChange(nextId: QRContentMode) {
     if (!csvGrid) return
@@ -383,10 +368,10 @@ export function BatchGenerator() {
             </div>
             <div
               className="relative"
-              onDragEnter={handleDragOver}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
+              onDragEnter={onDragEnter}
+              onDragOver={onDragOver}
+              onDragLeave={onDragLeave}
+              onDrop={onDrop}
             >
               <textarea
                 id={textareaId}

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useId, useRef, useState, type DragEvent } from 'react'
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { Upload, Camera, Copy, Check, ExternalLink, PencilLine, RotateCcw, X } from 'lucide-react'
 
 import { PillGroup } from '../../common/PillGroup'
@@ -7,6 +7,8 @@ import { ScanHistory } from './ScanHistory'
 import { useQrScanner, type ScanErrorCode } from '../../../hooks/useQrScanner'
 import { useScanHistory, type ScanHistoryEntry } from '../../../hooks/useScanHistory'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
+import { useCopyToClipboard } from '../../../hooks/useCopyToClipboard'
+import { useFileDrop } from '../../../hooks/useFileDrop'
 import { classifyDecoded, getOpenableUrl, type DecodedContentType } from '../../../utils/qrClassify'
 import type { TranslationKey } from '../../../types/i18n'
 
@@ -49,10 +51,8 @@ export function QRScanner({ onEditInGenerator }: QRScannerProps) {
   const { history, addEntry, remove: removeHistoryEntry, clear: clearHistory } = useScanHistory()
 
   const [method, setMethodState] = useState<InputMethod>('upload')
-  const [isDragging, setIsDragging] = useState(false)
-  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'error'>('idle')
+  const [copyState, copyToClipboard, setCopyState] = useCopyToClipboard()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
-  const copyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const resultHeadingId = useId()
 
   const setMethod = useCallback(
@@ -71,31 +71,19 @@ export function QRScanner({ onEditInGenerator }: QRScannerProps) {
     [scanFile],
   )
 
-  const handleDrop = useCallback(
-    (event: DragEvent<HTMLButtonElement>) => {
-      event.preventDefault()
-      setIsDragging(false)
-      handleFiles(event.dataTransfer.files)
-    },
-    [handleFiles],
+  const { isDragging, onDragOver, onDragLeave, onDrop } = useFileDrop<HTMLButtonElement>(
+    useCallback(file => void scanFile(file), [scanFile]),
   )
 
   const handleCopy = useCallback(async () => {
     if (!decoded) return
-    if (copyTimerRef.current) clearTimeout(copyTimerRef.current)
-    try {
-      await navigator.clipboard.writeText(decoded)
-      setCopyState('copied')
-    } catch {
-      setCopyState('error')
-    }
-    copyTimerRef.current = setTimeout(() => setCopyState('idle'), 2000)
-  }, [decoded])
+    await copyToClipboard(decoded)
+  }, [decoded, copyToClipboard])
 
   const handleScanAnother = useCallback(() => {
     reset()
     setCopyState('idle')
-  }, [reset])
+  }, [reset, setCopyState])
 
   // Remember every decoded value the moment it appears. The ref guards against re-recording
   // the same result on a re-render (and against a restored entry being saved as if freshly
@@ -114,7 +102,7 @@ export function QRScanner({ onEditInGenerator }: QRScannerProps) {
       showResult(entry.value)
       setCopyState('idle')
     },
-    [showResult],
+    [showResult, setCopyState],
   )
 
   const handleRemove = useCallback(
@@ -225,12 +213,9 @@ export function QRScanner({ onEditInGenerator }: QRScannerProps) {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    onDragOver={(e) => {
-                      e.preventDefault()
-                      setIsDragging(true)
-                    }}
-                    onDragLeave={() => setIsDragging(false)}
-                    onDrop={handleDrop}
+                    onDragOver={onDragOver}
+                    onDragLeave={onDragLeave}
+                    onDrop={onDrop}
                     className={`flex min-h-48 w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed px-6 py-10 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 ${
                       isDragging
                         ? 'border-action bg-surface-inset'

@@ -1,8 +1,9 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useId, useState } from 'react'
 import { LocateFixed } from 'lucide-react'
 import { Input } from '../../common/Input'
 import { Callout } from '../../common/Callout'
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
+import { useTimedState } from '../../../hooks/useTimedState'
 import { parseLatitude, parseLongitude } from '../../../utils/geo'
 import type { GeoConfig } from '../../../types/qr'
 
@@ -34,10 +35,7 @@ export function GeoForm({ config, onLatitudeChange, onLongitudeChange }: GeoForm
   const [locationError, setLocationError] = useState<string | undefined>()
   // Single polite live-region message: the in-flight "finding…" then a transient "found",
   // so a non-sighted user hears that the silent field fill actually succeeded.
-  const [srStatus, setSrStatus] = useState('')
-  const foundTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
-
-  useEffect(() => () => clearTimeout(foundTimerRef.current), [])
+  const [srStatus, setSrStatusTimed, setSrStatus] = useTimedState('', 3000)
 
   const [latTouched, setLatTouched] = useState(false)
   const [lngTouched, setLngTouched] = useState(false)
@@ -73,9 +71,7 @@ export function GeoForm({ config, onLatitudeChange, onLongitudeChange }: GeoForm
         onLatitudeChange(roundCoord(position.coords.latitude))
         onLongitudeChange(roundCoord(position.coords.longitude))
         setLocating(false)
-        setSrStatus(translate('controls.geoLocationFound'))
-        clearTimeout(foundTimerRef.current)
-        foundTimerRef.current = setTimeout(() => setSrStatus(''), 3000)
+        setSrStatusTimed(translate('controls.geoLocationFound'))
       },
       () => {
         setLocating(false)
