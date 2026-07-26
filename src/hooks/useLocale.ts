@@ -63,10 +63,8 @@ export function useLocale(): UseLocaleResult {
 
   const seo = useMemo(() => locales[locale].seo, [locale])
 
-  return {
-    locale,
-    setLocale,
-    translate,
-    seo,
-  }
+  return useMemo(
+    () => ({ locale, setLocale, translate, seo }),
+    [locale, setLocale, translate, seo],
+  )
 }
