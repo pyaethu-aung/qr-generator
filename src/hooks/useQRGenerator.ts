@@ -6,18 +6,11 @@ import { renderQrPngBlob } from '../utils/export/pngRenderer'
 import { getHydratedAppearance } from '../utils/shareConfig'
 import { loadPersistedAppearance, persistAppearance } from '../utils/persistedAppearance'
 import { getCapacityStatus } from '../utils/qrCapacity'
+import { readRaw, writeRaw } from '../utils/safeLocalStorage'
 
 export const INPUT_LENGTH_LIMIT = 2000
 
 const TEXT_DRAFT_KEY = 'qr-generator:draft:text'
-
-function loadTextDraft(): string {
-  try {
-    return localStorage.getItem(TEXT_DRAFT_KEY) ?? ''
-  } catch {
-    return ''
-  }
-}
 
 function getValidationErrorStatic(value: string): string | undefined {
   if (value.length > INPUT_LENGTH_LIMIT) {
@@ -47,7 +40,7 @@ export interface UseQRGeneratorReturn {
 }
 
 export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => {
-  const [inputValue, setInputValueState] = useState<string>(loadTextDraft)
+  const [inputValue, setInputValueState] = useState<string>(() => readRaw(TEXT_DRAFT_KEY))
   const [inputError, setInputError] = useState<string | undefined>(() =>
     getValidationErrorStatic(inputValue),
   )
@@ -55,14 +48,21 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
 
   // Initial appearance precedence: a shared `#c=` link wins, then the last-persisted
   // appearance, then defaults. Persisting fg/bg/EC lets the Batch tab inherit the look.
-  const sharedAppearance = getHydratedAppearance()
-  const persistedAppearance = loadPersistedAppearance()
-  const [inputEcLevel, setInputEcLevel] = useState<QRErrorCorrectionLevel>(
-    sharedAppearance?.ecLevel ?? persistedAppearance.ecLevel,
-  )
-  const [inputFgColor, setInputFgColor] = useState<string>(sharedAppearance?.fgColor ?? persistedAppearance.fgColor)
-  const [inputBgColor, setInputBgColor] = useState<string>(sharedAppearance?.bgColor ?? persistedAppearance.bgColor)
-  const [inputTransparentBg, setInputTransparentBg] = useState<boolean>(persistedAppearance.transparentBg)
+  // Computed once (lazy initializer) rather than on every render.
+  const [initialAppearance] = useState(() => {
+    const shared = getHydratedAppearance()
+    const persisted = loadPersistedAppearance()
+    return {
+      ecLevel: shared?.ecLevel ?? persisted.ecLevel,
+      fgColor: shared?.fgColor ?? persisted.fgColor,
+      bgColor: shared?.bgColor ?? persisted.bgColor,
+      transparentBg: persisted.transparentBg,
+    }
+  })
+  const [inputEcLevel, setInputEcLevel] = useState<QRErrorCorrectionLevel>(initialAppearance.ecLevel)
+  const [inputFgColor, setInputFgColor] = useState<string>(initialAppearance.fgColor)
+  const [inputBgColor, setInputBgColor] = useState<string>(initialAppearance.bgColor)
+  const [inputTransparentBg, setInputTransparentBg] = useState<boolean>(initialAppearance.transparentBg)
   const [recentDownload, setRecentDownload] = useState<'png' | 'svg' | null>(null)
   const downloadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -79,6 +79,7 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
     [effectiveInput, inputEcLevel],
   )
   const isBlocked = Boolean(effectiveError) || isOverCapacity
+  const isUsable = Boolean(effectiveInput.trim()) && !isBlocked
 
   useEffect(() => {
     return () => {
@@ -93,13 +94,7 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
 
   // Persist the text draft so a refresh or tab discard doesn't lose it.
   useEffect(() => {
-    const timer = setTimeout(() => {
-      try {
-        localStorage.setItem(TEXT_DRAFT_KEY, inputValue)
-      } catch {
-        // Ignore if localStorage is unavailable
-      }
-    }, 400)
+    const timer = setTimeout(() => writeRaw(TEXT_DRAFT_KEY, inputValue), 400)
     return () => clearTimeout(timer)
   }, [inputValue])
 
@@ -113,20 +108,28 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
 
   // Debounce the text field — 300 ms for valid input, 0 ms to clear on invalid/empty
   useEffect(() => {
-    const effective = effectiveInput.trim() && !isBlocked ? effectiveInput : ''
+    const effective = isUsable ? effectiveInput : ''
     const delay = effective ? 300 : 0
     const timer = setTimeout(() => setLiveValue(effective), delay)
     return () => clearTimeout(timer)
-  }, [effectiveInput, isBlocked])
+  }, [effectiveInput, isUsable])
 
-  const canDownload = useMemo(
-    () => Boolean(effectiveInput.trim()) && !isBlocked,
-    [isBlocked, effectiveInput],
-  )
+  const canDownload = isUsable
 
-  const isPending = Boolean(effectiveInput.trim()) && !isBlocked && liveValue !== effectiveInput.trim()
+  const isPending = isUsable && liveValue !== effectiveInput.trim()
 
-  const downloadPng = useCallback(async (
+  const downloadRendered = useCallback(async (
+    format: 'png' | 'svg',
+    renderBlob: (opts: {
+      ecLevel: QRErrorCorrectionLevel
+      fgColor: string
+      bgColor: string
+      designConfig: QRDesignConfig
+      frameConfig?: QRFrameConfig
+      logoDataUrl?: string | null
+      logoSize: number
+      transparentBg: boolean
+    }) => Promise<Blob>,
     designConfig: QRDesignConfig,
     frameConfig?: QRFrameConfig,
     logoDataUrl?: string | null,
@@ -135,7 +138,7 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
     if (!effectiveInput.trim()) return
 
     try {
-      const blob = await renderQrPngBlob(effectiveInput, {
+      const blob = await renderBlob({
         ecLevel: inputEcLevel,
         fgColor: inputFgColor,
         bgColor: inputBgColor,
@@ -146,43 +149,42 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
         transparentBg: inputTransparentBg,
       })
 
-      downloadBlob(blob, `qr-code-${Date.now()}.png`)
+      downloadBlob(blob, `qr-code-${Date.now()}.${format}`)
       if (downloadTimerRef.current) clearTimeout(downloadTimerRef.current)
-      setRecentDownload('png')
+      setRecentDownload(format)
       downloadTimerRef.current = setTimeout(() => setRecentDownload(null), 1500)
     } catch (err) {
-      console.error('Failed to generate PNG', err)
+      console.error(`Failed to generate ${format.toUpperCase()}`, err)
     }
   }, [effectiveInput, inputEcLevel, inputFgColor, inputBgColor, inputTransparentBg])
 
-  const downloadSvg = useCallback(async (
+  const downloadPng = useCallback((
     designConfig: QRDesignConfig,
     frameConfig?: QRFrameConfig,
     logoDataUrl?: string | null,
-    logoSize = 20,
-  ) => {
-    if (!effectiveInput.trim()) return
+    logoSize?: number,
+  ) => downloadRendered(
+    'png',
+    opts => renderQrPngBlob(effectiveInput, opts),
+    designConfig,
+    frameConfig,
+    logoDataUrl,
+    logoSize,
+  ), [downloadRendered, effectiveInput])
 
-    try {
-      const blob = await exportSvg(effectiveInput, {
-        value: effectiveInput,
-        ecLevel: inputEcLevel,
-        fgColor: inputFgColor,
-        bgColor: inputBgColor,
-        designConfig,
-        frameConfig,
-        logoDataUrl,
-        logoSize,
-        transparentBg: inputTransparentBg,
-      })
-      downloadBlob(blob, `qr-code-${Date.now()}.svg`)
-      if (downloadTimerRef.current) clearTimeout(downloadTimerRef.current)
-      setRecentDownload('svg')
-      downloadTimerRef.current = setTimeout(() => setRecentDownload(null), 1500)
-    } catch (err) {
-      console.error('Failed to generate SVG', err)
-    }
-  }, [effectiveInput, inputEcLevel, inputFgColor, inputBgColor, inputTransparentBg])
+  const downloadSvg = useCallback((
+    designConfig: QRDesignConfig,
+    frameConfig?: QRFrameConfig,
+    logoDataUrl?: string | null,
+    logoSize?: number,
+  ) => downloadRendered(
+    'svg',
+    opts => exportSvg(effectiveInput, { value: effectiveInput, ...opts }),
+    designConfig,
+    frameConfig,
+    logoDataUrl,
+    logoSize,
+  ), [downloadRendered, effectiveInput])
 
   return {
     liveValue,

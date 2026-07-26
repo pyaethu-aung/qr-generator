@@ -16,18 +16,11 @@ import {
 } from '../utils/batch/labelSheetLayout'
 import { loadPersistedAppearance } from '../utils/persistedAppearance'
 import { loadDesignConfig, loadFrameConfig } from '../utils/persistedDesign'
+import { readRaw, writeRaw } from '../utils/safeLocalStorage'
 
 // The tab mounts on demand (so it re-reads the latest design each time it opens), which
 // would otherwise drop a long pasted list on a tab switch. Persist the input so it survives.
 const BATCH_INPUT_KEY = 'qr-generator:batch:input'
-
-function loadBatchInput(): string {
-  try {
-    return localStorage.getItem(BATCH_INPUT_KEY) ?? ''
-  } catch {
-    return ''
-  }
-}
 
 export type BatchStatus = 'idle' | 'generating' | 'success' | 'error'
 export type BatchErrorCode = 'empty' | 'render-failed'
@@ -84,7 +77,7 @@ export interface UseBatchGeneratorReturn {
 }
 
 export function useBatchGenerator(): UseBatchGeneratorReturn {
-  const [input, setInputState] = useState(loadBatchInput)
+  const [input, setInputState] = useState(() => readRaw(BATCH_INPUT_KEY))
   const [format, setFormatState] = useState<BatchOutput>('png')
   const [labelPreset, setLabelPresetState] = useState<LabelPresetId>(DEFAULT_LABEL_PRESET_ID)
   const [captions, setCaptionsState] = useState(true)
@@ -102,13 +95,7 @@ export function useBatchGenerator(): UseBatchGeneratorReturn {
 
   // Persist the pasted list (debounced) so switching tabs and back doesn't lose it.
   useEffect(() => {
-    const timer = setTimeout(() => {
-      try {
-        localStorage.setItem(BATCH_INPUT_KEY, input)
-      } catch {
-        // Ignore if localStorage is unavailable
-      }
-    }, 400)
+    const timer = setTimeout(() => writeRaw(BATCH_INPUT_KEY, input), 400)
     return () => clearTimeout(timer)
   }, [input])
 
