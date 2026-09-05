@@ -71,8 +71,9 @@ describe('App integration', () => {
 
     expect(screen.getByRole('heading', { name: /sculpt standout qr codes/i })).toBeInTheDocument()
 
+    // The Scan view is lazy-loaded, so it resolves through a Suspense boundary.
     await user.click(screen.getByRole('button', { name: /^scan$/i }))
-    expect(screen.getByRole('heading', { name: /scan a qr code/i })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: /scan a qr code/i })).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /^generate$/i }))
     expect(screen.queryByRole('heading', { name: /scan a qr code/i })).not.toBeInTheDocument()
