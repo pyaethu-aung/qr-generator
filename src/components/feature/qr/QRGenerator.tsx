@@ -530,6 +530,11 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
                 {recentDownload === 'png' ? <Check size={16} aria-hidden className="shrink-0" /> : <Download size={16} aria-hidden className="shrink-0" />}
                 <span className="truncate">{translate('controls.downloadPngPrimary')}</span>
               </button>
+              {!canDownload && (
+                <p className="text-xs text-text-secondary text-center">
+                  {translate('controls.downloadsDisabledHint')}
+                </p>
+              )}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <button
                   type="button"
@@ -554,11 +559,6 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
                   <span className="truncate">{translate('preview.shareButtonLabel')}</span>
                 </button>
               </div>
-              {!canDownload && (
-                <p className="text-xs text-text-secondary text-center">
-                  {translate('controls.downloadsDisabledHint')}
-                </p>
-              )}
               <div className="space-y-1.5">
                 <button
                   type="button"
