@@ -39,12 +39,9 @@
   },
   "config": {
     "sectionLabel": "Configuración",
-    "sectionTitle": "Ajustes",
-    "helper": "Introduce el contenido que quieres codificar en el código QR."
+    "sectionTitle": "Ajustes"
   },
   "controls": {
-    "contentLabel": "Contenido",
-    "contentPlaceholder": "Introduce texto o URL",
     "correctionLabel": "Fiabilidad de escaneo",
     "correctionLow": "Baja (7%)",
     "correctionMedium": "Media (15%)",
@@ -77,8 +74,6 @@
     "gradientDirBottomLeft": "Abajo a la izquierda",
     "gradientDirLeft": "Izquierda",
     "gradientDirTopLeft": "Arriba a la izquierda",
-    "generate": "Generar código QR",
-    "downloadsTitle": "Descargas",
     "downloadPng": "Descargar PNG",
     "downloadSvg": "Descargar SVG",
     "logoLabel": "Logotipo",
@@ -368,31 +363,6 @@
     "csvToggleYes": "Sí",
     "csvToggleNo": "No",
     "csvPreviewMore": "+{count} más"
-  },
-  "export": {
-    "modalTitle": "Exportar código QR",
-    "exportButton": "Exportar",
-    "cancelButton": "Cancelar",
-    "dimensionLabel": "Dimensión",
-    "dpiLabel": "Calidad de impresión (DPI)",
-    "formatLabels": {
-      "png": "PNG",
-      "svg": "SVG",
-      "pdf": "PDF"
-    },
-    "formatDescriptions": {
-      "png": "Formato de imagen rasterizada, ideal para uso web y digital",
-      "svg": "Gráficos vectoriales escalables, resolución infinita",
-      "pdf": "Formato de documento listo para imprimir"
-    },
-    "closeModalLabel": "Cerrar ventana",
-    "exportingStatus": "Exportando el código QR, espera por favor...",
-    "exportFailedStatus": "Error al exportar: {error}",
-    "errors": {
-      "emptyContent": "Introduce contenido para generar el código QR",
-      "exportFailed": "Error al exportar. Inténtalo de nuevo.",
-      "canvasNotFound": "No se encontró el lienzo del código QR"
-    }
   },
   "history": {
     "sectionLabel": "Generados recientemente",
