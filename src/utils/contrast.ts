@@ -3,7 +3,7 @@
  * (auto-contrasting caption text). Operates on `#rrggbb` hex strings.
  */
 
-const INK = '#1A1A1A' // Inkwell — primary text token
+const INK = '#1C1A17' // Inkwell — primary text token
 const PAPER = '#FFFFFF' // action-fg token
 
 function channelToLinear(c: number): number {

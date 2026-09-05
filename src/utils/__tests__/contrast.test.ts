@@ -46,11 +46,11 @@ describe('readableTextColor', () => {
   })
 
   it('picks ink text on a light fill', () => {
-    expect(readableTextColor('#FAF6F1')).toBe('#1A1A1A')
-    expect(readableTextColor('#E8DDD2')).toBe('#1A1A1A')
+    expect(readableTextColor('#FAF6F1')).toBe('#1C1A17')
+    expect(readableTextColor('#E8DDD2')).toBe('#1C1A17')
   })
 
   it('falls back to ink for invalid input', () => {
-    expect(readableTextColor('terracotta')).toBe('#1A1A1A')
+    expect(readableTextColor('terracotta')).toBe('#1C1A17')
   })
 })

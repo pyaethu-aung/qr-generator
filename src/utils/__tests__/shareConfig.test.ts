@@ -9,6 +9,7 @@ import {
   type ShareConfigInput,
 } from '../shareConfig'
 import type { QRDesignConfig, QRFrameConfig } from '../../types/qr'
+import { DEFAULT_QR_CONFIG } from '../../data/defaults'
 
 const design: QRDesignConfig = {
   eyeFrameShape: 'Circle',
@@ -135,8 +136,8 @@ describe('decode sanitizes attacker-controlled fields', () => {
   it('drops a non-hex foreground/background color to the safe default', () => {
     const token = tokenFor({ v: 1, m: 'text', d: 'hi', e: 'M', f: 'red;url(x)', b: 'javascript:1', g: design, r: frame })
     const decoded = decodeShareConfig(token)
-    expect(decoded?.appearance.fgColor).toBe('#000000')
-    expect(decoded?.appearance.bgColor).toBe('#ffffff')
+    expect(decoded?.appearance.fgColor).toBe(DEFAULT_QR_CONFIG.fgColor)
+    expect(decoded?.appearance.bgColor).toBe(DEFAULT_QR_CONFIG.bgColor)
   })
 
   it('drops an invalid EC level to M', () => {

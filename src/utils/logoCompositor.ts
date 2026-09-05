@@ -1,3 +1,4 @@
+import { DEFAULT_QR_CONFIG } from '../data/defaults'
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image()
@@ -18,6 +19,12 @@ export interface LogoPlacement {
   centerY?: number
   /** Edge length the size % is taken from, in canvas pixels. Defaults to `canvasSize`. */
   baseSize?: number
+  /**
+   * Fill for the disc drawn behind the logo. It exists to clear QR modules, so it
+   * must match the code's background or it shows as a bright plate on a tinted
+   * one. Defaults to the app's default QR background.
+   */
+  backingColor?: string
 }
 
 /**
@@ -40,7 +47,7 @@ export function compositeLoadedLogoOnCanvas(
 
   ctx.save()
 
-  ctx.fillStyle = '#FFFFFF'
+  ctx.fillStyle = placement.backingColor ?? DEFAULT_QR_CONFIG.bgColor
   ctx.beginPath()
   ctx.arc(cx, cy, backingRadius, 0, Math.PI * 2)
   ctx.fill()

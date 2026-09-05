@@ -22,6 +22,7 @@ import type {
   WiFiConfig,
   WiFiSecurity,
 } from '../types/qr'
+import { DEFAULT_QR_CONFIG } from '../data/defaults'
 
 /**
  * Shareable config URL. The full reproducible QR config (content + design, minus the
@@ -259,8 +260,8 @@ export function decodeShareConfig(token: string): DecodedShareConfig | null {
     content: sanitizeContent(mode, p.d),
     appearance: {
       ecLevel: oneOf(p.e, EC_LEVELS, 'M'),
-      fgColor: hex(p.f, '#000000'),
-      bgColor: hex(p.b, '#ffffff'),
+      fgColor: hex(p.f, DEFAULT_QR_CONFIG.fgColor),
+      bgColor: hex(p.b, DEFAULT_QR_CONFIG.bgColor),
     },
     design: sanitizeDesign(p.g),
     frame: sanitizeFrame(p.r),

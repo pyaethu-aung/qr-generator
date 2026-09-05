@@ -3,6 +3,7 @@ import { describe, it, expect, vi } from 'vitest'
 import type { ComponentProps } from 'react'
 import { LocaleProvider } from '../../../../hooks/LocaleProvider'
 import { QRControls } from '../QRControls'
+import { DEFAULT_QR_CONFIG } from '../../../../data/defaults'
 
 type QRControlsProps = ComponentProps<typeof QRControls>
 
@@ -25,8 +26,8 @@ const setup = (overrides: Partial<QRControlsProps> = {}) => {
     eyeFrameColor: null,
     eyeCenterColor: null,
     pixelPattern: 'Square',
-    fgColor: '#000000',
-    bgColor: '#ffffff',
+    fgColor: DEFAULT_QR_CONFIG.fgColor,
+    bgColor: DEFAULT_QR_CONFIG.bgColor,
     onValueChange,
     onEcLevelChange,
     onEyeFrameShapeChange,
@@ -231,7 +232,7 @@ describe('QRControls configuration updates', () => {
 
 describe('color contrast warning', () => {
   it('does not show a warning when contrast is good (dark on light)', () => {
-    setup({ fgColor: '#000000', bgColor: '#ffffff' })
+    setup({ fgColor: DEFAULT_QR_CONFIG.fgColor, bgColor: DEFAULT_QR_CONFIG.bgColor })
 
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
