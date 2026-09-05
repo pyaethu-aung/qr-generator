@@ -382,7 +382,8 @@ export function BatchGenerator() {
                   setFileError(null)
                   clearMapping()
                 }}
-                disabled={isGenerating || mappingActive}
+                disabled={isGenerating}
+                readOnly={mappingActive}
                 rows={mappingActive ? 5 : 9}
                 spellCheck={false}
                 autoCapitalize="none"
@@ -601,8 +602,8 @@ export function BatchGenerator() {
                 aria-label={generatingStatus}
               >
                 <div
-                  className="h-full rounded-full bg-action transition-[width] duration-150 ease-out"
-                  style={{ width: `${percent}%` }}
+                  className="h-full w-full origin-left rounded-full bg-action transition-transform duration-150 ease-out"
+                  style={{ transform: `scaleX(${percent / 100})` }}
                 />
               </div>
               <p role="status" aria-live="polite" className="text-center text-xs text-text-secondary">
