@@ -322,7 +322,6 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
               <QRControls
                 value={inputValue}
                 onValueChange={setInputValue}
-                hasContent={!!liveValue}
                 capacityValue={capacityValue}
                 capacityPayloadValue={builtValue}
                 ecLevel={inputEcLevel}
