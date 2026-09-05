@@ -78,7 +78,7 @@ function App() {
       <footer className="relative z-10 border-t border-border-subtle py-6 text-center text-sm text-text-secondary">
         <p className="flex items-center justify-center gap-3 flex-wrap">
           <span>{translate('layout.footerNote')}</span>
-          <span className="text-border-strong select-none" aria-hidden>·</span>
+          <span className="text-text-secondary select-none" aria-hidden>·</span>
           <a
             href="https://github.com/pyaethu-aung/qr-generator"
             target="_blank"
