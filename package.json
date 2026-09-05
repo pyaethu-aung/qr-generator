@@ -20,7 +20,6 @@
     "docker:run": "docker run --rm -p 8080:80 --name qr-app --read-only --cap-drop ALL --tmpfs /var/cache/nginx:mode=1777 --tmpfs /tmp:mode=1777 qr-generator:local"
   },
   "dependencies": {
-    "@babel/core": "^8.0.1",
     "@zxing/library": "^0.23.0",
     "clsx": "^2.1.1",
     "fflate": "^0.8.3",
