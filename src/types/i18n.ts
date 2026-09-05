@@ -28,6 +28,7 @@ export interface LayoutStrings {
   headerTitle: string
   headerSubtitle: string
   navLabel: string
+  skipToContent: string
   themeToggleToLight: string
   themeToggleToDark: string
   footerNote: string
@@ -244,6 +245,20 @@ export interface ControlStrings {
   capacityUsage: string
   capacityNearLimit: string
   capacityOverLimit: string
+  downloadPngPrimary: string
+  downloadsDisabledHint: string
+  patternFluidHint: string
+  readabilityRiskTitle: string
+  readabilityRiskBody: string
+  contrastRiskTitle: string
+  invertedColorsTitle: string
+  contrastDismissLabel: string
+  contrastLowBody: string
+  contrastLowRatioPrefix: string
+  contrastLowRatioFallback: string
+  contrastInvertedBody: string
+  inputTooLong: string
+  requiredFieldLabel: string
 }
 
 export interface PreviewStrings {
@@ -264,6 +279,7 @@ export interface PreviewStrings {
 }
 
 export interface CommonStrings {
+  loading: string
   comingSoon: string
 }
 
@@ -394,8 +410,10 @@ export interface LocaleConfig {
 
 export type TranslationKey =
   | 'locale.toggleLabel'
+  | 'layout.skipToContent'
   | `locale.switchTo.${SupportedLocale}`
   | 'common.comingSoon'
+  | 'common.loading'
   | 'seo.title'
   | 'seo.description'
   | 'seo.ogTitle'
@@ -447,6 +465,20 @@ export type TranslationKey =
   | 'controls.gradientDirLeft'
   | 'controls.gradientDirTopLeft'
   | 'controls.generate'
+  | 'controls.downloadPngPrimary'
+  | 'controls.downloadsDisabledHint'
+  | 'controls.patternFluidHint'
+  | 'controls.readabilityRiskTitle'
+  | 'controls.readabilityRiskBody'
+  | 'controls.contrastRiskTitle'
+  | 'controls.invertedColorsTitle'
+  | 'controls.contrastDismissLabel'
+  | 'controls.contrastLowBody'
+  | 'controls.contrastLowRatioPrefix'
+  | 'controls.contrastLowRatioFallback'
+  | 'controls.contrastInvertedBody'
+  | 'controls.inputTooLong'
+  | 'controls.requiredFieldLabel'
   | 'controls.downloadsTitle'
   | 'controls.downloadPng'
   | 'controls.downloadSvg'

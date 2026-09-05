@@ -9,7 +9,8 @@
     }
   },
   "common": {
-    "comingSoon": "Coming soon"
+    "comingSoon": "Coming soon",
+    "loading": "Loading…"
   },
   "seo": {
     "title": "QR Code Generator",
@@ -28,7 +29,8 @@
     "navLabel": "Site controls",
     "themeToggleToLight": "Switch to light theme",
     "themeToggleToDark": "Switch to dark theme",
-    "footerNote": "© 2026 QR Code Generator"
+    "footerNote": "© 2026 QR Code Generator",
+    "skipToContent": "Skip to main content"
   },
   "hero": {
     "badge": "QUICK & EASY",
@@ -246,7 +248,21 @@
     "copyLinkHint": "Anyone with the link sees your text and design (not your logo).",
     "capacityUsage": "{used} of {max} characters used",
     "capacityNearLimit": "Approaching limit",
-    "capacityOverLimit": "Over capacity"
+    "capacityOverLimit": "Over capacity",
+    "downloadPngPrimary": "Download PNG · 1024 × 1024",
+    "downloadsDisabledHint": "Add a link to enable downloads.",
+    "patternFluidHint": "Merges touching modules into flowing shapes.",
+    "readabilityRiskTitle": "Readability Risk",
+    "readabilityRiskBody": "High density shapes may affect camera readability.",
+    "contrastRiskTitle": "Contrast Risk",
+    "invertedColorsTitle": "Inverted Colors",
+    "contrastDismissLabel": "Dismiss contrast warning",
+    "contrastLowBody": "{ratio} contrast may prevent scanners from reading the QR code. Try darkening your foreground or lightening your background.",
+    "contrastLowRatioPrefix": "{ratio}, low",
+    "contrastLowRatioFallback": "Low",
+    "contrastInvertedBody": "Light on dark may not be recognized by all scanners. Try swapping foreground and background colors.",
+    "inputTooLong": "Input too long (max {max} characters)",
+    "requiredFieldLabel": "required"
   },
   "preview": {
     "sectionLabel": "Live Preview",
