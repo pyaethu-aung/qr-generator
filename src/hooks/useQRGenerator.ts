@@ -12,9 +12,15 @@ export const INPUT_LENGTH_LIMIT = 2000
 
 const TEXT_DRAFT_KEY = 'qr-generator:draft:text'
 
-function getValidationErrorStatic(value: string): string | undefined {
+/** English fallback; callers pass a localized template with a `{max}` placeholder. */
+const DEFAULT_TOO_LONG_TEMPLATE = `Input too long (max {max} characters)`
+
+function getValidationErrorStatic(
+  value: string,
+  tooLongTemplate: string = DEFAULT_TOO_LONG_TEMPLATE,
+): string | undefined {
   if (value.length > INPUT_LENGTH_LIMIT) {
-    return `Input too long (max ${INPUT_LENGTH_LIMIT} characters)`
+    return tooLongTemplate.replace('{max}', String(INPUT_LENGTH_LIMIT))
   }
   return undefined
 }
@@ -39,10 +45,13 @@ export interface UseQRGeneratorReturn {
   isPending: boolean
 }
 
-export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => {
+export const useQRGenerator = (
+  externalValue?: string,
+  tooLongTemplate?: string,
+): UseQRGeneratorReturn => {
   const [inputValue, setInputValueState] = useState<string>(() => readRaw(TEXT_DRAFT_KEY))
   const [inputError, setInputError] = useState<string | undefined>(() =>
-    getValidationErrorStatic(inputValue),
+    getValidationErrorStatic(inputValue, tooLongTemplate),
   )
   const [liveValue, setLiveValue] = useState<string>('')
 
@@ -87,10 +96,13 @@ export const useQRGenerator = (externalValue?: string): UseQRGeneratorReturn => 
     }
   }, [])
 
-  const setInputValue = useCallback((value: string) => {
-    setInputValueState(value)
-    setInputError(getValidationErrorStatic(value))
-  }, [])
+  const setInputValue = useCallback(
+    (value: string) => {
+      setInputValueState(value)
+      setInputError(getValidationErrorStatic(value, tooLongTemplate))
+    },
+    [tooLongTemplate],
+  )
 
   // Persist the text draft so a refresh or tab discard doesn't lose it.
   useEffect(() => {
