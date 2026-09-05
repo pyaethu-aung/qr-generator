@@ -114,6 +114,25 @@
     color: var(--color-link);
     @apply underline-offset-4 hover:underline;
   }
+
+  /* PRODUCT.md asks for reduced-motion support on any transition, and 30-odd
+     `transition-*` utilities across the components were unguarded. One rule
+     covers them and anything added later.
+
+     Deliberately scoped to transitions only. Animations are already gated the
+     right way (`motion-safe:` plus `@media (prefers-reduced-motion:
+     no-preference)` around the keyframes), and a blanket animation kill is the
+     anti-pattern that destroys genuinely useful feedback like the scan spinner.
+     Collapsing a transition removes the tween and nothing else: every state
+     change still lands, instantly. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      transition-duration: 0.01ms !important;
+      transition-delay: 0ms !important;
+    }
+  }
 }
 
 @theme {
