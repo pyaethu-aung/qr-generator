@@ -252,7 +252,7 @@ export function QRScanner({ onEditInGenerator }: QRScannerProps) {
                         aria-hidden
                         className="pointer-events-none absolute inset-0 flex items-center justify-center"
                       >
-                        <div className="aspect-square w-3/5 rounded-2xl border-2 border-white/90 shadow-[0_0_0_9999px_rgba(0,0,0,0.35)]" />
+                        <div className="aspect-square w-3/5 rounded-2xl border-2 border-viewfinder shadow-[0_0_0_9999px_var(--color-scrim)]" />
                       </div>
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center">
@@ -290,7 +290,18 @@ export function QRScanner({ onEditInGenerator }: QRScannerProps) {
                 </div>
               )}
               {error && (
-                <Callout role="status">{translate(ERROR_KEY[error])}</Callout>
+                // A blocked camera or an unsupported browser is a dead end, not
+                // a status update: announce it assertively. Soft outcomes like
+                // "no code found" stay polite.
+                <Callout
+                  role={
+                    error === 'camera-denied' || error === 'camera-unsupported'
+                      ? 'alert'
+                      : 'status'
+                  }
+                >
+                  {translate(ERROR_KEY[error])}
+                </Callout>
               )}
             </div>
           )}

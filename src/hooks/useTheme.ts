@@ -41,7 +41,15 @@ export function useTheme() {
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     const handleChange = (e: MediaQueryListEvent) => {
-      const stored = localStorage.getItem(STORAGE_KEY)
+      // Guarded like every other access in this file: reading site data throws
+      // outright in some privacy contexts, and an OS theme change must not
+      // take the app down with it.
+      let stored: string | null = null
+      try {
+        stored = localStorage.getItem(STORAGE_KEY)
+      } catch (err) {
+        console.warn('[theme] Could not read from localStorage', err)
+      }
       if (!stored) {
         setThemeState(e.matches ? 'dark' : 'light')
       }
