@@ -1,4 +1,10 @@
-@import 'tailwindcss';
+/* source(none) disables Tailwind v4's automatic content detection, which was
+   also scanning specs/*.md and README.md and generating 37 unused palette
+   colours (indigo, sky, slate, fuchsia) from class names merely quoted in
+   prose. The two @source lines below then scope it to real source. */
+@import 'tailwindcss' source(none);
+@source '../src';
+@source '../index.html';
 
 @layer base {
   :root {
@@ -32,6 +38,10 @@
     --color-warning: #7C4A18;
     --color-warning-surface: #FAF3E6;
     --color-warning-border: #D4A850;
+    /* Camera overlay: sits over live video, so it is deliberately fixed in
+       both themes rather than following the surface tokens. */
+    --color-viewfinder: rgba(255, 255, 255, 0.9);
+    --color-scrim: rgba(0, 0, 0, 0.35);
 
     /* Follows the app's theme class (not the OS), so native control chrome
        (date picker indicators, scrollbars) matches the active theme. */
@@ -130,6 +140,8 @@
   --color-warning: var(--color-warning);
   --color-warning-surface: var(--color-warning-surface);
   --color-warning-border: var(--color-warning-border);
+  --color-viewfinder: var(--color-viewfinder);
+  --color-scrim: var(--color-scrim);
 }
 
 @layer components {
