@@ -351,7 +351,7 @@ export function BatchGenerator() {
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isGenerating}
-                className="flex items-center gap-1.5 rounded-md border border-border-subtle bg-surface-raised px-2.5 py-1 text-xs font-semibold text-text-secondary transition-colors hover:bg-surface-inset hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1"
+                className="flex items-center gap-1.5 rounded-md border border-border-strong bg-surface-raised px-2.5 py-1 text-xs font-semibold text-text-secondary transition-colors hover:bg-surface-inset hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1"
               >
                 <Upload size={12} aria-hidden className="shrink-0" />
                 {translate('batch.importButton')}
@@ -392,7 +392,7 @@ export function BatchGenerator() {
                     ? translate('batch.csvStructuredPlaceholder')
                     : translate('batch.inputPlaceholder')
                 }
-                className="w-full resize-y rounded-lg border border-border-strong bg-surface-inset p-3 font-['Geist_Mono'] text-sm text-text-primary placeholder:text-text-disabled transition-colors focus-visible:border-focus-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring/25 disabled:opacity-50"
+                className="w-full resize-y rounded-lg border border-border-strong bg-surface-inset p-3 font-['Geist_Mono'] text-sm text-text-primary placeholder:text-text-secondary transition-colors focus-visible:border-focus-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring/25 disabled:opacity-50"
               />
               {isDragging && (
                 <div
@@ -414,10 +414,7 @@ export function BatchGenerator() {
                 {translate('batch.importedFile').replace('{filename}', importedFileName)}
               </p>
             ) : (
-              <p
-                className={`text-xs ${count > 0 ? 'text-text-secondary' : 'text-text-disabled'}`}
-                aria-live="polite"
-              >
+              <p className="text-xs text-text-secondary" aria-live="polite">
                 {count > 0 ? countLabel : translate('batch.emptyHint')}
               </p>
             )}
@@ -510,7 +507,7 @@ export function BatchGenerator() {
                     </li>
                   ))}
                   {count > previewValues.length && (
-                    <li className="text-text-disabled">
+                    <li className="text-text-secondary">
                       {translate('batch.csvPreviewMore').replace(
                         '{count}',
                         String(count - previewValues.length),
