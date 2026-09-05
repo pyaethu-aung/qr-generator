@@ -289,7 +289,6 @@ export interface QRControlsProps {
   onDownloadPng?: () => void
   onDownloadSvg?: () => void
   canDownload?: boolean
-  hasContent?: boolean
   /** Raw typed content for the capacity counter in non-text modes. Undefined in text mode. */
   capacityValue?: string
   /** Formatted payload the QR encodes, for the non-text counter's warning state. Undefined in text mode. */
@@ -476,7 +475,6 @@ export function QRControls({
   onDownloadPng,
   onDownloadSvg,
   canDownload = false,
-  hasContent = false,
   capacityValue,
   capacityPayloadValue,
   inputError,
@@ -936,7 +934,12 @@ export function QRControls({
           />
         )}
 
-        <div className={`space-y-4 transition-opacity duration-150 ${(contentMode === 'text' ? !value.trim() : !hasContent) ? 'opacity-40' : ''}`}>
+        {/* Not dimmed while empty. The 40% wash used here read as "disabled" but
+            gated nothing (a dimmed pill still toggled), and it dropped ~32 text
+            nodes to 1.6-2.5:1, including the reliability hint that keeps a
+            printed code scannable. The rule and the section headings already
+            mark this as secondary. */}
+        <div className="space-y-4">
           {contentMode !== 'text' && <hr className="border-border-subtle" />}
           {/* EC Level pill row */}
           <div className="flex flex-col gap-1">
