@@ -79,6 +79,7 @@ export async function renderQrPngBlob(value: string, config: PngRenderConfig): P
       centerX: logoCenter.x * scale,
       centerY: logoCenter.y * scale,
       baseSize: logoBase * scale,
+      backingColor: bgColor,
     })
   }
 

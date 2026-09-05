@@ -3,6 +3,7 @@ import { useRef, useCallback, forwardRef, useEffect, useLayoutEffect } from 'rea
 import { useLocaleContext } from '../../../hooks/LocaleProvider'
 import { composeQrSvg } from '../../../utils/qrSvgComposer'
 import { compositeLoadedLogoOnCanvas } from '../../../utils/logoCompositor'
+import { DEFAULT_QR_CONFIG } from '../../../data/defaults'
 import type { QRConfig, QRDesignConfig, QRFrameConfig } from '../../../types/qr'
 
 export interface QRPreviewProps extends QRConfig {
@@ -35,6 +36,8 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
     sizeRef.current = size
     const logoSizeRef = useRef(logoSize)
     logoSizeRef.current = logoSize
+    const bgColorRef = useRef(bgColor)
+    bgColorRef.current = bgColor
     // Logo placement as viewBox ratios (0..1), updated whenever the QR base regenerates.
     // A frame offsets and shrinks the QR, so the logo follows the QR region, not the canvas.
     const logoPlacementRef = useRef({ cx: 0.5, cy: 0.5, base: 1 })
@@ -75,6 +78,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
           centerX: p.cx * physicalSize,
           centerY: p.cy * physicalSize,
           baseSize: p.base * physicalSize,
+          backingColor: bgColorRef.current,
         })
       }
     }, [])
@@ -193,7 +197,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
             <div
               ref={wrapperRef}
               className="qr-enter w-full rounded-lg p-4 overflow-hidden"
-              style={{ backgroundColor: bgColor ?? '#ffffff', maxWidth: size + 32 }}
+              style={{ backgroundColor: bgColor ?? DEFAULT_QR_CONFIG.bgColor, maxWidth: size + 32 }}
               onAnimationEnd={(e) => {
                 if (e.animationName === 'qr-enter') canFlashRef.current = true
               }}

@@ -1,6 +1,7 @@
 import type { QRConfig, QRDesignConfig, QRFrameConfig } from '../../types/qr'
 import { composeQrSvg } from '../qrSvgComposer'
 import { rasterizeLogoForSvg } from '../logoCompositor'
+import { DEFAULT_QR_CONFIG } from '../../data/defaults'
 
 export interface SvgExportConfig extends QRConfig {
   margin?: number
@@ -23,8 +24,8 @@ export async function exportSvg(
   const {
     margin = 4,
     ecLevel = 'M',
-    fgColor = '#000000',
-    bgColor = '#FFFFFF',
+    fgColor = DEFAULT_QR_CONFIG.fgColor,
+    bgColor = DEFAULT_QR_CONFIG.bgColor,
     designConfig = { eyeFrameShape: 'Square', eyeCenterShape: 'Square', eyeFrameColor: null, eyeCenterColor: null, pixelPattern: 'Square', fgGradient: null },
     frameConfig,
     logoDataUrl,
@@ -59,7 +60,7 @@ export async function exportSvg(
     const logoRadius = logoRenderPx / 2
     const backingRadius = logoRadius + Math.max(4, Math.round(logoRadius * 0.1))
     logoSvgElements = `<defs><clipPath id="logo-clip"><circle cx="${cx}" cy="${cy}" r="${logoRadius}"/></clipPath></defs>
-<circle cx="${cx}" cy="${cy}" r="${backingRadius}" fill="#FFFFFF"/>
+<circle cx="${cx}" cy="${cy}" r="${backingRadius}" fill="${bgColor}"/>
 <image href="${rasterizedDataUrl}" x="${cx - logoRadius}" y="${cy - logoRadius}" width="${logoRenderPx}" height="${logoRenderPx}" clip-path="url(#logo-clip)"/>`
   }
 

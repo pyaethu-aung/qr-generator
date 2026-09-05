@@ -4,6 +4,7 @@ import { Input } from '../../common/Input'
 import { Callout } from '../../common/Callout'
 import { PillGroup } from '../../common/PillGroup'
 import { Tooltip } from '../../common/Tooltip'
+import { DEFAULT_QR_CONFIG } from '../../../data/defaults'
 import { WiFiForm } from './WiFiForm'
 import { VCardForm } from './VCardForm'
 import { EmailForm } from './EmailForm'
@@ -713,8 +714,8 @@ export function QRControls({
   // from the defaults — so a shared link's styling (or your own edits) is visible at a
   // glance without opening the panel. Frame self-indicates via its named-style pill.
   const appearanceCustomized =
-    fgColor.toLowerCase() !== '#000000' ||
-    bgColor.toLowerCase() !== '#ffffff' ||
+    fgColor.toLowerCase() !== DEFAULT_QR_CONFIG.fgColor.toLowerCase() ||
+    bgColor.toLowerCase() !== DEFAULT_QR_CONFIG.bgColor.toLowerCase() ||
     transparentBg ||
     eyeFrameShape !== 'Square' ||
     eyeCenterShape !== 'Square' ||
