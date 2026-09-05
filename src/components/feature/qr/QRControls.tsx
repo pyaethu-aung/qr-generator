@@ -347,6 +347,16 @@ export interface QRControlsProps {
   correctionTooltip?: string
   correctionTooltipAriaLabel?: string
   dismissWarningAriaLabel?: string
+  patternFluidHint?: string
+  readabilityRiskTitle?: string
+  readabilityRiskBody?: string
+  contrastRiskTitle?: string
+  invertedColorsTitle?: string
+  contrastDismissLabel?: string
+  contrastLowBody?: string
+  contrastLowRatioPrefix?: string
+  contrastLowRatioFallback?: string
+  contrastInvertedBody?: string
   correctionHint?: string
   correctionBelowRecommendedLabel?: string
   downloadStatus?: 'png' | 'svg' | null
@@ -558,6 +568,16 @@ export function QRControls({
   correctionTooltip = 'How much of the QR code can be covered or damaged and still scan. Low gives a compact code; Highest lets you overlay a logo at the cost of a denser pattern.',
   correctionTooltipAriaLabel = 'About error correction',
   dismissWarningAriaLabel = 'Dismiss warning',
+  patternFluidHint = 'Merges touching modules into flowing shapes.',
+  readabilityRiskTitle = 'Readability Risk',
+  readabilityRiskBody = 'High density shapes may affect camera readability.',
+  contrastRiskTitle = 'Contrast Risk',
+  invertedColorsTitle = 'Inverted Colors',
+  contrastDismissLabel = 'Dismiss contrast warning',
+  contrastLowBody = '{ratio} contrast may prevent scanners from reading the QR code. Try darkening your foreground or lightening your background.',
+  contrastLowRatioPrefix = '{ratio}, low',
+  contrastLowRatioFallback = 'Low',
+  contrastInvertedBody = 'Light on dark may not be recognized by all scanners. Try swapping foreground and background colors.',
   correctionHint = 'Higher = survives damage and supports logos.',
   correctionBelowRecommendedLabel = 'Lower reliability can make this code harder to scan. Highest is recommended.',
   downloadStatus,
@@ -1043,13 +1063,13 @@ export function QRControls({
                 ))}
               </div>
               {(pixelPattern === 'Classy' || pixelPattern === 'Fluid') && (
-                <p className="text-xs text-text-secondary">Merges touching modules into flowing shapes.</p>
+                <p className="text-xs text-text-secondary">{patternFluidHint}</p>
               )}
             </div>
 
             {isRiskyPattern && (
-              <Callout title="Readability Risk" onDismiss={onDismissWarning} dismissLabel={dismissWarningAriaLabel}>
-                High density shapes may affect camera readability.
+              <Callout title={readabilityRiskTitle} onDismiss={onDismissWarning} dismissLabel={dismissWarningAriaLabel}>
+                {readabilityRiskBody}
               </Callout>
             )}
 
@@ -1397,7 +1417,7 @@ export function QRControls({
                     className={`flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed text-sm transition-colors ${
                       isDragOver
                         ? 'border-action bg-action/5 text-action'
-                        : 'border-border-subtle bg-surface-inset text-text-secondary hover:border-action hover:text-text-primary'
+                        : 'border-border-strong bg-surface-inset text-text-secondary hover:border-action hover:text-text-primary'
                     }`}
                   >
                     {isLoadingLogo ? (
@@ -1430,7 +1450,7 @@ export function QRControls({
                       type="url"
                       placeholder="https://…"
                       aria-label={logoUrlAriaLabel}
-                      className="h-11 w-full rounded-lg border border-border-strong bg-surface-inset px-3 text-sm text-text-primary placeholder:text-text-disabled focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring"
+                      className="h-11 w-full rounded-lg border border-border-strong bg-surface-inset px-3 text-sm text-text-primary placeholder:text-text-secondary focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') void handleUrlSubmit(e.currentTarget.value)
                         if (e.key === 'Escape') setShowUrlInput(false)
@@ -1478,13 +1498,18 @@ export function QRControls({
 
         {showContrastWarning && (
           <Callout
-            title={isLowContrast ? 'Contrast Risk' : 'Inverted Colors'}
+            title={isLowContrast ? contrastRiskTitle : invertedColorsTitle}
             onDismiss={() => setDismissedColors({ fg: fgContrastKey, bg: bgColor })}
-            dismissLabel="Dismiss contrast warning"
+            dismissLabel={contrastDismissLabel}
           >
             {isLowContrast
-              ? `${contrastRatioLabel ? `${contrastRatioLabel}, low` : 'Low'} contrast may prevent scanners from reading the QR code. Try darkening your foreground or lightening your background.`
-              : 'Light on dark may not be recognized by all scanners. Try swapping foreground and background colors.'}
+              ? contrastLowBody.replace(
+                  '{ratio}',
+                  contrastRatioLabel
+                    ? contrastLowRatioPrefix.replace('{ratio}', contrastRatioLabel)
+                    : contrastLowRatioFallback,
+                )
+              : contrastInvertedBody}
           </Callout>
         )}
 
@@ -1497,7 +1522,7 @@ export function QRControls({
                   type="button"
                   onClick={onDownloadPng}
                   disabled={!canDownload}
-                  className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-border-subtle bg-surface-raised px-4 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-border-strong bg-surface-raised px-4 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {downloadStatus === 'png' ? (
                     <Check size={16} aria-hidden className="text-action" />
@@ -1512,7 +1537,7 @@ export function QRControls({
                   type="button"
                   onClick={onDownloadSvg}
                   disabled={!canDownload}
-                  className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-border-subtle bg-surface-raised px-4 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-border-strong bg-surface-raised px-4 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {downloadStatus === 'svg' ? (
                     <Check size={16} aria-hidden className="text-action" />
