@@ -300,12 +300,18 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
       <span className="sr-only" aria-live="polite" aria-atomic="true">{qrAnnouncement}</span>
       <div className="relative mx-auto max-w-6xl space-y-3">
         <div className="text-center pt-10 pb-4 px-6 sm:px-12">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-action">
+          {/* The eyebrow is pure decoration and was the weakest of the four
+              resting accent elements, so it gives its terracotta up to the
+              primary download CTA (DESIGN.md: The Terracotta Economy). */}
+          <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-text-secondary">
             {translate('hero.badge')}
           </p>
           <h2 className="mt-1.5 text-2xl font-bold text-text-primary sm:text-4xl">
             {translate('hero.title')}
           </h2>
+          {/* Batch and Scan both orient the visitor with a subtitle; the
+              flagship view had one written and translated but never rendered. */}
+          <p className="mt-2 text-sm text-text-secondary">{translate('hero.subtitle')}</p>
         </div>
 
         <div className="rounded-xl border border-border-strong bg-surface-overlay p-8 shadow-lg w-full max-w-full overflow-clip">
