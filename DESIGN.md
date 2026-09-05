@@ -3,16 +3,17 @@ name: QR Generator
 description: Craft custom QR codes — warm, considered, done in under a minute.
 colors:
   action: "#A04D28"
+  action-hover: "#8B4020"
   action-fg: "#FFFFFF"
   action-disabled: "#E8C5B3"
   surface: "#F3EBE2"
   surface-raised: "#FAF6F1"
   surface-inset: "#E8DDD2"
-  text-primary: "#1A1A1A"
-  text-secondary: "#6B6B6B"
-  text-disabled: "#706860"
+  text-primary: "#1C1A17"
+  text-secondary: "#605A52"
+  text-disabled: "#6E665C"
   border-subtle: "#C5BEB6"
-  border-strong: "#A89E93"
+  border-strong: "#877D70"
   error: "#C53030"
   error-surface: "#FEF2F2"
   warning: "#7C4A18"
@@ -21,27 +22,27 @@ colors:
   focus-ring: "#A04D28"
 typography:
   display:
-    fontFamily: "Inter, Segoe UI, system-ui, sans-serif"
+    fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
     fontSize: "36px"
     fontWeight: 700
     lineHeight: 1.2
   title:
-    fontFamily: "Inter, Segoe UI, system-ui, sans-serif"
+    fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
     fontSize: "24px"
     fontWeight: 700
     lineHeight: 1.3
   body:
-    fontFamily: "Inter, Segoe UI, system-ui, sans-serif"
+    fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
     fontSize: "16px"
     fontWeight: 400
     lineHeight: 1.5
   label:
-    fontFamily: "Inter, Segoe UI, system-ui, sans-serif"
+    fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
     fontSize: "13px"
     fontWeight: 600
     lineHeight: 1.4
   caption:
-    fontFamily: "Inter, Segoe UI, system-ui, sans-serif"
+    fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
     fontSize: "10px"
     fontWeight: 600
     letterSpacing: "0.3em"
@@ -112,15 +113,16 @@ components:
 
 A QR code generator that treats the output as a craft object, not a utility dump. Every surface carries the warmth of fired clay and linen — earthy without being rustic, refined without being cold. The palette is committed to a single terracotta accent that earns the right to appear, surrounded by strata of warm neutrals that breathe.
 
-This system rejects the interchangeable. There is no blue primary, no card grid, no SaaS-cream background. Playfair Display headings give the configuration panel the quiet authority of a well-labeled workshop drawer. Inter handles the functional work without noise. The sand surface (#F3EBE2) is never purely neutral — it is always slightly warm, always hinting at the material world.
+This system rejects the interchangeable. There is no blue primary, no card grid, no SaaS-cream background. Authority comes from restraint rather than a display face: heavy weight against generous space, uppercase eyebrows tracking out over bold titles, and a single accent that only ever marks state or action. The sand surface (#F3EBE2) is never purely neutral — it is always slightly warm, always hinting at the material world. And the warmth now reaches the code itself, not just the frame around it.
 
 Interaction is brief and purposeful. The user arrives with a URL, leaves with a QR code they are not embarrassed by. The tool does not perform. It does.
 
 **Key Characteristics:**
 - Warm earthy palette: sand, linen, oatmeal neutrals anchored by a single terracotta accent
-- Editorial typography: Playfair Display for authority, Inter for function, Geist Mono for precision
+- One face, worked hard: the platform system stack for the whole UI, Geist Mono for machine values only
 - Dual theme: light mode is warm afternoon light; dark mode is a dim workshop at dusk
 - Pill-shaped controls: segmented options feel tactile, not digital
+- The output inherits the palette: warm ink on warm paper, never black on white
 - Settled and warm: controls feel planted — no floating, no over-animation
 - 150ms transitions: state changes feel immediate, not harsh
 
@@ -130,7 +132,7 @@ A restrained palette built on warm neutrals with a single terracotta accent. Eve
 
 ### Primary
 
-- **Terracotta** (#A04D28, dark: #D4916E): The brand accent. Used on the Generate button, active pills, section eyebrow text, and focus rings. At most three elements per view carry this color.
+- **Terracotta** (#A04D28, hover #8B4020; dark: #D4916E, hover #E3A98B): The brand accent. Used on the Generate button, active pills, section eyebrow text, and focus rings. At most three elements per view carry this color.
 - **Action Foreground** (#FFFFFF, dark: #1A1612): Text and icons on terracotta surfaces.
 - **Action Disabled** (#E8C5B3, dark: #6B4B38): Disabled state of action elements.
 
@@ -139,11 +141,11 @@ A restrained palette built on warm neutrals with a single terracotta accent. Eve
 - **Warm Sand** (#F3EBE2, dark: #1A1612): Page background. Never pure white; the warmth carries through every surface.
 - **Pale Linen** (#FAF6F1, dark: #2A2420): Cards, navbar, raised surfaces — one step lighter than sand.
 - **Oatmeal** (#E8DDD2, dark: rgba(255,255,255,0.05)): Inputs, inactive pills, preview area — the inset well.
-- **Inkwell** (#1A1A1A, dark: #F3EBE2): Primary text.
-- **Driftwood** (#6B6B6B, dark: #A89E93): Secondary text, icons, muted labels.
-- **Fog** (#706860, dark: #5C544C): Placeholder and disabled text.
-- **Pale Stone** (#C5BEB6, dark: rgba(255,255,255,0.10)): Most dividers and subtle borders.
-- **Warm Slate** (#A89E93, dark: rgba(255,255,255,0.18)): Card outline and strong borders.
+- **Inkwell** (#1C1A17, dark: #F3EBE2): Primary text. Warm-tinted, per the Warm Neutral Rule.
+- **Driftwood** (#605A52, dark: #A89E93): Secondary text, icons, muted labels, **placeholders**, empty states and hints. Meets 4.5:1 on all three surfaces including `surface-inset` (5.10:1).
+- **Fog** (#6E665C, dark: #948A7E): **Disabled controls only.** WCAG 1.4.3 exempts inactive components; anything a sighted user is meant to read (placeholders, empty states, hints) uses Driftwood instead.
+- **Pale Stone** (#C5BEB6, dark: rgba(255,255,255,0.10)): Dividers, panel and popover outlines. **Decorative only** — it does not meet 1.4.11 and must never be a control's sole boundary.
+- **Warm Slate** (#877D70, dark: rgba(255,255,255,0.38)): Card outline, and the boundary of every interactive control. Meets the 3:1 of WCAG 1.4.11 against all surfaces in both themes.
 
 ### Tertiary
 
@@ -152,18 +154,26 @@ A restrained palette built on warm neutrals with a single terracotta accent. Eve
 
 ### Named Rules
 
-**The Terracotta Economy.** The action color appears on at most three elements per view: the active pill, the Generate button, and the hero eyebrow. Its rarity is the point. A fourth terracotta element devalues all of them.
+**The Terracotta Economy.** The action color earns its place by meaning, not by a headcount. It is reserved for exactly three jobs:
+
+1. the **active state** of a segmented control (view tabs, content mode, reliability, batch format),
+2. exactly **one primary action** per view (Download PNG, Generate ZIP), and
+3. **focus rings**.
+
+Nothing decorative may take it. The hero eyebrow used to, and gave it up when the primary download claimed it. If you are reaching for the accent and your element is not in that list, the answer is `text-primary` or `border-strong`.
+
+On the Generate view this resolves to four resting elements (active tab, active content pill, active reliability pill, primary CTA), each carrying state or action. An earlier revision of this rule capped the count at three, which the build never met and could not: two segmented controls plus a tab bar plus a CTA is four before any decoration.
 
 **The Warm Neutral Rule.** No surface is pure gray or pure white. Every neutral is tinted toward the warm hue family (48–68 in OKLCH). #F3EBE2 is not white. #1A1612 is not black. Tinting is non-negotiable.
 
 ## 3. Typography
 
-**Body Font:** Inter (with Segoe UI, system-ui, sans-serif fallback) — the only typeface in the current build
-**Mono Font:** Geist Mono (loaded via Google Fonts — hex values in the color picker only)
+**UI Font:** the platform system stack (`system-ui, -apple-system, Segoe UI, Roboto, sans-serif`) — the only typeface in the UI
+**Mono Font:** Geist Mono (loaded via Google Fonts — hex values in the color picker and the batch list only)
 
-> **Implementation note:** Playfair Display (the intended heading font) is not yet loaded. All headings currently use Inter 700. When added, it applies to Display and Title roles only. This section reflects what is built.
+> **Deliberate, not aspirational.** Earlier revisions of this document specified Inter for the UI and Playfair Display for headings. Neither was ever loaded: `index.html` fetches only Geist Mono, so the shipped type has always been whatever the OS provides, and it differed per platform. Rather than add two webfont payloads to a tool whose whole promise is "done in under a minute", the system stack is now the documented choice: zero bytes, zero FOUC, and a face that already looks native to the visitor. If a display face is ever added, it applies to Display and Title only, never below 18px, and it must be self-hosted and preloaded.
 
-**Character:** Inter carries the full UI — from hero headline to form labels. Hierarchy comes entirely from size and weight contrast: 700 for display and titles, 600 for labels and eyebrows, 400 for body copy. It's functional and clear, which suits the non-technical audience. The eyebrow captions compensate for the single-font system with aggressive uppercase tracking, giving sections visual anchoring without a second typeface.
+**Character:** the system stack carries the full UI — from hero headline to form labels. Hierarchy comes entirely from size and weight contrast: 700 for display and titles, 600 for labels and eyebrows, 400 for body copy. It's functional and clear, which suits the non-technical audience. The eyebrow captions compensate for the single-font system with aggressive uppercase tracking, giving sections visual anchoring without a second typeface.
 
 ### Hierarchy
 
@@ -180,7 +190,7 @@ A restrained palette built on warm neutrals with a single terracotta accent. Eve
 
 **The Weight-Scale Rule.** In a single-font system, hierarchy lives entirely in weight and size. 700 for headings, 600 for labels and eyebrows, 400–500 for body and secondary. Never use 400 on interactive element labels — it reads as inactive.
 
-**The Inter-Only Rule (current).** Playfair Display is not in the current build. When it is added for the redesign, it applies to Display and Title roles only — never to labels, buttons, pills, or captions, and never below 18px.
+**The One-Face Rule.** The UI ships a single family, the system stack, and Geist Mono for machine values only (hex codes, the batch list). Do not introduce a third face without loading it: a `font-family` naming a font nothing fetches is not a typographic choice, it is a per-platform accident.
 
 ## 4. Elevation
 
@@ -191,12 +201,11 @@ Depth is conveyed primarily through tonal layering: `surface` (page) → `surfac
 - **card-ambient** (`0 2px 4px rgba(0,0,0,0.031), 0 12px 32px rgba(0,0,0,0.059)`): Main two-column card. Two-layer ambient shadow for grounded depth. The heaviest structural shadow in the system.
 - **button-lift** (`shadow-sm`): Primary and secondary buttons at rest. Subtle ground contact only.
 - **tooltip** (`shadow-md`): Tooltip and inline popovers.
-- **modal** (`shadow-2xl`): Export modal — the only surface that fully lifts above the page.
 - **preview-inset-dark** (`0 2px 8px rgba(0,0,0,0.125)`): Preview area in dark mode. Reinforces the inset well.
 
 ### Named Rules
 
-**The Flat-By-Default Rule.** Controls (pills, inputs, dropdowns) are flat at rest. Shadow is a structural signal, not decoration. New components must not introduce a shadow heavier than `card-ambient` unless they genuinely float above all other surfaces (modal, tooltip).
+**The Flat-By-Default Rule.** Controls (pills, inputs, dropdowns) are flat at rest. Shadow is a structural signal, not decoration. New components must not introduce a shadow heavier than `card-ambient` unless they genuinely float above all other surfaces (the tooltip and the country popover are the only two that do).
 
 ## 5. Components
 
@@ -205,11 +214,13 @@ Depth is conveyed primarily through tonal layering: `surface` (page) → `surfac
 ### Buttons
 
 - **Shape:** Pill (9999px radius) for primary. Gently rounded (12px) for secondary, download, and share buttons.
-- **Primary (Generate QR Code):** Terracotta fill, white text, full-width, 48px tall, inline zap icon, 700 weight.
-- **Secondary (Download, Share):** Surface-raised fill, `border-subtle` stroke, text-primary label, 44px tall. Icon precedes label in `text-secondary`.
+- **Primary (Download PNG, Generate ZIP):** Terracotta fill (`bg-action`, hover `bg-action-hover`), `action-fg` text, full-width, 48px tall, pill radius, leading icon, 700 weight. **One per view.** The Generate view's primary states its output size ("Download PNG · 1024 × 1024") so the visitor knows what they are getting.
+- **Secondary (Download SVG, Share, Copy link):** Surface-raised fill, `border-strong` stroke, text-primary label, 44px tall, 12px radius. Icon precedes label.
 - **Hover:** `background-color` shift at 150ms ease. Primary darkens toward #8B4020; secondary shifts to `surface-inset`.
 - **Focus:** 2px `focus-ring` ring with 2px `surface` offset, applied via `focus-visible` only.
-- **Disabled:** 50% opacity, `cursor-not-allowed`.
+- **Disabled:** 50% opacity, `cursor-not-allowed`, and the *same* fill and text as the enabled state. One disabled vocabulary, never a per-button variant. When a whole action group is disabled, say why once beneath it rather than leaving dead buttons unexplained.
+
+> **No Button component.** `Button.tsx` existed but was never imported: it could not express the pill primary above, so every button was hand-rolled around it. It was removed. Compose buttons from the recipes here; if a primitive is reintroduced it must be able to produce the primary.
 
 ### Chips / Pills
 
@@ -244,9 +255,9 @@ The multiline sibling of the input — same surface, stroke, radius, and focus v
 
 ### Navigation
 
-- **Navbar:** `surface-overlay` fill, `border-subtle` bottom border. 16px vertical / 48px horizontal padding.
-- **Brand:** Sparkle glyph (22px) + "QR Code Generator" (18px, 600, Playfair Display) + subtitle (13px, `text-secondary`).
-- **Icon Buttons:** Circular (36×36px), `surface-raised` fill, `border-subtle` stroke, `text-secondary` icons (18×18px). Theme toggle (sun/moon) and language toggle (globe).
+- **Navbar:** `surface-overlay` fill, `border-subtle` bottom border. 16px vertical / 48px horizontal padding. Wraps (`flex-wrap`) so its controls stay on screen at 200% text size — `Layout` clips horizontal overflow, so anything pushed out is lost, not scrollable. **No `backdrop-blur`:** it is a resting surface (see Do's and Don'ts).
+- **Brand:** `BrandMark` (22px inline SVG: the three QR finder patterns plus four data modules, drawn in `currentColor` = `text-primary`) + "QR Code Generator" (18px, 600) + subtitle (13px, `text-secondary`, hidden below `sm`). The mark is `aria-hidden`, so the `<h1>` announces the name alone. It is deliberately **not** terracotta: chrome present on every view would spend the accent budget permanently.
+- **Icon Buttons:** Circular (44×44px), `surface-raised` fill, `border-strong` stroke, `text-secondary` icons (18×18px). Theme toggle (sun/moon) and language toggle (globe).
 
 ### Color Picker (Signature Component)
 
@@ -300,6 +311,18 @@ The Batch list textarea doubles as a file drop target for `.txt` / `.csv` import
 
 The Batch view reuses the **Chips / Pills** component (see above) for its mutually-exclusive choices rather than inventing new controls: output format (PNG / SVG / PDF / Labels), label-sheet layout preset (3 Avery-style options), and the captions on/off toggle. Same 36px height, full radius, terracotta active fill, 150ms transition.
 
+### The Code Itself (the actual deliverable)
+
+`PRODUCT.md`'s first principle is "The result is the product", and for a long time the QR was the one surface this system never touched: pure `#000000` on `#FFFFFF`, indistinguishable from any free generator's output. The chrome was the atelier; the artifact was a commodity.
+
+The default output is now **warm ink on warm paper**: `#1A1612` on `#FAF6F1` (`DEFAULT_QR_CONFIG` in `src/data/defaults.ts`), the same ink and paper the rest of the product uses. A visitor who customizes nothing still leaves with something recognizably from this tool.
+
+- **Concrete hex, never tokens.** These colors are baked into the exported PNG/SVG, which cannot read CSS variables, and must look identical whether the visitor generated them in light or dark UI. Everything that needs a color fallback derives it from `DEFAULT_QR_CONFIG` rather than repeating a literal.
+- **Contrast is not negotiable.** 16.72:1 here, far above the ~4:1 scanners need. The contrast warning fires below 3:1. Any future change to the default must be checked against that floor first, because an unreadable code is not a design decision.
+- **The logo backing disc follows the code's background**, not white. It exists to clear modules for the logo; a hard `#FFFFFF` plate on warm paper is a visible bright disc.
+
+---
+
 ### Label Sheet (Output Format)
 
 Not a screen component: the **Labels** format renders a single printable PDF instead of a ZIP, arranging codes in an Avery-style grid (3 presets: A4·3×7, A4·2×4, Letter·3×6). Each cell optionally prints a caption beneath the code — a readable field (Wi-Fi network name, contact full name, `lat,long`) when the source was a mapped CSV, falling back to the raw value otherwise. Geometry is pure points math in `labelSheetLayout.ts`; the render is jsPDF in `buildLabelSheetPdf.ts`.
@@ -307,19 +330,21 @@ Not a screen component: the **Labels** format renders a single printable PDF ins
 ## 6. Do's and Don'ts
 
 ### Do:
-- **Do** use `var(--color-action)` for the primary CTA, active pills, section eyebrow text, and focus rings only — three elements per view at most.
-- **Do** pair Playfair Display headings with Inter body copy. Never use Playfair Display below 18px or in labels, buttons, or pill text.
+- **Do** use `var(--color-action)` for the active state of a segmented control, exactly one primary action per view, and focus rings. Nothing decorative (see The Terracotta Economy).
+- **Do** build hierarchy from size and weight in the single system face. Geist Mono is for machine values only (hex codes, the batch list).
 - **Do** use `surface-inset` (#E8DDD2) for all input backgrounds and inactive pill fills.
 - **Do** keep every neutral warm — hue 48–68 in OKLCH. #F3EBE2 is not white. #1A1612 is not black.
 - **Do** use full pill radius (9999px) for nav icon buttons, the Generate button, and segmented controls. Use 12px for inputs, cards, and download buttons.
 - **Do** apply 150ms ease to all state transitions — faster feels abrupt, slower feels sluggish.
-- **Do** maintain WCAG AA contrast across both light and dark themes on all text and interactive states.
+- **Do** maintain WCAG AA across both themes: 4.5:1 for text (SC 1.4.3) and 3:1 for control boundaries (SC 1.4.11). Placeholders and empty states are text and take `text-secondary`; `text-disabled` is only for genuinely inactive controls.
+- **Do** give any hover- or focus-revealed panel an Escape dismiss and let the pointer travel into it (SC 1.4.13). The tooltip carries hover on its wrapper, not its trigger, for exactly this reason.
 - **Do** reserve `backdrop-blur` for transient, functional overlays only — the batch file-drop affordance is the one sanctioned use. It signals an active drag state and disappears the moment the drag ends. This is the explicit exception to the no-decorative-blur rule below; never use blur for resting atmosphere.
 
 ### Don't:
 - **Don't** use blue, purple, or cool-gray. Every neutral must sit on the warm side of neutral (hue 48–68 in OKLCH).
 - **Don't** use `border-left` or `border-right` greater than 1px as a colored accent stripe. Rewrite with full borders, background tints, or nothing.
 - **Don't** use gradient text (`background-clip: text` with a gradient). Use solid color; emphasis comes from weight and size.
+- **Don't** dim a region with opacity to mark it secondary. It reads as disabled, it does not gate anything, and it drags every nested token below contrast. Use the rule, the heading, and spacing.
 - **Don't** assemble from a generic SaaS kit — no blue primary, no card grid, no `rounded-xl` everything from a template.
 - **Don't** use neon accents or dark backgrounds with glowing effects. This signals "developer tool" and excludes the primary audience.
 - **Don't** build dense, gray, data-heavy UI. This is for everyday users, not IT admins.

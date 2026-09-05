@@ -14,7 +14,7 @@ Secondary users: designers and small-business owners who want visual control (co
 
 A single-page QR code generator. The user pastes a URL or text, adjusts colors, error correction level, and pixel pattern, sees a live preview, and downloads or shares the result. Success means the user walks away with a QR code they're proud to use — not just one that works.
 
-The Burmese localization (`my.json`) signals an intentional audience beyond English-speaking markets. Copy and layout must communicate clearly regardless of script.
+The product ships English and Spanish (`en.json`, `es.json`), at full key parity. Copy and layout must communicate clearly regardless of script, and the locale registry is additive by design so a further language needs no type edits. (An earlier revision of this document cited a Burmese `my.json` as evidence of audience intent; that file has never existed. The intent is real, the artifact was not.)
 
 ## Brand Personality
 
@@ -43,4 +43,11 @@ Emotional goal: the user's reaction to the generated QR code should be "this act
 
 ## Accessibility & Inclusion
 
-WCAG AA. Keyboard navigable throughout. Screen-reader-friendly labels and roles. Sufficient contrast ratios on all text and interactive states — including the terracotta accent (`$action`) against both light and dark surfaces. Support `prefers-reduced-motion` for any transitions (the 150ms theme transition should respect it).
+WCAG AA, treated as a floor the token layer has to meet rather than something components patch case by case:
+
+- **1.4.3 (text, 4.5:1)** across both themes, including placeholders, empty states and hints. `text-disabled` is reserved for genuinely inactive controls, which the criterion exempts.
+- **1.4.11 (non-text, 3:1)** for the boundary of every interactive control. `border-strong` meets it; `border-subtle` is decorative and must never be a control's only edge.
+- **1.4.4 / 1.4.10 (resize and reflow)** to 200% text with nothing clipped. `Layout` hides horizontal overflow, so any layout that overflows loses content instead of gaining a scrollbar: wrap, don't overflow.
+- **1.4.13 (content on hover or focus)** dismissible with Escape and hoverable without vanishing.
+- Keyboard navigable throughout, with a visible focus ring on every focusable element and a ring offset bound to the page surface.
+- `prefers-reduced-motion` respected as an **opt-in** (`@media (prefers-reduced-motion: no-preference)` and `motion-safe:`), never a global `0.01ms` kill that destroys useful feedback.
