@@ -1,0 +1,23 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font-size",
+        "value": "11px",
+        "createdAt": "2026-09-05T14:25:07.120Z",
+        "reason": "DESIGN.md typography documents 'Caption - Panel (600, 11px, ls 0.15em, uppercase)' as a real step of the ramp; verified across 9 call sites in the review. The genuine off-ramp value is 9px in Tooltip.tsx, fixed separately."
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "32px",
+        "files": [
+          "e2e/accessibility.spec.ts"
+        ],
+        "createdAt": "2026-09-05T14:52:37.821Z",
+        "reason": "Playwright test simulating 200% browser text zoom (WCAG 1.4.4 check), not a UI font size. Scoped to this spec file."
+      }
+    ]
+  }
+}
