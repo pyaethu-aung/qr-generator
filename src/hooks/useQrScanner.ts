@@ -8,6 +8,21 @@ import {
 import { loadUnsupportedImage, sniffImageFormat } from '../utils/imageFormat'
 
 /**
+ * Live-camera decode budget. The loop used to reschedule on every animation
+ * frame and run the full scale ladder, so a browser without `BarcodeDetector`
+ * (Firefox, older Safari) did up to nine synchronous ZXing passes per frame on
+ * the main thread — pinning a core and draining battery on exactly the mobile
+ * devices this feature targets.
+ *
+ * ~10 fps is well above what a hand-held scan needs, and two passes per frame
+ * is enough because successive frames re-frame the code anyway: a miss costs
+ * 100ms, not the scan. Still uploads keep the full ladder, where latency is
+ * acceptable and the single attempt has to count.
+ */
+const LIVE_FRAME_INTERVAL_MS = 100
+const LIVE_FRAME_MAX_PASSES = 2
+
+/**
  * Why a decode attempt failed, mapped to a user-facing message by the component:
  * - `no-code` — the image or frame held no readable QR code
  * - `unsupported-file` — the dropped file was not an image
@@ -103,12 +118,14 @@ async function decodeDrawable(
   sw: number,
   sh: number,
   canvas: HTMLCanvasElement,
+  maxFallbackPasses?: number,
 ): Promise<string | null> {
   if (isBarcodeDetectorSupported()) {
     const value = await decodeWithBarcodeDetector(source)
     if (value) return value
   }
-  for (const edge of getDecodeEdges(Math.max(sw, sh))) {
+  const edges = getDecodeEdges(Math.max(sw, sh))
+  for (const edge of maxFallbackPasses ? edges.slice(0, maxFallbackPasses) : edges) {
     const imageData = drawScaled(source, sw, sh, canvas, edge)
     if (!imageData) return null
     const value = decodeImageData(imageData)
@@ -121,9 +138,10 @@ async function decodeDrawable(
 function decodeFromSource(
   source: HTMLImageElement | HTMLVideoElement,
   canvas: HTMLCanvasElement,
+  maxFallbackPasses?: number,
 ): Promise<string | null> {
   const [sw, sh] = sourceDimensions(source)
-  return decodeDrawable(source, sw, sh, canvas)
+  return decodeDrawable(source, sw, sh, canvas, maxFallbackPasses)
 }
 
 /** Loads a File into an HTMLImageElement via an object URL, revoking it when done. */
@@ -345,18 +363,22 @@ export function useQrScanner(): UseQrScannerReturn {
       setDecoded(null)
       setIsCameraActive(true)
 
-      const tick = async () => {
+      let lastDecodeAt = Number.NEGATIVE_INFINITY
+      const tick = async (now: number) => {
         const current = videoRef.current
         if (!current || !streamRef.current) return
-        const value = await decodeFromSource(current, getCanvas())
-        if (value) {
-          setDecoded(value)
-          stopCamera()
-          return
+        if (now - lastDecodeAt >= LIVE_FRAME_INTERVAL_MS) {
+          lastDecodeAt = now
+          const value = await decodeFromSource(current, getCanvas(), LIVE_FRAME_MAX_PASSES)
+          if (value) {
+            setDecoded(value)
+            stopCamera()
+            return
+          }
         }
-        frameRef.current = requestAnimationFrame(() => void tick())
+        frameRef.current = requestAnimationFrame((next) => void tick(next))
       }
-      frameRef.current = requestAnimationFrame(() => void tick())
+      frameRef.current = requestAnimationFrame((next) => void tick(next))
     } catch (err) {
       const name = (err as Error)?.name
       setError(name === 'NotAllowedError' || name === 'SecurityError' ? 'camera-denied' : 'camera-unsupported')
