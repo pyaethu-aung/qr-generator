@@ -188,7 +188,11 @@ describe('BatchGenerator', () => {
       setup()
       uploadCsv()
       await waitFor(() => expect(screen.getByText(/map csv columns/i)).toBeInTheDocument())
-      expect(screen.getByLabelText(/your list/i)).toBeDisabled()
+      // readOnly, not disabled: the source view must stay readable and in the
+      // tab order for keyboard and screen-reader users.
+      const textarea = screen.getByLabelText(/your list/i)
+      expect(textarea).toHaveAttribute('readonly')
+      expect(textarea).not.toBeDisabled()
     })
 
     it('builds filename overrides when a filename column is chosen', async () => {
