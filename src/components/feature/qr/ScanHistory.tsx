@@ -94,7 +94,7 @@ export function ScanHistory({
                 'flex items-stretch gap-2 rounded-xl border transition-[background-color,border-color,box-shadow] duration-150',
                 isRestored
                   ? 'border-action bg-surface-raised ring-2 ring-action ring-offset-2'
-                  : 'border-border-subtle bg-surface-raised hover:border-border-strong',
+                  : 'border-border-strong bg-surface-raised hover:border-action',
               ].join(' ')}
             >
               <button

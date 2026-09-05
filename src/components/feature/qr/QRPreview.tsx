@@ -176,7 +176,7 @@ export const QRPreview = forwardRef<HTMLCanvasElement, QRPreviewProps>(
         <div className="flex items-center justify-center min-h-[220px] md:h-[536px] rounded-lg border border-border-subtle bg-surface-inset">
           {!value ? (
             <div
-              className="flex items-center justify-center w-full bg-surface-inset text-text-disabled rounded-lg border-2 border-dashed border-border-subtle aspect-square"
+              className="flex items-center justify-center w-full bg-surface-inset text-text-secondary rounded-lg border-2 border-dashed border-border-subtle aspect-square"
               style={{ maxWidth: size }}
               role="img"
               aria-label={placeholderHint ?? ariaPlaceholder}

@@ -56,7 +56,7 @@ export function QRHistory({ history, onRestore, onClear, sectionLabel, clearAria
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2',
                 isRestored
                   ? 'border-action bg-surface-raised ring-2 ring-action ring-offset-2'
-                  : 'border-border-subtle bg-surface-raised hover:border-border-strong hover:bg-surface-inset',
+                  : 'border-border-strong bg-surface-raised hover:border-action hover:bg-surface-inset',
               ].join(' ')}
             >
               <div className="size-[72px] shrink-0 overflow-hidden rounded-lg">
