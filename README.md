@@ -222,6 +222,10 @@ The app supports multiple languages (English and Spanish) via custom locale conf
 
 - Metadata (title, description, Open Graph, Twitter) is automatically updated on language change.
 - HTML `lang` attribute is kept in sync with the active locale.
+- **WCAG 2.2 AA** is treated as a property of the token layer rather than something patched per component: 4.5:1 for all text including placeholders and empty states (SC 1.4.3), 3:1 for the boundary of every interactive control (SC 1.4.11), no clipped content at 200% text size (SC 1.4.4), and hover/focus panels that dismiss with Escape and survive the pointer entering them (SC 1.4.13).
+- Every focusable element has a visible focus ring, with the ring offset bound to the page surface so it reads as a gap in both themes.
+- `prefers-reduced-motion` is honoured as an opt-in: transitions collapse and animations are gated behind `motion-safe`, with no global animation kill that would remove useful feedback such as the scan spinner.
+- Screen-reader semantics are checked in `e2e/accessibility.spec.ts`, which runs across desktop and mobile in both themes.
 
 ## Development
 
