@@ -10,18 +10,29 @@ export function Tooltip({ content, ariaLabel = 'More information' }: TooltipProp
   const id = useId()
 
   return (
-    <div className="relative inline-flex">
+    // Hover lives on the wrapper, not the trigger, so the pointer can travel
+    // into the panel without dismissing it (WCAG 1.4.13 Hoverable). Escape
+    // closes it without moving focus (WCAG 1.4.13 Dismissible).
+    <div
+      className="relative inline-flex"
+      onMouseEnter={() => setVisible(true)}
+      onMouseLeave={() => setVisible(false)}
+      onKeyDown={(event) => {
+        if (event.key === 'Escape' && visible) {
+          event.stopPropagation()
+          setVisible(false)
+        }
+      }}
+    >
       <button
         type="button"
         aria-describedby={visible ? id : undefined}
-        onMouseEnter={() => setVisible(true)}
-        onMouseLeave={() => setVisible(false)}
         onFocus={() => setVisible(true)}
         onBlur={() => setVisible(false)}
-        className="group inline-flex h-7 w-7 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-1"
+        className="group inline-flex h-9 w-9 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1"
         aria-label={ariaLabel}
       >
-        <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-surface-inset text-[9px] font-semibold text-text-secondary group-hover:bg-surface-raised">
+        <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-surface-inset text-[10px] font-semibold text-text-secondary group-hover:bg-surface-raised">
           ?
         </span>
       </button>
