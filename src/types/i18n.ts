@@ -43,12 +43,9 @@ export interface HeroStrings {
 export interface ConfigStrings {
   sectionLabel: string
   sectionTitle: string
-  helper: string
 }
 
 export interface ControlStrings {
-  contentLabel: string
-  contentPlaceholder: string
   correctionLabel: string
   correctionHint: string
   correctionBelowRecommended: string
@@ -76,8 +73,6 @@ export interface ControlStrings {
   gradientDirBottomLeft: string
   gradientDirLeft: string
   gradientDirTopLeft: string
-  generate: string
-  downloadsTitle: string
   downloadPng: string
   downloadSvg: string
   downloadSuccess: string
@@ -434,9 +429,6 @@ export type TranslationKey =
   | 'hero.subtitle'
   | 'config.sectionLabel'
   | 'config.sectionTitle'
-  | 'config.helper'
-  | 'controls.contentLabel'
-  | 'controls.contentPlaceholder'
   | 'controls.correctionLabel'
   | 'controls.correctionHint'
   | 'controls.correctionBelowRecommended'
@@ -464,7 +456,6 @@ export type TranslationKey =
   | 'controls.gradientDirBottomLeft'
   | 'controls.gradientDirLeft'
   | 'controls.gradientDirTopLeft'
-  | 'controls.generate'
   | 'controls.downloadPngPrimary'
   | 'controls.downloadsDisabledHint'
   | 'controls.patternFluidHint'
@@ -479,7 +470,6 @@ export type TranslationKey =
   | 'controls.contrastInvertedBody'
   | 'controls.inputTooLong'
   | 'controls.requiredFieldLabel'
-  | 'controls.downloadsTitle'
   | 'controls.downloadPng'
   | 'controls.downloadSvg'
   | 'controls.downloadSuccess'
