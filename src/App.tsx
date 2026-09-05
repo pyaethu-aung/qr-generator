@@ -1,9 +1,7 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, lazy, Suspense } from 'react'
 import { ExternalLink, QrCode, ScanLine, Layers } from 'lucide-react'
 
 import { QRGenerator } from './components/feature/qr/QRGenerator'
-import { QRScanner } from './components/feature/qr/QRScanner'
-import { BatchGenerator } from './components/feature/qr/BatchGenerator'
 import { PillGroup } from './components/common/PillGroup'
 import './App.css'
 import { useLocaleContext } from './hooks/LocaleProvider'
@@ -11,6 +9,16 @@ import { applySeoMetadata } from './utils/metadata'
 import { Navbar } from './components/Navigation/Navbar'
 import { Layout } from './components/Layout/Layout'
 import SEOHead from './components/common/SEOHead'
+
+// Both tabs already mount on demand, but a static import pulls their heavy
+// deps (@zxing/library ~598 kB, jspdf, fflate) into the entry chunk that every
+// Generate-view visitor downloads. lazy() moves them into their own chunks.
+const QRScanner = lazy(() =>
+  import('./components/feature/qr/QRScanner').then((m) => ({ default: m.QRScanner })),
+)
+const BatchGenerator = lazy(() =>
+  import('./components/feature/qr/BatchGenerator').then((m) => ({ default: m.BatchGenerator })),
+)
 
 type AppView = 'generate' | 'batch' | 'scan'
 
@@ -60,8 +68,10 @@ function App() {
           <div hidden={view !== 'generate'}>
             <QRGenerator seed={seed} />
           </div>
-          {view === 'batch' && <BatchGenerator />}
-          {view === 'scan' && <QRScanner onEditInGenerator={handleEditInGenerator} />}
+          <Suspense fallback={<div className="py-16 text-center text-sm text-text-secondary">{translate('common.loading')}</div>}>
+            {view === 'batch' && <BatchGenerator />}
+            {view === 'scan' && <QRScanner onEditInGenerator={handleEditInGenerator} />}
+          </Suspense>
         </div>
       </main>
 
