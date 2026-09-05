@@ -9,7 +9,8 @@
     }
   },
   "common": {
-    "comingSoon": "Próximamente"
+    "comingSoon": "Próximamente",
+    "loading": "Cargando…"
   },
   "seo": {
     "title": "Generador de Códigos QR",
@@ -28,7 +29,8 @@
     "navLabel": "Controles del sitio",
     "themeToggleToLight": "Cambiar al tema claro",
     "themeToggleToDark": "Cambiar al tema oscuro",
-    "footerNote": "© 2026 Generador de Códigos QR"
+    "footerNote": "© 2026 Generador de Códigos QR",
+    "skipToContent": "Saltar al contenido principal"
   },
   "hero": {
     "badge": "RÁPIDO Y FÁCIL",
@@ -246,7 +248,21 @@
     "copyLinkHint": "Cualquiera con el enlace ve tu texto y diseño (no tu logotipo).",
     "capacityUsage": "{used} de {max} caracteres usados",
     "capacityNearLimit": "Cerca del límite",
-    "capacityOverLimit": "Capacidad superada"
+    "capacityOverLimit": "Capacidad superada",
+    "downloadPngPrimary": "Descargar PNG · 1024 × 1024",
+    "downloadsDisabledHint": "Añade un enlace para habilitar las descargas.",
+    "patternFluidHint": "Une los bloques contiguos en formas continuas.",
+    "readabilityRiskTitle": "Riesgo de lectura",
+    "readabilityRiskBody": "Las formas de alta densidad pueden dificultar la lectura con la cámara.",
+    "contrastRiskTitle": "Riesgo de contraste",
+    "invertedColorsTitle": "Colores invertidos",
+    "contrastDismissLabel": "Descartar el aviso de contraste",
+    "contrastLowBody": "Un contraste {ratio} puede impedir que los escáneres lean el código QR. Prueba a oscurecer el color principal o aclarar el fondo.",
+    "contrastLowRatioPrefix": "{ratio}, bajo",
+    "contrastLowRatioFallback": "Bajo",
+    "contrastInvertedBody": "Puede que no todos los escáneres reconozcan el claro sobre oscuro. Prueba a intercambiar el color principal y el fondo.",
+    "inputTooLong": "Texto demasiado largo (máximo {max} caracteres)",
+    "requiredFieldLabel": "obligatorio"
   },
   "preview": {
     "sectionLabel": "Vista previa en vivo",
