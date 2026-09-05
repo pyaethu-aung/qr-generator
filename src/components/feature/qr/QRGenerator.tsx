@@ -91,6 +91,8 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
   // Raw field bytes for the capacity counter — see comment on `structuredContent` above.
   const capacityValue = activeContent?.raw
 
+  const { translate } = useLocaleContext()
+
   const {
     liveValue,
     inputValue,
@@ -109,7 +111,7 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
     canDownload,
     recentDownload,
     isPending,
-  } = useQRGenerator(builtValue)
+  } = useQRGenerator(builtValue, translate('controls.inputTooLong'))
 
   const {
     designConfig,
@@ -136,7 +138,6 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
     frameTextLimit,
   } = useQRDesign(liveValue, inputEcLevel)
 
-  const { translate } = useLocaleContext()
   const { history, addEntry, clear: clearHistory } = useQRHistory()
   const { presets, save: savePreset, remove: removePreset } = useQRPresets()
 
@@ -309,7 +310,7 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
 
         <div className="rounded-xl border border-border-strong bg-surface-overlay p-8 shadow-lg w-full max-w-full overflow-clip">
           <div className="grid gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-            <div className="order-2 md:order-1 space-y-5 min-w-0">
+            <div className="order-1 space-y-5 min-w-0">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-text-secondary">
                   {translate('config.sectionLabel')}
@@ -384,6 +385,16 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
                 isRiskyPattern={isRiskyPattern}
                 onDismissWarning={dismissWarning}
                 dismissWarningAriaLabel={translate('controls.dismissWarningAriaLabel')}
+                patternFluidHint={translate('controls.patternFluidHint')}
+                readabilityRiskTitle={translate('controls.readabilityRiskTitle')}
+                readabilityRiskBody={translate('controls.readabilityRiskBody')}
+                contrastRiskTitle={translate('controls.contrastRiskTitle')}
+                invertedColorsTitle={translate('controls.invertedColorsTitle')}
+                contrastDismissLabel={translate('controls.contrastDismissLabel')}
+                contrastLowBody={translate('controls.contrastLowBody')}
+                contrastLowRatioPrefix={translate('controls.contrastLowRatioPrefix')}
+                contrastLowRatioFallback={translate('controls.contrastLowRatioFallback')}
+                contrastInvertedBody={translate('controls.contrastInvertedBody')}
                 logoDataUrl={logoDataUrl}
                 onLogoChange={setLogoDataUrl}
                 logoSize={logoSize}
@@ -479,7 +490,7 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
               />
             </div>
 
-            <div className="order-1 md:order-2 space-y-4 min-w-0">
+            <div className="order-2 space-y-4 min-w-0">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-text-secondary">
                   {translate('preview.sectionLabel')}
@@ -502,21 +513,24 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
                 isPending={isPending}
                 placeholderHint={previewPlaceholderHint}
               />
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                <button
-                  type="button"
-                  onClick={() => { void downloadPng(designConfig, frameConfig, logoDataUrl, logoSize); void captureHistoryEntry() }}
-                  disabled={!canDownload}
-                  className="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-border-subtle bg-surface-raised px-3 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {recentDownload === 'png' ? <Check size={15} aria-hidden className="text-action shrink-0" /> : <Download size={15} aria-hidden className="shrink-0" />}
-                  <span className="truncate">{translate('controls.downloadPng')}</span>
-                </button>
+              {/* One primary action. PNG is right for almost every visitor, so it
+                  carries the documented terracotta pill CTA and states its output
+                  size; SVG, Share and Copy link stay secondary. */}
+              <button
+                type="button"
+                onClick={() => { void downloadPng(designConfig, frameConfig, logoDataUrl, logoSize); void captureHistoryEntry() }}
+                disabled={!canDownload}
+                className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-action px-6 text-sm font-bold text-action-fg transition-colors hover:bg-action-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {recentDownload === 'png' ? <Check size={16} aria-hidden className="shrink-0" /> : <Download size={16} aria-hidden className="shrink-0" />}
+                <span className="truncate">{translate('controls.downloadPngPrimary')}</span>
+              </button>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => { void downloadSvg(designConfig, frameConfig, logoDataUrl, logoSize); void captureHistoryEntry() }}
                   disabled={!canDownload}
-                  className="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-border-subtle bg-surface-raised px-3 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-border-strong bg-surface-raised px-3 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {recentDownload === 'svg' ? <Check size={15} aria-hidden className="text-action shrink-0" /> : <Download size={15} aria-hidden className="shrink-0" />}
                   <span className="truncate">{translate('controls.downloadSvg')}</span>
@@ -531,8 +545,8 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
                   onClick={handleShareClick}
                   className={`flex h-11 w-full items-center justify-center gap-1.5 rounded-xl border px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
                     liveValue
-                      ? 'border-border-subtle bg-surface-raised text-text-primary focus-visible:ring-focus-ring hover:bg-surface-inset'
-                      : 'border-border-subtle bg-surface-inset text-text-disabled'
+                      ? 'border-border-strong bg-surface-raised text-text-primary focus-visible:ring-focus-ring hover:bg-surface-inset'
+                      : 'border-border-strong bg-surface-inset text-text-disabled'
                   } ${isShareDisabled ? 'cursor-not-allowed opacity-50' : ''} ${isSharing ? 'cursor-wait' : ''}`}
                 >
                   <Share2 size={15} aria-hidden className="shrink-0" />
@@ -544,7 +558,7 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
                   type="button"
                   onClick={() => void handleCopyLink()}
                   disabled={!canDownload}
-                  className="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-border-subtle bg-surface-raised px-3 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-border-strong bg-surface-raised px-3 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {copyState === 'copied' ? <Check size={15} aria-hidden className="text-action shrink-0" /> : <Link2 size={15} aria-hidden className="shrink-0" />}
                   <span className="truncate">{copyState === 'copied' ? translate('controls.copyLinkSuccess') : translate('controls.copyLink')}</span>
