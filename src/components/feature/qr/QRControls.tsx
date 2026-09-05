@@ -1133,19 +1133,19 @@ export function QRControls({
                 )}
 
                 <div className="min-w-[120px] flex-1 flex flex-col gap-1">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <label htmlFor={bgColorId} className="text-sm font-medium text-text-primary">{backgroundLabel}</label>
+                  <div className="flex min-w-0 items-baseline justify-between gap-2">
+                    <label htmlFor={bgColorId} className="truncate text-sm font-medium text-text-primary">{backgroundLabel}</label>
                     {onTransparentBgChange && (
                       <button
                         type="button"
                         role="switch"
                         aria-checked={transparentBg}
                         onClick={() => onTransparentBgChange(!transparentBg)}
-                        className="flex items-center gap-1.5 text-xs text-text-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded transition-colors"
+                        className="flex shrink-0 items-center gap-1.5 text-xs text-text-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded transition-colors"
                       >
                         {bgTransparentLabel}
                         <span className={`relative inline-flex h-4 w-7 shrink-0 items-center rounded-full transition-colors duration-150 ${transparentBg ? 'bg-action' : 'bg-border-strong'}`}>
-                          <span className={`inline-block h-3 w-3 transform rounded-full bg-white shadow-sm transition-transform duration-150 ${transparentBg ? 'translate-x-3.5' : 'translate-x-0.5'}`} />
+                          <span className={`inline-block h-3 w-3 transform rounded-full bg-surface-raised shadow-sm transition-transform duration-150 ${transparentBg ? 'translate-x-3.5' : 'translate-x-0.5'}`} />
                         </span>
                       </button>
                     )}

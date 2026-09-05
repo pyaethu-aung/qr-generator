@@ -15,8 +15,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     } else {
       root.classList.remove('dark')
     }
+    // Read the value back off --color-surface rather than repeating the hex.
+    // The class is already applied above, so the computed value is the theme's.
+    // index.html's boot script still carries literals: it runs before any CSS
+    // has loaded, which is the whole point of it.
     const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')
-    if (meta) meta.content = theme === 'dark' ? '#1A1612' : '#F3EBE2'
+    if (meta) {
+      const surface = getComputedStyle(root).getPropertyValue('--color-surface').trim()
+      if (surface) meta.content = surface
+    }
   }, [theme])
 
   useEffect(() => {

@@ -548,16 +548,17 @@ export const QRGenerator = ({ seed }: QRGeneratorProps = {}) => {
                   aria-disabled={isShareDisabled}
                   aria-describedby={actionStatusMessage ? shareStatusId : undefined}
                   onClick={handleShareClick}
-                  className={`flex h-11 w-full items-center justify-center gap-1.5 rounded-xl border px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
-                    liveValue
-                      ? 'border-border-strong bg-surface-raised text-text-primary focus-visible:ring-focus-ring hover:bg-surface-inset'
-                      : 'border-border-strong bg-surface-inset text-text-disabled'
-                  } ${isShareDisabled ? 'cursor-not-allowed opacity-50' : ''} ${isSharing ? 'cursor-wait' : ''}`}
+                  className={`flex h-11 w-full items-center justify-center gap-1.5 rounded-xl border border-border-strong bg-surface-raised px-3 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${isSharing ? 'cursor-wait' : ''}`}
                 >
                   <Share2 size={15} aria-hidden className="shrink-0" />
                   <span className="truncate">{translate('preview.shareButtonLabel')}</span>
                 </button>
               </div>
+              {!canDownload && (
+                <p className="text-xs text-text-secondary text-center">
+                  {translate('controls.downloadsDisabledHint')}
+                </p>
+              )}
               <div className="space-y-1.5">
                 <button
                   type="button"
