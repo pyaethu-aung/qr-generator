@@ -207,7 +207,7 @@ export function CountryCodeSelect({
                 }}
                 onKeyDown={onSearchKeyDown}
                 onBlur={onSearchBlur}
-                className="h-9 w-full rounded-lg border border-border-strong bg-surface-inset pl-8 pr-3 text-sm text-text-primary placeholder:text-text-disabled focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:border-focus-ring"
+                className="h-9 w-full rounded-lg border border-border-strong bg-surface-inset pl-8 pr-3 text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:border-focus-ring"
               />
             </div>
           </div>

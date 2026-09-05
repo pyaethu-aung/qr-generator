@@ -42,7 +42,7 @@ const TYPE_KEY: Record<DecodedContentType, TranslationKey> = {
 }
 
 const ACTION_BUTTON =
-  'flex h-11 items-center justify-center gap-1.5 rounded-xl border border-border-subtle bg-surface-raised px-3 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2'
+  'flex h-11 items-center justify-center gap-1.5 rounded-xl border border-border-strong bg-surface-raised px-3 text-sm font-medium text-text-primary transition-colors hover:bg-surface-inset focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2'
 
 export function QRScanner({ onEditInGenerator }: QRScannerProps) {
   const { translate } = useLocaleContext()

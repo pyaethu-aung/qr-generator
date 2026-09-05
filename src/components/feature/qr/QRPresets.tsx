@@ -158,7 +158,7 @@ export function QRPresets({
               if (e.key === 'Enter') handleConfirmSave()
               if (e.key === 'Escape') handleCancelSave()
             }}
-            className="h-11 flex-1 min-w-0 rounded-lg border border-border-strong bg-surface-inset px-3 text-sm text-text-primary placeholder:text-text-disabled focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring"
+            className="h-11 flex-1 min-w-0 rounded-lg border border-border-strong bg-surface-inset px-3 text-sm text-text-primary placeholder:text-text-secondary focus:border-focus-ring focus:outline-none focus:ring-2 focus:ring-focus-ring"
           />
           <button
             type="button"
@@ -205,7 +205,7 @@ export function QRPresets({
                       ? 'border-error bg-surface-raised ring-2 ring-error ring-offset-2'
                       : isApplied || isJustSaved
                         ? 'border-action bg-surface-raised ring-2 ring-action ring-offset-2'
-                        : 'border-border-subtle bg-surface-raised hover:border-border-strong hover:bg-surface-inset',
+                        : 'border-border-strong bg-surface-raised hover:border-action hover:bg-surface-inset',
                   ].join(' ')}
                 >
                   <div

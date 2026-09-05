@@ -17,7 +17,7 @@ export function LanguageToggle() {
         value={locale}
         onChange={(event) => setLocale(event.target.value as SupportedLocale)}
         aria-label={translate('locale.toggleLabel')}
-        className="h-11 cursor-pointer appearance-none rounded-full border border-border-subtle bg-surface-raised pl-9 pr-9 text-sm text-text-secondary transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
+        className="h-11 cursor-pointer appearance-none rounded-full border border-border-strong bg-surface-raised pl-9 pr-9 text-sm text-text-secondary transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2"
       >
         {localeCodes.map((code) => (
           <option key={code} value={code}>
