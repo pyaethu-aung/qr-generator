@@ -1,14 +1,14 @@
 # =============================================================================
-# Dockerfile — QR Generator SPA (Multi-Stage Build)
+# Dockerfile — QRCraft SPA (Multi-Stage Build)
 #
 # Stage 1 (builder): Node 20 Alpine — install deps, compile TS, build Vite
 # Stage 2 (runtime): Nginx Alpine — serve static assets with security hardening
 #
-# Build:  docker build -t qr-generator:local .
+# Build:  docker build -t qrcraft:local .
 # Run:    docker run --rm -p 8080:80 --read-only --cap-drop ALL \
 #           --tmpfs /var/cache/nginx:mode=1777 \
 #           --tmpfs /tmp:mode=1777 \
-#           qr-generator:local
+#           qrcraft:local
 # =============================================================================
 
 # ---------------------------------------------------------------------------
