@@ -1,4 +1,4 @@
-# QR Generator
+# QRCraft
 
 [![Deploy to GitHub Pages](https://github.com/pyaethu-aung/qr-generator/actions/workflows/deploy.yml/badge.svg)](https://github.com/pyaethu-aung/qr-generator/actions/workflows/deploy.yml)
 [![Lint and Type Check](https://github.com/pyaethu-aung/qr-generator/actions/workflows/lint.yml/badge.svg)](https://github.com/pyaethu-aung/qr-generator/actions/workflows/lint.yml)
@@ -374,4 +374,4 @@ The application injects `SoftwareApplication` JSON-LD structured data into the d
 
 **Key Configuration:**
 - The application URL is hardcoded in `src/components/common/SEOHead.tsx`.
-- If the hosting URL changes (e.g., from `pyaethu-aung.github.io` to a custom domain), you **MUST** update the `url` property in `SEOHead.tsx` to maintain valid schema markup.
+- The site serves from the custom domain in `CNAME` (`qrcraft.pyaethuaung.com`). If that domain changes, you **MUST** update `CNAME` and the `url` property in `SEOHead.tsx` together — they must agree to maintain valid schema markup.
