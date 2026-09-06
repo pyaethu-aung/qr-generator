@@ -27,7 +27,7 @@ describe('SEOHead Component', () => {
 
         expect(json['@context']).toBe('https://schema.org');
         expect(json['@type']).toBe('SoftwareApplication');
-        expect(json.name).toBe('QR Code Generator');
+        expect(json.name).toBe('QRCraft');
         expect(json.applicationCategory).toBe('UtilitiesApplication');
         expect(json.operatingSystem).toBe('Web');
     });
