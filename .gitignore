@@ -41,3 +41,7 @@ playwright-report/
 playwright/.cache/
 
 .cache/develop-web-feature/
+
+# impeccable: platform-specific engine binary (12MB, darwin-arm64 only).
+# The launcher re-downloads it on first run.
+.claude/skills/impeccable/scripts/bin/
