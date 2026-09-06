@@ -1,5 +1,5 @@
 ---
-name: QR Generator
+name: QRCraft
 description: Craft custom QR codes — warm, considered, done in under a minute.
 colors:
   action: "#A04D28"
@@ -105,7 +105,7 @@ components:
     padding: "32px"
 ---
 
-# Design System: QR Generator
+# Design System: QRCraft
 
 ## 1. Overview
 
@@ -256,7 +256,7 @@ The multiline sibling of the input — same surface, stroke, radius, and focus v
 ### Navigation
 
 - **Navbar:** `surface-overlay` fill, `border-subtle` bottom border. 16px vertical / 48px horizontal padding. Wraps (`flex-wrap`) so its controls stay on screen at 200% text size — `Layout` clips horizontal overflow, so anything pushed out is lost, not scrollable. **No `backdrop-blur`:** it is a resting surface (see Do's and Don'ts).
-- **Brand:** `BrandMark` (22px inline SVG: the three QR finder patterns plus four data modules, drawn in `currentColor` = `text-primary`) + "QR Code Generator" (18px, 600) + subtitle (13px, `text-secondary`, hidden below `sm`). The mark is `aria-hidden`, so the `<h1>` announces the name alone. It is deliberately **not** terracotta: chrome present on every view would spend the accent budget permanently.
+- **Brand:** `BrandMark` (22px inline SVG: the three QR finder patterns plus four data modules, drawn in `currentColor` = `text-primary`) + "QRCraft" (18px, 600) + subtitle (13px, `text-secondary`, hidden below `sm`). The mark is `aria-hidden`, so the `<h1>` announces the name alone. It is deliberately **not** terracotta: chrome present on every view would spend the accent budget permanently.
 - **Icon Buttons:** Circular (44×44px), `surface-raised` fill, `border-strong` stroke, `text-secondary` icons (18×18px). Theme toggle (sun/moon) and language toggle (globe).
 
 ### Color Picker (Signature Component)

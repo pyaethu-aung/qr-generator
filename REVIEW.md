@@ -1,4 +1,4 @@
-# Project Review: QR Generator
+# Project Review: QRCraft
 
 **Method:** dual-agent critique (Assessment A design review and Assessment B detector/browser evidence ran as isolated parallel sub-agents), plus an independent technical audit sub-agent and a parent verification pass.
 **Date:** 2026-09-05

@@ -13,7 +13,7 @@ Templates Updated:
 Deferred Items:
 - None
 -->
-# QR Generator Constitution
+# QRCraft Constitution
 
 ## Core Principles
 
