@@ -1,5 +1,5 @@
 {
-  "name": "qr-generator",
+  "name": "qrcraft",
   "private": true,
   "version": "0.18.0",
   "type": "module",
@@ -16,8 +16,8 @@
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "preview": "vite preview",
-    "docker:build": "docker build -t qr-generator:local .",
-    "docker:run": "docker run --rm -p 8080:80 --name qr-app --read-only --cap-drop ALL --tmpfs /var/cache/nginx:mode=1777 --tmpfs /tmp:mode=1777 qr-generator:local"
+    "docker:build": "docker build -t qrcraft:local .",
+    "docker:run": "docker run --rm -p 8080:80 --name qrcraft --read-only --cap-drop ALL --tmpfs /var/cache/nginx:mode=1777 --tmpfs /tmp:mode=1777 qrcraft:local"
   },
   "dependencies": {
     "@babel/core": "^8.0.1",
