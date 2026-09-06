@@ -138,7 +138,16 @@ The `/impeccable` skill has one separate entry that must be added manually (also
 
 | Permission | Why |
 |---|---|
-| `Bash(node .claude/skills/impeccable/scripts/critique-storage.mjs*)` | `/impeccable` persists critique snapshots via this script; variable expansion (`$SLUG`) triggers Claude Code's obfuscation heuristic without the allow entry. |
+| `Bash(.claude/skills/impeccable/scripts/impeccable *)` | Every `/impeccable` sub-command shells out to this launcher, which runs a self-contained engine binary (no Node required). |
+
+The launcher expects its platform binary at `scripts/bin/<os>-<arch>/impeccable`. That
+path is **gitignored** — it is ~12 MB and architecture-specific — so a fresh clone has
+no binary and the launcher downloads one on first run into `~/.impeccable/`. Nothing to
+do manually.
+
+The skill's own settings live in `.impeccable/config.json` (shared, committed) with
+per-developer overrides in the gitignored `.impeccable/config.local.json`. Toggle the
+per-edit design detector with `/impeccable hooks on` / `off`.
 
 ## Deployment
 
