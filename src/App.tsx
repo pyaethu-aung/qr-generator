@@ -80,7 +80,7 @@ function App() {
           <span>{translate('layout.footerNote')}</span>
           <span className="text-text-secondary select-none" aria-hidden>·</span>
           <a
-            href="https://github.com/pyaethu-aung/qr-generator"
+            href="https://github.com/pyaethu-aung/qrcraft"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-text-secondary hover:text-text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring rounded"
