@@ -1,8 +1,8 @@
 # QRCraft
 
-[![Deploy to GitHub Pages](https://github.com/pyaethu-aung/qr-generator/actions/workflows/deploy.yml/badge.svg)](https://github.com/pyaethu-aung/qr-generator/actions/workflows/deploy.yml)
-[![Lint and Type Check](https://github.com/pyaethu-aung/qr-generator/actions/workflows/lint.yml/badge.svg)](https://github.com/pyaethu-aung/qr-generator/actions/workflows/lint.yml)
-[![Security Scan](https://github.com/pyaethu-aung/qr-generator/actions/workflows/security.yml/badge.svg)](https://github.com/pyaethu-aung/qr-generator/actions/workflows/security.yml)
+[![Deploy to GitHub Pages](https://github.com/pyaethu-aung/qrcraft/actions/workflows/deploy.yml/badge.svg)](https://github.com/pyaethu-aung/qrcraft/actions/workflows/deploy.yml)
+[![Lint and Type Check](https://github.com/pyaethu-aung/qrcraft/actions/workflows/lint.yml/badge.svg)](https://github.com/pyaethu-aung/qrcraft/actions/workflows/lint.yml)
+[![Security Scan](https://github.com/pyaethu-aung/qrcraft/actions/workflows/security.yml/badge.svg)](https://github.com/pyaethu-aung/qrcraft/actions/workflows/security.yml)
 
 Single-page app for generating QR codes with real-time preview and
 download, plus batch generation (a list of codes as one ZIP) and a built-in
@@ -301,7 +301,7 @@ The `/impeccable` skill requires one separate manual entry:
 
 ## Docker Support
 
-[![Docker Build](https://github.com/pyaethu-aung/qr-generator/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/pyaethu-aung/qr-generator/actions/workflows/docker-publish.yml)
+[![Docker Build](https://github.com/pyaethu-aung/qrcraft/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/pyaethu-aung/qrcraft/actions/workflows/docker-publish.yml)
 
 Included Dockerfile supports multi-stage builds (Node.js builder → Nginx runtime) for a secure, optimized (<25MB) production image.
 
