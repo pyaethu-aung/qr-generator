@@ -12,23 +12,23 @@
     "comingSoon": "Coming soon"
   },
   "seo": {
-    "title": "QR Code Generator",
+    "title": "QRCraft",
     "description": "Generate, style, and download high-quality QR codes without touching a backend.",
-    "ogTitle": "QR Code Generator",
+    "ogTitle": "QRCraft",
     "ogDescription": "Generate, style, and download high-quality QR codes without touching a backend.",
     "ogType": "website",
     "twitterCard": "summary_large_image",
-    "twitterTitle": "QR Code Generator",
+    "twitterTitle": "QRCraft",
     "twitterDescription": "Generate, style, and download high-quality QR codes without touching a backend.",
     "canonical": "/"
   },
   "layout": {
-    "headerTitle": "QR Code Generator",
+    "headerTitle": "QRCraft",
     "headerSubtitle": "No sign-up needed. Runs entirely in your browser.",
     "navLabel": "Site controls",
     "themeToggleToLight": "Switch to light theme",
     "themeToggleToDark": "Switch to dark theme",
-    "footerNote": "© 2026 QR Code Generator"
+    "footerNote": "© 2026 QRCraft"
   },
   "hero": {
     "badge": "QUICK & EASY",
