@@ -13,23 +13,23 @@
     "loading": "Cargando…"
   },
   "seo": {
-    "title": "Generador de Códigos QR",
+    "title": "QRCraft",
     "description": "Genera, personaliza y descarga códigos QR de alta calidad sin tocar un backend.",
-    "ogTitle": "Generador de Códigos QR",
+    "ogTitle": "QRCraft",
     "ogDescription": "Genera, personaliza y descarga códigos QR de alta calidad sin tocar un backend.",
     "ogType": "website",
     "twitterCard": "summary_large_image",
-    "twitterTitle": "Generador de Códigos QR",
+    "twitterTitle": "QRCraft",
     "twitterDescription": "Genera, personaliza y descarga códigos QR de alta calidad sin tocar un backend.",
     "canonical": "/"
   },
   "layout": {
-    "headerTitle": "Generador de Códigos QR",
+    "headerTitle": "QRCraft",
     "headerSubtitle": "Sin registro. Funciona por completo en tu navegador.",
     "navLabel": "Controles del sitio",
     "themeToggleToLight": "Cambiar al tema claro",
     "themeToggleToDark": "Cambiar al tema oscuro",
-    "footerNote": "© 2026 Generador de Códigos QR",
+    "footerNote": "© 2026 QRCraft",
     "skipToContent": "Saltar al contenido principal"
   },
   "hero": {
