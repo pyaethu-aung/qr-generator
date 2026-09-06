@@ -1,5 +1,5 @@
 ---
-name: QR Generator
+name: QRCraft
 description: Craft custom QR codes — warm, considered, done in under a minute.
 colors:
   action: "#A04D28"
@@ -104,7 +104,7 @@ components:
     padding: "32px"
 ---
 
-# Design System: QR Generator
+# Design System: QRCraft
 
 ## 1. Overview
 
@@ -245,7 +245,7 @@ The multiline sibling of the input — same surface, stroke, radius, and focus v
 ### Navigation
 
 - **Navbar:** `surface-overlay` fill, `border-subtle` bottom border. 16px vertical / 48px horizontal padding.
-- **Brand:** Sparkle glyph (22px) + "QR Code Generator" (18px, 600, Playfair Display) + subtitle (13px, `text-secondary`).
+- **Brand:** Sparkle glyph (22px) + "QRCraft" (18px, 600, Playfair Display) + subtitle (13px, `text-secondary`).
 - **Icon Buttons:** Circular (36×36px), `surface-raised` fill, `border-subtle` stroke, `text-secondary` icons (18×18px). Theme toggle (sun/moon) and language toggle (globe).
 
 ### Color Picker (Signature Component)

@@ -146,4 +146,4 @@ The `/impeccable` skill has one separate entry that must be added manually (also
 - **Docker image**: published to GHCR on version tags (e.g. `git tag v1.0.0`); Trivy blocks high/critical CVEs
 - **Dependabot**: runs daily for npm; no auto-merge
 
-If the hosting URL changes from `pyaethu-aung.github.io`, update the `url` property in `src/components/common/SEOHead.tsx` to keep JSON-LD structured data valid.
+The site serves from the custom domain in `CNAME` (`qrcraft.pyaethuaung.com`). If that domain changes, update `CNAME` **and** the `url` property in `src/components/common/SEOHead.tsx` together — they must agree or the JSON-LD structured data is invalid.
