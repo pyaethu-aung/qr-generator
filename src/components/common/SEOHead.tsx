@@ -8,11 +8,11 @@ const SEOHead = () => {
     const schema: SoftwareApplicationJSONLD = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
-        "name": "QR Code Generator",
+        "name": "QRCraft",
         "description": "Generate high-quality QR codes instantly with real-time preview.",
         "applicationCategory": "UtilitiesApplication",
         "operatingSystem": "Web",
-        "url": "https://pyaethu-aung.github.io/qr-generator/",
+        "url": "https://qrcraft.pyaethuaung.com/",
         "image": "./logo.png",
         "featureList": "Client-side generation, Zero-backend, SVG Export",
         "offers": {
